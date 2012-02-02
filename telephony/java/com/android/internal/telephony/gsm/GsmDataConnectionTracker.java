@@ -1356,6 +1356,7 @@ public final class GsmDataConnectionTracker extends DataConnectionTracker {
                 log("onDataStateChanged: Data Activity updated to DORMANT. stopNetStatePoll");
             }
             stopNetStatPoll();
+            stopDataStallAlarm();
         } else {
             mActivity = Activity.NONE;
             if (DBG) {
@@ -1363,7 +1364,10 @@ public final class GsmDataConnectionTracker extends DataConnectionTracker {
                          "isAnyDataCallActive = " + isAnyDataCallActive +
                          " isAnyDataCallDormant = " + isAnyDataCallDormant);
             }
-            if (isAnyDataCallActive) startNetStatPoll();
+            if (isAnyDataCallActive) {
+                startNetStatPoll();
+                startDataStallAlarm(DATA_STALL_NOT_SUSPECTED);
+            }
         }
         mPhone.notifyDataActivity();
 
@@ -1786,7 +1790,7 @@ public final class GsmDataConnectionTracker extends DataConnectionTracker {
         intent.putExtra(DATA_STALL_ALARM_TAG_EXTRA, mDataStallAlarmTag);
         mDataStallAlarmIntent = PendingIntent.getBroadcast(mPhone.getContext(), 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+        am.set(AlarmManager.ELAPSED_REALTIME,
                 SystemClock.elapsedRealtime() + delayInMs, mDataStallAlarmIntent);
     }
 
