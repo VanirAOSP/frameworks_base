@@ -400,6 +400,9 @@ public final class BatteryService extends Binder {
                     && mBatteryLevel <= mLowBatteryWarningLevel
                     && (oldPlugged || mLastBatteryLevel > mLowBatteryWarningLevel);
 
+            if (mBatteryStatus == BatteryManager.BATTERY_STATUS_UNKNOWN)
+                mBatteryLevel = BATTERY_SCALE;
+
             sendIntentLocked();
 
             // Separate broadcast is sent for power connected / not connected
