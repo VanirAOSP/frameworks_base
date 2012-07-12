@@ -235,7 +235,7 @@ public abstract class WindowOrientationListener {
         // The minimum amount of time that must have elapsed since the device stopped
         // undergoing external acceleration before the proposed rotation can change.
         private static final long PROPOSAL_MIN_TIME_SINCE_ACCELERATION_ENDED_NANOS =
-                500 * NANOS_PER_MS;
+                400 * NANOS_PER_MS;
 
         // If the tilt angle remains greater than the specified angle for a minimum of
         // the specified time, then the device is deemed to be lying flat
