@@ -208,6 +208,8 @@ public abstract class HardwareRenderer {
      *         false otherwise
      */
     public static boolean isAvailable() {
+        if (SystemProperties.getBoolean("ro.nohardwaregfx", false))
+            return false;
         return GLES20Canvas.isAvailable();
     }
 
