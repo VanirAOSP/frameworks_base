@@ -882,6 +882,10 @@
   <java-symbol type="string" name="default_audio_route_name_dock_speakers" />
   <java-symbol type="string" name="default_audio_route_name_hdmi" />
   <java-symbol type="string" name="default_audio_route_category_name" />
+  <java-symbol type="string" name="eos_globalactions_reboot" />
+  <java-symbol type="string" name="eos_globalactions_reboot_bootloader" />
+  <java-symbol type="string" name="eos_globalactions_reboot_recovery" />
+  <java-symbol type="string" name="reboot_title" />
 
   <java-symbol type="plurals" name="abbrev_in_num_days" />
   <java-symbol type="plurals" name="abbrev_in_num_hours" />
@@ -1027,6 +1031,9 @@
   <java-symbol type="drawable" name="ic_lockscreen_unlock_phantom" />
   <java-symbol type="drawable" name="ic_media_route_on_holo_dark" />
   <java-symbol type="drawable" name="ic_media_route_disabled_holo_dark" />
+  <java-symbol type="drawable" name="ic_lock_reboot" />
+  <java-symbol type="drawable" name="ic_lock_reboot_bootloader" />
+  <java-symbol type="drawable" name="ic_lock_reboot_recovery" />
 
   <java-symbol type="layout" name="action_bar_home" />
   <java-symbol type="layout" name="action_bar_title_item" />
