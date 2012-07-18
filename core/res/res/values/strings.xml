@@ -3581,5 +3581,6 @@
     <string name="eos_globalactions_reboot">Reboot</string>
     <string name="eos_globalactions_reboot_bootloader">Bootloader</string>
     <string name="eos_globalactions_reboot_recovery">Recovery</string>
+    <string name="eos_globalactions_reboot_safemode">Safe Mode</string>
     <string name="reboot_title">Reboot</string>
 </resources>

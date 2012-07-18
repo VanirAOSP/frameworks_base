@@ -885,6 +885,7 @@
   <java-symbol type="string" name="eos_globalactions_reboot" />
   <java-symbol type="string" name="eos_globalactions_reboot_bootloader" />
   <java-symbol type="string" name="eos_globalactions_reboot_recovery" />
+  <java-symbol type="string" name="eos_globalactions_reboot_safemode" />
   <java-symbol type="string" name="reboot_title" />
 
   <java-symbol type="plurals" name="abbrev_in_num_days" />
@@ -1034,6 +1035,7 @@
   <java-symbol type="drawable" name="ic_lock_reboot" />
   <java-symbol type="drawable" name="ic_lock_reboot_bootloader" />
   <java-symbol type="drawable" name="ic_lock_reboot_recovery" />
+  <java-symbol type="drawable" name="ic_lock_reboot_safemode" />
 
   <java-symbol type="layout" name="action_bar_home" />
   <java-symbol type="layout" name="action_bar_title_item" />
