@@ -332,7 +332,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private void createRebootMenuItems () {
         mItems = new ArrayList<Action>();
 
-        // first: power off
+        // reboot menu - reboot, recovery, bootloader, safe mode
         mItems.add(
             new SinglePressAction(
                     com.android.internal.R.drawable.ic_lock_reboot,
@@ -353,6 +353,24 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mItems.add(
                 new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_reboot_recovery,
+                        R.string.eos_globalactions_reboot_recovery) {
+
+                    public void onPress() {
+                        mWindowManagerFuncs.reboot("recovery", false);
+                    }
+
+                    public boolean showDuringKeyguard() {
+                        return true;
+                    }
+
+                    public boolean showBeforeProvisioning() {
+                        return true;
+                    }
+                });
+
+        mItems.add(
+                new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_reboot_bootloader,
                         R.string.eos_globalactions_reboot_bootloader) {
 
@@ -369,23 +387,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     }
                 });
 
-        mItems.add(
-                new SinglePressAction(
-                        com.android.internal.R.drawable.ic_lock_reboot_recovery,
-                        R.string.eos_globalactions_reboot_recovery) {
-
-                    public void onPress() {
-                        mWindowManagerFuncs.reboot("recovery", false);
-                    }
-
-                    public boolean showDuringKeyguard() {
-                        return true;
-                    }
-
-                    public boolean showBeforeProvisioning() {
-                        return true;
-                    }
-                });
         mItems.add(
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_reboot_safemode,
