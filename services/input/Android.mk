@@ -40,6 +40,10 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_C_INCLUDES := \
     external/skia/include/core
 
+ifeq ($(BOARD_USES_ALSA_AUDIO),true)
+    LOCAL_CFLAGS += -DALSA_HEADSET_DETECTION
+endif
+
 LOCAL_MODULE:= libinput
 
 LOCAL_MODULE_TAGS := optional
