@@ -887,6 +887,7 @@
   <java-symbol type="string" name="eos_globalactions_reboot_recovery" />
   <java-symbol type="string" name="eos_globalactions_reboot_safemode" />
   <java-symbol type="string" name="reboot_title" />
+  <java-symbol type="string" name="app_killed_message" />
 
   <java-symbol type="plurals" name="abbrev_in_num_days" />
   <java-symbol type="plurals" name="abbrev_in_num_hours" />

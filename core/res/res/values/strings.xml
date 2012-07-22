@@ -3583,4 +3583,7 @@
     <string name="eos_globalactions_reboot_recovery">Recovery</string>
     <string name="eos_globalactions_reboot_safemode">Safe Mode</string>
     <string name="reboot_title">Reboot</string>
+
+    <!--Application killed toast -->
+    <string name="app_killed_message">Hasta la vista, baby!</string>
 </resources>
