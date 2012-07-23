@@ -1993,6 +1993,13 @@ public final class Settings {
         /** @hide */
         public static final String STATUS_BAR_BATTERY = "status_bar_battery";
 
+         /**
+         * Navigation controls to Use
+         *
+         * @hide
+         */
+        public static final String NAV_BUTTONS = "nav_buttons";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
