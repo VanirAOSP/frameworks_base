@@ -545,9 +545,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         // .03, the item disappears entirely (as if alpha = 0) and that discontinuity looks
         // a bit jarring
         mRecentsPanel.setMinSwipeAlpha(0.03f);
-        if (mNavigationBarView != null) {
-            mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPanel);
-        }
     }
 
     @Override
@@ -627,9 +624,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
 
-        mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
-        mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPanel);
-        mNavigationBarView.getHomeButton().setOnTouchListener(mHomeSearchActionListener);
+	mNavigationBarView.setListener(mRecentsClickListener,mRecentsPanel, mHomeSearchActionListener);
         updateSearchPanel();
     }
 
