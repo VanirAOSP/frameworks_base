@@ -145,8 +145,18 @@ public class NavigationBarView extends LinearLayout {
     }
 
     protected void setListener(OnClickListener RecentsClickListener, RecentsPanelView RecentsPanel) {
+        setListener(RecentsClickListener, RecentsPanel, null);
+    }
+    
+    protected void setListener(OnClickListener RecentsClickListener, RecentsPanelView RecentsPanel, OnTouchListener mHomeSearchActionListener) {
         mRecentsClickListener = RecentsClickListener;
-        mRecentsPanel = RecentsPanel;
+        mRecentsPanel = RecentsPanel;        
+        if (mHomeSearchActionListener != null)
+        {
+            View homeView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
+            if (homeView != null)
+                homeView.setOnTouchListener(mHomeSearchActionListener);
+        }
     }
 
     protected void toggleRecentListener(boolean enable) {
