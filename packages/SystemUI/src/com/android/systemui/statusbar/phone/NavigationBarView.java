@@ -255,14 +255,14 @@ public class NavigationBarView extends LinearLayout {
 
         mNavigationIconHints = hints;
 
-        mCurrentView.findViewById(R.id.back).setAlpha(
+        mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK).setAlpha(
             (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
-        mCurrentView.findViewById(R.id.home).setAlpha(
+        mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME).setAlpha(
             (0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
-        mCurrentView.findViewById(R.id.recent_apps).setAlpha(
+        mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT).setAlpha(
             (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
 
-        ((ImageView)mCurrentView.findViewById(R.id.back)).setImageDrawable(
+        ((ImageView)mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK)).setImageDrawable(
             (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
                 ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
                 : (mVertical ? mBackLandIcon : mBackIcon));
