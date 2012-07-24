@@ -145,7 +145,7 @@ public class NavigationBarView extends LinearLayout {
     }
 
     protected void setListener(OnTouchListener mHomeSearchActionListener) {
-	View homeView = mNavigationBarView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
+	View homeView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
 	homeView.setOnTouchListener(mHomeSearchActionListener);
     }
 
