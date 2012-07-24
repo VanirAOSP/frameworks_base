@@ -624,7 +624,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
 
-	mNavigationBarView.setListener(mRecentsClickListener,mRecentsPanel, mHomeSearchActionListener);
+	mNavigationBarView.setListener(mHomeSearchActionListener);
         updateSearchPanel();
     }
 
