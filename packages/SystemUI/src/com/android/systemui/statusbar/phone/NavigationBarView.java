@@ -425,7 +425,7 @@ public class NavigationBarView extends LinearLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        mDelegateHelper.setInitialTouchRegion(mCurrentView.findViewById(R.id.home), mCurrentView.findViewById(R.id.back), mCurrentView.findViewById(R.id.recent_apps));
+        mDelegateHelper.setInitialTouchRegion(mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME), mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK), mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT));
     }
 
     @Override
