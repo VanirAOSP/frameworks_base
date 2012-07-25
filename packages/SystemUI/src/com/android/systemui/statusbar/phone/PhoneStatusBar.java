@@ -97,7 +97,7 @@ import java.util.ArrayList;
 
 public class PhoneStatusBar extends BaseStatusBar {
     static final String TAG = "PhoneStatusBar";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final boolean SPEW = DEBUG;
     public static final boolean DUMPTRUCK = true; // extra dumpsys info
 
@@ -544,7 +544,11 @@ public class PhoneStatusBar extends BaseStatusBar {
         // Make .03 alpha the minimum so you always see the item a bit-- slightly below
         // .03, the item disappears entirely (as if alpha = 0) and that discontinuity looks
         // a bit jarring
-        mRecentsPanel.setMinSwipeAlpha(0.03f);
+        if (mNavigationBarView != null) {
+        	View recents = mNavigationBarView.getRecentsButton();
+        	if (recents != null)
+        		recents.setOnTouchListener(mRecentsPanel);
+        }
     }
 
     @Override
@@ -591,7 +595,15 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private View.OnClickListener mRecentsClickListener = new View.OnClickListener() {
         public void onClick(View v) {
-            toggleRecentApps();
+        	if (v == mNavigationBarView.getRecentsButton())
+        	{
+        		edb("RECENTS CLICK FIRED ON THE BUTTON");
+	            toggleRecentApps();
+            }
+            else
+            {           	
+            	edb("RECENTSCLICK FIRED FOR SOME OTHER VIEW!!!");
+            }
         }
     };
 
@@ -606,7 +618,9 @@ public class PhoneStatusBar extends BaseStatusBar {
         public boolean onTouch(View v, MotionEvent event) {
             switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+            	edb("MHOMESEARCHACTIONLISTENER GOT A DOWN!");
                 if (!shouldDisableNavbarGestures() && !inKeyguardRestrictedInputMode()) {
+                  	edb("MHOMESEARCHACTIONLISTENER REMOVING CALLBACKS AND SHOWING!");
                     mHandler.removeCallbacks(mShowSearchPanel);
                     mHandler.postDelayed(mShowSearchPanel, mShowSearchHoldoff);
                 }
@@ -614,17 +628,23 @@ public class PhoneStatusBar extends BaseStatusBar {
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+            	edb("MHOMESEARCHACTIONLISTENER GOT AN UP/CANCEL!");
                 mHandler.removeCallbacks(mShowSearchPanel);
             break;
         }
         return false;
         }
     };
+    
+	private void edb(String str)
+	{		
+        if (DEBUG) 
+        	Slog.d(TAG, str);
+	}
 
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
-
-	mNavigationBarView.setListener(mHomeSearchActionListener);
+        mNavigationBarView.putThisInYourPipeAndSmokeIt(mRecentsClickListener, mRecentsPanel, mHomeSearchActionListener);
         updateSearchPanel();
     }
 

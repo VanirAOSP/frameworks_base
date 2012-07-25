@@ -57,7 +57,7 @@ import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
 
 public class NavigationBarView extends LinearLayout {
-    final static boolean DEBUG = false;
+    final static boolean DEBUG = true;
     final static String TAG = "PhoneStatusBar/NavigationBarView";
 
     final static boolean DEBUG_DEADZONE = false;
@@ -72,7 +72,8 @@ public class NavigationBarView extends LinearLayout {
     private NavbarEditor mEditBar;
     private NavBarReceiver mNavBarReceiver;
     private OnClickListener mRecentsClickListener;
-    private RecentsPanelView mRecentsPanel;
+    private OnTouchListener mRecentsPanel;
+    private OnTouchListener mHomeSearchActionListener;
 
     protected IStatusBarService mBarService;
     final Display mDisplay;
@@ -117,6 +118,17 @@ public class NavigationBarView extends LinearLayout {
         }
     }
 
+	public View getRecentsButton() {
+        return mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
+    }
+    public View getBackButton() {
+        return mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
+    }
+    public View getHomeButton() {
+        return mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
+    }
+    
+
     public void setDelegateView(View view) {
         mDelegateHelper.setDelegateView(view);
     }
@@ -132,6 +144,35 @@ public class NavigationBarView extends LinearLayout {
         }
         return true;
     }
+    
+    public void putThisInYourPipeAndSmokeIt(OnClickListener recentclick, OnTouchListener recenttouch, OnTouchListener homesearch)
+    {
+    	mRecentsClickListener = recentclick;
+    	mRecentsPanel = recenttouch;
+    	mHomeSearchActionListener = homesearch;
+    	View rb = getRecentsButton(), hb = getHomeButton();
+		if (rb != null)
+		{
+			////NONONONONONONO?
+			rb.setOnClickListener(mRecentsClickListener);
+    	    rb.setOnTouchListener(mRecentsPanel);
+	    }
+	    else edb("prepareNavigationBarView() -- getRecentsButton() is F'd in the A");
+	    if (hb != null)
+	    {
+	        hb.setOnTouchListener(mHomeSearchActionListener);	        
+	        
+			////SUCK IT, TREBEK!
+	        hb.setOnClickListener(null);
+        }
+        else edb("prepareNavigationBarView() -- getHomeButton() is F'd in the A");
+    }
+
+	private void edb(String str)
+	{		
+        if (DEBUG) 
+        	Slog.d(TAG, str);
+	}
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
@@ -144,18 +185,6 @@ public class NavigationBarView extends LinearLayout {
         return EDIT_MODE;
     }
 
-    protected void setListener(OnTouchListener mHomeSearchActionListener) {
-	View homeView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
-	homeView.setOnTouchListener(mHomeSearchActionListener);
-    }
-
-    protected void toggleRecentListener(boolean enable) {
-        View recentView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
-        if (recentView != null) {
-            recentView.setOnClickListener(enable ? mRecentsClickListener : null);
-            recentView.setOnTouchListener(enable ? mRecentsPanel : null);
-        }
-    }
 
     private void setButtonWithTagVisibility(String string, int visibility) {
         View findView = mCurrentView.findViewWithTag(string);
@@ -244,6 +273,16 @@ public class NavigationBarView extends LinearLayout {
         setNavigationIconHints(hints, false);
     }
 
+	protected void toggleRecentListener(boolean enable) {
+		//Yeah... I'm from the streets. (nuclearmistake)
+
+        View recentView = getRecentsButton();
+        if (recentView != null) {        	
+			recentView.setOnClickListener(enable ? mRecentsClickListener : null);
+			recentView.setOnTouchListener(enable ? mRecentsPanel : null);
+        }
+     }
+
     public void setNavigationIconHints(int hints, boolean force) {
         if (!force && hints == mNavigationIconHints) return;
 
@@ -255,14 +294,13 @@ public class NavigationBarView extends LinearLayout {
 
         mNavigationIconHints = hints;
 
-        mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK).setAlpha(
+        getBackButton().setAlpha(
             (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
-        mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME).setAlpha(
+        getHomeButton().setAlpha(
             (0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
-        mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT).setAlpha(
+        getRecentsButton().setAlpha(
             (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
-
-        ((ImageView)mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK)).setImageDrawable(
+        ((ImageView)getBackButton()).setImageDrawable(
             (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
                 ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
                 : (mVertical ? mBackLandIcon : mBackIcon));
@@ -285,7 +323,6 @@ public class NavigationBarView extends LinearLayout {
 
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_BACK, disableBack ? View.INVISIBLE : View.VISIBLE);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_HOME, disableHome ? View.INVISIBLE : View.VISIBLE);
-        setButtonWithTagVisibility(NavbarEditor.NAVBAR_RECENT, disableRecent ? View.INVISIBLE : View.VISIBLE);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_RECENT, disableRecent ? View.INVISIBLE : View.VISIBLE);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_ALWAYS_MENU, disableRecent ? View.INVISIBLE : View.VISIBLE);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_MENU_BIG, disableRecent ? View.INVISIBLE : View.VISIBLE);
@@ -425,7 +462,7 @@ public class NavigationBarView extends LinearLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        mDelegateHelper.setInitialTouchRegion(mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME), mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK), mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT));
+        mDelegateHelper.setInitialTouchRegion(getHomeButton(), getBackButton(), getRecentsButton());
     }
 
     @Override
