@@ -97,7 +97,7 @@ import java.util.ArrayList;
 
 public class PhoneStatusBar extends BaseStatusBar {
     static final String TAG = "PhoneStatusBar";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final boolean SPEW = DEBUG;
     public static final boolean DUMPTRUCK = true; // extra dumpsys info
 
@@ -555,7 +555,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     @Override
     protected void updateSearchPanel() {
         super.updateSearchPanel();
-        edb("UPDAE SEARCH PANEL!");
         mSearchPanelView.setStatusBarView(mNavigationBarView);
         mNavigationBarView.setDelegateView(mSearchPanelView);
     }
@@ -563,7 +562,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     @Override
     public void showSearchPanel() {
         super.showSearchPanel();
-        edb("SHOWING SEARCH PANEL!");
         WindowManager.LayoutParams lp =
             (android.view.WindowManager.LayoutParams) mNavigationBarView.getLayoutParams();
         lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
@@ -573,7 +571,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     @Override
     public void hideSearchPanel() {
         super.hideSearchPanel();
-        edb("HIDING SEARCH PANEL!");
         WindowManager.LayoutParams lp =
             (android.view.WindowManager.LayoutParams) mNavigationBarView.getLayoutParams();
         lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
@@ -600,21 +597,13 @@ public class PhoneStatusBar extends BaseStatusBar {
     private View.OnClickListener mRecentsClickListener = new View.OnClickListener() {
         public void onClick(View v) {
         	if (v == mNavigationBarView.getRecentsButton())
-        	{
-        		edb("RECENTS CLICK FIRED ON THE BUTTON");
 	            toggleRecentApps();
-            }
-            else
-            {           	
-            	edb("RECENTSCLICK FIRED FOR SOME OTHER VIEW!!!");
-            }
         }
     };
 
     private int mShowSearchHoldoff = 0;
     private Runnable mShowSearchPanel = new Runnable() {
         public void run() { 
-            edb("mShowSearchPanel.run()");
             showSearchPanel();
         }
     };
@@ -623,19 +612,16 @@ public class PhoneStatusBar extends BaseStatusBar {
         public boolean onTouch(View v, MotionEvent event) {
             switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-            	edb("MHOMESEARCHACTIONLISTENER GOT A DOWN!");
                 if (!shouldDisableNavbarGestures() && !inKeyguardRestrictedInputMode()) {
-                  	edb("MHOMESEARCHACTIONLISTENER KILLING RECENTPANEL WITH EXTREME PREJUDICE, REMOVING CALLBACKS AND SHOWING!");                  	
                     mRecentsPanel.DIE_IN_A_FIRE(true);
                     mHandler.removeCallbacks(mShowSearchPanel);
                     mHandler.postDelayed(mShowSearchPanel, mShowSearchHoldoff);
-                    mHandler.postDelayed(mShowSearchPanel, mShowSearchHoldoff);
+                    mHandler.postDelayed(mShowSearchPanel, mShowSearchHoldoff); //second time for good measure....... O.o
                 }
             break;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-            	edb("MHOMESEARCHACTIONLISTENER GOT AN UP/CANCEL!");            	    
                 mHandler.removeCallbacks(mShowSearchPanel);
                 mRecentsPanel.DIE_IN_A_FIRE(false);
             break;
@@ -643,12 +629,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         return false;
         }
     };
-    
-	private void edb(String str)
-	{		
-        if (DEBUG) 
-        	Slog.d(TAG, str);
-	}
 
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
