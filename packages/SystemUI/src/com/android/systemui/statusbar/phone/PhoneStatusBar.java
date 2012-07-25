@@ -543,7 +543,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         super.updateRecentsPanel(R.layout.status_bar_recent_panel);
         // Make .03 alpha the minimum so you always see the item a bit-- slightly below
         // .03, the item disappears entirely (as if alpha = 0) and that discontinuity looks
-        // a bit jarring
+        // a bit jarring 	
+        mRecentsPanel.setMinSwipeAlpha(0.03f);        
         if (mNavigationBarView != null) {
         	View recents = mNavigationBarView.getRecentsButton();
         	if (recents != null)
@@ -554,6 +555,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     @Override
     protected void updateSearchPanel() {
         super.updateSearchPanel();
+        edb("UPDAE SEARCH PANEL!");
         mSearchPanelView.setStatusBarView(mNavigationBarView);
         mNavigationBarView.setDelegateView(mSearchPanelView);
     }
@@ -561,6 +563,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     @Override
     public void showSearchPanel() {
         super.showSearchPanel();
+        edb("SHOWING SEARCH PANEL!");
         WindowManager.LayoutParams lp =
             (android.view.WindowManager.LayoutParams) mNavigationBarView.getLayoutParams();
         lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
@@ -570,6 +573,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     @Override
     public void hideSearchPanel() {
         super.hideSearchPanel();
+        edb("HIDING SEARCH PANEL!");
         WindowManager.LayoutParams lp =
             (android.view.WindowManager.LayoutParams) mNavigationBarView.getLayoutParams();
         lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
@@ -609,7 +613,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private int mShowSearchHoldoff = 0;
     private Runnable mShowSearchPanel = new Runnable() {
-        public void run() {
+        public void run() { 
+            edb("mShowSearchPanel.run()");
             showSearchPanel();
         }
     };
@@ -620,16 +625,19 @@ public class PhoneStatusBar extends BaseStatusBar {
             case MotionEvent.ACTION_DOWN:
             	edb("MHOMESEARCHACTIONLISTENER GOT A DOWN!");
                 if (!shouldDisableNavbarGestures() && !inKeyguardRestrictedInputMode()) {
-                  	edb("MHOMESEARCHACTIONLISTENER REMOVING CALLBACKS AND SHOWING!");
+                  	edb("MHOMESEARCHACTIONLISTENER KILLING RECENTPANEL WITH EXTREME PREJUDICE, REMOVING CALLBACKS AND SHOWING!");                  	
+                    mRecentsPanel.DIE_IN_A_FIRE(true);
                     mHandler.removeCallbacks(mShowSearchPanel);
+                    mHandler.postDelayed(mShowSearchPanel, mShowSearchHoldoff);
                     mHandler.postDelayed(mShowSearchPanel, mShowSearchHoldoff);
                 }
             break;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-            	edb("MHOMESEARCHACTIONLISTENER GOT AN UP/CANCEL!");
+            	edb("MHOMESEARCHACTIONLISTENER GOT AN UP/CANCEL!");            	    
                 mHandler.removeCallbacks(mShowSearchPanel);
+                mRecentsPanel.DIE_IN_A_FIRE(false);
             break;
         }
         return false;

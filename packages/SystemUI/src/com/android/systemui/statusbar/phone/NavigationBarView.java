@@ -72,7 +72,7 @@ public class NavigationBarView extends LinearLayout {
     private NavbarEditor mEditBar;
     private NavBarReceiver mNavBarReceiver;
     private OnClickListener mRecentsClickListener;
-    private OnTouchListener mRecentsPanel;
+    private RecentsPanelView mRecentsPanel;
     private OnTouchListener mHomeSearchActionListener;
 
     protected IStatusBarService mBarService;
@@ -145,7 +145,7 @@ public class NavigationBarView extends LinearLayout {
         return true;
     }
     
-    public void putThisInYourPipeAndSmokeIt(OnClickListener recentclick, OnTouchListener recenttouch, OnTouchListener homesearch)
+    public void putThisInYourPipeAndSmokeIt(OnClickListener recentclick, RecentsPanelView recenttouch, OnTouchListener homesearch)
     {
     	mRecentsClickListener = recentclick;
     	mRecentsPanel = recenttouch;
@@ -153,26 +153,14 @@ public class NavigationBarView extends LinearLayout {
     	View rb = getRecentsButton(), hb = getHomeButton();
 		if (rb != null)
 		{
-			////NONONONONONONO?
 			rb.setOnClickListener(mRecentsClickListener);
     	    rb.setOnTouchListener(mRecentsPanel);
 	    }
-	    else edb("prepareNavigationBarView() -- getRecentsButton() is F'd in the A");
 	    if (hb != null)
 	    {
 	        hb.setOnTouchListener(mHomeSearchActionListener);	        
-	        
-			////SUCK IT, TREBEK!
-	        hb.setOnClickListener(null);
         }
-        else edb("prepareNavigationBarView() -- getHomeButton() is F'd in the A");
     }
-
-	private void edb(String str)
-	{		
-        if (DEBUG) 
-        	Slog.d(TAG, str);
-	}
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {

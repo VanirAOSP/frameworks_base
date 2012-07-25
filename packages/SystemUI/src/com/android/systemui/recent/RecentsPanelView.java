@@ -101,6 +101,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private int mRecentItemLayoutId;
     private boolean mFirstScreenful = true;
     private boolean mHighEndGfx;
+    
+    private boolean DIE_DIE_DIE_DIE_DIE;
 
     public static interface OnRecentsPanelVisibilityChangedListener {
         public void onRecentsPanelVisibilityChanged(boolean visible);
@@ -310,6 +312,11 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         sendCloseSystemWindows(mContext, BaseStatusBar.SYSTEM_DIALOG_REASON_RECENT_APPS);
 
         if (show) {
+            if (DIE_DIE_DIE_DIE_DIE)
+            {
+                dismiss();
+                return;
+            }
             // Need to update list of recent apps before we set visibility so this view's
             // content description is updated before it gets focus for TalkBack mode
             refreshRecentTasksList(recentTaskDescriptions, firstScreenful);
@@ -452,9 +459,11 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     }
 
     public void setVisibility(int visibility) {
+        if (DIE_DIE_DIE_DIE_DIE && visibility == VISIBLE)
+            visibility = INVISIBLE;
         if (mVisibilityChangedListener != null) {
             mVisibilityChangedListener.onRecentsPanelVisibilityChanged(visibility == VISIBLE);
-        }
+        }        
         super.setVisibility(visibility);
     }
 
@@ -605,7 +614,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     // tasks on touch down
     @Override
     public boolean onTouch(View v, MotionEvent ev) {
-        if (!mShowing) {
+        Log.i(TAG, "RECENTS PANEL VIEW GOT A TOUCH EVENT FROM: "+v.getTag());
+        if (!mShowing && !DIE_DIE_DIE_DIE_DIE) {
             int action = ev.getAction() & MotionEvent.ACTION_MASK;
             if (action == MotionEvent.ACTION_DOWN) {
                 post(mPreloadTasksRunnable);
@@ -849,7 +859,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         getContext().startActivity(intent);
     }
 
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(MotionEvent ev) {        
         if (mPopup != null) {
             return true;
         } else {
@@ -890,5 +900,11 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             }
         });
         popup.show();
+    }
+    
+    public void DIE_IN_A_FIRE(boolean DO_IT)
+    {
+        DIE_DIE_DIE_DIE_DIE = DO_IT;     
+        setVisibility(INVISIBLE);  
     }
 }
