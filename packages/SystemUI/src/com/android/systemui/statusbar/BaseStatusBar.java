@@ -352,7 +352,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         if (!isHomeSearchInTheHizi)
         {
             int msg = (mRecentsPanel.getVisibility() == View.VISIBLE) ? MSG_CLOSE_RECENTS_PANEL : MSG_OPEN_RECENTS_PANEL;
-            Log.wtf(TAG, "toggleRecent "+((mRecentsPanel.getVisibility() == View.VISIBLE) ? "VISIBLE" : "NOT VISIBLE"));
             mHandler.removeMessages(msg);
             mHandler.sendEmptyMessage(msg);
             return true;
@@ -363,7 +362,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     @Override
     public void preloadRecentApps() {
         int msg = MSG_PRELOAD_RECENT_APPS;
-        Log.wtf(TAG, "preloadRecent");
         mHandler.removeMessages(msg);
         mHandler.sendEmptyMessage(msg);
     }
@@ -371,7 +369,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     @Override
     public void cancelPreloadRecentApps() {
         int msg = MSG_CANCEL_PRELOAD_RECENT_APPS;        
-        Log.wtf(TAG, "cancelPreloadRecent");
         mHandler.removeMessages(msg);
         mHandler.sendEmptyMessage(msg);
     }
