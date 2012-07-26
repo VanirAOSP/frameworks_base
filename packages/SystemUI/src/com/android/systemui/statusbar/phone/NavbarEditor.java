@@ -83,6 +83,8 @@ public class NavbarEditor implements OnTouchListener {
     public static final String NAVBAR_CONDITIONAL_MENU = "menu0";
     public static final String NAVBAR_ALWAYS_MENU = "menu1";
     public static final String NAVBAR_MENU_BIG = "menu2";
+    public static final String NAVBAR_CONDITIONAL_MENU_TWO = "menu3";
+    public static final String NAVBAR_ALWAYS_MENU_TWO = "menu4";
 
     static {
         buttonMap.put(NAVBAR_HOME,
@@ -97,6 +99,12 @@ public class NavbarEditor implements OnTouchListener {
         buttonMap.put(NAVBAR_MENU_BIG,
                 new ButtonInfo(R.string.navbar_menu_big_button, R.string.accessibility_menu, KeyEvent.KEYCODE_MENU, R.drawable.ic_sysbar_menu_big,
                         R.drawable.ic_sysbar_menu_big_land, 0));
+        buttonMap.put(NAVBAR_CONDITIONAL_MENU_TWO,
+                new ButtonInfo(R.string.navbar_menu_conditional_button, R.string.accessibility_menu, KeyEvent.KEYCODE_MENU, R.drawable.ic_sysbar_menu,
+                        R.drawable.ic_sysbar_menu_land, R.drawable.ic_sysbar_menu));
+        buttonMap.put(NAVBAR_ALWAYS_MENU_TWO,
+                new ButtonInfo(R.string.navbar_menu_always_button, R.string.accessibility_menu, KeyEvent.KEYCODE_MENU, R.drawable.ic_sysbar_menu,
+                        R.drawable.ic_sysbar_menu_land, R.drawable.ic_sysbar_menu));
         buttonMap.put(NAVBAR_BACK,
                 new ButtonInfo(R.string.navbar_back_button, R.string.accessibility_back,KeyEvent.KEYCODE_BACK, R.drawable.ic_sysbar_back,
                         R.drawable.ic_sysbar_back_land, R.drawable.ic_sysbar_back_side));
@@ -448,6 +456,8 @@ public class NavbarEditor implements OnTouchListener {
             if (!smallButtons) {
                 items.remove(NAVBAR_CONDITIONAL_MENU);
                 items.remove(NAVBAR_ALWAYS_MENU);
+                items.remove(NAVBAR_CONDITIONAL_MENU_TWO);
+                items.remove(NAVBAR_ALWAYS_MENU_TWO);
             } else {
                 items.remove(NAVBAR_MENU_BIG);
             }

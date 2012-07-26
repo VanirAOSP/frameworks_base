@@ -238,6 +238,8 @@ public class KeyButtonView extends ImageView {
             }
         } else if (itemKey.equals(NavbarEditor.NAVBAR_CONDITIONAL_MENU)) {
             setVisibility(NavigationBarView.getEditMode() ? View.VISIBLE : View.INVISIBLE);
+        } else if (itemKey.equals(NavbarEditor.NAVBAR_CONDITIONAL_MENU_TWO)) {
+            setVisibility(NavigationBarView.getEditMode() ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
