@@ -57,7 +57,7 @@ import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
 
 public class NavigationBarView extends LinearLayout {
-    final static boolean DEBUG = false;
+    final static boolean DEBUG = true;
     final static String TAG = "PhoneStatusBar/NavigationBarView";
 
     final static boolean DEBUG_DEADZONE = false;
