@@ -683,21 +683,23 @@ public class TabletStatusBar extends BaseStatusBar implements
     }
 
     @Override
-    public void showSearchPanel() {
-        super.showSearchPanel();
+    public boolean showSearchPanel() {
+        boolean whatevars = super.showSearchPanel();
         WindowManager.LayoutParams lp =
             (android.view.WindowManager.LayoutParams) mStatusBarView.getLayoutParams();
         lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
         WindowManagerImpl.getDefault().updateViewLayout(mStatusBarView, lp);
+        return  whatevars;
     }
 
     @Override
-    public void hideSearchPanel() {
-        super.hideSearchPanel();
+    public boolean hideSearchPanel() {
+        boolean whatevars = super.hideSearchPanel();
         WindowManager.LayoutParams lp =
             (android.view.WindowManager.LayoutParams) mStatusBarView.getLayoutParams();
         lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
         WindowManagerImpl.getDefault().updateViewLayout(mStatusBarView, lp);
+        return  whatevars;
     }
 
     public int getStatusBarHeight() {

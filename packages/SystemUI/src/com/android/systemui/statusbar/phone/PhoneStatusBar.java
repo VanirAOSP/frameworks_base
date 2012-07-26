@@ -560,21 +560,29 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     @Override
-    public void showSearchPanel() {
-        super.showSearchPanel();
-        WindowManager.LayoutParams lp =
-            (android.view.WindowManager.LayoutParams) mNavigationBarView.getLayoutParams();
-        lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-        WindowManagerImpl.getDefault().updateViewLayout(mNavigationBarView, lp);
+    public boolean showSearchPanel() {
+        if (super.showSearchPanel())
+        {
+            WindowManager.LayoutParams lp =
+                (android.view.WindowManager.LayoutParams) mNavigationBarView.getLayoutParams();
+            lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+            WindowManagerImpl.getDefault().updateViewLayout(mNavigationBarView, lp);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void hideSearchPanel() {
-        super.hideSearchPanel();
-        WindowManager.LayoutParams lp =
-            (android.view.WindowManager.LayoutParams) mNavigationBarView.getLayoutParams();
-        lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-        WindowManagerImpl.getDefault().updateViewLayout(mNavigationBarView, lp);
+    public boolean hideSearchPanel() {
+        if (super.hideSearchPanel())
+        {
+            WindowManager.LayoutParams lp =
+                (android.view.WindowManager.LayoutParams) mNavigationBarView.getLayoutParams();
+            lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+            WindowManagerImpl.getDefault().updateViewLayout(mNavigationBarView, lp);
+            return true;               
+        }
+        return false;
     }
 
     protected int getStatusBarGravity() {

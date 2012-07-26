@@ -344,41 +344,64 @@ public abstract class BaseStatusBar extends SystemUI implements
     public void dismissIntruder() {
         // pass
     }
+    
+    private boolean isHomeSearchInTheHizi;
 
     @Override
-    public void toggleRecentApps() {
-        int msg = (mRecentsPanel.getVisibility() == View.VISIBLE)
-            ? MSG_CLOSE_RECENTS_PANEL : MSG_OPEN_RECENTS_PANEL;
-        mHandler.removeMessages(msg);
-        mHandler.sendEmptyMessage(msg);
+    public boolean toggleRecentApps() {
+        if (!isHomeSearchInTheHizi)
+        {
+            int msg = (mRecentsPanel.getVisibility() == View.VISIBLE) ? MSG_CLOSE_RECENTS_PANEL : MSG_OPEN_RECENTS_PANEL;
+            Log.wtf(TAG, "toggleRecent "+((mRecentsPanel.getVisibility() == View.VISIBLE) ? "VISIBLE" : "NOT VISIBLE"));
+            mHandler.removeMessages(msg);
+            mHandler.sendEmptyMessage(msg);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void preloadRecentApps() {
         int msg = MSG_PRELOAD_RECENT_APPS;
+        Log.wtf(TAG, "preloadRecent");
         mHandler.removeMessages(msg);
         mHandler.sendEmptyMessage(msg);
     }
 
     @Override
     public void cancelPreloadRecentApps() {
-        int msg = MSG_CANCEL_PRELOAD_RECENT_APPS;
+        int msg = MSG_CANCEL_PRELOAD_RECENT_APPS;        
+        Log.wtf(TAG, "cancelPreloadRecent");
         mHandler.removeMessages(msg);
         mHandler.sendEmptyMessage(msg);
     }
 
     @Override
-    public void showSearchPanel() {
-        int msg = MSG_OPEN_SEARCH_PANEL;
-        mHandler.removeMessages(msg);
-        mHandler.sendEmptyMessage(msg);
+    public boolean showSearchPanel() {
+        if (!isHomeSearchInTheHizi)
+        {
+            isHomeSearchInTheHizi = true;
+            int msg = MSG_OPEN_SEARCH_PANEL;
+            Log.wtf(TAG, "showSearchPanel");
+            mHandler.removeMessages(msg);
+            mHandler.sendEmptyMessage(msg);
+            return true;            
+        }
+        return false;
     }
 
     @Override
-    public void hideSearchPanel() {
-        int msg = MSG_CLOSE_SEARCH_PANEL;
-        mHandler.removeMessages(msg);
-        mHandler.sendEmptyMessage(msg);
+    public boolean hideSearchPanel() {
+        if (isHomeSearchInTheHizi)
+        {
+            isHomeSearchInTheHizi = false;
+            int msg = MSG_CLOSE_SEARCH_PANEL;
+            Log.wtf(TAG, "hideSearchPanel");
+            mHandler.removeMessages(msg);
+            mHandler.sendEmptyMessage(msg);
+            return true;
+        }
+        return false;
     }
 
     @Override
