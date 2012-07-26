@@ -234,6 +234,7 @@ public class NavigationBarView extends LinearLayout {
                     }
                     ((ViewGroup) mCurrentView.findViewById(R.id.mid_nav_buttons)).setLayoutTransition(
                             new LayoutTransition());
+                    putThisInYourPipeAndSmokeIt(mRecentsClickListener, mRecentsPanel, mHomeSearchActionListener);
                 }
             }
         }
