@@ -60,6 +60,8 @@ import android.util.Slog;
 import android.util.TimeUtils;
 import android.view.WindowManagerPolicy;
 
+import com.android.internal.app.ThemeUtils;
+
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -167,6 +169,7 @@ public final class PowerManagerService extends IPowerManager.Stub
     private static final int DREAM_BATTERY_LEVEL_DRAIN_CUTOFF = 5;
 
     private Context mContext;
+    private Context mUiContext;
     private LightsService mLightsService;
     private BatteryService mBatteryService;
     private DisplayManagerService mDisplayManagerService;
@@ -1835,9 +1838,9 @@ public final class PowerManagerService extends IPowerManager.Stub
             public void run() {
                 synchronized (this) {
                     if (shutdown) {
-                        ShutdownThread.shutdown(mContext, confirm);
+                        ShutdownThread.shutdown(getUiContext(), confirm);
                     } else {
-                        ShutdownThread.reboot(mContext, reason, confirm);
+                        ShutdownThread.reboot(getUiContext(), reason, confirm);
                     }
                 }
             }
@@ -1890,6 +1893,13 @@ public final class PowerManagerService extends IPowerManager.Stub
         } catch (InterruptedException e) {
             Log.wtf(TAG, e);
         }
+    }
+
+    private Context getUiContext() {
+        if (mUiContext == null) {
+            mUiContext = ThemeUtils.createUiContext(mContext);
+        }
+        return mUiContext != null ? mUiContext : mContext;
     }
 
     /**
