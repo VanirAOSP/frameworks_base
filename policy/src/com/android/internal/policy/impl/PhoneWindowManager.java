@@ -369,6 +369,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mOrientationSensorEnabled = false;
     int mCurrentAppOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     boolean mHasSoftInput = false;
+    int mBackKillTimeout;
     
     int mPointerLocationMode = 0; // guarded by mLock
 
@@ -772,32 +773,40 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     Runnable mBackLongPress = new Runnable() {
         public void run() {
             try {
-		performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-                IActivityManager mgr = ActivityManagerNative.getDefault();
-                List<RunningAppProcessInfo> apps = mgr.getRunningAppProcesses();
+                boolean targetKilled = false;
+                IActivityManager am = ActivityManagerNative.getDefault();
+                List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
                 for (RunningAppProcessInfo appInfo : apps) {
                     int uid = appInfo.uid;
                     // Make sure it's a foreground user application (not system,
                     // root, phone, etc.)
                     if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
                             && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-			Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
-                        // Kill the entire pid
-			if (appInfo.pkgList!=null && (apps.size() > 0)){
-				mgr.forceStopPackage(appInfo.pkgList[0]);
-			} else{
-				Process.killProcess(appInfo.pid);	
-			}			        
-                        mBackJustKilled = true;
+                        if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
+                            for (String pkg : appInfo.pkgList) {
+                                if (!pkg.equals("com.android.systemui")) {
+                                    am.forceStopPackage(pkg);
+                                    targetKilled = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            Process.killProcess(appInfo.pid);
+                            targetKilled = true;
+                        }
+                    }
+                    if (targetKilled) {
+                        performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
+                        Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                         break;
                     }
-                    mBackJustKilled = false;
                 }
             } catch (RemoteException remoteException) {
                 // Do nothing; just let it go.
             }
         }
     };
+
 
     void showGlobalActionsDialog() {
         if (mGlobalActions == null) {
@@ -956,6 +965,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 com.android.internal.R.integer.config_lidNavigationAccessibility);
         mLidControlsSleep = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_lidControlsSleep);
+        mBackKillTimeout = mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_backKillTimeout);
+
         // register for dock events
         IntentFilter filter = new IntentFilter();
         filter.addAction(UiModeManager.ACTION_ENTER_CAR_MODE);
@@ -1171,9 +1183,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mHasSoftInput = hasSoftInput;
                 updateRotation = true;
             }
-
-            mLongPressBackKill = (Settings.Secure.getInt(
-                    resolver, Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
 
             // dreams
             mScreenSaverFeatureAvailable = mContext.getResources().getBoolean(
@@ -1798,12 +1807,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
 
         if (keyCode == KeyEvent.KEYCODE_BACK && !down) {
-     		if ((flags&KeyEvent.FLAG_CANCELED) == 0) {       
-			mHandler.removeCallbacks(mBackLongPress);
-			KeyEvent.changeFlags(event, flags + KeyEvent.FLAG_CANCELED);
-	    		mBackJustKilled = false;
-		}
+            mHandler.removeCallbacks(mBackLongPress);
         }
+
 
         // First we always handle the home key here, so applications
         // can never break it, although if keyguard is on, we do let
@@ -1942,13 +1948,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             return -1;
 
-	} else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            	if (mLongPressBackKill) {
-                	if (!mBackJustKilled && down && repeatCount == 0) {
-                    		mHandler.postDelayed(mBackLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
-				mBackJustKilled = true;
-                	}
-		}
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (Settings.Secure.getInt(mContext.getContentResolver(),
+                    Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
+                if (down && repeatCount == 0) {
+                    mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
+                }
+            }
         } else if (keyCode == KeyEvent.KEYCODE_ASSIST) {
             if (down) {
                 if (repeatCount == 0) {
