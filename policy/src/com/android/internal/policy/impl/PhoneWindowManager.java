@@ -370,6 +370,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mCurrentAppOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     boolean mHasSoftInput = false;
     int mBackKillTimeout;
+    boolean mLongPressBackKill
+    boolean mBackJustKilled;
     
     int mPointerLocationMode = 0; // guarded by mLock
 
@@ -800,6 +802,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                         break;
                     }
+		    mBackJustKilled = false;
                 }
             } catch (RemoteException remoteException) {
                 // Do nothing; just let it go.
@@ -1183,6 +1186,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mHasSoftInput = hasSoftInput;
                 updateRotation = true;
             }
+
+            mLongPressBackKill = (Settings.Secure.getInt(
+                    resolver, Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
 
             // dreams
             mScreenSaverFeatureAvailable = mContext.getResources().getBoolean(
@@ -1807,7 +1813,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
 
         if (keyCode == KeyEvent.KEYCODE_BACK && !down) {
-            mHandler.removeCallbacks(mBackLongPress);
+            if ((flags&KeyEvent.FLAG_CANCELED) == 0) {
+                mHandler.removeCallbacks(mBackLongPress);
+                KeyEvent.changeFlags(event, flags + KeyEvent.FLAG_CANCELED);
+                mBackJustKilled = false;
+            }
+
         }
 
 
@@ -1949,10 +1960,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             return -1;
 
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
-                if (down && repeatCount == 0) {
+            if (mLongPressBackKill) {
+                if (!mBackJustKilled && down && repeatCount == 0) {
                     mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
+		    mBackJustKilled = true;
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ASSIST) {
