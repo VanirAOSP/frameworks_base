@@ -230,6 +230,11 @@ interface IWindowManager
     boolean hasNavigationBar();
 
     /**
+     * Device can generate KEY_ACTION_MENU keypress
+     */
+    boolean hasMenuKeyEnabled();
+
+    /**
      * Lock the device immediately with the specified options (can be null).
      */
     void lockNow(in Bundle options);
@@ -286,9 +291,8 @@ interface IWindowManager
      */
     MagnificationSpec getCompatibleMagnificationSpecForWindow(in IBinder windowToken);
 
-    /*
-     *
-     * YIPPIE KIE-YAY MOTHER FUCKER
+    /**
+     * Update the application display metrics
      */
     void updateDisplayMetrics();
 }
