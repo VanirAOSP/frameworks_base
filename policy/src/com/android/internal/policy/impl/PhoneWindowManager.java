@@ -370,7 +370,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mCurrentAppOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     boolean mHasSoftInput = false;
     int mBackKillTimeout;
-    boolean mLongPressBackKill
+    boolean mLongPressBackKill;
     boolean mBackJustKilled;
     
     int mPointerLocationMode = 0; // guarded by mLock
