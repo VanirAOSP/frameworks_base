@@ -777,7 +777,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 IActivityManager am = ActivityManagerNative.getDefault();
                 List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
                 for (RunningAppProcessInfo appInfo : apps) {
-                    int uid = appInfo.uid;
+                    int uid = appInfo.uid;                    
                     // Make sure it's a foreground user application (not system,
                     // root, phone, etc.)
                     if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
@@ -800,7 +800,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                         break;
                     }
-		    mBackJustKilled = false;
+		    mBackJustKilled = true;
                 }
             } catch (RemoteException remoteException) {
                 // Do nothing; just let it go.
@@ -1960,8 +1960,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mLongPressBackKill) {
                 if (!mBackJustKilled && down && repeatCount == 0) {
-                    mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
-		    mBackJustKilled = true;
+                    mHandler.postDelayed(mBackLongPress, mBackKillTimeout);		    
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ASSIST) {
