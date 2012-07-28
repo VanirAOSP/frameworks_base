@@ -60,6 +60,7 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -67,6 +68,7 @@ import android.util.EventLog;
 import android.util.Log;
 import android.util.Slog;
 import android.view.Display;
+import com.android.internal.app.ActivityTrigger;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -328,6 +330,16 @@ final class ActivityStack {
 
     private final PowerManagerService mPm;
     final Handler mHandler;
+
+    private static final ActivityTrigger mActivityTrigger;
+
+    static {
+        if (SystemProperties.QCOM_HARDWARE) {
+            mActivityTrigger = new ActivityTrigger();
+        } else {
+            mActivityTrigger = null;
+        }
+    }
 
     final class ActivityStackHandler extends Handler {
         //public Handler() {
@@ -1525,6 +1537,10 @@ final class ActivityStack {
 
         if (DEBUG_SWITCH) Slog.v(TAG, "Resuming " + next);
 
+        if (mActivityTrigger != null) {
+            mActivityTrigger.activityResumeTrigger(next.intent);
+        }
+
         // If we are currently pausing an activity, then don't do anything
         // until that is done.
         if (mPausingActivity != null) {
@@ -2567,6 +2583,9 @@ final class ActivityStack {
             final int userId = aInfo != null ? UserHandle.getUserId(aInfo.applicationInfo.uid) : 0;
             Slog.i(TAG, "START u" + userId + " {" + intent.toShortString(true, true, true, false)
                     + "} from pid " + (callerApp != null ? callerApp.pid : callingPid));
+            if (mActivityTrigger != null) {
+                mActivityTrigger.activityStartTrigger(intent);
+            }
         }
 
         ActivityRecord sourceRecord = null;
