@@ -838,27 +838,30 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     int uid = appInfo.uid;                    
                     // Make sure it's a foreground user application (not system,
                     // root, phone, etc.)
-                    if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
-                            && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                        if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
-                            for (String pkg : appInfo.pkgList) {
-                                if (!pkg.equals("com.android.systemui")) {
-                                    am.forceStopPackage(pkg);
-                                    targetKilled = true;
-                                    break;
+                        if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
+                                && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                            if (appInfo.pkgList != null) {
+    			        for (String pkg : appInfo.pkgList) {
+			    	    if ((appInfo.pkgList.length > 1)) {
+                                        if (!pkg.equals("com.android.systemui")) {
+				    	   am.forceStopPackage(pkg);
+        	                           targetKilled = true;
+        	                           break;
+    					}
+				    }
+				    break;
                                 }
                             }
                         } else {
-                            Process.killProcess(appInfo.pid);
-                            targetKilled = true;
-                        }
-                    }
+                               Process.killProcess(appInfo.pid);
+                               targetKilled = true;
+                          }
                     if (targetKilled) {
                         performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
                         Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                         break;
                     }
-		    mBackJustKilled = true;
+		    mBackJustKilled = false;
                 }
             } catch (RemoteException remoteException) {
                 // Do nothing; just let it go.
@@ -2021,7 +2024,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mLongPressBackKill) {
                 if (!mBackJustKilled && down && repeatCount == 0) {
-                    mHandler.postDelayed(mBackLongPress, mBackKillTimeout);		    
+                    mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
+		    mBackJustKilled = true;		    
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ASSIST) {
