@@ -837,10 +837,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 IActivityManager am = ActivityManagerNative.getDefault();
                 List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
                 final PackageManager pm = mContext.getPackageManager();
-                if (mHomeInfo == null)
-                {
-                    mHomeInfo = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).resolveActivityInfo(pm, 0);
-                }        
+                mHomeInfo = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).resolveActivityInfo(pm, 0);
+                boolean targetwashome = false;
                 for (RunningAppProcessInfo appInfo : apps) {
                     int uid = appInfo.uid;                    
                     // Make sure it's a foreground user application (not system,
@@ -849,34 +847,30 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
                         if (appInfo.pkgList != null && appInfo.pkgList.length > 0) {
         			        for (String pkg : appInfo.pkgList) {
-        			            Slog.e(TAG, "mHomeInfo.packageName="+(mHomeInfo==null?"NULL WTF?!":mHomeInfo.packageName));
-        			            if ((mHomeInfo == null || !pkg.equals(mHomeInfo.packageName)) && !pkg.equals("com.android.systemui"))
+        			            if (mHomeInfo != null && pkg.equals(mHomeInfo.packageName))
+        			            {
+        			                targetwashome = true;
+        			                break;
+        			            }
+        			            else if (!pkg.equals("com.android.systemui"))
 		                        {
-		                            Slog.i(TAG, "longpress killing "+appInfo.processName+" w/ forceStopPackage("+pkg+")");
+		                           Slog.i(TAG, "longpress killing "+appInfo.processName+" w/ forceStopPackage("+pkg+")");
         				    	   am.forceStopPackage(pkg);
                                    targetKilled = true;
                                    break;
                                 }	                        
                             }
     				    }
-    				    else if ((mHomeInfo == null || !appInfo.processName.equals(mHomeInfo.packageName)) && !appInfo.processName.equals("com.android.systemui"))
-                        {
-                           Slog.i(TAG, "longpress killing "+appInfo.processName+" w/ forceStopPackage("+appInfo.processName+")");
-				    	   am.forceStopPackage(appInfo.processName);
-                           targetKilled = true;
-                        }	                        
-                        /*else
-                        {
-                           Slog.i(TAG, "longpress killing "+appInfo.pid+" w/ killProcess("+appInfo.pid+")");
-                           Process.killProcess(appInfo.pid);
-                           targetKilled = true;                         
-    				    }*/
                     }
-                    if (targetKilled) break;
+                    if (targetKilled || targetwashome) break;
                 }
                 if (targetKilled) {
                     performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
                     Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
+                }
+                else if (targetwashome) {
+                    performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
+                    Toast.makeText(mContext, "To kill your launcher, use Settings>Apps.", Toast.LENGTH_SHORT).show();
                 }
 		        mBackJustKilled = false;            
             } catch (RemoteException remoteException) {
@@ -1893,7 +1887,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (keyCode == KeyEvent.KEYCODE_BACK && !down) {
             if ((flags&KeyEvent.FLAG_CANCELED) == 0) {
                 mHandler.removeCallbacks(mBackLongPress);
-                KeyEvent.changeFlags(event, flags + KeyEvent.FLAG_CANCELED);
+                KeyEvent.changeFlags(event, flags | KeyEvent.FLAG_CANCELED);
                 mBackJustKilled = false;
             }
 
