@@ -536,6 +536,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int MSG_DISPATCH_MEDIA_KEY_WITH_WAKE_LOCK = 3;
     private static final int MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK = 4;
 
+    private ActivityInfo mHomeInfo;
+
     private class PolicyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -834,35 +836,49 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 boolean targetKilled = false;
                 IActivityManager am = ActivityManagerNative.getDefault();
                 List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
+                final PackageManager pm = mContext.getPackageManager();
+                if (mHomeInfo == null)
+                {
+                    mHomeInfo = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).resolveActivityInfo(pm, 0);
+                }        
                 for (RunningAppProcessInfo appInfo : apps) {
                     int uid = appInfo.uid;                    
                     // Make sure it's a foreground user application (not system,
                     // root, phone, etc.)
-                        if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
-                                && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                            if (appInfo.pkgList != null) {
-    			        for (String pkg : appInfo.pkgList) {
-			    	    if ((appInfo.pkgList.length > 1)) {
-                                        if (!pkg.equals("com.android.systemui")) {
-				    	   am.forceStopPackage(pkg);
-        	                           targetKilled = true;
-        	                           break;
-    					}
-				    }
-				    break;
-                                }
+                    if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
+                            && appInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                        if (appInfo.pkgList != null && appInfo.pkgList.length > 0) {
+        			        for (String pkg : appInfo.pkgList) {
+        			            Slog.e(TAG, "mHomeInfo.packageName="+(mHomeInfo==null?"NULL WTF?!":mHomeInfo.packageName));
+        			            if ((mHomeInfo == null || !pkg.equals(mHomeInfo.packageName)) && !pkg.equals("com.android.systemui"))
+		                        {
+		                            Slog.i(TAG, "longpress killing "+appInfo.processName+" w/ forceStopPackage("+pkg+")");
+        				    	   am.forceStopPackage(pkg);
+                                   targetKilled = true;
+                                   break;
+                                }	                        
                             }
-                        } else {
-                               Process.killProcess(appInfo.pid);
-                               targetKilled = true;
-                          }
-                    if (targetKilled) {
-                        performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-                        Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
-                        break;
+    				    }
+    				    else if ((mHomeInfo == null || !appInfo.processName.equals(mHomeInfo.packageName)) && !appInfo.processName.equals("com.android.systemui"))
+                        {
+                           Slog.i(TAG, "longpress killing "+appInfo.processName+" w/ forceStopPackage("+appInfo.processName+")");
+				    	   am.forceStopPackage(appInfo.processName);
+                           targetKilled = true;
+                        }	                        
+                        /*else
+                        {
+                           Slog.i(TAG, "longpress killing "+appInfo.pid+" w/ killProcess("+appInfo.pid+")");
+                           Process.killProcess(appInfo.pid);
+                           targetKilled = true;                         
+    				    }*/
                     }
-		    mBackJustKilled = false;
+                    if (targetKilled) break;
                 }
+                if (targetKilled) {
+                    performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
+                    Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
+                }
+		        mBackJustKilled = false;            
             } catch (RemoteException remoteException) {
                 // Do nothing; just let it go.
             }
