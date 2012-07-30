@@ -174,7 +174,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mAdapter = new MyAdapter();
 
-        final AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
+        final AlertDialog.Builder ab = new AlertDialog.Builder(getUiContext());
 
         ab.setAdapter(mAdapter, this)
                 .setInverseBackgroundForced(true);
