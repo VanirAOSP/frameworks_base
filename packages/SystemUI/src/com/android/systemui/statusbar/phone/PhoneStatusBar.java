@@ -622,7 +622,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private View.OnClickListener mRecentsClickListener = new View.OnClickListener() {
         public void onClick(View v) {
-        	if (v == mNavigationBarView.getRecentsButton())
+        	if (v == mNavigationBarView.getRecentsButton() && v != null)
 	            toggleRecentApps();
         }
     };

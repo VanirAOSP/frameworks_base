@@ -118,7 +118,7 @@ public class NavigationBarView extends LinearLayout {
         }
     }
 
-	public View getRecentsButton() {
+    public View getRecentsButton() {
         return mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
     }
     public View getBackButton() {
@@ -151,14 +151,14 @@ public class NavigationBarView extends LinearLayout {
     	mRecentsPanel = recenttouch;
     	mHomeSearchActionListener = homesearch;
     	View rb = getRecentsButton(), hb = getHomeButton();
-		if (rb != null)
-		{
-			rb.setOnClickListener(mRecentsClickListener);
+	if (rb != null)
+	{
+	    rb.setOnClickListener(mRecentsClickListener);
     	    rb.setOnTouchListener(mRecentsPanel);
-	    }
-	    if (hb != null)
-	    {
-	        hb.setOnTouchListener(mHomeSearchActionListener);	        
+	}
+	if (hb != null)
+	{
+	    hb.setOnTouchListener(mHomeSearchActionListener);	        
         }
     }
 
@@ -283,17 +283,27 @@ public class NavigationBarView extends LinearLayout {
 
         mNavigationIconHints = hints;
 
-        getBackButton().setAlpha(
-            (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
-        getHomeButton().setAlpha(
-            (0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
-        getRecentsButton().setAlpha(
-            (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
-        ((ImageView)getBackButton()).setImageDrawable(
-            (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
-                ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
-                : (mVertical ? mBackLandIcon : mBackIcon));
-    }
+	View hb = getHomeButton();
+	if (hb != null) {
+            hb.setAlpha(
+                (0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
+	}
+
+	View rb = getRecentsButton();	
+	if (rb != null) {
+            rb.setAlpha(
+                (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
+	}
+        	
+	View bb = getBackButton();
+	if (bb != null) {
+            bb.setAlpha(
+                (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
+    	    ((ImageView)bb).setImageDrawable(
+                (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
+                    ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
+                    : (mVertical ? mBackLandIcon : mBackIcon));
+        }
 
     public void setDisabledFlags(int disabledFlags) {
         setDisabledFlags(disabledFlags, false);
@@ -453,7 +463,12 @@ public class NavigationBarView extends LinearLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        mDelegateHelper.setInitialTouchRegion(getHomeButton(), getBackButton(), getRecentsButton());
+	View bb = getBackButton();
+	View hb = getHomeButton();
+	View rb = getRecentsButton();
+	if (bb != null && hb != null && rb != null) {
+            mDelegateHelper.setInitialTouchRegion(getHomeButton(), getBackButton(), getRecentsButton());
+    	}
     }
 
     @Override
