@@ -304,6 +304,7 @@ public class NavigationBarView extends LinearLayout {
                     ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
                     : (mVertical ? mBackLandIcon : mBackIcon));
         }
+    }
 
     public void setDisabledFlags(int disabledFlags) {
         setDisabledFlags(disabledFlags, false);
@@ -463,12 +464,7 @@ public class NavigationBarView extends LinearLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-	View bb = getBackButton();
-	View hb = getHomeButton();
-	View rb = getRecentsButton();
-	if (bb != null && hb != null && rb != null) {
             mDelegateHelper.setInitialTouchRegion(getHomeButton(), getBackButton(), getRecentsButton());
-    	}
     }
 
     @Override
