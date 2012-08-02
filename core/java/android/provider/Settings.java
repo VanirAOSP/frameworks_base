@@ -1222,8 +1222,11 @@ public final class Settings {
          * Constant for use in AIRPLANE_MODE_RADIOS to specify NFC radio.
          */
         public static final String RADIO_NFC = "nfc";
+
+     	/**
+         * @hide
+         */
         
-                <!-- Toggles -->
         public static final String STATUSBAR_TOGGLES_USE_BUTTONS = "statusbar_toggles_use_buttons";
 
         /**
