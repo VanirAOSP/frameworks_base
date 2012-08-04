@@ -3516,6 +3516,25 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     if (noDelayInATwoDP) {
                         setBluetoothA2dpOnInt(true);
                     }
+                    // Headset disconnected
+                    for (int stream = 0; stream < STREAM_VOLUME_SPEAKER_SETTINGS.length; stream++) {
+                        final int streamAlias = mStreamVolumeAlias[stream];
+                        // Save headset volume
+                        System.putInt(mContentResolver, STREAM_VOLUME_HEADSET_SETTINGS[stream],
+                                getStreamVolume(streamAlias));
+                        // Restore speaker volume
+                        try {
+                            lastVolume = System.getInt(mContentResolver,
+                                    STREAM_VOLUME_SPEAKER_SETTINGS[streamAlias]);
+                        } catch (SettingNotFoundException e) {
+                            lastVolume = -1;
+                        }
+                        System.putInt(mContentResolver, STREAM_VOLUME_HEADSET_SETTINGS[stream],
+                                getStreamVolume(stream));
+                        if (lastVolume >= 0)
+                            setStreamVolume(streamAlias, lastVolume, 0);
+                    }
+
                 }
             } else if (action.equals(Intent.ACTION_USB_AUDIO_ACCESSORY_PLUG) ||
                            action.equals(Intent.ACTION_USB_AUDIO_DEVICE_PLUG)) {
