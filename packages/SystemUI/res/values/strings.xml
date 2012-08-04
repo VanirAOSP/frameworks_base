@@ -416,7 +416,6 @@
     <string name="toggle_silent">Silent</string>
     <string name="toggle_torch">Torch</string>
     <string name="toggle_sync">Sync</string>
-    <string name="toggle_swagger">Swagger</string>
     <string name="toggle_fcharge">FastChrg</string>
     <string name="toggle_tether">Tether</string>
     <string name="toggle_nfc">NFC</string>
