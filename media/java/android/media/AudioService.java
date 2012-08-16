@@ -279,7 +279,9 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
 
     private boolean mLinkNotificationWithVolume;
 
-    private static final int HEADSET_VOLUME_RESTORE_CAP_MUSIC = 8; // Out of 15
+    // Cap used for safe headset volume restore. The value directly applies
+    // to AudioSystem.STREAM_MUSIC volume and is rescaled for other streams.
+    private static final int HEADSET_VOLUME_RESTORE_CAP = 10;
 
     private final AudioSystem.ErrorCallback mAudioSystemCallback = new AudioSystem.ErrorCallback() {
         public void onError(int error) {
@@ -3518,14 +3520,19 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         setBluetoothA2dpOnInt(false);
                     }
 
-                    // Media volume restore capping
+                    // Volume restore capping
                     final boolean capVolumeRestore = Settings.System.getInt(mContentResolver,
                             Settings.System.SAFE_HEADSET_VOLUME_RESTORE, 1) == 1;
                     if (capVolumeRestore) {
-                        final int volume = getStreamVolume(AudioSystem.STREAM_MUSIC);
-                        if (volume > HEADSET_VOLUME_RESTORE_CAP_MUSIC) {
-                            setStreamVolume(AudioSystem.STREAM_MUSIC,
-                                    HEADSET_VOLUME_RESTORE_CAP_MUSIC, 0);
+                        for (int stream = 0; stream < AudioSystem.getNumStreamTypes(); stream++) {
+                            if (stream == mStreamVolumeAlias[stream]) {
+                                final int volume = getStreamVolume(stream);
+                                final int restoreCap = rescaleIndex(HEADSET_VOLUME_RESTORE_CAP,
+                                        AudioSystem.STREAM_MUSIC, stream);
+                                if (volume > restoreCap) {
+                                    setStreamVolume(stream, restoreCap, 0);
+                                }
+                            }
                         }
                     }
                 } else {
