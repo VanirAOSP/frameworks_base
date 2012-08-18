@@ -33,7 +33,7 @@ public class DreamManagerService
         extends IDreamManager.Stub 
         implements ServiceConnection
 {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final String TAG = "DreamManagerService";
     
     final Object mLock = new Object[0];

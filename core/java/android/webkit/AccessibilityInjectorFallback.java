@@ -66,7 +66,7 @@ import java.util.Stack;
 class AccessibilityInjectorFallback {
     private static final String LOG_TAG = "AccessibilityInjector";
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int ACTION_SET_CURRENT_AXIS = 0;
     private static final int ACTION_TRAVERSE_CURRENT_AXIS = 1;

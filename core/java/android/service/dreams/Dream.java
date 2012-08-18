@@ -38,7 +38,7 @@ import android.view.WindowManagerImpl;
  *
  */
 public class Dream extends Service implements Window.Callback {
-    private final static boolean DEBUG = false;
+    private final static boolean DEBUG = true;
     private final static String TAG = "Dream";
     
     /**
