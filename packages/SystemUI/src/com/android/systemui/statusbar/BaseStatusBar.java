@@ -208,9 +208,8 @@ public abstract class BaseStatusBar extends SystemUI implements
 
        IntentFilter filter = new IntentFilter();
         filter.addAction("com.android.settings.RESTART_SYSTEMUI");
-////////////////////////////////// THIS ALSO NEEDS TO BE FIXED /////////////////////////////////////////////////////
         // protect this receiver so nobody but the system can use it
-        mContext.registerReceiver(mDevRestartReceiver, filter, "com.bamf.ics.permission.RESTART_SYSTEMUI", null);
+        mContext.registerReceiver(mDevRestartReceiver, filter, "com.steeldroid.permission.RESTART_SYSTEMUI", null);
 
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();
