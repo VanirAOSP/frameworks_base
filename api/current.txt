@@ -3690,6 +3690,7 @@ package android.app {
 
   public abstract class IntentService extends android.app.Service {
     ctor public IntentService(java.lang.String);
+    ctor public IntentService(java.lang.String, int);
     method public android.os.IBinder onBind(android.content.Intent);
     method protected abstract void onHandleIntent(android.content.Intent);
     method public void setIntentRedelivery(boolean);
