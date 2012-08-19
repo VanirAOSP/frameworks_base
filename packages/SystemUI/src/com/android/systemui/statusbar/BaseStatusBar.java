@@ -24,11 +24,13 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.ContentObserver;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -203,6 +205,12 @@ public abstract class BaseStatusBar extends SystemUI implements
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
 
 	mStatusBarContainer = new FrameLayout(mContext);
+
+       IntentFilter filter = new IntentFilter();
+        filter.addAction("com.android.settings.RESTART_SYSTEMUI");
+////////////////////////////////// THIS ALSO NEEDS TO BE FIXED /////////////////////////////////////////////////////
+        // protect this receiver so nobody but the system can use it
+        mContext.registerReceiver(mDevRestartReceiver, filter, "com.bamf.ics.permission.RESTART_SYSTEMUI", null);
 
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();
@@ -991,5 +999,28 @@ public abstract class BaseStatusBar extends SystemUI implements
         public boolean isTablet() {
         return false;
     }
-    
+
+	private BroadcastReceiver mDevRestartReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// Normally it will restart on its own, but sometimes it doesn't.
+			// Other times it's slow.
+
+			// This will help it restart reliably and faster.
+			restartMe(context);
+		}
+	};
+	
+	void restartMe(Context context){
+		PendingIntent restartIntent = PendingIntent.getService(context, 0,
+				new Intent(context, SystemUIService.class), 0);
+
+		AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+		alarmMgr.set(AlarmManager.RTC_WAKEUP,
+				System.currentTimeMillis() + 3000, restartIntent);
+		
+		Process.killProcessQuiet(Process.myPid());
+	}
+
 }
