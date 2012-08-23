@@ -20126,6 +20126,7 @@ package android.telephony {
     method public int getGsmBitErrorRate();
     method public int getGsmSignalStrength();
     method public boolean isGsm();
+    method public void setOemSignalStrength(int, int, int);
     method public void writeToParcel(android.os.Parcel, int);
   }
 
