@@ -25,6 +25,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.ContentObserver;
@@ -56,7 +57,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.PopupMenu;
-
+import android.app.AlarmManager;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarIconList;
@@ -64,6 +65,7 @@ import com.android.internal.statusbar.StatusBarNotification;
 import com.android.internal.widget.SizeAdaptiveLayout;
 import com.android.systemui.SearchPanelView;
 import com.android.systemui.SystemUI;
+import com.android.systemui.SystemUIService;
 import com.android.systemui.recent.RecentsPanelView;
 import com.android.systemui.recent.RecentTasksLoader;
 import com.android.systemui.recent.TaskDescription;
@@ -71,6 +73,7 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
+import java.io.IOException;
 
 import com.android.systemui.R;
 
@@ -1019,7 +1022,11 @@ public abstract class BaseStatusBar extends SystemUI implements
 		alarmMgr.set(AlarmManager.RTC_WAKEUP,
 				System.currentTimeMillis() + 3000, restartIntent);
 		
-		Process.killProcessQuiet(Process.myPid());
+        try {
+            Runtime.getRuntime().exec("pkill -TERM -f com.android.systemui");
+        } catch (IOException e) {
+            // we're screwed here fellas
+        }
 	}
 
 }
