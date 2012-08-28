@@ -3665,8 +3665,7 @@
 
   <java-symbol type="bool" name="config_noDelayInATwoDP" />
 
-<!-- AVRCP 1.3 Meta Data Resources -->
-
+  <!-- AVRCP 1.3 Meta Data Resources -->
   <java-symbol type="array" name="avrcp_meta_changed_intents" />
   <java-symbol type="array" name="avrcp_playstate_changed_intents" />
   <java-symbol type="array" name="avrcp_special_extra_keys" />
@@ -3679,4 +3678,8 @@
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_artist" />
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_album" />
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_id" />
+  
+  <!-- QuickMessage, for editbox background overrides -->
+  <public type="drawable" name="edit_text_holo_light" />
+  <public type="drawable" name="edit_text_holo_dark" />
 </resources>
