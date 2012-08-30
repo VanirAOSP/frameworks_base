@@ -46,10 +46,4 @@ interface IPowerManager
     void setBacklightBrightness(int brightness);
     void setAttentionLight(boolean on, int color);
     void setAutoBrightnessAdjustment(float adj);
-    // custom backlight things
-    int getLightSensorValue();
-    int getRawLightSensorValue();
-    int getLightSensorScreenBrightness();
-    int getLightSensorButtonBrightness();
-    int getLightSensorKeyboardBrightness();
 }
