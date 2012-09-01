@@ -3678,8 +3678,4 @@
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_artist" />
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_album" />
   <java-symbol type="string" name="com.amazon.mp3.playstatechanged_id" />
-  
-  <!-- QuickMessage, for editbox background overrides -->
-  <public type="drawable" name="edit_text_holo_light" />
-  <public type="drawable" name="edit_text_holo_dark" />
 </resources>
