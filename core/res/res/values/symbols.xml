@@ -1848,6 +1848,8 @@
 
   <java-symbol type="bool" name="config_hasRemovableLid" />
 
+  <java-symbol type="integer" name="config_wallpaperMaxWidth" />
+
   <!-- Telephony -->
   <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
   <java-symbol type="bool" name="config_samsung_stk" />
