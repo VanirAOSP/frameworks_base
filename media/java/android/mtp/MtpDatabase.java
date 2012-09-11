@@ -882,7 +882,13 @@ public class MtpDatabase {
                             ID_WHERE, new String[] {  Integer.toString(handle) }, null, null);
             if (c != null && c.moveToNext()) {
                 String path = c.getString(1);
-                path.getChars(0, path.length(), outFilePath, 0);
+                int length = path.length();
+
+                if (length > 255) {
+                    Log.w(TAG, "Object file path is too long");
+                    return MtpConstants.RESPONSE_GENERAL_ERROR;
+                }
+                path.getChars(0, length, outFilePath, 0);
                 outFilePath[path.length()] = 0;
                 // File transfers from device to host will likely fail if the size is incorrect.
                 // So to be safe, use the actual file size here.
