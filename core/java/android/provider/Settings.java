@@ -2179,9 +2179,30 @@ public final class Settings {
         public static final String NAV_BUTTONS = "nav_buttons";
 
         /**
-         * Whether to wake the screen with the volume keys, the value is boolean.
+         * Whether to show the clock in status bar
+         * of the stock battery icon
+         * 0: don't show the clock
+         * 1: right side clock
+         * 2: center clock
+         * default: 1
          * @hide
          */
+        public static final String STATUS_BAR_CLOCK = "status_bar_show_clock";
+         
+        /**
+         * comments are for noobs
+         * @hide
+         */
+        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm"; 
+        
+         
+        /**
+         * comments are for noobs
+         * @hide
+         */
+        public static final String PREF_ENABLE = "clock_style";
+
+
         public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
 
         /**
