@@ -18,11 +18,12 @@
 -->
 
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-        android:detachWallpaper="true" android:shareInterpolator="false"
-        android:zAdjustment="normal">
+	android:detachWallpaper="true"
+	android:shareInterpolator="false"
+	android:zAdjustment="normal" >
     <alpha android:fromAlpha="0.0" android:toAlpha="1.0"
             android:interpolator="@interpolator/accelerate_cubic"
             android:fillEnabled="true"
             android:fillBefore="true" android:fillAfter="true"
-            android:duration="280"/>
+            android:duration="280" />
 </set>

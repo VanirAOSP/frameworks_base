@@ -17,20 +17,19 @@
 */
 -->
 
-
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:zAdjustment="top"
-    android:shareInterpolator="false">
+    android:shareInterpolator="false" >
     <scale
-        android:fromXScale="1.0" android:toXScale="1.10"
-        android:fromYScale="1.0" android:toYScale="1.10"
-        android:pivotX="50%p" android:pivotY="50%p"
-        android:fillEnabled="true" android:fillAfter="true"
-        android:interpolator="@interpolator/accelerate_quint"
-        android:duration="@android:integer/config_shortAnimTime" />
+	android:fromXScale="1.0" android:toXScale="1.10"
+	android:fromYScale="1.0" android:toYScale="1.10"
+	android:pivotX="50%p" android:pivotY="50%p"
+	android:fillEnabled="true" android:fillAfter="true"
+	android:interpolator="@interpolator/accelerate_quint"
+	android:duration="@android:integer/config_shortAnimTime" />
     <alpha
-        android:fromAlpha="1.0" android:toAlpha="0"
-        android:fillEnabled="true" android:fillAfter="true"
-        android:interpolator="@interpolator/accelerate_quad"
-        android:duration="@android:integer/config_shortAnimTime"/>
+	android:fromAlpha="1.0" android:toAlpha="0"
+	android:fillEnabled="true" android:fillAfter="true"
+	android:interpolator="@interpolator/accelerate_quad"
+	android:duration="@android:integer/config_shortAnimTime" />
 </set>

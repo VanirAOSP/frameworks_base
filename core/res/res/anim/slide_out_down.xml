@@ -14,10 +14,6 @@
      limitations under the License.
 -->
 
-<translate
-    xmlns:android="http://schemas.android.com/apk/res/android"
-
-    android:fromYDelta="0"
-    android:toYDelta="100%p"
-
-    android:duration="@android:integer/config_longAnimTime" />
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+	android:fromYDelta="0" android:toYDelta="100%p"
+	android:duration="@android:integer/config_longAnimTime" />

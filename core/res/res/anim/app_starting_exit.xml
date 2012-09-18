@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/* //device/apps/common/res/anim/options_panel_exit.xml
-**
+/*
 ** Copyright 2007, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License"); 
@@ -19,7 +18,6 @@
 -->
 
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-        android:detachWallpaper="true" android:interpolator="@interpolator/decelerate_quad">
+        android:detachWallpaper="true" android:interpolator="@interpolator/decelerate_quad" >
 	<alpha android:fromAlpha="1.0" android:toAlpha="0.0" android:duration="160" />
 </set>
-

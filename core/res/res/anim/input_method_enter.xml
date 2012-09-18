@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/* //device/apps/common/res/anim/fade_in.xml
-**
+/*
 ** Copyright 2007, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License"); 
@@ -19,11 +18,11 @@
 -->
 
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-		android:shareInterpolator="false">
+	android:shareInterpolator="false">
     <translate android:fromYDelta="10%" android:toYDelta="0"
-	        android:interpolator="@interpolator/decelerate_quint"
-            android:duration="@android:integer/config_shortAnimTime"/>
+	       android:interpolator="@interpolator/decelerate_quint"
+	       android:duration="@android:integer/config_shortAnimTime" />
     <alpha android:fromAlpha="0.5" android:toAlpha="1.0"
-			android:interpolator="@interpolator/decelerate_cubic"
-            android:duration="@android:integer/config_shortAnimTime" />
+	   android:interpolator="@interpolator/decelerate_cubic"
+	   android:duration="@android:integer/config_shortAnimTime" />
 </set>
