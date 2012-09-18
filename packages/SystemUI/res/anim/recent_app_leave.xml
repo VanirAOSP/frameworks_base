@@ -19,12 +19,13 @@
 
 <!-- Special window zoom animation: this is the element that enters the screen,
      it starts at 200% and scales down.  Goes with zoom_exit.xml. -->
+
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-        android:interpolator="@android:anim/decelerate_interpolator">
+	android:interpolator="@android:anim/decelerate_interpolator" >
     <scale android:fromXScale="1.0" android:toXScale="0.25"
-           android:fromYScale="1.0" android:toYScale="0.25"
-           android:pivotX="0%p" android:pivotY="0%p"
-           android:duration="500" />
+	   android:fromYScale="1.0" android:toYScale="0.25"
+	   android:pivotX="0%p" android:pivotY="0%p"
+	   android:duration="500" />
     <alpha android:fromAlpha="1.0" android:toAlpha="0.0"
-            android:duration="500"/>
+	   android:duration="500" />
 </set>
