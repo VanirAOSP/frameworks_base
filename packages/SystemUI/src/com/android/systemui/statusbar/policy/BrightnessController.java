@@ -62,7 +62,7 @@ public class BrightnessController implements ToggleSlider.Listener {
             control.setChecked(false);
             //control.hideToggle();
         }
-        
+
         int value;
         try {
             value = Settings.System.getInt(mContext.getContentResolver(), 
@@ -98,11 +98,11 @@ public class BrightnessController implements ToggleSlider.Listener {
         Settings.System.putInt(mContext.getContentResolver(),
                 Settings.System.SCREEN_BRIGHTNESS_MODE, mode);
     }
-    
+
     private void setBrightness(int brightness) {
         try {
             mPower.setBacklightBrightness(brightness);
         } catch (RemoteException ex) {
-        }        
+        }
     }
 }

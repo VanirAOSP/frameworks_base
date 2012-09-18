@@ -82,7 +82,7 @@ public class LocationController extends BroadcastReceiver {
             textResId = R.string.gps_notification_searching_text;
             visible = true;
         }
-        
+
         try {
             if (visible) {
                 Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -99,7 +99,7 @@ public class LocationController extends BroadcastReceiver {
                 // Notification.Builder will helpfully fill these out for you no matter what you do
                 n.tickerView = null;
                 n.tickerText = null;
-                
+
                 n.priority = Notification.PRIORITY_HIGH;
 
                 int[] idOut = new int[1];
@@ -119,4 +119,3 @@ public class LocationController extends BroadcastReceiver {
         }
     }
 }
-

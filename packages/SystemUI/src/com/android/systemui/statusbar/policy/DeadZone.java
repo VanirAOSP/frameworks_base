@@ -38,4 +38,3 @@ public class DeadZone extends View {
         return true; // but I eated it
     }
 }
-

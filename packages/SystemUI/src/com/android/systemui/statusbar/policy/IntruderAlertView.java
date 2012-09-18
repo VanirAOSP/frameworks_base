@@ -50,10 +50,10 @@ public class IntruderAlertView extends LinearLayout implements SwipeHelper.Callb
     Rect mTmpRect = new Rect();
 
     private SwipeHelper mSwipeHelper;
-    
+
     BaseStatusBar mBar;
     private ViewGroup mContentHolder;
-    
+
     private RemoteViews mIntruderRemoteViews;
     private OnClickListener mOnClickListener;
 
@@ -72,14 +72,14 @@ public class IntruderAlertView extends LinearLayout implements SwipeHelper.Callb
         float densityScale = getResources().getDisplayMetrics().density;
         float pagingTouchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
         mSwipeHelper = new SwipeHelper(SwipeHelper.X, this, densityScale, pagingTouchSlop);
-        
+
         mContentHolder = (ViewGroup) findViewById(R.id.contentHolder);
         if (mIntruderRemoteViews != null) {
             // whoops, we're on already!
             applyIntruderContent(mIntruderRemoteViews, mOnClickListener);
         }
     }
-    
+
     public void setBar(BaseStatusBar bar) {
         mBar = bar;
     }
@@ -161,7 +161,7 @@ public class IntruderAlertView extends LinearLayout implements SwipeHelper.Callb
         final View content = intruderView.apply(getContext(), mContentHolder);
         if (listener != null) {
             content.setOnClickListener(listener);
-            
+
             //content.setBackgroundResource(R.drawable.intruder_row_bg);
             Drawable bg = getResources().getDrawable(R.drawable.intruder_row_bg);
             if (bg == null) {
@@ -171,6 +171,5 @@ public class IntruderAlertView extends LinearLayout implements SwipeHelper.Callb
             }
         }
         mContentHolder.addView(content);
-        
     }
 }

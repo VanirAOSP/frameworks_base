@@ -260,6 +260,7 @@ public class NetworkController extends BroadcastReceiver {
     public void addWifiIconView(ImageView v) {
         mWifiIconViews.add(v);
     }
+
     public void addWimaxIconView(ImageView v) {
         mWimaxIconViews.add(v);
     }
@@ -358,9 +359,7 @@ public class NetworkController extends BroadcastReceiver {
         }
     }
 
-
     // ===== Telephony ==============================================================
-
     PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength) {
@@ -700,7 +699,6 @@ public class NetworkController extends BroadcastReceiver {
         } finally {
             Binder.restoreCallingIdentity(ident);
         }
-
         mDataDirectionIconId = iconId;
         mDataConnected = visible;
     }
@@ -731,7 +729,6 @@ public class NetworkController extends BroadcastReceiver {
     }
 
     // ===== Wifi ===================================================================
-
     class WifiHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -788,7 +785,6 @@ public class NetworkController extends BroadcastReceiver {
             mWifiLevel = WifiManager.calculateSignalLevel(
                     mWifiRssi, WifiIcons.WIFI_LEVEL_COUNT);
         }
-
         updateWifiIcons();
     }
 
@@ -821,7 +817,6 @@ public class NetworkController extends BroadcastReceiver {
         }
         return null;
     }
-
 
     // ===== Wimax ===================================================================
     private final void updateWimaxState(Intent intent) {
@@ -867,7 +862,6 @@ public class NetworkController extends BroadcastReceiver {
     }
 
     // ===== Full or limited Internet connectivity ==================================
-
     private void updateConnectivity(Intent intent) {
         if (CHATTY) {
             Slog.d(TAG, "updateConnectivity: intent=" + intent);
@@ -910,9 +904,7 @@ public class NetworkController extends BroadcastReceiver {
         updateWifiIcons();
     }
 
-
     // ===== Update the views =======================================================
-
     void refreshViews() {
         Context context = mContext;
 
@@ -968,7 +960,6 @@ public class NetworkController extends BroadcastReceiver {
                         mMobileActivityIconId = 0;
                         break;
                 }
-
                 combinedLabel = mobileLabel;
                 combinedActivityIconId = mMobileActivityIconId;
                 combinedSignalIconId = mDataSignalIconId; // set by updateDataIcon()
@@ -1002,7 +993,6 @@ public class NetworkController extends BroadcastReceiver {
                         break;
                 }
             }
-
             combinedActivityIconId = mWifiActivityIconId;
             combinedLabel = wifiLabel;
             combinedSignalIconId = mWifiIconId; // set by updateWifiIcons()
@@ -1063,7 +1053,6 @@ public class NetworkController extends BroadcastReceiver {
                 mHasMobileDataFeature ? mDataSignalIconId : mWifiIconId;
             mContentDescriptionCombinedSignal = mHasMobileDataFeature
                 ? mContentDescriptionDataType : mContentDescriptionWifi;
-
             mDataTypeIconId = 0;
             if (isCdma()) {
                 if (isCdmaEri()) {
@@ -1172,6 +1161,7 @@ public class NetworkController extends BroadcastReceiver {
                 }
            }
         }
+
         // the combined data signal icon
         if (mLastCombinedSignalIconId != combinedSignalIconId) {
             mLastCombinedSignalIconId = combinedSignalIconId;
@@ -1384,5 +1374,4 @@ public class NetworkController extends BroadcastReceiver {
             return "(null)";
         }
     }
-
 }

@@ -47,7 +47,6 @@ public class AirplaneModeController extends BroadcastReceiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
         context.registerReceiver(this, filter);
-
     }
 
     public void release() {

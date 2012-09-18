@@ -139,4 +139,3 @@ public class ToggleSlider extends RelativeLayout
         mSlider.setProgress(value);
     }
 }
-

@@ -89,7 +89,7 @@ public class KeyButtonView extends ImageView {
                 defStyle, 0);
 
         mCode = a.getInteger(R.styleable.KeyButtonView_keyCode, 0);
-        
+
         mSupportsLongpress = a.getBoolean(R.styleable.KeyButtonView_keyRepeat, true);
 
         mGlowBG = a.getDrawable(R.styleable.KeyButtonView_glowBackground);
@@ -98,7 +98,7 @@ public class KeyButtonView extends ImageView {
             mGlowWidth = mGlowBG.getIntrinsicWidth();
             mGlowHeight = mGlowBG.getIntrinsicHeight();
         }
-        
+
         a.recycle();
 
         setClickable(true);
@@ -173,7 +173,6 @@ public class KeyButtonView extends ImageView {
                               getTop() - ry,
                               getRight() + rx,
                               getBottom() + ry));
-
             // also invalidate our immediate parent to help avoid situations where nearby glows
             // interfere
             ((View)getParent()).invalidate();
@@ -305,7 +304,6 @@ public class KeyButtonView extends ImageView {
                 }
                 break;
         }
-
         return true;
     }
 
@@ -323,5 +321,3 @@ public class KeyButtonView extends ImageView {
                 InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }
 }
-
-

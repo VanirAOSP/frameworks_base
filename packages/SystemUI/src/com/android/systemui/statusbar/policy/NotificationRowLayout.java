@@ -61,7 +61,7 @@ public class NotificationRowLayout
     HashMap<View, ValueAnimator> mDisappearingViews = new HashMap<View, ValueAnimator>();
 
     private SwipeHelper mSwipeHelper;
-    
+
     private OnSizeChangedListener mOnSizeChangedListener;
 
     // Flag set during notification removal animation to avoid causing too much work until
@@ -79,7 +79,7 @@ public class NotificationRowLayout
 
         mRealLayoutTransition = new LayoutTransition();
         setLayoutTransitionsEnabled(true);
-        
+
         setOrientation(LinearLayout.VERTICAL);
 
         if (DEBUG) {
@@ -93,7 +93,6 @@ public class NotificationRowLayout
                     Slog.d(TAG, "view removed: " + child + "; new count: " + (getChildCount() - 1));
                 }
             });
-
             setBackgroundColor(0x80FF8000);
         }
 
@@ -216,7 +215,6 @@ public class NotificationRowLayout
         float pagingTouchSlop = ViewConfiguration.get(mContext).getScaledPagingTouchSlop();
         mSwipeHelper.setPagingTouchSlop(pagingTouchSlop);
     }
-
 
     /**
      * Sets a flag to tell us whether to actually remove views. Removal is delayed by setting this

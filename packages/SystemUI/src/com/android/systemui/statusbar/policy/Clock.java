@@ -237,9 +237,7 @@ public class Clock extends TextView {
                 return formatted;
             }
         }
- 
         return result;
-
     }
 
     private void updateSettings(){
@@ -266,4 +264,3 @@ public class Clock extends TextView {
             setVisibility(View.GONE);
     }
 }
-
