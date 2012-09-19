@@ -31,7 +31,7 @@ public class TrackingPatternView extends View {
     private Paint mPaint;
     private int mTextureWidth;
     private int mTextureHeight;
-    
+
     public TrackingPatternView(Context context, AttributeSet attrs) {
         super(context, attrs);
 

@@ -107,8 +107,4 @@ public class CarrierLabel extends TextView {
         }
         setText(str);
     }
-
-    
 }
-
-

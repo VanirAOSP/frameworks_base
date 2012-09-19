@@ -21,7 +21,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.LinearLayout;
 
-
 public class CloseDragHandle extends LinearLayout {
     PhoneStatusBar mService;
 
@@ -48,4 +47,3 @@ public class CloseDragHandle extends LinearLayout {
                 ? true : super.onInterceptTouchEvent(event);
     }
 }
-

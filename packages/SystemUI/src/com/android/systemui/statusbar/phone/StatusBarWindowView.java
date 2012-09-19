@@ -29,7 +29,6 @@ import com.android.systemui.ExpandHelper;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 
-
 public class StatusBarWindowView extends FrameLayout
 {
     private static final String TAG = "StatusBarWindowView";
@@ -94,4 +93,3 @@ public class StatusBarWindowView extends FrameLayout
         return handled;
     }
 }
-

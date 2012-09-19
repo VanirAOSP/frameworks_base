@@ -73,7 +73,6 @@ public class PhoneStatusBarPolicy {
     // storage
     private StorageManager mStorageManager;
 
-
     // Assume it's all good unless we hear otherwise.  We don't always seem
     // to get broadcasts that it *is* there.
     IccCard.State mSimState = IccCard.State.READY;
@@ -273,7 +272,6 @@ public class PhoneStatusBarPolicy {
         } else {
             return;
         }
-
         mService.setIcon("bluetooth", iconId, 0, contentDescription);
         mService.setIconVisibility("bluetooth", mBluetoothEnabled);
     }

@@ -446,7 +446,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         mSettingsButton = mStatusBarWindow.findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
         mRotationButton = (RotationToggle) mStatusBarWindow.findViewById(R.id.rotation_lock_button);
-        
+
         mCarrierLabel = (TextView)mStatusBarWindow.findViewById(R.id.carrier_label);
         mCarrierLabel.setVisibility(mCarrierLabelVisible ? View.VISIBLE : View.INVISIBLE);
 
@@ -845,7 +845,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 animateCollapse();
             }
         }
-
         setAreThereNotifications();
     }
 
@@ -898,7 +897,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 mPile.addView(v, i);
             }
         }
-
         mSettingsButton.setEnabled(isDeviceProvisioned());
     }
 
@@ -963,10 +961,10 @@ public class PhoneStatusBar extends BaseStatusBar {
             Slog.d(TAG, String.format("pileh=%d scrollh=%d carrierh=%d",
                     mPile.getHeight(), mScrollView.getHeight(), mCarrierLabelHeight));
         }
-        
+
         final boolean makeVisible = 
             mPile.getHeight() < (mScrollView.getHeight() - mCarrierLabelHeight);
-        
+
         if (force || mCarrierLabelVisible != makeVisible) {
             mCarrierLabelVisible = makeVisible;
             if (DEBUG) {
@@ -1051,7 +1049,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 })
                 .start();
         }
-
         updateCarrierLabelVisibility(false);
     }
 
@@ -1254,7 +1251,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         if (revealAfterDraw) {
             mHandler.post(mStartRevealAnimation);
         }
-
         visibilityChanged(true);
     }
 
@@ -1475,7 +1471,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                         view.setLayerType(layerType, null);
                     }
                 }
-
                 break;
         }
     }
@@ -1671,6 +1666,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 if (xVel < 0) {
                     xVel = -xVel;
                 }
+
                 if (xVel > mFlingGestureMaxXVelocityPx) {
                     xVel = mFlingGestureMaxXVelocityPx; // limit how much we care about the x axis
                 }
@@ -1679,6 +1675,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 if (vel > mFlingGestureMaxOutputVelocityPx) {
                     vel = mFlingGestureMaxOutputVelocityPx;
                 }
+
                 if (negative) {
                     vel = -vel;
                 }
@@ -1701,7 +1698,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 mFlingVelocity = vel;
                 mHandler.post(mPerformFling);
             }
-
         }
         return false;
     }
@@ -1944,7 +1940,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                         mTickingDoneListener));
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in,
                     null));
-
         }
 
         public void tickerHalting() {
@@ -1955,7 +1950,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out,
                         mTickingDoneListener));
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
-
         }
     }
 
@@ -2172,7 +2166,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             final int color = ((int)(0xB0 * k)) << 24;
             mStatusBarWindow.setBackgroundColor(color);
         }
-        
         updateCarrierLabelVisibility(false);
     }
 

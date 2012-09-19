@@ -38,13 +38,13 @@ public class PhoneStatusBarView extends FrameLayout {
     private static final String TAG = "PhoneStatusBarView";
 
     static final int DIM_ANIM_TIME = 400;
-    
+
     PhoneStatusBar mService;
     boolean mTracking;
     int mStartX, mStartY;
     ViewGroup mNotificationIcons;
     ViewGroup mStatusIcons;
-    
+
     boolean mNightMode = false;
     int mStartAlpha = 0, mEndAlpha = 0;
     long mEndTime = 0;
@@ -68,7 +68,7 @@ public class PhoneStatusBarView extends FrameLayout {
         super.onAttachedToWindow();
         //mService.onBarViewAttached();
     }
-    
+
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -92,13 +92,13 @@ public class PhoneStatusBarView extends FrameLayout {
         return mEndAlpha
                 - (int)(((mEndAlpha-mStartAlpha) * (mEndTime-time) / DIM_ANIM_TIME));
     }
-   
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mService.onBarViewDetached();
     }
- 
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);

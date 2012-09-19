@@ -533,7 +533,6 @@ public class NavbarEditor implements OnTouchListener {
             }
             return true;
         }
-
     }
 
     final void dismissDialog() {
@@ -541,5 +540,4 @@ public class NavbarEditor implements OnTouchListener {
             mDialog.dismiss();
         }
     }
-
 }

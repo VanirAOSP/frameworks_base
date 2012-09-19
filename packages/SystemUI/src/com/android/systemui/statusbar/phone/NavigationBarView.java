@@ -65,7 +65,7 @@ public class NavigationBarView extends LinearLayout {
     final static boolean NAVBAR_ALWAYS_AT_RIGHT = true;
 
     final static boolean ANIMATE_HIDE_TRANSITION = false; // turned off because it introduces unsightly delay when videos goes to full screen
-    
+
     final static String NAVBAR_EDIT = "android.intent.action.NAVBAR_EDIT";
 
     private static boolean EDIT_MODE;
@@ -88,7 +88,7 @@ public class NavigationBarView extends LinearLayout {
     int mNavigationIconHints = 0;
 
     private Drawable mBackIcon, mBackLandIcon, mBackAltIcon, mBackAltLandIcon;
-    
+
     private DelegateViewHelper mDelegateHelper;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
@@ -121,13 +121,14 @@ public class NavigationBarView extends LinearLayout {
     public View getRecentsButton() {
         return mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
     }
+
     public View getBackButton() {
         return mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
     }
+
     public View getHomeButton() {
         return mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
     }
-    
 
     public void setDelegateView(View view) {
         mDelegateHelper.setDelegateView(view);
@@ -144,7 +145,7 @@ public class NavigationBarView extends LinearLayout {
         }
         return true;
     }
-    
+
     public void putThisInYourPipeAndSmokeIt(OnClickListener recentclick, RecentsPanelView recenttouch, OnTouchListener homesearch)
     {
     	mRecentsClickListener = recentclick;
@@ -172,7 +173,6 @@ public class NavigationBarView extends LinearLayout {
     public static boolean getEditMode() {
         return EDIT_MODE;
     }
-
 
     private void setButtonWithTagVisibility(String string, int visibility) {
         View findView = mCurrentView.findViewWithTag(string);
@@ -294,7 +294,7 @@ public class NavigationBarView extends LinearLayout {
             rb.setAlpha(
                 (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
 	}
-        	
+
 	View bb = getBackButton();
 	if (bb != null) {
             bb.setAlpha(
@@ -328,7 +328,6 @@ public class NavigationBarView extends LinearLayout {
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_ALWAYS_MENU_TWO, disableRecent ? View.INVISIBLE : View.VISIBLE);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_MENU_BIG, disableRecent ? View.INVISIBLE : View.VISIBLE);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_SEARCH, disableRecent ? View.INVISIBLE : View.VISIBLE);
-
     }
 
     public void setSlippery(boolean newSlippery) {
@@ -387,7 +386,6 @@ public class NavigationBarView extends LinearLayout {
                 .alpha(lightsOut ? 0f : 1f)
                 .setDuration(lightsOut ? 750 : 250)
                 .start();
-
             lowLights.setOnTouchListener(mLightsOutListener);
             if (lowLights.getVisibility() == View.GONE) {
                 lowLights.setAlpha(0f);
@@ -424,7 +422,7 @@ public class NavigationBarView extends LinearLayout {
         mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot0);
 
         mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot90);
-        
+
         mRotatedViews[Surface.ROTATION_270] = NAVBAR_ALWAYS_AT_RIGHT
                                                 ? findViewById(R.id.rot90)
                                                 : findViewById(R.id.rot270);
@@ -457,7 +455,6 @@ public class NavigationBarView extends LinearLayout {
         if (DEBUG) {
             Slog.d(TAG, "reorient(): rot=" + mDisplay.getRotation());
         }
-
         setNavigationIconHints(mNavigationIconHints, true);
     }
 
@@ -503,7 +500,6 @@ public class NavigationBarView extends LinearLayout {
         return super.onInterceptTouchEvent(ev);
     }
     */
-        
 
     private String getResourceName(int resId) {
         if (resId != 0) {
@@ -564,7 +560,6 @@ public class NavigationBarView extends LinearLayout {
         final View home = mCurrentView.findViewWithTag("home");
         final View recent = mCurrentView.findViewWithTag("recent");
 
-
         pw.println("      back: "
                 + PhoneStatusBar.viewInfo(back)
                 + " " + visibilityToString(back.getVisibility())
@@ -579,5 +574,4 @@ public class NavigationBarView extends LinearLayout {
                 );
         pw.println("    }");
     }
-
 }
