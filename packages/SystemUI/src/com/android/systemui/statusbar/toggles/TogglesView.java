@@ -40,7 +40,6 @@ public class TogglesView extends LinearLayout {
 
 	private int mBrightnessLocation = BRIGHTNESS_LOC_TOP;
 
-	private static final String TOGGLE_AUTOROTATE = "ROTATE";
 	private static final String TOGGLE_BLUETOOTH = "BT";
 	private static final String TOGGLE_GPS = "GPS";
 	private static final String TOGGLE_LTE = "LTE";
@@ -104,9 +103,7 @@ public class TogglesView extends LinearLayout {
 			Log.e(TAG, "split: " + splitToggle);
 			Toggle newToggle = null;
 
-			if (splitToggle.equals(TOGGLE_AUTOROTATE))
-				newToggle = new AutoRotateToggle(mContext);
-			else if (splitToggle.equals(TOGGLE_BLUETOOTH))
+			if (splitToggle.equals(TOGGLE_BLUETOOTH))
 				newToggle = new BluetoothToggle(mContext);
 			else if (splitToggle.equals(TOGGLE_DATA))
 				newToggle = new NetworkToggle(mContext);
