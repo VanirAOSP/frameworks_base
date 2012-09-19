@@ -3832,7 +3832,7 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
             invalidate();  // So we draw again
 
             if (!mScroller.isFinished()) {
-				mSendScroll.setPostpone(true);
+                mSendScroll.setPostpone(true);
                 int rangeX = computeMaxScrollX();
                 int rangeY = computeMaxScrollY();
                 int overflingDistance = mOverflingDistance;
@@ -5716,15 +5716,14 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
             }
         }
     }
-    SendScrollToWebCore mSendScroll = new SendScrollToWebCore();
 
+    SendScrollToWebCore mSendScroll = new SendScrollToWebCore();
 
     @Override
     public void onScrollChanged(int l, int t, int oldl, int oldt) {
-		mSendScroll.send(false);
-		
+        mSendScroll.send(false);
+
         if (!mInOverScrollMode) {
-  
             // update WebKit if visible title bar height changed. The logic is same
             // as getVisibleTitleHeightImpl.
             int titleHeight = getTitleHeight();
