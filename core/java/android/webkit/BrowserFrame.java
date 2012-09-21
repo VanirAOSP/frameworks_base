@@ -33,6 +33,7 @@ import android.net.http.SslError;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.os.SystemProperties;
 import android.util.TypedValue;
 import android.view.Surface;
 import android.view.ViewRootImpl;
@@ -212,11 +213,13 @@ class BrowserFrame extends Handler {
             // set WebCore native cache size
             ActivityManager am = (ActivityManager) context
                     .getSystemService(Context.ACTIVITY_SERVICE);
-            if (am.getMemoryClass() > 16) {
-                sJavaBridge.setCacheSize(8 * 1024 * 1024);
-            } else {
-                sJavaBridge.setCacheSize(4 * 1024 * 1024);
+            int defCacheSize = am.getMemoryClass() > 16 ?
+				8 * 1024 *1024 : 4 * 1024 * 1024;
+			int cacheSize = SystemProperties.gitInt("net.webkit.cache.size", defCacheSize);
+			if ((cacheSize < 0) || (cacheSize > (100 * 1024 * 1024))) {
+				cacheSize = defCacheSize
             }
+            sJavaBridge.setCacheSize(cacheSize);
             // initialize CacheManager
             CacheManager.init(appContext);
             // create CookieSyncManager with current Context
