@@ -217,7 +217,7 @@ class BrowserFrame extends Handler {
 				8 * 1024 *1024 : 4 * 1024 * 1024;
 			int cacheSize = SystemProperties.gitInt("net.webkit.cache.size", defCacheSize);
 			if ((cacheSize < 0) || (cacheSize > (100 * 1024 * 1024))) {
-				cacheSize = defCacheSize
+				cacheSize = defCacheSize;
             }
             sJavaBridge.setCacheSize(cacheSize);
             // initialize CacheManager
