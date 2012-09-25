@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/* //device/apps/common/assets/res/any/colors.xml
-**
+/*
 ** Copyright 2006, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +16,7 @@
 ** limitations under the License.
 */
 -->
+
 <resources>
       <drawable name="screen_background_light">#ffffffff</drawable>
       <drawable name="screen_background_dark">#ff000000</drawable>
@@ -118,8 +118,8 @@
     <color name="facelock_spotlight_mask">#CC000000</color>
 
     <!-- For holo theme -->
-      <drawable name="screen_background_holo_light">#fff3f3f3</drawable>
-      <drawable name="screen_background_holo_dark">#ff000000</drawable>
+    <drawable name="screen_background_holo_light">#fff3f3f3</drawable>
+    <drawable name="screen_background_holo_dark">#ff000000</drawable>
     <color name="background_holo_dark">#ff000000</color>
     <color name="background_holo_light">#fff3f3f3</color>
     <color name="bright_foreground_holo_dark">@android:color/background_holo_light</color>
@@ -185,4 +185,3 @@
     <drawable name="notification_template_icon_low_bg">#0cffffff</drawable>
 
 </resources>
-

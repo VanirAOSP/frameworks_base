@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/* //device/apps/common/assets/res/any/dimens.xml
-**
+/*
 ** Copyright 2006, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +16,7 @@
 ** limitations under the License.
 */
 -->
+
 <resources>
     <!-- The width that is used when creating thumbnails of applications. -->
     <dimen name="thumbnail_width">164dp</dimen>

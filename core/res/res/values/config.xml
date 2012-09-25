@@ -464,7 +464,6 @@
     <integer name="config_criticalBatteryWarningLevel">5</integer>
 
     <!-- Display low battery warning when battery level dips to this value -->
-    <!-- Display low battery warning when battery level dips to this value -->
     <integer name="config_lowBatteryWarningLevel">15</integer>
 
     <!-- Close low battery warning when battery level reaches this value -->
@@ -536,7 +535,6 @@
          Must be overridden in platform specific overlays -->
     <integer-array name="config_autoBrightnessLevels">
     </integer-array>
-
 
     <!-- Minimum screen brightness allowed by the power manager. -->
     <integer name="config_screenBrightnessDim">16</integer>

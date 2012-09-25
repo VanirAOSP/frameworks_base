@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/* //device/apps/common/assets/res/any/strings.xml
-**
+/*
 ** Copyright 2006, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +16,7 @@
 ** limitations under the License.
 */
 -->
+
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Suffix added to a number to signify size in bytes. -->
     <string name="byteShort">B</string>
@@ -134,7 +134,6 @@
     <!-- Displayed to confirm to the user that caller ID will not be restricted on the next call or in general. -->
     <string name="CLIRDefaultOffNextCallOff">Caller ID defaults to not restricted. Next call: Not restricted</string>
 
-
     <!-- Displayed to tell the user that caller ID is not provisioned for their SIM. -->
     <string name="serviceNotProvisioned">Service not provisioned.</string>
     <!-- Displayed to tell the user that they cannot change the caller ID setting. -->
@@ -193,7 +192,6 @@
     <string name="roamingText11">Roaming Banner On</string>
     <string name="roamingText12">Roaming Banner Off</string>
     <string name="roamingTextSearching">Searching for Service</string>
-
 
     <!--
         {0} is one of "bearerServiceCode*"
@@ -272,7 +270,6 @@
     <string name="low_memory" product="tablet">Tablet storage is full. Delete some files to free space.</string>
     <!-- If MMS discovers there isn't much space left on the device, it will show a toast with this message. -->
     <string name="low_memory" product="default">Phone storage is full. Delete some files to free space.</string>
-
 
     <!-- Display name for any time a piece of data refers to the owner of the phone. For example, this could be used in place of the phone's phone number. -->
     <string name="me">Me</string>
@@ -1020,7 +1017,6 @@
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_writeCallLog" product="default">Allows the app to modify your phone\'s call log, including data about incoming and outgoing calls.
         Malicious apps may use this to erase or modify your call log.</string>
-
 
     <!-- Title of the read profile permission, listed so the user can decide whether to allow the application to read the user's personal profile data. [CHAR LIMIT=30] -->
     <string name="permlab_readProfile">read your own contact card</string>
@@ -1890,9 +1886,8 @@
     <!-- This can be used in any application wanting to disable the text "Emergency number" -->
     <string name="emergency_call_dialog_number_for_display">Emergency number</string>
 
-    <!--
-       *** touch based lock / unlock ***
-                                          --> <skip />
+    <!-- *** touch based lock / unlock *** -->
+    <skip />
 
     <!-- On the keyguard screen, it shows the carrier the phone is connected to.  This is displayed if the phone is not connected to a carrier.-->
     <string name="lockscreen_carrier_default">No service.</string>
@@ -1967,7 +1962,6 @@
     <!-- When the user inserts a sim card from an unsupported network, it becomes network
          locked -->
     <string name="lockscreen_network_locked_message">Network locked</string>
-
 
     <!-- When the user enters a wrong sim pin too many times, it becomes
          PUK locked (Pin Unlock Kode) -->
@@ -2622,7 +2616,6 @@
     <!-- Appened to express the value is this unit of time. -->
     <string name="years">years</string>
 
-
     <!-- Title for error alert when a video cannot be played.  it can be used by any app. -->
     <string name="VideoView_error_title">Video problem</string>
     <!-- Text for error alert when a video container is not valid for progressive download/playback. -->
@@ -2632,13 +2625,9 @@
     <!-- Button to close error alert when a video cannot be played -->
     <string name="VideoView_error_button">OK</string>
 
-
-
-
     <!-- Format indicating a relative expression and time.
          Example: "4 hours ago, 11:00 am" -->
     <string name="relative_time">"<xliff:g id="date" example="4 hours ago">%1$s</xliff:g>, <xliff:g id="time" example="11:00 am">%2$s</xliff:g>"</string>
-
 
     <!-- Quoted name for 12pm, lowercase -->
     <string name="noon">"noon"</string>
@@ -2648,16 +2637,6 @@
     <string name="midnight">"midnight"</string>
     <!-- Quoted name for 12am, uppercase first letter -->
     <string name="Midnight">"Midnight"</string>
-
-
-
-
-
-
-
-
-
-
 
     <!-- Format string for durations like "01:23" (1 minute, 23 seconds) -->
     <string name="elapsed_time_short_format_mm_ss"><xliff:g id="minutes" example="1">%1$02d</xliff:g>:<xliff:g id="seconds" example="23">%2$02d</xliff:g></string>
@@ -3139,7 +3118,6 @@
     <!-- Shown in the tutorial for tap twice for zoom control. -->
     <string name="tutorial_double_tap_to_zoom_message_short">Touch twice for zoom control</string>
 
-
     <!-- Shown in gadget hosts (e.g. the home screen) when there was an error inflating
     the gadget. -->
     <string name="gadget_host_error_inflating">Couldn\'t add widget.</string>
@@ -3168,7 +3146,6 @@
     <!-- Strings for search suggestions. These are going here because they are referenced by both
          ContactsProvider and GoogleContactsProvider -->
     <skip />
-
 
     <!-- This string appears (on two lines) when you type a number into contacts search, to let you dial the phone number you typed.  The first line will be in bigger type than the second. -->
     <string name="dial_number_using">Dial number\nusing <xliff:g id="number" example="555">%s</xliff:g></string>
