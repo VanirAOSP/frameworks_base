@@ -773,15 +773,16 @@ public final class WebViewCore {
                                 break;
 
                             case REDUCE_PRIORITY:
-                                // 3 is an adjustable number.
+                                // 2 is an adjustable number. (Original: 3)
                                 Process.setThreadPriority(
-                                        Process.THREAD_PRIORITY_DEFAULT + 3 *
+                                        Process.THREAD_PRIORITY_DEFAULT + 2 *
                                         Process.THREAD_PRIORITY_LESS_FAVORABLE);
                                 break;
 
                             case RESUME_PRIORITY:
                                 Process.setThreadPriority(
-                                        Process.THREAD_PRIORITY_DEFAULT);
+                                        Process.THREAD_PRIORITY_DEFAULT + -1 *
+                                        Process.THREAD_PRIORITY_MORE_FAVORABLE);
                                 break;
 
                             case EventHub.ADD_PACKAGE_NAME:
