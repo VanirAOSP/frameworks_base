@@ -1124,6 +1124,16 @@ public class MediaScanner
                         long lastModified = c.getLong(FILES_PRESCAN_DATE_MODIFIED_COLUMN_INDEX);
                         lastId = rowId;
 
+                        // In some condition, there is a race when MediaProvider's
+                        // mUnmountReceiver processing external storage's database
+                        // cleanup at shutdown procedure: if the database is too big,
+                        // system power down after db.update, but didn't do db.delete,
+                        // there will be many elements with null filename in the datebase.
+                        // We'd better delete thus elements here, otherwise,
+                        // duplicated files and folders would be shown in MTP.
+                        if (path != null && path.length() == 0)
+                            deleter.delete(rowId);
+
                         // Only consider entries with absolute path names.
                         // This allows storing URIs in the database without the
                         // media scanner removing them.
