@@ -1222,7 +1222,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mVolumeWakeScreen = (Settings.System.getInt(resolver,
                     Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
             mVolBtnMusicControls = (Settings.System.getInt(resolver,
-                    Settings.System.VOLBTN_MUSIC_CONTROLS, 1) == 1);
+                    Settings.System.VOLBTN_MUSIC_CONTROLS, 0) == 1);
             // Configure rotation lock.
             int userRotation = Settings.System.getInt(resolver,
                     Settings.System.USER_ROTATION, Surface.ROTATION_0);
