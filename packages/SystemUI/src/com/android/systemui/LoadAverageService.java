@@ -193,7 +193,7 @@ public class LoadAverageService extends Service {
             }
             int userW = (userTime*W)/totalTime;
             int systemW = (systemTime*W)/totalTime;
-            int irqW = ((iowaitTime+irqTime+softIrqTime)*W)/totalTime;
+            int irqW = (iowaitTime*W)/totalTime;  //display IOWait time only
 
             int x = RIGHT - mPaddingRight;
             int top = mPaddingTop + 2;
@@ -224,6 +224,8 @@ public class LoadAverageService extends Service {
             canvas.drawText(stats.mLoadText, RIGHT-mPaddingRight-stats.mLoadWidth,
                     y, mLoadPaint);
 
+/* display IOWait only instead of processes */
+/*
             int N = stats.countWorkingStats();
             for (int i=0; i<N; i++) {
                 Stats.Stats st = stats.getWorkingStats(i);
@@ -256,6 +258,7 @@ public class LoadAverageService extends Service {
                 if (st.removed) p = mRemovedPaint;
                 canvas.drawText(st.name, RIGHT-mPaddingRight-st.nameWidth, y, p);
             }
+ */
         }
 
         void updateDisplay() {
