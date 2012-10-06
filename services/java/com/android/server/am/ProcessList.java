@@ -100,15 +100,15 @@ class ProcessList {
     // The maximum number of hidden processes we will keep around before
     // killing them; this is just a control to not let us go too crazy with
     // keeping around processes on devices with large amounts of RAM.
-    static final int MAX_HIDDEN_APPS = 15;
+    static final int MAX_HIDDEN_APPS = 11;
 
     // We put empty content processes after any hidden processes that have
     // been idle for less than 15 seconds.
-    static final long CONTENT_APP_IDLE_OFFSET = 15*1000;
+    static final long CONTENT_APP_IDLE_OFFSET = 10*1000;
 
     // We put empty content processes after any hidden processes that have
     // been idle for less than 120 seconds.
-    static final long EMPTY_APP_IDLE_OFFSET = 120*1000;
+    static final long EMPTY_APP_IDLE_OFFSET = 100*1000;
 
     // These are the various interesting memory levels that we will give to
     // the OOM killer.  Note that the OOM killer only supports 6 slots, so we
@@ -161,7 +161,7 @@ class ProcessList {
 
         // Scale buckets from screen size.
         int minSize = 320*480;  //  153600
-        int maxSize = 1280*800; // 1024000  230400 870400  .264
+        int maxSize = 1280*720; // 1024000  230400 870400  .264
         float scaleDisp = ((float)(displayWidth*displayHeight)-minSize)/(maxSize-minSize);
         //Slog.i("XXXXXX", "scaleDisp=" + scaleDisp + " dw=" + displayWidth + " dh=" + displayHeight);
 
