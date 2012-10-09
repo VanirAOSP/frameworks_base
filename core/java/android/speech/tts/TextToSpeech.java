@@ -31,6 +31,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1188,6 +1189,7 @@ public class TextToSpeech {
     @Deprecated
     public int setOnUtteranceCompletedListener(final OnUtteranceCompletedListener listener) {
         mUtteranceProgressListener = UtteranceProgressListener.from(listener);
+        mCallback.setUtteranceProgressListener(mUtteranceProgressListener);
         return TextToSpeech.SUCCESS;
     }
 
@@ -1203,6 +1205,7 @@ public class TextToSpeech {
      */
     public int setOnUtteranceProgressListener(UtteranceProgressListener listener) {
         mUtteranceProgressListener = listener;
+        mCallback.setUtteranceProgressListener(mUtteranceProgressListener);
         return TextToSpeech.SUCCESS;
     }
 
@@ -1253,34 +1256,8 @@ public class TextToSpeech {
         return mEnginesHelper.getEngines();
     }
 
-
     private class Connection implements ServiceConnection {
         private ITextToSpeechService mService;
-        private final ITextToSpeechCallback.Stub mCallback = new ITextToSpeechCallback.Stub() {
-            @Override
-            public void onDone(String utteranceId) {
-                UtteranceProgressListener listener = mUtteranceProgressListener;
-                if (listener != null) {
-                    listener.onDone(utteranceId);
-                }
-            }
-
-            @Override
-            public void onError(String utteranceId) {
-                UtteranceProgressListener listener = mUtteranceProgressListener;
-                if (listener != null) {
-                    listener.onError(utteranceId);
-                }
-            }
-
-            @Override
-            public void onStart(String utteranceId) {
-                UtteranceProgressListener listener = mUtteranceProgressListener;
-                if (listener != null) {
-                    listener.onStart(utteranceId);
-                }
-            }
-        };
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -1394,4 +1371,38 @@ public class TextToSpeech {
 
     }
 
+    private final TextToSpeechCallback mCallback = new TextToSpeechCallback();
+}
+
+class TextToSpeechCallback extends ITextToSpeechCallback.Stub {
+
+    private volatile WeakReference<UtteranceProgressListener> mUtteranceProgressListener = null;
+
+    public void setUtteranceProgressListener(UtteranceProgressListener aUtteranceProgressListener) {
+        mUtteranceProgressListener = new WeakReference<UtteranceProgressListener>(aUtteranceProgressListener);
+    }
+
+    @Override
+    public void onDone(String utteranceId) {
+        UtteranceProgressListener listener = mUtteranceProgressListener.get();
+        if (listener != null) {
+            listener.onDone(utteranceId);
+        }
+    }
+
+    @Override
+    public void onError(String utteranceId) {
+        UtteranceProgressListener listener = mUtteranceProgressListener.get();
+        if (listener != null) {
+            listener.onError(utteranceId);
+        }
+    }
+
+    @Override
+    public void onStart(String utteranceId) {
+        UtteranceProgressListener listener = mUtteranceProgressListener.get();
+        if (listener != null) {
+            listener.onStart(utteranceId);
+        }
+    }
 }
