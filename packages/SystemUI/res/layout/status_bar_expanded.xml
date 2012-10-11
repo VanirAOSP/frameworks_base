@@ -68,7 +68,7 @@
             android:layout_height="match_parent"
             android:fadingEdge="none"
             android:overScrollMode="ifContentScrolls"
-            android:layout_marginTop="@dimen/notification_panel_header_height"
+            android:layout_marginTop="@dimen/notification_panel_padding_top"
             >
 
         <!-- Toggles -->
