@@ -419,12 +419,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                     }
                                 }
                                 TargetDrawable nDrawable = new TargetDrawable(res, getLayeredDrawable(back,front, tmpInset, frontBlank));
-                                boolean isCamera = in.getComponent().getClassName().equals("com.android.camera.Camera");
-                                if (isCamera) {
-                                    nDrawable.setEnabled(!mCameraDisabled);
-                                } else {
-                                    boolean isSearch = in.getComponent().getClassName().equals("SearchActivity");
-                                    if (isSearch) {
+                                ComponentName compName = in.getComponent();
+                                if (compName != null) {
+                                    String cls = compName.getClassName();
+                                    if (cls.equals("com.android.camera.CameraLauncher")) {
+                                        nDrawable.setEnabled(!mCameraDisabled);
+                                    } else if (cls.equals("SearchActivity")) {
                                         nDrawable.setEnabled(!mSearchDisabled);
                                     }
                                 }
@@ -488,13 +488,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     target -= 1 + mTargetOffset;
                     if (target < mStoredTargets.length && mStoredTargets[target] != null) {
                         try {
-                            Intent tIntent = Intent.parseUri(mStoredTargets[target], 0);
-                            tIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            mContext.startActivity(tIntent);
-                            mCallback.goToUnlockScreen();
-                            return;
+                            launchActivity(Intent.parseUri(mStoredTargets[target], 0));
                         } catch (URISyntaxException e) {
-                        } catch (ActivityNotFoundException e) {
                         }
                     }
                 }
@@ -507,12 +502,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     | Intent.FLAG_ACTIVITY_SINGLE_TOP
                     | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             try {
-                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-            } catch (RemoteException e) {
-                Log.w(TAG, "can't dismiss keyguard on launch");
-            }
-            try {
                 mContext.startActivity(intent);
+                mCallback.goToUnlockScreen();
             } catch (ActivityNotFoundException e) {
                 Log.w(TAG, "Activity not found for intent + " + intent.getAction());
             }
@@ -674,10 +665,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         boolean disabledByAdmin = mLockPatternUtils.getDevicePolicyManager()
                 .getCameraDisabled(null);
         boolean disabledBySimState = mUpdateMonitor.isSimLocked();
-        boolean cameraTargetPresent = (mUnlockWidgetMethods instanceof GlowPadViewMethods)
-                ? ((GlowPadViewMethods) mUnlockWidgetMethods)
-                        .isTargetPresent(com.android.internal.R.drawable.ic_lockscreen_camera)
-                        : false;
+        boolean cameraPresent = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         boolean searchTargetPresent = (mUnlockWidgetMethods instanceof GlowPadViewMethods)
                 ? ((GlowPadViewMethods) mUnlockWidgetMethods)
                         .isTargetPresent(com.android.internal.R.drawable.ic_action_assist_generic)
@@ -689,7 +677,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             Log.v(TAG, "Camera disabled by Sim State");
         }
         boolean searchActionAvailable = SearchManager.getAssistIntent(mContext) != null;
-        mCameraDisabled = disabledByAdmin || disabledBySimState || !cameraTargetPresent;
+        mCameraDisabled = disabledByAdmin || disabledBySimState || !cameraPresent;
         mSearchDisabled = disabledBySimState || !searchActionAvailable || !searchTargetPresent;
         mUnlockWidgetMethods.updateResources();
     }
