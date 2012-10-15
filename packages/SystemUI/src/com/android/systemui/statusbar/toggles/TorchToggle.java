@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.os.Handler;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.app.PendingIntent;
 import com.android.systemui.R;
@@ -41,7 +42,7 @@ public class TorchToggle extends Toggle implements
     public static final String KEY_TORCH_ON = "torch_on";
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
-    private static final String DB_TAG = "TorchDebug";
+    private static final String DB_TAG = "TorchToggleDebug";
     private static final boolean DEBUG = false;
     private boolean mIsTorchOn;
     private Context mContext;
@@ -61,7 +62,10 @@ public class TorchToggle extends Toggle implements
         prefs = mContext.getSharedPreferences("torch",
                 Context.MODE_WORLD_READABLE);
         prefs.registerOnSharedPreferenceChangeListener(this);
-        mIsTorchOn = prefs.getBoolean(KEY_TORCH_ON, false);
+        mIsTorchOn = false;
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(KEY_TORCH_ON, false);
+        editor.commit();
         updateState();
     }
 
@@ -105,7 +109,7 @@ public class TorchToggle extends Toggle implements
                 mContext.startActivity(i);
             }            
             handler.removeCallbacks(mMakeSureItReallyHappened); 
-            handler.postDelayed(mMakeSureItReallyHappened, 1000); //give it a second
+            handler.postDelayed(mMakeSureItReallyHappened, 2000); //give it a second
                                                                   //then punch it in the face                                                            
          }
          catch(Exception e)
@@ -121,10 +125,10 @@ public class TorchToggle extends Toggle implements
 
     private void BoomRoasted()
     {
-        try{
-          mIsTorchOn = prefs.getBoolean(KEY_TORCH_ON, false);
-          updateState();
-          if (mToggle.isChecked() == mIsTorchOn) {
+        mIsTorchOn = prefs.getBoolean(KEY_TORCH_ON, false);
+        updateState();
+        try{                    
+          if (updateInternalToggleState() == mIsTorchOn) {
               if (DEBUG)
                     Log.i(DB_TAG, "TOGGLE AND SHAREDPREF MATCH!!!! BOTH ARE "+mIsTorchOn);
              mToggle.setEnabled(true); // torch status has caught up with toggle
@@ -133,11 +137,8 @@ public class TorchToggle extends Toggle implements
            else 
            {           
               if (DEBUG)
-                    Log.e(DB_TAG, "TOGGLE AND SHAREDPREF MISMATCH!!!! mIsTorchOn="+mIsTorchOn+" -- mToggle.isChecked()="+mToggle.isChecked());
-             handler.post(new Runnable() {
-               public void run() {
-                   onCheckChanged(mIsTorchOn);
-               }});
+                    Log.e(DB_TAG, "TOGGLE AND SHAREDPREF MISMATCH!!!! mIsTorchOn="+mIsTorchOn+" -- mToggle.isChecked()="+updateInternalToggleState());
+               mToggle.setChecked(updateInternalToggleState());
            }
          }
          catch(Exception e)
