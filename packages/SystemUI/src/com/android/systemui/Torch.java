@@ -60,7 +60,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private static Torch torch;
     private static boolean reallystarted = false;
     private static final Object padlock = new Object();
-    private static final boolean DEBUG=false;
+    private static final boolean DEBUG=true;
+    private String lastIntent = null;
     public static final String KEY_TORCH_ON = "torch_on";
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
@@ -335,7 +336,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
 
     private void stopTorch() {
         synchronized(padlock)
-        {        
+        {                
+            brute.removeCallbacks(force);
             db("--- Trying to stop torch -- pref="+prefs.getBoolean(KEY_TORCH_ON, false));            
             turnLightOff();
             stopPreview();
@@ -344,14 +346,19 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 mCamera.release();
                 mCamera = null;                
             }
-            if (prefs.getBoolean(KEY_TORCH_ON, false))
+            if (!reallystarted || prefs.getBoolean(KEY_TORCH_ON, false))
             {
+                if (!reallystarted)
+                    db("SETTING SHAREDPREF false BECAUSE !reallystarted");
+                else
+                    db("SETTING SHAREDPREF false BECAUSE STOPPING AND IT WAS true");
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean(KEY_TORCH_ON, false);
                 editor.commit();
             }
-            db("--- Torch stopped");            
-            this.finish();                
+            db("--- Torch stopped");
+            if (!isFinishing())            
+                this.finish();                
         }
     }
 
@@ -370,12 +377,14 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     @Override
     public void onResume() {
         super.onResume();
-        db("--------- onResume (action="+getIntent().getAction()+") ----------");
-        doSomething(getIntent().getAction());
+        db("--------- onResume (action="+getIntent().getAction()+") ----------");   
+        if (getIntent().getAction() != lastIntent)
+            doSomething(getIntent().getAction());        
     }
     
     private void doSomething(String action)
     {
+        lastIntent = action;
         db("-*-*-* doSomething("+action+") *-*-*-");
         if (action == INTENT_TORCH_ON) {
             startTorch();
@@ -388,27 +397,30 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
 
     @Override
     public void onPause() {
-        super.onPause();
         db("--------- onPause ----------");
+        startWakeLock();
+        super.onPause();       
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onStop() {     
         db("--------- onStop ----------");
+        super.onStop();         
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         db("--------- onDestroy ----------");
+        stopTorch();
+        super.onDestroy(); 
     }
 
     @Override
     public void onNewIntent(Intent intent) {
         setIntent(intent);
         db("--------- onNewIntent (action="+intent.getAction()+") ----------");
-        doSomething(intent.getAction());
+        if (intent.getAction() != lastIntent)
+            doSomething(intent.getAction());
     }
 
     @Override

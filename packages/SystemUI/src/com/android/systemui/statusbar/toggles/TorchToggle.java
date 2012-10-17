@@ -43,7 +43,7 @@ public class TorchToggle extends Toggle implements
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
     private static final String DB_TAG = "TorchToggleDebug";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private boolean mIsTorchOn;
     private Context mContext;
 

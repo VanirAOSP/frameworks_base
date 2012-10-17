@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.CompatibilityInfo;
@@ -525,6 +526,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     ShortcutManager mShortcutManager;
     PowerManager.WakeLock mBroadcastWakeLock;
     boolean mHavePendingMediaKeyRepeatWithWakeLock;
+
+    public static final String KEY_TORCH_ON = "torch_on";
+    public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
+    public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
+    boolean mFastTorchOn; // local state of torch
+    boolean mEnableQuickTorch; // System.Setting
+    private SharedPreferences prefs;
     
     boolean mLongPressBackKill;
     boolean mBackJustKilled;
@@ -583,6 +591,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.VOLBTN_MUSIC_CONTROLS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACCELEROMETER_ROTATION), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_FAST_TORCH), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.USER_ROTATION), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -732,6 +742,28 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mPendingPowerKeyUpCanceled = true;
         }
     }
+    
+    Runnable mTorchOn = new Runnable() {
+        public void run() {        
+            Log.i("FastTorchDebug", "Firing on intent!");
+            Intent i = new Intent(INTENT_TORCH_ON);
+            i.setAction(INTENT_TORCH_ON);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(i);
+            mNomNomFailNomNom = true;
+        };
+    };
+
+    Runnable mTorchOff = new Runnable() {
+        public void run() {        
+            Log.i("FastTorchDebug", "Firing off intent!");
+            Intent i = new Intent(INTENT_TORCH_OFF);
+            i.setAction(INTENT_TORCH_OFF);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(i);
+            mNomNomFailNomNom = false;
+        };
+    };
 
     /**
      * When a volumeup-key longpress expires, skip songs based on key press
@@ -986,6 +1018,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             WindowManagerFuncs windowManagerFuncs,
             LocalPowerManager powerManager) {
         mContext = context;
+        prefs = mContext.getSharedPreferences("torch", Context.MODE_WORLD_READABLE);
         mWindowManager = windowManager;
         mWindowManagerFuncs = windowManagerFuncs;
         mPowerManager = powerManager;
@@ -1017,7 +1050,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mDeskDockIntent.addCategory(Intent.CATEGORY_DESK_DOCK);
         mDeskDockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-
+        
         PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mBroadcastWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "PhoneWindowManager.mBroadcastWakeLock");
@@ -1239,7 +1272,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 updateRotation = true;
                 updateOrientationListenerLp();
             }
-
+            
+            mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH, 0) == 1;
+                    
             if (mSystemReady) {
                 int pointerLocation = Settings.System.getInt(resolver,
                         Settings.System.POINTER_LOCATION, 0);
@@ -3546,6 +3581,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case KeyEvent.KEYCODE_POWER: {
                 result &= ~ACTION_PASS_TO_USER;
                 if (down) {
+                    if(!isScreenOn && mEnableQuickTorch) {
+                        handleChangeTorchState(true);
+                    }
                     if (isScreenOn && !mPowerKeyTriggered
                             && (event.getFlags() & KeyEvent.FLAG_FALLBACK) == 0) {
                         mPowerKeyTriggered = true;
@@ -3575,6 +3613,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     interceptPowerKeyDown(!isScreenOn || hungUp
                             || mVolumeDownKeyTriggered || mVolumeUpKeyTriggered);
                 } else {
+                    if (mEnableQuickTorch)
+                    {
+                        handleChangeTorchState(false);
+                    }
                     mPowerKeyTriggered = false;
                     cancelPendingScreenshotChordAction();
                     if (interceptPowerKeyUp(canceled || mPendingPowerKeyUpCanceled)) {
@@ -3648,6 +3690,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
         return result;
+    }
+    
+    private boolean mNomNomFailNomNom = false;
+    void handleChangeTorchState(boolean on) {
+        mHandler.removeCallbacks(mTorchOn);
+        mFastTorchOn = !on;//prefs.getBoolean(KEY_TORCH_ON, false);
+        if (on && !mFastTorchOn && !mNomNomFailNomNom)
+            mHandler.postDelayed(mTorchOn, ViewConfiguration.getLongPressTimeout());
+        else if (!on && mNomNomFailNomNom)
+            mHandler.post(mTorchOff);
     }
 
     /** {@inheritDoc} */

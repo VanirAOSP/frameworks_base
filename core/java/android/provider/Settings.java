@@ -1222,6 +1222,14 @@ public final class Settings {
          * Constant for use in AIRPLANE_MODE_RADIOS to specify NFC radio.
          */
         public static final String RADIO_NFC = "nfc";
+        
+        /**
+         *
+         * Whether to enable torch by long pressing power from a screen off state
+         *
+         * @hide
+         */
+        public static final String ENABLE_FAST_TORCH = "enable_fast_torch"; 
 
      	/**
          * @hide
