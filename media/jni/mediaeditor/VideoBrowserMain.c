@@ -346,6 +346,13 @@ M4OSA_ERR videoBrowserCreate(
 
     CHECK_ERR(videoBrowserCreate, err);
 
+    M4OSA_Int32 mThumbnailMode = 1;
+    err = pContext->m_pDecoder->m_pFctSetOption(
+            pContext->m_pDecoderCtx,
+            M4DECODER_kOptionID_VideoDecodersThumbnailMode,
+            (M4OSA_DataOption)&mThumbnailMode);
+    CHECK_ERR(videoBrowserCreate, err);
+
     /* store the callback details */
     pContext->m_pfCallback = pfCallback;
     pContext->m_pCallbackUserData = pCallbackData;
