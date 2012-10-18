@@ -60,7 +60,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private static Torch torch;
     private static boolean reallystarted = false;
     private static final Object padlock = new Object();
-    private static final boolean DEBUG=true;
+    private static final boolean DEBUG=false;
     private String lastIntent = null;
     public static final String KEY_TORCH_ON = "torch_on";
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
