@@ -57,9 +57,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
 
     private WakeLock wakeLock;
 
-    private static Torch torch;
-    private static boolean reallystarted = false;
-    private static final Object padlock = new Object();
+    private boolean reallystarted = false;
+    private Object padlock = new Object();
     private static final boolean DEBUG=false;
     private String lastIntent = null;
     public static final String KEY_TORCH_ON = "torch_on";
@@ -68,8 +67,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     public static final String INTENT_TORCH_TOGGLE = "com.android.systemui.INTENT_TORCH_TOGGLE";
 
     public Torch() {        
-        super();                    
-        torch = this;
+        super();      
     }
     
     public void db(String s)
@@ -79,7 +77,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     }
 
     public static Torch getTorch() {
-        return torch;
+        return new Torch();
     }
 
     private boolean getCamera() {
@@ -168,7 +166,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                     if (flashModes.contains(Parameters.FLASH_MODE_OFF)) {
                         parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
                         mCamera.setParameters(parameters);
-                        stopWakeLock();
                     } else {
                         Log.e(TAG, "FLASH_MODE_OFF not supported");
                     }
@@ -298,6 +295,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private void startTorch() {
         synchronized(padlock)
         {            
+            startWakeLock();
             db("--- Trying to start torch");
             if (!prefs.getBoolean(KEY_TORCH_ON, false))
             {
@@ -356,6 +354,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 editor.putBoolean(KEY_TORCH_ON, false);
                 editor.commit();
             }
+            stopWakeLock();
             db("--- Torch stopped");
             if (!isFinishing())            
                 this.finish();                
@@ -398,7 +397,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     @Override
     public void onPause() {
         db("--------- onPause ----------");
-        startWakeLock();
         super.onPause();       
     }
 
