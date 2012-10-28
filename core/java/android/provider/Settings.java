@@ -2211,6 +2211,10 @@ public final class Settings {
         public static final String PREF_ENABLE = "clock_style";
 
 
+        /**
+         * WEHH THE API CHANGED... WEHH... STFU, GOOGLE!
+         * @hide
+         */         
         public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
 
         /**
