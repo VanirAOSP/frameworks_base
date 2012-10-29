@@ -1304,7 +1304,7 @@ public class PduPersister {
 
         // Check to see if Group MMS is enabled in Share Preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean groupMMSEnabled = prefs.getBoolean("pref_key_mms_group_mms", true);
+        boolean groupMMSEnabled = prefs.getBoolean("pref_key_mms_group_mms", false);
 
         HashSet<String> recipients = new HashSet<String>();
         int msgType = pdu.getMessageType();
