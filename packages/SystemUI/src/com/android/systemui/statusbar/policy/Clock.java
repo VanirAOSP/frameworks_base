@@ -38,6 +38,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -54,8 +55,10 @@ import com.android.internal.R;
 public class Clock extends TextView {
     private boolean mAttached;
     private Calendar mCalendar;
-    private String mClockFormatString;
-    private SimpleDateFormat mClockFormat;
+    private static String mClockFormatString;
+    private static String mExpandedClockFormatString;
+    private static SimpleDateFormat mClockFormat;
+    private static SimpleDateFormat mExpandedClockFormat;
 
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
@@ -63,13 +66,16 @@ public class Clock extends TextView {
     private static final int PROTEKK_O_CLOCK     = 3;
     private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
 
+
+    private static final char MAGIC1 = '\uEF00';
+    private static final char MAGIC2 = '\uEF01';
+
     public static final int STYLE_HIDE_CLOCK    = 0;
     public static final int STYLE_CLOCK_RIGHT   = 1;
     public static final int STYLE_CLOCK_CENTER  = 2;
 
-    protected int mClockStyle = STYLE_CLOCK_RIGHT;
-
-    private int mAmPmStyle;
+    private static int mClockStyle = STYLE_CLOCK_RIGHT;
+    private static int mAmPmStyle;
     private boolean mShowClock;
 
     Handler mHandler;
@@ -173,19 +179,41 @@ public class Clock extends TextView {
         } else {
             res = R.string.twelve_hour_time_format;
         }
-
-        final char MAGIC1 = '\uEF00';
-        final char MAGIC2 = '\uEF01';
-
-        SimpleDateFormat sdf;
+        
         String format = context.getString(res);
-        if (!format.equals(mClockFormatString)) {
-            /*
-             * Search for an unquoted "a" in the format string, so we can
-             * add dummy characters around it to let us find it again after
-             * formatting and change its size.
-             */
-            if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
+        SimpleDateFormat sdf = updateFormatString(IsShade(), format);
+
+        String result = sdf.format(mCalendar.getTime());
+
+        if (IsShade() || AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
+            int magic1 = result.indexOf(MAGIC1);
+            int magic2 = result.indexOf(MAGIC2);
+            if (magic1 >= 0 && magic2 > magic1) {
+                SpannableStringBuilder formatted = new SpannableStringBuilder(result);
+                if (IsShade() || AM_PM_STYLE == AM_PM_STYLE_GONE) {
+                    formatted.delete(magic1, magic2+1);
+                } else {
+                    if (AM_PM_STYLE == AM_PM_STYLE_SMALL) {
+                        CharacterStyle style = new RelativeSizeSpan(0.7f);
+                        formatted.setSpan(style, magic1, magic2,
+                                          Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                    }
+                    formatted.delete(magic2, magic2 + 1);
+                    formatted.delete(magic1, magic1 + 1);
+                }
+                return formatted;
+            }
+        }
+        return result;
+    }
+    
+    private SimpleDateFormat updateFormatString(boolean shade, String format)
+    {
+        SimpleDateFormat sdf = (shade ? mExpandedClockFormat : mClockFormat);
+        
+        if (!format.equals(shade ? mExpandedClockFormatString : mClockFormatString)) {
+            
+            if (shade || AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
                 int a = -1;
                 boolean quoted = false;
                 for (int i = 0; i < format.length(); i++) {
@@ -210,34 +238,20 @@ public class Clock extends TextView {
                         + "a" + MAGIC2 + format.substring(b + 1);
                 }
             }
-
-            mClockFormat = sdf = new SimpleDateFormat(format);
-            mClockFormatString = format;
-        } else {
-            sdf = mClockFormat;
-        }
-        String result = sdf.format(mCalendar.getTime());
-
-        if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
-            int magic1 = result.indexOf(MAGIC1);
-            int magic2 = result.indexOf(MAGIC2);
-            if (magic1 >= 0 && magic2 > magic1) {
-                SpannableStringBuilder formatted = new SpannableStringBuilder(result);
-                if (AM_PM_STYLE == AM_PM_STYLE_GONE) {
-                    formatted.delete(magic1, magic2+1);
-                } else {
-                    if (AM_PM_STYLE == AM_PM_STYLE_SMALL) {
-                        CharacterStyle style = new RelativeSizeSpan(0.7f);
-                        formatted.setSpan(style, magic1, magic2,
-                                          Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-                    }
-                    formatted.delete(magic2, magic2 + 1);
-                    formatted.delete(magic1, magic1 + 1);
-                }
-                return formatted;
+            if (shade)
+            {
+                mExpandedClockFormat = sdf = new SimpleDateFormat(format);
+                mExpandedClockFormatString = format;
             }
+            else
+            {
+                mClockFormat = sdf = new SimpleDateFormat(format);
+                mClockFormatString = format;
+            }
+        } else {
+            sdf = shade ? mExpandedClockFormat : mClockFormat;
         }
-        return result;
+        return sdf;
     }
 
     private void updateSettings(){
@@ -256,9 +270,35 @@ public class Clock extends TextView {
         updateClockVisibility();
         updateClock();
     }
+    
+    public boolean IsCenter()
+    {        
+        Object o = getTag();
+        if (o == null)
+            Log.e("CLOCK", "TAG IS NULL!");
+        else
+            Log.e("CLOCK", "TAG IS "+o.toString());
+        return (o != null && o.toString().equals("center"));
+    }    
+    
+    public boolean IsShade()
+    {        
+        Object o = getTag();
+        if (o == null)
+            Log.e("CLOCK", "TAG IS NULL!");
+        else
+            Log.e("CLOCK", "TAG IS "+o.toString());
+        return (o != null && o.toString().equals("expanded"));
+    }    
+
+    public void forceUpdate()
+    {
+        updateSettings();
+    }
 
     protected void updateClockVisibility() {
-        if (mClockStyle == STYLE_CLOCK_RIGHT)
+        boolean c = IsCenter();
+        if (mClockStyle == STYLE_CLOCK_RIGHT && !c || mClockStyle == STYLE_CLOCK_CENTER && c || IsShade())
             setVisibility(View.VISIBLE);
         else
             setVisibility(View.GONE);
