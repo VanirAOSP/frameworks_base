@@ -127,24 +127,18 @@ public class TorchToggle extends Toggle implements
     {
         mIsTorchOn = prefs.getBoolean(KEY_TORCH_ON, false);
         updateState();
-        try{                    
-          if (updateInternalToggleState() == mIsTorchOn) {
-              if (DEBUG)
-                    Log.i(DB_TAG, "TOGGLE AND SHAREDPREF MATCH!!!! BOTH ARE "+mIsTorchOn);
-             mToggle.setEnabled(true); // torch status has caught up with toggle
-                                       // - re-enable toggle.
-           }
-           else 
-           {           
-              if (DEBUG)
-                    Log.e(DB_TAG, "TOGGLE AND SHAREDPREF MISMATCH!!!! mIsTorchOn="+mIsTorchOn+" -- mToggle.isChecked()="+updateInternalToggleState());
-               mToggle.setChecked(updateInternalToggleState());
-           }
-         }
-         catch(Exception e)
-         {
-            Log.e("BOOMROASTED", "BoomRoasted done exploadeded: "+e.getMessage());
-         }
+        mToggle.setEnabled(true); // torch status has caught up with toggle, or maybe not... need to re-enable either way
+                                  // - re-enable toggle.
+      if (updateInternalToggleState() == mIsTorchOn) {
+          if (DEBUG)
+                Log.i(DB_TAG, "TOGGLE AND SHAREDPREF MATCH!!!! BOTH ARE "+mIsTorchOn);             
+       }
+       else 
+       {           
+          if (DEBUG)
+                Log.e(DB_TAG, "TOGGLE AND SHAREDPREF MISMATCH!!!! mIsTorchOn="+mIsTorchOn+" -- mToggle.isChecked()="+updateInternalToggleState());                    
+//          mToggle.setChecked(updateInternalToggleState());
+       }
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,

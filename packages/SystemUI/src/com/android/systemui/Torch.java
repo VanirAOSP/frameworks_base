@@ -123,7 +123,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 if (flashModes.contains(Parameters.FLASH_MODE_TORCH)) {
                     parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
                     mCamera.setParameters(parameters);
-                    startWakeLock();
                     lightOn = true;
                 } else {
                     Log.e(TAG, "FLASH_MODE_TORCH not supported");
@@ -143,6 +142,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private boolean turnLightOff() {
         try{
             if (lightOn) {
+                lightOn = false;
                 if (mCamera == null) {
                     db("turnLightOff() FAILED");
                     return false;
@@ -170,7 +170,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                         Log.e(TAG, "FLASH_MODE_OFF not supported");
                     }
                 }                
-                lightOn = false;
                 db("turnLightOff() succeeded");
                 return true;
             }
@@ -186,9 +185,10 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private boolean startPreview() {
         try{
             if (!previewOn && mCamera != null) {
-                reallystarted = false;            
+                reallystarted = false;         
+                previewOn = true;   
                 mCamera.startPreview();
-                try{
+                /*try{
                     mCamera.autoFocus(new AutoFocusCallback() {
                         public void onAutoFocus(boolean success, Camera camera) {
                             db("onAutoFocus("+success+")");
@@ -203,11 +203,10 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 catch(Exception e)
                 {
                     reallystarted = true;
-                }
-                previewOn = true;
-                db("startPreview() succeeded");
-                return true;
-            }
+                }*/
+            }       
+            db("startPreview() succeeded");
+            return true;
         }
         catch(Exception e)
         {
@@ -220,8 +219,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private boolean stopPreview() {
         try{
             if (previewOn && mCamera != null) {
-                mCamera.stopPreview();
                 previewOn = false;
+                mCamera.stopPreview();
                 db("stopPreview() succeeded");
                 return true;
             }
@@ -240,8 +239,8 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 Log.d(TAG, "wakeLock is null, getting a new WakeLock");
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
+                wakeLock.acquire();
             }
-            wakeLock.acquire();
             Log.d(TAG, "WakeLock acquired");
             db("startWakeLock() succeeded");
             return true;
@@ -313,6 +312,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         public void run() {
             synchronized(padlock)
             {
+                brute.removeCallbacks(force);
                 if (reallystarted)
                 {
                     if (!prefs.getBoolean(KEY_TORCH_ON, false))
@@ -324,7 +324,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 }
                 else
                 {
-                    brute.removeCallbacks(force);
                     brute.postDelayed(force, 100);
                 }
             }
@@ -423,8 +422,13 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int I, int J, int K) {
-        moveTaskToBack(true); // once Surface is set up - we should be able to
-                              // background ourselves.
+        db("         REALLY STARTED");             
+        if (!reallystarted)
+        {
+            reallystarted = true;
+        }
+//        moveTaskToBack(true); // once Surface is set up - we should be able to
+                              // background ourselves.      
     }
 
     @Override

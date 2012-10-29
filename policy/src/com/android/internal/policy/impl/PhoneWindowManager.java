@@ -781,23 +781,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     
     Runnable mTorchOn = new Runnable() {
         public void run() {        
-            Log.i("FastTorchDebug", "Firing on intent!");
             Intent i = new Intent(INTENT_TORCH_ON);
             i.setAction(INTENT_TORCH_ON);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(i);
-            mNomNomFailNomNom = true;
+            mFastTorchOn = true;
         };
     };
 
     Runnable mTorchOff = new Runnable() {
         public void run() {        
-            Log.i("FastTorchDebug", "Firing off intent!");
             Intent i = new Intent(INTENT_TORCH_OFF);
             i.setAction(INTENT_TORCH_OFF);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(i);
-            mNomNomFailNomNom = false;
         };
     };
 
@@ -3947,14 +3944,18 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         return result;
     }
     
-    private boolean mNomNomFailNomNom = false;
     void handleChangeTorchState(boolean on) {
         mHandler.removeCallbacks(mTorchOn);
-        mFastTorchOn = !on;//prefs.getBoolean(KEY_TORCH_ON, false);
-        if (on && !mFastTorchOn && !mNomNomFailNomNom)
+        mHandler.removeCallbacks(mTorchOff);
+        if (on && !mFastTorchOn)
+        {        
             mHandler.postDelayed(mTorchOn, ViewConfiguration.getLongPressTimeout());
-        else if (!on && mNomNomFailNomNom)
+        }
+        else if (mFastTorchOn)
+        {        
+            mFastTorchOn = false;
             mHandler.post(mTorchOff);
+        }
     }
 
     /** {@inheritDoc} */
