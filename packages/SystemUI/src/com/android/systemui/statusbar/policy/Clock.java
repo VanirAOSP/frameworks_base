@@ -274,20 +274,12 @@ public class Clock extends TextView {
     public boolean IsCenter()
     {        
         Object o = getTag();
-        if (o == null)
-            Log.e("CLOCK", "TAG IS NULL!");
-        else
-            Log.e("CLOCK", "TAG IS "+o.toString());
         return (o != null && o.toString().equals("center"));
     }    
     
     public boolean IsShade()
     {        
         Object o = getTag();
-        if (o == null)
-            Log.e("CLOCK", "TAG IS NULL!");
-        else
-            Log.e("CLOCK", "TAG IS "+o.toString());
         return (o != null && o.toString().equals("expanded"));
     }    
 
