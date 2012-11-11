@@ -3704,7 +3704,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
             }
         }
-
+        boolean isThisAReachAround = false;
         // Handle special keys.
         switch (keyCode) {
             case KeyEvent.KEYCODE_ENDCALL: {
@@ -3821,6 +3821,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 if (isScreenOn || !mVolumeWakeScreen) {
                     break;
                 } else if (keyguardActive) {
+                    isThisAReachAround = true;
                     keyCode = KeyEvent.KEYCODE_POWER;
                     mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(keyCode,
                             mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
@@ -3833,7 +3834,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case KeyEvent.KEYCODE_POWER: {
                 result &= ~ACTION_PASS_TO_USER;
                 if (down) {
-                    if(!isScreenOn && mEnableQuickTorch) {
+                    if(!isThisAReachAround && !isScreenOn && mEnableQuickTorch) {
                         handleChangeTorchState(true);
                     }
                     if (isScreenOn && !mPowerKeyTriggered
@@ -3865,7 +3866,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     interceptPowerKeyDown(!isScreenOn || hungUp
                             || mVolumeDownKeyTriggered || mVolumeUpKeyTriggered);
                 } else {
-                    if (mEnableQuickTorch)
+                    if (!isThisAReachAround && mEnableQuickTorch)
                     {
                         handleChangeTorchState(false);
                     }
