@@ -2273,6 +2273,23 @@ public final class Settings {
          * @hide
          */
         public static final String POINTER_SPEED = "pointer_speed";
+        
+         /**
+         * Volume Overlay Mode. This is the style of the volume overlay panel.
+         *      0 - Single
+         *      1 - Expandable (default)
+         *      2 - Expanded
+         *      3 - None
+         * @hide
+         */
+        public static final String MODE_VOLUME_OVERLAY = "mode_volume_overlay";
+
+        /**
+         * Boolean value whether to link ringtone and notification volumes
+         * 
+         * @hide
+         */
+        public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
