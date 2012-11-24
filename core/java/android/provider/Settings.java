@@ -2083,6 +2083,13 @@ public final class Settings {
         public static final String HEARING_AID = "hearing_aid";
 
         /**
+         * Whether noise suppression is enabled. The value is
+         * boolean (1 or 0).
+         * @hide
+         */
+        public static final String NOISE_SUPPRESSION = "noise_suppression";
+
+        /**
          * CDMA only settings
          * TTY Mode
          * 0 = OFF
