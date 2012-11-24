@@ -2929,6 +2929,12 @@ public final class Settings {
          */
         public static final String STATUS_BAR_IME_SWITCHER = "status_bar_ime_switcher";
 
+         /**
+         * Statusbar State
+         * @hide
+         */
+        public static final String EXPANDED_DESKTOP_STATE = "expanded_desktop_state";
+
         /**
          * Whether to use a separate delay for "slide to unlock" and security
          * lock
@@ -3095,8 +3101,13 @@ public final class Settings {
         public static final String GESTURES_UP_SWIPE = "gestures_up_swipe";
 
         /**
-         * down Swipe Action
-         *
+         * Whether power menu expanded desktop is enabled
+         * @hide
+         */
+        public static final String POWER_MENU_EXPANDED_DESKTOP_ENABLED = "power_menu_expanded_desktop_enabled";
+
+        /**
+         * Whether power menu profiles switcher is enabled
          * @hide
          */
         public static final String GESTURES_DOWN_SWIPE = "gestures_down_swipe";
