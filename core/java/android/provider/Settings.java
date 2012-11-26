@@ -3095,6 +3095,14 @@ public final class Settings {
         public static final String DEVELOPMENT_SETTINGS_ENABLED =
                 Global.DEVELOPMENT_SETTINGS_ENABLED;
 
+		/**
+         * When the user has enable the option to have a "reboot" command
+         * in the power menu.
+         * @hide
+         */
+		public static final String REBOOT_IN_POWER_MENU = "reboot_in_power_menu";
+		
+		
         /**
          * When the user has enable the option to have a "bug report" command
          * in the power menu.
