@@ -25,6 +25,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.ContentObserver;
@@ -47,7 +48,7 @@ import com.android.systemui.statusbar.policy.BrightnessController.BrightnessStat
 import com.android.systemui.statusbar.policy.CurrentUserTracker;
 import com.android.systemui.statusbar.policy.LocationController.LocationGpsStateChangeCallback;
 import com.android.systemui.statusbar.policy.NetworkController.NetworkSignalChangedCallback;
-
+import com.android.systemui.statusbar.powerwidget.PowerButton;
 
 class QuickSettingsModel implements BluetoothStateChangeCallback,
         NetworkSignalChangedCallback,
@@ -113,7 +114,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(AudioManager.RINGER_MODE_CHANGED_ACTION)) {
-                onSystemVolumeChanged();
+                onSystemSoundStateChanged();
                 onVibrationChanged();
             }
         }
@@ -246,13 +247,21 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mSettingsCallback;
     private final State mSettingsState = new State();
 
-    private QuickSettingsTileView mSystemVolumeTile;
-    private RefreshCallback mSystemVolumeCallback;
-    private final State mSystemVolumeState = new State();
+    private QuickSettingsTileView mSystemSoundTile;
+    private RefreshCallback mSystemSoundCallback;
+    private final State mSystemSoundState = new State();
 
     private QuickSettingsTileView mVibrationTile;
     private RefreshCallback mVibrationCallback;
     private final State mVibrationState = new State();
+
+    private QuickSettingsTileView mLockscreenTile;
+    private RefreshCallback mLockscreenCallback;
+    private final State mLockscreenState = new State();
+
+    private QuickSettingsTileView mVibrationAndSoundTile;
+    private RefreshCallback mVibrationAndSoundCallback;
+    private final State mVibrationAndSoundState = new State();
 
     public QuickSettingsModel(Context context) {
         mContext = context;
@@ -734,31 +743,32 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         onBrightnessLevelChanged();
         onNextAlarmChanged();
         onBugreportChanged();
-        onSystemVolumeChanged();
+        onSystemSoundStateChanged();
         onVibrationChanged();
+        onVibrationAndSoundChanged();
     }
 
     //Volume
     void addSystemVolumeTile(QuickSettingsTileView view, RefreshCallback cb) {
-        mSystemVolumeTile = view;
-        mSystemVolumeCallback = cb;
-        onSystemVolumeChanged();
+        mSystemSoundTile = view;
+        mSystemSoundCallback = cb;
+        onSystemSoundStateChanged();
     }
 
-    void onSystemVolumeChanged(){
+    void onSystemSoundStateChanged(){
         AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         boolean soundOn = !am.isSilentMode();
         if(soundOn){
-            mSystemVolumeState.enabled = true;
-            mSystemVolumeState.iconId = R.drawable.stat_ring_on;
-            mSystemVolumeState.label = mContext.getString(R.string.accessibility_desc_on);
+            mSystemSoundState.enabled = true;
+            mSystemSoundState.iconId = R.drawable.ic_qs_ring_on;
+            mSystemSoundState.label = mContext.getString(R.string.quicksettings_ringer_on);
         }else{
-            mSystemVolumeState.enabled = false;
-            mSystemVolumeState.iconId = R.drawable.stat_ring_off;
-            mSystemVolumeState.label = mContext.getString(R.string.accessibility_desc_off);
+            mSystemSoundState.enabled = false;
+            mSystemSoundState.iconId = R.drawable.ic_qs_ring_off;
+            mSystemSoundState.label = mContext.getString(R.string.quicksettings_ringer_off);
         }
-        if(mSystemVolumeTile != null && mSystemVolumeCallback != null){
-            mSystemVolumeCallback.refreshView(mSystemVolumeTile, mSystemVolumeState);
+        if(mSystemSoundTile != null && mSystemSoundCallback != null){
+            mSystemSoundCallback.refreshView(mSystemSoundTile, mSystemSoundState);
         }
     }
 
@@ -777,19 +787,72 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON){
             //Sound + vibrate
             mVibrationState.enabled = true;
-            mVibrationState.iconId = R.drawable.stat_vibrate_on;
-            mVibrationState.label = mContext.getString(R.string.accessibility_desc_on);
+            mVibrationState.iconId = R.drawable.ic_qs_vibrate_on;
+            mVibrationState.label = mContext.getString(R.string.quicksettings_vibration_on);
         }else if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE){
             //Vibrate
             mVibrationState.enabled = true;
-            mVibrationState.iconId = R.drawable.stat_vibrate_on;
-            mVibrationState.label = mContext.getString(R.string.accessibility_desc_on);
+            mVibrationState.iconId = R.drawable.ic_qs_vibrate_on;
+            mVibrationState.label = mContext.getString(R.string.quicksettings_vibration_on);
         }else{
             //No vibration
             mVibrationState.enabled = false;
-            mVibrationState.iconId = R.drawable.stat_vibrate_off;
-            mVibrationState.label = mContext.getString(R.string.accessibility_desc_off);
+            mVibrationState.iconId = R.drawable.ic_qs_vibrate_off;
+            mVibrationState.label = mContext.getString(R.string.quicksettings_vibration_off);
         }
-        mVibrationCallback.refreshView(mVibrationTile, mVibrationState);
+        if(mVibrationTile != null && mVibrationCallback != null){
+            mVibrationCallback.refreshView(mVibrationTile, mVibrationState);
+        }
     }
+
+    void addLockscreenEnablerTile(QuickSettingsTileView view, RefreshCallback cb){
+        mLockscreenTile = view;
+        mLockscreenCallback = cb;
+        onLockscreenEnabledChanged();
+    }
+
+    void onLockscreenEnabledChanged(){
+        SharedPreferences sp = mContext.getSharedPreferences("PowerButton-" + PowerButton.BUTTON_LOCKSCREEN, Context.MODE_PRIVATE);
+        if(!sp.getBoolean("lockscreen_disabled", false)){
+            mLockscreenState.enabled = true;
+            mLockscreenState.iconId = R.drawable.ic_qs_lock_screen_on;
+        }else{
+            mLockscreenState.enabled = false;
+            mLockscreenState.iconId = R.drawable.ic_qs_lock_screen_off;
+        }
+        mLockscreenCallback.refreshView(mLockscreenTile, mLockscreenState);
+    }
+
+    void addNoStateTile(QuickSettingsTileView view, RefreshCallback cb) {
+        cb.refreshView(view, null);
+    }
+
+    void addVibrationAndSoundTile(QuickSettingsTileView view, RefreshCallback cb){
+        mVibrationAndSoundTile = view;
+        mVibrationAndSoundCallback = cb;
+        onVibrationAndSoundChanged();
+    }
+
+    void onVibrationAndSoundChanged(){
+        AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        boolean vibrate = am.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER) == AudioManager.VIBRATE_SETTING_ON;
+        Resources r = mContext.getResources();
+        mVibrationAndSoundState.label = r.getString(R.string.quicksettings_ringer_normal);
+        if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL && vibrate){
+            //Sound + Vibrate
+            mVibrationAndSoundState.iconId = R.drawable.ic_qs_ring_vibrate_on;
+        }else if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
+            //Sound
+            mVibrationAndSoundState.iconId = R.drawable.ic_qs_ring_on;
+        }else if(am.getRingerMode() == AudioManager.RINGER_MODE_SILENT){
+            mVibrationAndSoundState.iconId = R.drawable.ic_qs_ring_off;
+        }else{
+            mVibrationAndSoundState.iconId = R.drawable.ic_qs_vibrate_on;
+        }
+        if(mVibrationAndSoundTile != null && mVibrationAndSoundCallback != null){
+            mVibrationAndSoundCallback.refreshView(mVibrationAndSoundTile, mVibrationAndSoundState);
+        }
+    }
+
+
 }

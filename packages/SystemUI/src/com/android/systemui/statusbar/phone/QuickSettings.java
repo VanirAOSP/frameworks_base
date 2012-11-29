@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import android.app.ActivityManagerNative;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -30,6 +32,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
@@ -45,9 +49,12 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Profile;
@@ -70,6 +77,7 @@ import com.android.internal.widget.LockPatternUtils;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.BluetoothState;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.RSSIState;
+import com.android.systemui.statusbar.phone.QuickSettingsModel.RefreshCallback;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.State;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.UserState;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.WifiState;
@@ -79,7 +87,7 @@ import com.android.systemui.statusbar.policy.BrightnessController;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.ToggleSlider;
-
+import com.android.systemui.statusbar.powerwidget.PowerButton;
 
 /**
  *
@@ -87,6 +95,28 @@ import com.android.systemui.statusbar.policy.ToggleSlider;
 class QuickSettings {
     private static final String TAG = "QuickSettings";
     public static final boolean SHOW_IME_TILE = false;
+
+    public static final int USER_TILE = 0;
+    public static final int BRIGHTNESS_TILE = 1;
+    public static final int SETTINGS_TILE = 2;
+    public static final int WIFI_TILE = 3;
+    public static final int MOBILE_NETWORK_TILE = 4;
+    public static final int ROTATION_LOCK_TILE = 5;
+    public static final int BATTERY_TILE = 6;
+    public static final int AIRPLANE_MODE_TILE = 7;
+    public static final int BLUETOOTH_TILE = 8;
+    public static final int RINGER_MODE_TILE = 9;
+    public static final int VIBRATION_TILE = 10;
+    public static final int ALARM_TILE = 11;
+    public static final int BUGREPORT_TILE = 12;
+    public static final int IME_TILE = 13;
+    public static final int LOCATION_TILE = 14;
+    public static final int MEDIA_TILE = 15;
+    public static final int TIME_TILE = 16;
+    public static final int WIFI_DISPLAY_TILE = 17;
+    public static final int SLEEP_TILE = 18;
+    public static final int LOCK_SCREEN_TILE = 19;
+    public static final int SOUND_AND_VIBRATION_TILE = 20;
 
     private final Context mContext;
     private PanelBar mBar;
@@ -374,58 +404,49 @@ class QuickSettings {
         parent.addView(timeTile);
         mDynamicSpannedTiles.add(timeTile);
         */
-
-        // Settings tile
-        QuickSettingsTileView settingsTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        settingsTile.setContent(R.layout.quick_settings_tile_settings, inflater);
-        settingsTile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startSettingsActivity(android.provider.Settings.ACTION_SETTINGS);
-            }
-        });
-        mModel.addSettingsTile(settingsTile, new QuickSettingsModel.RefreshCallback() {
-            @Override
-            public void refreshView(QuickSettingsTileView view, State state) {
-                TextView tv = (TextView) view.findViewById(R.id.settings_tileview);
-                tv.setText(state.label);
-            }
-        });
-        parent.addView(settingsTile);
-        mDynamicSpannedTiles.add(settingsTile);
     }
 
     private void addSystemTiles(ViewGroup parent, LayoutInflater inflater) {
+        // Settings
+        addGenericTile(parent, inflater, SETTINGS_TILE);
+
         // Wi-fi
-        addWiFiTile(parent, inflater);
+       addGenericTile(parent, inflater, WIFI_TILE);
 
         if (mModel.deviceHasMobileData()) {
             // RSSI
-            addMobileNetworkTile(parent,inflater);
+            addGenericTile(parent, inflater, MOBILE_NETWORK_TILE);
         }
 
         // Rotation Lock
         //if (mContext.getResources().getBoolean(R.bool.quick_settings_show_rotation_lock)) {
-            addRotationTile(parent,inflater);
+            addGenericTile(parent, inflater, ROTATION_LOCK_TILE);
         //}
 
         // Battery
-        addBatteryTile(parent,inflater);
+        addGenericTile(parent, inflater, BATTERY_TILE);
         // Airplane Mode
-        addAirplaneTile(parent, inflater);
+        addGenericTile(parent, inflater, AIRPLANE_MODE_TILE);
 
         // Bluetooth
         if (mModel.deviceSupportsBluetooth()) {
-            addBluetoothTile(parent, inflater);
+            addGenericTile(parent, inflater, BLUETOOTH_TILE);
         }
 
-        //Volume
-        addSystemVolumeTile(parent, inflater);
+        // Sound
+        //addGenericTile(parent, inflater, RINGER_MODE_TILE);
 
-        //Vibration
-        addVibrationTile(parent, inflater);
+        // Vibration
+        //addGenericTile(parent, inflater, VIBRATION_TILE);
 
+        // Sleep
+        addGenericTile(parent, inflater, SLEEP_TILE);
+
+        // Lockscreen
+        //addGenericTile(parent, inflater, LOCK_SCREEN_TILE);
+
+        // Sound and Vibration
+        addGenericTile(parent, inflater, SOUND_AND_VIBRATION_TILE);
     }
 
     private void addTemporaryTiles(final ViewGroup parent, final LayoutInflater inflater) {
@@ -723,8 +744,10 @@ class QuickSettings {
                 reloadUserInfo();
             } else if(AudioManager.VIBRATE_SETTING_CHANGED_ACTION.equals(action)){
                 mModel.onVibrationChanged();
+                mModel.onVibrationAndSoundChanged();
             } else if(AudioManager.RINGER_MODE_CHANGED_ACTION.equals(action)){
-                mModel.onSystemVolumeChanged();
+                mModel.onSystemSoundStateChanged();
+                mModel.onVibrationAndSoundChanged();
             }
         }
     };
@@ -748,30 +771,174 @@ class QuickSettings {
         }
     };
 
-    private void addWiFiTile(ViewGroup parent, LayoutInflater inflater){
-        QuickSettingsTileView wifiTile = (QuickSettingsTileView)
+    private void addGenericTile(ViewGroup parent, LayoutInflater inflater, int type){
+        QuickSettingsTileView genericTile = (QuickSettingsTileView)
                 inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        wifiTile.setContent(R.layout.quick_settings_tile_wifi, inflater);
-        wifiTile.setOnLongClickListener(new OnLongClickListener() {
+        genericTile = addContents(genericTile, inflater, type);
+        addActions(genericTile, inflater, parent, type);
+    }
 
+    private QuickSettingsTileView addContents(QuickSettingsTileView original, LayoutInflater inflater, int type){
+        int contentID = -1;
+        if(type == USER_TILE){
+            contentID = R.layout.quick_settings_tile_user;
+        }else if(type == BATTERY_TILE){
+            contentID = R.layout.quick_settings_tile_battery;
+        }else if(type == MOBILE_NETWORK_TILE){
+            contentID = R.layout.quick_settings_tile_rssi;
+        }else if(type == TIME_TILE){
+            contentID = R.layout.quick_settings_tile_time;
+        }else{
+            contentID = R.layout.quick_settings_tile_generic;
+        }
+        original.setContent(contentID, inflater);
+        return original;
+    }
+
+    private void addActions(QuickSettingsTileView original, LayoutInflater inflater, ViewGroup parent, int type){
+        switch(type){
+        case USER_TILE:
+            addUserTileActions(original, parent);
+            break;
+        case BRIGHTNESS_TILE:
+            addBrightnessTileActions(original, parent);
+            break;
+        case SETTINGS_TILE:
+            addSettingsTileActions(original, parent);
+            break;
+        case WIFI_TILE:
+            addWiFiTileActions(original, parent);
+            break;
+        case MOBILE_NETWORK_TILE:
+            addMobileNetworkTileActions(original, parent);
+            break;
+        case ROTATION_LOCK_TILE:
+            addRotationTileActions(original, parent);
+            break;
+        case BATTERY_TILE:
+            addBatteryTileActions(original, parent);
+            break;
+        case AIRPLANE_MODE_TILE:
+            addAirplaneTileActions(original, parent);
+            break;
+        case BLUETOOTH_TILE:
+            addBluetoothTileActions(original, parent);
+            break;
+        case RINGER_MODE_TILE:
+            addRingerModeTileActions(original, parent);
+            break;
+        case VIBRATION_TILE:
+            addVibrationTileActions(original, parent);
+            break;
+        case SLEEP_TILE:
+            addSleepTileActions(original, parent);
+            break;
+        case LOCK_SCREEN_TILE:
+            addLockscreenEnableTileActions(original, parent);
+            break;
+        case SOUND_AND_VIBRATION_TILE:
+            addVibrationAndSoundTileActions(original, parent);
+            break;
+        }
+        parent.addView(original);
+    }
+
+    private void addUserTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBar.collapseAllPanels(true);
+                final UserManager um =
+                        (UserManager) mContext.getSystemService(Context.USER_SERVICE);
+                if (um.getUsers(true).size() > 1) {
+                    try {
+                        WindowManagerGlobal.getWindowManagerService().lockNow(
+                                LockPatternUtils.USER_SWITCH_LOCK_OPTIONS);
+                    } catch (RemoteException e) {
+                        Log.e(TAG, "Couldn't show user switcher", e);
+                    }
+                } else {
+                    Intent intent = ContactsContract.QuickContact.composeQuickContactsIntent(
+                            mContext, v, ContactsContract.Profile.CONTENT_URI,
+                            ContactsContract.QuickContact.MODE_LARGE, null);
+                    mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
+                }
+            }
+        });
+        mModel.addUserTile(original, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView view, State state) {
+                UserState us = (UserState) state;
+                ImageView iv = (ImageView) view.findViewById(R.id.user_imageview);
+                TextView tv = (TextView) view.findViewById(R.id.user_textview);
+                tv.setText(state.label);
+                iv.setImageDrawable(us.avatar);
+                view.setContentDescription(mContext.getString(
+                        R.string.accessibility_quick_settings_user, state.label));
+            }
+        });
+
+        mDynamicSpannedTiles.add(original);
+    }
+
+    private void addBrightnessTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBar.collapseAllPanels(true);
+                showBrightnessDialog();
+            }
+        });
+        mModel.addBrightnessTile(original, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView view, State state) {
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
+                tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
+                tv.setText(state.label);
+                dismissBrightnessDialog(mBrightnessDialogShortTimeout);
+            }
+        });
+        mDynamicSpannedTiles.add(original);
+    }
+
+    private void addSettingsTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSettingsActivity(android.provider.Settings.ACTION_SETTINGS);
+            }
+        });
+        mModel.addSettingsTile(original, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView view, State state) {
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
+                tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_qs_settings, 0, 0);
+                tv.setText(state.label);
+            }
+        });
+        mDynamicSpannedTiles.add(original);
+    }
+
+    private void addWiFiTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 startSettingsActivity(android.provider.Settings.ACTION_WIFI_SETTINGS);
                 return true;
             }
         });
-        wifiTile.setOnClickListener(new View.OnClickListener() {
+        original.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 WifiManager wfm = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
                 wfm.setWifiEnabled(!wfm.isWifiEnabled());
             }
         });
-        mModel.addWifiTile(wifiTile, new QuickSettingsModel.RefreshCallback() {
+        mModel.addWifiTile(original, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
                 WifiState wifiState = (WifiState) state;
-                TextView tv = (TextView) view.findViewById(R.id.wifi_textview);
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
                 tv.setCompoundDrawablesWithIntrinsicBounds(0, wifiState.iconId, 0, 0);
                 tv.setText(wifiState.label);
                 view.setContentDescription(mContext.getString(
@@ -780,14 +947,10 @@ class QuickSettings {
                         (wifiState.connected) ? wifiState.label : ""));
             }
         });
-        parent.addView(wifiTile);
     }
 
-    private void addMobileNetworkTile(ViewGroup parent, LayoutInflater inflater){
-        QuickSettingsTileView rssiTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        rssiTile.setContent(R.layout.quick_settings_tile_rssi, inflater);
-        rssiTile.setOnClickListener(new View.OnClickListener() {
+    private void addMobileNetworkTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
@@ -799,8 +962,7 @@ class QuickSettings {
                 }
             }
         });
-        rssiTile.setOnLongClickListener(new OnLongClickListener() {
-
+        original.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 Intent intent = new Intent();
@@ -811,7 +973,7 @@ class QuickSettings {
                 return true;
             }
         });
-        mModel.addRSSITile(rssiTile, new QuickSettingsModel.RefreshCallback() {
+        mModel.addRSSITile(original, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
                 RSSIState rssiState = (RSSIState) state;
@@ -832,42 +994,34 @@ class QuickSettings {
                         state.label));
             }
         });
-        parent.addView(rssiTile);
     }
 
-    private void addRotationTile(ViewGroup parent, LayoutInflater inflater){
-        QuickSettingsTileView rotationLockTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        rotationLockTile.setContent(R.layout.quick_settings_tile_rotation_lock, inflater);
-        rotationLockTile.setOnClickListener(new View.OnClickListener() {
+    private void addRotationTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean locked = RotationPolicy.isRotationLocked(mContext);
                 RotationPolicy.setRotationLock(mContext, !locked);
             }
         });
-        mModel.addRotationLockTile(rotationLockTile, new QuickSettingsModel.RefreshCallback() {
+        mModel.addRotationLockTile(original, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
-                TextView tv = (TextView) view.findViewById(R.id.rotation_lock_textview);
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
                 tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                 tv.setText(state.label);
             }
         });
-        parent.addView(rotationLockTile);
     }
 
-    private void addBatteryTile(ViewGroup parent, LayoutInflater inflater){
-        QuickSettingsTileView batteryTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        batteryTile.setContent(R.layout.quick_settings_tile_battery, inflater);
-        batteryTile.setOnClickListener(new View.OnClickListener() {
+    private void addBatteryTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startSettingsActivity(Intent.ACTION_POWER_USAGE_SUMMARY);
             }
         });
-        mModel.addBatteryTile(batteryTile, new QuickSettingsModel.RefreshCallback() {
+        mModel.addBatteryTile(original, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
                 QuickSettingsModel.BatteryState batteryState =
@@ -894,17 +1048,13 @@ class QuickSettings {
                         mContext.getString(R.string.accessibility_quick_settings_battery, t));
             }
         });
-        parent.addView(batteryTile);
     }
 
-    private void addAirplaneTile(ViewGroup parent, LayoutInflater inflater){
-        QuickSettingsTileView airplaneTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        airplaneTile.setContent(R.layout.quick_settings_tile_airplane, inflater);
-        mModel.addAirplaneModeTile(airplaneTile, new QuickSettingsModel.RefreshCallback() {
+    private void addAirplaneTileActions(QuickSettingsTileView original, ViewGroup parent) {
+        mModel.addAirplaneModeTile(original, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
-                TextView tv = (TextView) view.findViewById(R.id.airplane_mode_textview);
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
                 tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
 
                 String airplaneState = mContext.getString(
@@ -915,14 +1065,11 @@ class QuickSettings {
                 tv.setText(state.label);
             }
         });
-        parent.addView(airplaneTile);
     }
 
-    private void addBluetoothTile(ViewGroup parent, LayoutInflater inflater){
-        QuickSettingsTileView bluetoothTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        bluetoothTile.setContent(R.layout.quick_settings_tile_bluetooth, inflater);
-        bluetoothTile.setOnClickListener(new View.OnClickListener() {
+    private void addBluetoothTileActions(QuickSettingsTileView original,
+            ViewGroup parent) {
+        original.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -933,7 +1080,7 @@ class QuickSettings {
                 }
             }
         });
-        bluetoothTile.setOnLongClickListener(new OnLongClickListener() {
+        original.setOnLongClickListener(new OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View v) {
@@ -941,11 +1088,11 @@ class QuickSettings {
                 return true;
             }
         });
-        mModel.addBluetoothTile(bluetoothTile, new QuickSettingsModel.RefreshCallback() {
+        mModel.addBluetoothTile(original, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
                 BluetoothState bluetoothState = (BluetoothState) state;
-                TextView tv = (TextView) view.findViewById(R.id.bluetooth_textview);
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
                 tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
 
                 Resources r = mContext.getResources();
@@ -969,14 +1116,11 @@ class QuickSettings {
                 tv.setText(label);
             }
         });
-        parent.addView(bluetoothTile);
     }
 
-    private void addSystemVolumeTile(ViewGroup parent, LayoutInflater inflater){
-        QuickSettingsTileView volumeTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        volumeTile.setContent(R.layout.quick_settings_tile_volume, inflater);
-        volumeTile.setOnClickListener(new View.OnClickListener() {
+    private void addRingerModeTileActions(QuickSettingsTileView original,
+            ViewGroup parent) {
+        original.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -992,7 +1136,7 @@ class QuickSettings {
                 }
             }
         });
-        volumeTile.setOnLongClickListener(new OnLongClickListener() {
+        original.setOnLongClickListener(new OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View v) {
@@ -1000,38 +1144,36 @@ class QuickSettings {
                 return true;
             }
         });
-        mModel.addSystemVolumeTile(volumeTile, new QuickSettingsModel.RefreshCallback() {
+        mModel.addSystemVolumeTile(original, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
-                TextView tv = (TextView) view.findViewById(R.id.volume_mode_textview);
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
                 tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
 
                 String airplaneState = mContext.getString(
-                        (state.enabled) ? R.string.accessibility_desc_on
-                                : R.string.accessibility_desc_off);
+                        (state.enabled) ? R.string.quicksettings_ringer_on
+                                : R.string.quicksettings_ringer_off);
                 view.setContentDescription(
-                        mContext.getString(R.string.accessibility_quick_settings_airplane, airplaneState));
+                        mContext.getString(R.string.accessibility_quick_settings_ringer, airplaneState));
                 tv.setText(state.label);
             }
         });
-        parent.addView(volumeTile);
     }
 
-    private void addVibrationTile(ViewGroup parent, LayoutInflater inflater){
-        QuickSettingsTileView vibrationTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        vibrationTile.setContent(R.layout.quick_settings_tile_volume, inflater);
-        vibrationTile.setOnClickListener(new View.OnClickListener() {
-
+    private void addVibrationTileActions(QuickSettingsTileView original,
+            ViewGroup parent) {
+        original.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
                 if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE){
                     //Vibrate -> Silent
                     am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
                     am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
                 }else if(am.getRingerMode() == AudioManager.RINGER_MODE_SILENT){
                     //Silent -> Vibrate
+                    vibrator.vibrate(300);
                     am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
                     am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
                 }else{
@@ -1040,12 +1182,13 @@ class QuickSettings {
                         am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
                     }else{
                         //Sound -> Sound + Vibrate
+                        vibrator.vibrate(300);
                         am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
                     }
                 }
             }
         });
-        vibrationTile.setOnLongClickListener(new OnLongClickListener() {
+        original.setOnLongClickListener(new OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View v) {
@@ -1053,20 +1196,122 @@ class QuickSettings {
                 return true;
             }
         });
-        mModel.addVibrationTile(vibrationTile, new QuickSettingsModel.RefreshCallback() {
+        mModel.addVibrationTile(original, new QuickSettingsModel.RefreshCallback() {
             @Override
             public void refreshView(QuickSettingsTileView view, State state) {
-                TextView tv = (TextView) view.findViewById(R.id.volume_mode_textview);
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
                 tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
 
                 String airplaneState = mContext.getString(
-                        (state.enabled) ? R.string.accessibility_desc_on
-                                : R.string.accessibility_desc_off);
+                        (state.enabled) ? R.string.quicksettings_vibration_on
+                                : R.string.quicksettings_vibration_off);
                 view.setContentDescription(
-                        mContext.getString(R.string.accessibility_quick_settings_airplane, airplaneState));
+                        mContext.getString(R.string.accessibility_quick_settings_vibration, airplaneState));
                 tv.setText(state.label);
             }
         });
-        parent.addView(vibrationTile);
+    }
+
+    private void addSleepTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PowerManager pm = (PowerManager)
+                        mContext.getSystemService(Context.POWER_SERVICE);
+                pm.goToSleep(SystemClock.uptimeMillis());
+            }
+        });
+        original.setOnLongClickListener(new OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                startSettingsActivity("android.settings.DISPLAY_SETTINGS");
+                return true;
+            }
+        });
+        mModel.addNoStateTile(original, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView view, State state) {
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
+                tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_qs_sleep, 0, 0);
+                tv.setText(mContext.getString(R.string.quicksettings_screen_sleep));
+            }
+        });
+    }
+
+    private void addLockscreenEnableTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                KeyguardManager keyguardManager = (KeyguardManager)
+                        mContext.getSystemService(Context.KEYGUARD_SERVICE);
+                KeyguardLock lock = keyguardManager.newKeyguardLock("PowerWidget");
+                SharedPreferences sp = mContext.getSharedPreferences("PowerButton-" + PowerButton.BUTTON_LOCKSCREEN, Context.MODE_PRIVATE);
+                Editor editor = sp.edit();
+                Log.d(TAG,"BEFORE: Lockscreen: "+sp.getBoolean("lockscreen_disabled", false));
+                if(!sp.getBoolean("lockscreen_disabled", false)){
+                    lock.reenableKeyguard();
+                    editor.putBoolean("lockscreen_disabled", true);
+                }else{
+                    lock.disableKeyguard();
+                    editor.putBoolean("lockscreen_disabled", false);
+                }
+                editor.apply();
+                Log.d(TAG,"AFTER: Lockscreen: "+sp.getBoolean("lockscreen_disabled", false));
+            }
+        });
+        mModel.addLockscreenEnablerTile(original, new RefreshCallback() {
+
+            @Override
+            public void refreshView(QuickSettingsTileView view, State state) {
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
+                tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
+                tv.setText(mContext.getResources().getString(R.string.accessibility_desc_on));
+            }
+        });
+    }
+
+    private void addVibrationAndSoundTileActions(QuickSettingsTileView original, ViewGroup parent){
+        original.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+               // Vibration + Sound -> Silent -> Vibration -> Sound ...
+                AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                boolean vibrate = am.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER) == AudioManager.VIBRATE_SETTING_ON;
+                if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL && vibrate){
+                    // Switch to Silent
+                    am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
+                    am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                }else if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
+                    // Switch to Sound + Vibration
+                    vibrator.vibrate(300);
+                    am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
+                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                }else if(am.getRingerMode() == AudioManager.RINGER_MODE_SILENT){
+                    // Switch to Vibration
+                    vibrator.vibrate(300);
+                    am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                    am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
+                }else if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE){
+                    // Switch to Sound
+                    am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
+                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                }
+            }
+        });
+        mModel.addVibrationAndSoundTile(original, new RefreshCallback() {
+
+            @Override
+            public void refreshView(QuickSettingsTileView view, State state) {
+                TextView tv = (TextView) view.findViewById(R.id.tile_textview);
+                tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
+                tv.setText(state.label);
+            }
+        });
     }
 }
+
+
