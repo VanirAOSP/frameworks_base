@@ -19,6 +19,7 @@ package android.widget;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.PowerManager;
 import android.util.FloatMath;
 import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
@@ -108,6 +109,8 @@ public class Scroller  {
     private float mDeceleration;
     private final float mPpi;
 
+    private final PowerManager mPm;
+    
     // A context-specific coefficient adjusted to physical values.
     private float mPhysicalCoeff;
 
@@ -182,7 +185,7 @@ public class Scroller  {
         mPpi = context.getResources().getDisplayMetrics().density * 160.0f;
         mDeceleration = computeDeceleration(ViewConfiguration.getScrollFriction());
         mFlywheel = flywheel;
-
+        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         mPhysicalCoeff = computeDeceleration(0.84f); // look and feel tuning
     }
 
@@ -407,6 +410,7 @@ public class Scroller  {
         mDeltaX = dx;
         mDeltaY = dy;
         mDurationReciprocal = 1.0f / (float) mDuration;
+        mPm.cpuBoost(1500000);
     }
 
     /**
