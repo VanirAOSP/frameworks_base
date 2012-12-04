@@ -529,4 +529,5 @@
     <string name="quicksettings_label_disabled">Off</string>
     <string name="quicksettings_ringer_normal">Sound</string>
 
+    <string name="toggle_torch">Torch</string>
 </resources>
