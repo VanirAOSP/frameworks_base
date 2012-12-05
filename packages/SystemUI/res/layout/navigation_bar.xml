@@ -17,7 +17,7 @@
 ** limitations under the License.
 */
 -->
-
+ 
 <com.android.systemui.statusbar.phone.NavigationBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"

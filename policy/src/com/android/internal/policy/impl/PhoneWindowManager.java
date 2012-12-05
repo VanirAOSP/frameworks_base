@@ -1090,10 +1090,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // 0-599dp: "phone" UI with a separate status & navigation bar
             mHasSystemNavBar = false;
             mNavigationBarCanMove = true;
+            Settings.System.putInt(mContext.getContentResolver(),	
+			                    Settings.System.TABLET_UI, 0);
         } else if (shortSizeDp < 720) {
             // 600+dp: "phone" UI with modifications for larger screens
             mHasSystemNavBar = false;
             mNavigationBarCanMove = false;
+            Settings.System.putInt(mContext.getContentResolver(),	
+			                    Settings.System.TABLET_UI, 2);
+	    } else {
+			// 720dp tablet UI with single combined status & nav bar
+			mHasSystemNavBar = true;
+			mNavigationBarCanMove = false;
+			Settings.System.putInt(mContext.getContentResolver(),	
+			                    Settings.System.TABLET_UI, 1);
         }
 
         if (mHasSystemNavBar) {
