@@ -2444,6 +2444,28 @@ public final class Settings {
         */
         public static final String NAVIGATION_BAR_HEIGHT_LANDSCAPE = "navigation_bar_height_landscape";
 
+        
+        /**
+         * WEHH THE API CHANGED... WEHH... STFU, GOOGLE!
+         * @hide
+         */         
+        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
+
+        /**
+         * Whether or not volume button music controls should be enabled to seek media tracks
+         * @hide
+         */
+        public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
+
+       
+        /**
+         *
+         * Whether to enable torch by long pressing power from a screen off state
+         *
+         * @hide
+         */
+        public static final String ENABLE_FAST_TORCH = "enable_fast_torch"; 
+
         /**
          * Whether the UI is initiated in tablet UI (false = phone UI)
          * @hide
