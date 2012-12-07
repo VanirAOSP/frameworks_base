@@ -70,6 +70,9 @@
     <!-- Navbar -->
     <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
 
+    <!-- FOR TORCH -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:persistent="true"
         android:allowClearUserData="false"
