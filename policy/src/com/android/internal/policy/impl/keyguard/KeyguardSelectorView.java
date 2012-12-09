@@ -97,6 +97,10 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         public void onGrabbedStateChange(View v, int handle) {
 
         }
+        
+        public void onTargetChange(View v, int target) {
+
+        }
 
         public void onFinishFinalAnimation() {
 

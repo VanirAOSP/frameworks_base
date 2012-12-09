@@ -1170,6 +1170,50 @@ public final class Settings {
             }
             return value;
         }
+        
+        /**
+         * @hide
+         * Convenience function for retrieving a single system settings value
+         * as a boolean.  Note that internally setting values are always
+         * stored as strings; this function converts the string to a boolean
+         * for you. It will only return true if the stored value is "1"
+         *
+         * @param cr The ContentResolver to access.
+         * @param name The name of the setting to retrieve.
+         * @param def Value to return if the setting is not defined.
+         *
+         * @return The setting's current value, or 'def' if it is not defined
+         * or not a valid integer.
+         */
+        public static boolean getBoolean(ContentResolver cr, String name, boolean def) {
+            String v = getString(cr, name);
+            try {
+                if(v != null)
+                    return "1".equals(v);
+                else
+                    return def;
+            } catch (NumberFormatException e) {
+                return def;
+           }
+        }
+        
+        /**
+        * @hide
+        * Convenience function for updating a single settings value as a
+        * boolean. This will either create a new entry in the table if the
+        * given name does not exist, or modify the value of the existing row
+        * with that name. Note that internally setting values are always
+        * stored as strings, so this function converts the given value to a
+        * string (1 or 0) before storing it.
+        *
+        * @param cr The ContentResolver to access.
+        * @param name The name of the setting to modify.
+        * @param value The new value for the setting.
+        * @return true if the value was set, false on database errors
+        */
+        public static boolean putBoolean(ContentResolver cr, String name, boolean value) {
+            return putString(cr, name, value ? "1" : "0");
+        }
 
         /**
          * Convenience function for retrieving a single system settings value
@@ -2297,6 +2341,51 @@ public final class Settings {
          * @hide
          */
         public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
+
+       /**
+        * Lefty mode
+        * @hide
+        */
+        public static final String NAVIGATION_BAR_LEFTY_MODE = "navigation_bar_lefty_mode";
+
+       /**
+        *
+        * @hide
+        */
+        public static final String SYSTEMUI_NAVRING_AMOUNT = "systemui_navring_amount";
+
+       /**
+        *
+        * @hide
+        */
+
+        public static final String SYSTEMUI_NAVRING_LONG_ENABLE = "systemui_navring_long_enable";
+        /**
+         * Custom navring actions
+         *
+         * @hide
+         */
+
+        public static final String[] SYSTEMUI_NAVRING = new String[] {
+                "navring_0",
+                "navring_1",
+                "navring_2",
+                "navring_3",
+                "navring_4",
+        };
+
+        /**
+         * Custom navring long press actions
+         *
+         * @hide
+         */
+        public static final String[] SYSTEMUI_NAVRING_LONG = new String[] {
+                "navring_long_0",
+                "navring_long_1",
+                "navring_long_2",
+                "navring_long_3",
+                "navring_long_4",
+        };
 
          /**
          * @hide
