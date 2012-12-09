@@ -16,6 +16,8 @@
 
 package com.android.systemui.statusbar.policy;
 
+import android.app.ActivityManagerNative;
+import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +27,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.provider.AlarmClock;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
@@ -36,7 +39,9 @@ import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.util.Slog;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
+import com.android.internal.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,7 +53,7 @@ import com.android.internal.R;
 /**
  * Digital clock for the status bar.
  */
-public class Clock extends TextView {
+public class Clock extends TextView implements OnClickListener {
     private boolean mAttached;
     private Calendar mCalendar;
     private String mClockFormatString;
@@ -71,7 +76,11 @@ public class Clock extends TextView {
 
     public Clock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-    }
+    
+        if(isClickable()){
+	            setOnClickListener(this);
+	    }
+	 }
 
     @Override
     protected void onAttachedToWindow() {
@@ -212,5 +221,28 @@ public class Clock extends TextView {
         return result;
 
     }
+    private void collapseStartActivity(Intent what) {
+	        // collapse status bar
+	        StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(
+	                Context.STATUS_BAR_SERVICE);
+	        statusBarManager.collapsePanels();
+	
+	        // dismiss keyguard in case it was active and no passcode set
+	        try {
+	            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+	        } catch (Exception ex) {
+	            // no action needed here
+	        }
+	
+	        // start activity
+	        what.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	        mContext.startActivity(what);
+	    }
+	
+	    @Override
+	    public void onClick(View v) {
+	        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+	        collapseStartActivity(intent);
+	    }
 }
 
