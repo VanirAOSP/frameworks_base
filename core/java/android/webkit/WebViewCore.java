@@ -66,7 +66,7 @@ public final class WebViewCore {
             System.loadLibrary("webcore");
             System.loadLibrary("chromium_net");
         } catch (UnsatisfiedLinkError e) {
- //           Log.e(LOGTAG, "Unable to load native support libraries.");
+            Log.e(LOGTAG, "Unable to load native support libraries.");
         }
     }
 
@@ -178,9 +178,9 @@ public final class WebViewCore {
                 try {
                     WebViewCore.class.wait();
                 } catch (InterruptedException e) {
- //                   Log.e(LOGTAG, "Caught exception while waiting for thread " +
- //                          "creation.");
- //                   Log.e(LOGTAG, Log.getStackTraceString(e));
+                    Log.e(LOGTAG, "Caught exception while waiting for thread " +
+                           "creation.");
+                    Log.e(LOGTAG, Log.getStackTraceString(e));
                 }
 
                 if (sShouldMonitorWebCoreThread) {
@@ -1247,16 +1247,16 @@ public final class WebViewCore {
 
                     if (mWebViewClassic == null || mNativeClass == 0) {
                         if (DebugFlags.WEB_VIEW_CORE) {
-                     //       Log.w(LOGTAG, "Rejecting message " + msg.what
-                      //              + " because we are destroyed");
+                            Log.w(LOGTAG, "Rejecting message " + msg.what
+                                    + " because we are destroyed");
                         }
                         return;
                     }
                     if (mDestroying == true
                             && msg.what != EventHub.DESTROY) {
                         if (DebugFlags.WEB_VIEW_CORE) {
-                      //      Log.v(LOGTAG, "Rejecting message " + msg.what
-                      //              + " because we are being destroyed");
+                            Log.v(LOGTAG, "Rejecting message " + msg.what
+                                    + " because we are being destroyed");
                         }
                         return;
                     }
@@ -1661,7 +1661,7 @@ public final class WebViewCore {
                         case EXECUTE_JS:
                             if (msg.obj instanceof String) {
                                 if (DebugFlags.WEB_VIEW_CORE) {
-  //                                  Log.d(LOGTAG, "Executing JS : " + msg.obj);
+                                    Log.d(LOGTAG, "Executing JS : " + msg.obj);
                                 }
                                 mBrowserFrame.stringByEvaluatingJavaScriptFromString(
                                         (String) msg.obj);
@@ -2014,15 +2014,15 @@ public final class WebViewCore {
 
     private String saveWebArchive(String filename, boolean autoname) {
         if (DebugFlags.WEB_VIEW_CORE) {
- //           Log.v(LOGTAG, " CORE saveWebArchive " + filename + " " + autoname);
+            Log.v(LOGTAG, " CORE saveWebArchive " + filename + " " + autoname);
         }
         return mBrowserFrame.saveWebArchive(filename, autoname);
     }
 
     private void key(KeyEvent evt, int canTakeFocusDirection, boolean isDown) {
         if (DebugFlags.WEB_VIEW_CORE) {
- //           Log.v(LOGTAG, "CORE key at " + System.currentTimeMillis() + ", "
- //                   + evt);
+            Log.v(LOGTAG, "CORE key at " + System.currentTimeMillis() + ", "
+                    + evt);
         }
         mChromeCanFocusDirection = canTakeFocusDirection;
         int keyCode = evt.getKeyCode();
@@ -2073,11 +2073,11 @@ public final class WebViewCore {
         int textwrapWidth = data.mTextWrapWidth;
         float scale = data.mScale;
         if (DebugFlags.WEB_VIEW_CORE) {
- //           Log.v(LOGTAG, "viewSizeChanged w=" + w + "; h=" + h
- //                   + "; textwrapWidth=" + textwrapWidth + "; scale=" + scale);
+            Log.v(LOGTAG, "viewSizeChanged w=" + w + "; h=" + h
+                    + "; textwrapWidth=" + textwrapWidth + "; scale=" + scale);
         }
         if (w == 0) {
-  //          Log.w(LOGTAG, "skip viewSizeChanged as w is 0");
+            Log.w(LOGTAG, "skip viewSizeChanged as w is 0");
             return;
         }
         int width = calculateWindowWidth(w);
@@ -2263,7 +2263,7 @@ public final class WebViewCore {
         try {
             result = ViewStateSerializer.serializeViewState(stream, draw);
         } catch (Throwable t) {
- //           Log.w(LOGTAG, "Failed to save view state", t);
+            Log.w(LOGTAG, "Failed to save view state", t);
         }
         callback.onReceiveValue(result);
         if (draw.mBaseLayer != 0) {
@@ -2308,7 +2308,7 @@ public final class WebViewCore {
 
             synchronized (core) {
                 if (core.mNativeClass == 0) {
- //                   Log.w(LOGTAG, "Cannot pauseUpdatePicture, core destroyed or not initialized!");
+                    Log.w(LOGTAG, "Cannot pauseUpdatePicture, core destroyed or not initialized!");
                     return;
                 }
                 core.mDrawIsPaused = true;
@@ -2325,7 +2325,7 @@ public final class WebViewCore {
 
             synchronized (core) {
                 if (core.mNativeClass == 0) {
- //                   Log.w(LOGTAG, "Cannot resumeUpdatePicture, core destroyed!");
+                    Log.w(LOGTAG, "Cannot resumeUpdatePicture, core destroyed!");
                     return;
                 }
                 core.mDrawIsPaused = false;
@@ -2448,7 +2448,7 @@ public final class WebViewCore {
     // called by JNI
     private void didFirstLayout(boolean standardLoad) {
         if (DebugFlags.WEB_VIEW_CORE) {
- //           Log.v(LOGTAG, "didFirstLayout standardLoad =" + standardLoad);
+            Log.v(LOGTAG, "didFirstLayout standardLoad =" + standardLoad);
         }
 
         mBrowserFrame.didFirstLayout();
@@ -2613,7 +2613,7 @@ public final class WebViewCore {
             viewportWidth = (int) (webViewWidth / adjust);
             if (viewportWidth == 0) {
                 if (DebugFlags.WEB_VIEW_CORE) {
-//                    Log.v(LOGTAG, "Can't get the viewWidth yet");
+                    Log.v(LOGTAG, "Can't get the viewWidth yet");
                 }
             }
         } else {
@@ -2908,17 +2908,17 @@ public final class WebViewCore {
 
         String pkgName = pluginManager.getPluginsAPKName(libName);
         if (pkgName == null) {
- //           Log.w(LOGTAG, "Unable to resolve " + libName + " to a plugin APK");
+            Log.w(LOGTAG, "Unable to resolve " + libName + " to a plugin APK");
             return null;
         }
 
         try {
             return pluginManager.getPluginClass(pkgName, clsName);
         } catch (NameNotFoundException e) {
- //           Log.e(LOGTAG, "Unable to find plugin classloader for the apk (" + pkgName + ")");
+            Log.e(LOGTAG, "Unable to find plugin classloader for the apk (" + pkgName + ")");
         } catch (ClassNotFoundException e) {
- //           Log.e(LOGTAG, "Unable to find plugin class (" + clsName +
-//                    ") in the apk (" + pkgName + ")");
+            Log.e(LOGTAG, "Unable to find plugin class (" + clsName +
+                    ") in the apk (" + pkgName + ")");
         }
 
         return null;
@@ -2954,7 +2954,7 @@ public final class WebViewCore {
         }
 
         if (pluginView == null) {
- //           Log.e(LOGTAG, "Attempted to add an empty plugin view to the view hierarchy");
+            Log.e(LOGTAG, "Attempted to add an empty plugin view to the view hierarchy");
             return null;
         }
 
