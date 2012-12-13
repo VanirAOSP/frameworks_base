@@ -974,22 +974,7 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
      */
     private class SimpleEGLConfigChooser extends ComponentSizeChooser {
         public SimpleEGLConfigChooser(boolean withDepthBuffer) {
-            super(5, 6, 5, 0, withDepthBuffer ? 16 : 0, 0);	977
-            mRedSize = 8;	
-            mGreenSize = 8;	
-            mBlueSize = 8;	
-        }	
-	
-        @Override	
-        public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display, EGLConfig[] configs) {	
-            EGLConfig config = super.chooseConfig(egl, display, configs);	
-            if (config == null) {	
-                mRedSize = 5;	
-                mGreenSize = 6;
-                mBlueSize = 5;	
-                config = super.chooseConfig(egl, display, configs);	
-            }	
-            return config;
+            super(8, 8, 8, 0, withDepthBuffer ? 16 : 0, 0);
         }
     }
 
