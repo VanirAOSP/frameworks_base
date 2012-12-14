@@ -276,7 +276,7 @@ class QuickSettings {
                 r.getInteger(R.integer.quick_settings_brightness_dialog_long_timeout);
         mBrightnessDialogShortTimeout =
                 r.getInteger(R.integer.quick_settings_brightness_dialog_short_timeout);
-//        mFastChargePath = r.getString(com.android.internal.R.string.config_fastChargePath);
+        mFastChargePath = r.getString(com.android.internal.R.string.config_fastChargePath);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(DisplayManager.ACTION_WIFI_DISPLAY_STATUS_CHANGED);
@@ -1626,18 +1626,18 @@ class QuickSettings {
         }
     };
 
-//    private void setFastCharge(final boolean on) {
-//        Intent fastChargeIntent = new Intent("com.aokp.romcontrol.ACTION_CHANGE_FCHARGE_STATE");
-//        fastChargeIntent.setPackage("com.aokp.romcontrol");
-//        fastChargeIntent.putExtra("newState", on);
-//        mContext.sendBroadcast(fastChargeIntent);
-//        mHandler.postDelayed(new Runnable() {
-//            public void run() {
-//                mModel.refreshFChargeTile();
-//            }
-//        }, 250);
-//    }
-
+    private void setFastCharge(final boolean on) {
+        Intent fastChargeIntent = new Intent("com.aokp.romcontrol.ACTION_CHANGE_FCHARGE_STATE");
+        fastChargeIntent.setPackage("com.aokp.romcontrol");
+        fastChargeIntent.putExtra("newState", on);
+        mContext.sendBroadcast(fastChargeIntent);
+        mHandler.postDelayed(new Runnable() {
+            public void run() {
+                mModel.refreshFChargeTile();
+            }
+        }, 250);
+    }
+        
     private void changeWifiApState(final boolean desiredState) {
         if (wifiManager == null) {
             return;
@@ -1645,10 +1645,9 @@ class QuickSettings {
 
         AsyncTask.execute(new Runnable() {
             public void run() {
-                int wifiState = wifiManager.getWifiState();
+                int wifiState = wifiManager.getWifiState(); 
                 if (desiredState
-                        && ((wifiState == WifiManager.WIFI_STATE_ENABLING)
-                                || (wifiState == WifiManager.WIFI_STATE_ENABLED))) {
+                        && ((wifiState == WifiManager.WIFI_STATE_ENABLING) || (wifiState == WifiManager.WIFI_STATE_ENABLED))) {
                     wifiManager.setWifiEnabled(false);
                 }
 
@@ -1698,11 +1697,11 @@ class QuickSettings {
         public void run() {
             mModel.refreshWifiTetherTile();
             mModel.refreshUSBTetherTile();
-//            mModel.refreshTorchTile();
+            mModel.refreshTorchTile();
         }
     };
 
-/*    private void restoreFChargeState() {
+    private void restoreFChargeState() {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
@@ -1713,7 +1712,7 @@ class QuickSettings {
             }
         }.execute();
     }
-*/
+
     void updateTileTextSize(int colnum) {
         // adjust Tile Text Size based on column count
         switch (colnum) {
