@@ -351,9 +351,9 @@ final class ActivityStack {
                 case IDLE_TIMEOUT_MSG: {
                     if (mService.mDidDexOpt) {
                         mService.mDidDexOpt = false;
-                        Message nmsg = mHandler.obtainMessage(IDLE_TIMEOUT_MSG);
+                        Message nmsg = obtainMessage(IDLE_TIMEOUT_MSG);
                         nmsg.obj = msg.obj;
-                        mHandler.sendMessageDelayed(nmsg, IDLE_TIMEOUT);
+                        sendMessageDelayed(nmsg, IDLE_TIMEOUT);
                         return;
                     }
                     // We don't at this point know if the activity is fullscreen,
@@ -394,8 +394,7 @@ final class ActivityStack {
                 case LAUNCH_TIMEOUT_MSG: {
                     if (mService.mDidDexOpt) {
                         mService.mDidDexOpt = false;
-                        Message nmsg = mHandler.obtainMessage(LAUNCH_TIMEOUT_MSG);
-                        mHandler.sendMessageDelayed(nmsg, LAUNCH_TIMEOUT);
+                        sendEmptyMessageDelayed(LAUNCH_TIMEOUT_MSG, LAUNCH_TIMEOUT);
                         return;
                     }
                     synchronized (mService) {
@@ -847,8 +846,7 @@ final class ActivityStack {
                 }
             }
             mHandler.removeMessages(SLEEP_TIMEOUT_MSG);
-            Message msg = mHandler.obtainMessage(SLEEP_TIMEOUT_MSG);
-            mHandler.sendMessageDelayed(msg, SLEEP_TIMEOUT);
+            mHandler.sendEmptyMessageDelayed(SLEEP_TIMEOUT_MSG, SLEEP_TIMEOUT);
             checkReadyForSleepLocked();
         }
     }
@@ -1003,8 +1001,7 @@ final class ActivityStack {
             mLaunchingActivity.acquire();
             if (!mHandler.hasMessages(LAUNCH_TIMEOUT_MSG)) {
                 // To be safe, don't allow the wake lock to be held for too long.
-                Message msg = mHandler.obtainMessage(LAUNCH_TIMEOUT_MSG);
-                mHandler.sendMessageDelayed(msg, LAUNCH_TIMEOUT);
+                mHandler.sendEmptyMessageDelayed(LAUNCH_TIMEOUT_MSG, LAUNCH_TIMEOUT);
             }
         }
 

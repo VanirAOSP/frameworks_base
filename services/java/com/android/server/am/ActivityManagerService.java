@@ -1051,9 +1051,9 @@ public final class ActivityManagerService extends ActivityManagerNative
             case SERVICE_TIMEOUT_MSG: {
                 if (mDidDexOpt) {
                     mDidDexOpt = false;
-                    Message nmsg = mHandler.obtainMessage(SERVICE_TIMEOUT_MSG);
+                    Message nmsg = obtainMessage(SERVICE_TIMEOUT_MSG);
                     nmsg.obj = msg.obj;
-                    mHandler.sendMessageDelayed(nmsg, ActiveServices.SERVICE_TIMEOUT);
+                    sendMessageDelayed(nmsg, ActiveServices.SERVICE_TIMEOUT);
                     return;
                 }
                 mServices.serviceTimeout((ProcessRecord)msg.obj);
@@ -1123,7 +1123,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                     d.setTitle(title);
                     d.setMessage(text);
                     d.setButton(DialogInterface.BUTTON_POSITIVE, "I'm Feeling Lucky",
-                            mHandler.obtainMessage(IM_FEELING_LUCKY_MSG));
+                            obtainMessage(IM_FEELING_LUCKY_MSG));
                     mUidAlert = d;
                     d.show();
                 }
@@ -1137,9 +1137,9 @@ public final class ActivityManagerService extends ActivityManagerNative
             case PROC_START_TIMEOUT_MSG: {
                 if (mDidDexOpt) {
                     mDidDexOpt = false;
-                    Message nmsg = mHandler.obtainMessage(PROC_START_TIMEOUT_MSG);
+                    Message nmsg = obtainMessage(PROC_START_TIMEOUT_MSG);
                     nmsg.obj = msg.obj;
-                    mHandler.sendMessageDelayed(nmsg, PROC_START_TIMEOUT);
+                    sendMessageDelayed(nmsg, PROC_START_TIMEOUT);
                     return;
                 }
                 ProcessRecord app = (ProcessRecord)msg.obj;
@@ -4435,8 +4435,8 @@ public final class ActivityManagerService extends ActivityManagerNative
             
             if (mFactoryTest != SystemServer.FACTORY_TEST_LOW_LEVEL) {
                 // Start looking for apps that are abusing wake locks.
-                Message nmsg = mHandler.obtainMessage(CHECK_EXCESSIVE_WAKE_LOCKS_MSG);
-                mHandler.sendMessageDelayed(nmsg, POWER_CHECK_DELAY);
+                mHandler.sendEmptyMessageDelayed(CHECK_EXCESSIVE_WAKE_LOCKS_MSG,
+                        POWER_CHECK_DELAY);
                 // Tell anyone interested that we are done booting!
                 SystemProperties.set("sys.boot_completed", "1");
                 SystemProperties.set("dev.bootcomplete", "1");
@@ -7130,8 +7130,8 @@ public final class ActivityManagerService extends ActivityManagerNative
                 // Initialize the wake times of all processes.
                 checkExcessivePowerUsageLocked(false);
                 mHandler.removeMessages(CHECK_EXCESSIVE_WAKE_LOCKS_MSG);
-                Message nmsg = mHandler.obtainMessage(CHECK_EXCESSIVE_WAKE_LOCKS_MSG);
-                mHandler.sendMessageDelayed(nmsg, POWER_CHECK_DELAY);
+                mHandler.sendEmptyMessageDelayed(CHECK_EXCESSIVE_WAKE_LOCKS_MSG,
+                        POWER_CHECK_DELAY);
             }
         }
     }
@@ -7245,8 +7245,8 @@ public final class ActivityManagerService extends ActivityManagerNative
                     + APP_SWITCH_DELAY_TIME;
             mDidAppSwitch = false;
             mHandler.removeMessages(DO_PENDING_ACTIVITY_LAUNCHES_MSG);
-            Message msg = mHandler.obtainMessage(DO_PENDING_ACTIVITY_LAUNCHES_MSG);
-            mHandler.sendMessageDelayed(msg, APP_SWITCH_DELAY_TIME);
+            mHandler.sendEmptyMessageDelayed(DO_PENDING_ACTIVITY_LAUNCHES_MSG,
+                    APP_SWITCH_DELAY_TIME);
         }
     }
     
@@ -7936,9 +7936,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             
             try {
                 if (AppGlobals.getPackageManager().hasSystemUidErrors()) {
-                    Message msg = Message.obtain();
-                    msg.what = SHOW_UID_ERROR_MSG;
-                    mHandler.sendMessage(msg);
+                    mHandler.sendEmptyMessage(SHOW_UID_ERROR_MSG);
                 }
             } catch (RemoteException e) {
             }
@@ -13254,7 +13252,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 if (mPendingProcessChanges.size() == 0) {
                     if (DEBUG_PROCESS_OBSERVERS) Slog.i(TAG,
                             "*** Enqueueing dispatch processes changed!");
-                    mHandler.obtainMessage(DISPATCH_PROCESSES_CHANGED).sendToTarget();
+                    mHandler.sendEmptyMessage(DISPATCH_PROCESSES_CHANGED);
                 }
                 mPendingProcessChanges.add(item);
             }
@@ -13361,14 +13359,13 @@ public final class ActivityManagerService extends ActivityManagerNative
         if (mProcessesToGc.size() > 0) {
             // Schedule a GC for the time to the next process.
             ProcessRecord proc = mProcessesToGc.get(0);
-            Message msg = mHandler.obtainMessage(GC_BACKGROUND_PROCESSES_MSG);
-            
+
             long when = proc.lastRequestedGc + GC_MIN_INTERVAL;
             long now = SystemClock.uptimeMillis();
             if (when < (now+GC_TIMEOUT)) {
                 when = now + GC_TIMEOUT;
             }
-            mHandler.sendMessageAtTime(msg, when);
+            mHandler.sendEmptyMessageAtTime(GC_BACKGROUND_PROCESSES_MSG, when);
         }
     }
     
