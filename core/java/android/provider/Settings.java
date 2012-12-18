@@ -2730,6 +2730,11 @@ public final class Settings {
         * @hide
         */
         public static final String NAVIGATION_BAR_SHOW = "navigation_bar_show";
+        
+       /**
+        * @hide
+        */
+        public static final String NAVIGATION_BAR_SHOW_NOW = "navigation_bar_show_now";
 
         /**
         * @hide
@@ -2765,7 +2770,8 @@ public final class Settings {
          *  1 = Tablet UI
          *  2 = Phablet UI
          */
-        public static final String TABLET_UI = "tablet_ui";
+
+        public static final String CURRENT_UI_MODE = "current_ui_mode";
 
         /**
          * Whether to use the custom quick unlock screen control

@@ -56,18 +56,16 @@ public class KeyButtonView extends ImageView {
     long mDownTime;
     int mCode;
     int mTouchSlop;
-    private int mNavigationBarTint;
     Drawable mGlowBG;
     int mGlowBGColor = Integer.MIN_VALUE;
     int mGlowWidth, mGlowHeight;
+    int mDurationSpeedOn = 500;
+    int mDurationSpeedOff = 50;
     float mGlowAlpha = 0f, mGlowScale = 1f, mDrawingAlpha = 1f;
     boolean mSupportsLongpress = true;
     protected boolean mHandlingLongpress = false;
     RectF mRect = new RectF(0f,0f,0f,0f);
     AnimatorSet mPressedAnim;
-
-    int durationSpeedOn = 500;
-    int durationSpeedOff = 50;
 
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
@@ -134,14 +132,13 @@ public class KeyButtonView extends ImageView {
             setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
             mGlowWidth = mGlowBG.getIntrinsicWidth();
             mGlowHeight = mGlowBG.getIntrinsicHeight();
-            mDrawingAlpha = BUTTON_QUIESCENT_ALPHA;
-        }
-       /* if (mGlowBG != null) {
-            int defaultColor = mContext.getResources().getColor(
-                    com.android.internal.R.color.holo_blue_light);
-            //ContentResolver resolver = mContext.getContentResolver();
-            //mGlowBGColor = Settings.System.getInt(resolver,
-             //       Settings.System.NAVIGATION_BAR_GLOW_TINT, defaultColor);
+            
+            int defaultColor = mContext.getResources().getColor( 
+            com.android.internal.R.color.white);
+
+            ContentResolver resolver = mContext.getContentResolver();
+            mGlowBGColor = Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_GLOW_TINT, defaultColor);                  
 
             if (mGlowBGColor == Integer.MIN_VALUE) {
             	mGlowBGColor = defaultColor;
@@ -150,7 +147,7 @@ public class KeyButtonView extends ImageView {
             mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
 
             
-        } */
+        }
     }
     
     @Override
@@ -246,14 +243,14 @@ public class KeyButtonView extends ImageView {
                         ObjectAnimator.ofFloat(this, "glowAlpha", 1f),
                         ObjectAnimator.ofFloat(this, "glowScale", GLOW_MAX_SCALE_FACTOR)
                     );
-                    as.setDuration(25);
+                    as.setDuration(mDurationSpeedOff);
                 } else {
                     as.playTogether(
                         ObjectAnimator.ofFloat(this, "glowAlpha", 0f),
                         ObjectAnimator.ofFloat(this, "glowScale", 1f),
                         ObjectAnimator.ofFloat(this, "drawingAlpha", BUTTON_QUIESCENT_ALPHA)
                     );
-                    as.setDuration(250);
+                    as.setDuration(mDurationSpeedOn);
                 }
                 as.start();
             }
@@ -347,9 +344,21 @@ public class KeyButtonView extends ImageView {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTON_ALPHA), false, this);
-			resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_TINT), false, this);
-			resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_GLOW_DURATION[1]), false, this);	
+                    Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_BUTTON_ALPHA),
+                    false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_TINT),
+                    false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_GLOW_TINT),
+                    false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_GLOW_DURATION[1]),
+                    false, this);
             updateSettings();
         }
 
@@ -362,15 +371,38 @@ public class KeyButtonView extends ImageView {
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-	durationSpeedOff = Settings.System.getInt(resolver,
-	Settings.System.NAVIGATION_BAR_GLOW_DURATION[0], 10);
- 	durationSpeedOn = Settings.System.getInt(resolver,
- 	Settings.System.NAVIGATION_BAR_GLOW_DURATION[1], 100);
+	    mDurationSpeedOff = Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_GLOW_DURATION[0], 10);
+        mDurationSpeedOn = Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_GLOW_DURATION[1], 100);
 
         BUTTON_QUIESCENT_ALPHA = Settings.System.getFloat(resolver, Settings.System.NAVIGATION_BAR_BUTTON_ALPHA, 0.7f);
-	    mNavigationBarTint = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_TINT, 0xFFFFFFFF);
+
         setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
-		setColorFilter(mNavigationBarTint);
+
+        if (mGlowBG != null) {
+            int defaultColor = mContext.getResources().getColor(
+                    com.android.internal.R.color.white);
+            mGlowBGColor = Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_GLOW_TINT, defaultColor);
+
+            if (mGlowBGColor == Integer.MIN_VALUE) {
+                mGlowBGColor = defaultColor;
+            }
+            mGlowBG.setColorFilter(null);
+            mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
+        }
+
+        int defaultButtonColor = mContext.getResources().getColor(
+                    com.android.internal.R.color.white);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_TINT, defaultButtonColor);
+        if (color == Integer.MIN_VALUE) {
+            setColorFilter(null);
+        } else {
+            setColorFilter(null);
+            setColorFilter(color);
+        }
         invalidate();
     }
 }
