@@ -41,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
             android:singleLine="true"
+            android:tag="expanded"
             android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Clock"
             android:layout_centerVertical="true"
             android:clickable="true"

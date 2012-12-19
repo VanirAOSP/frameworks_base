@@ -2324,7 +2324,30 @@ public final class Settings {
          * @hide
          */
         public static final String POINTER_SPEED = "pointer_speed";
-        
+
+        /**
+         * Whether to show the clock in status bar
+         * of the stock battery icon
+         * 0: don't show the clock
+         * 1: right side clock
+         * 2: center clock
+         * default: 1
+            @hide
+         */
+        public static final String STATUS_BAR_CLOCK = "status_bar_show_clock";
+
+        /**
+         * comments are for noobs
+         * @hide
+         */
+        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm"; 
+
+        /**
+         * comments are for noobs
+         * @hide
+         */
+        public static final String PREF_ENABLE = "clock_style";
+
          /**
          * Volume Overlay Mode. This is the style of the volume overlay panel.
          *      0 - Single
