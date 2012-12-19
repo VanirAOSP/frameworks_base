@@ -1279,6 +1279,7 @@ public final class WebViewCore {
                                 mBrowserFrame = null;
                                 mSettings.onDestroyed();
                                 mNativeClass = 0;
+                                WebCoreThreadWatchdog.unregisterWebView(mWebViewClassic);
                                 mWebViewClassic = null;
                             }
                             break;
@@ -1983,7 +1984,6 @@ public final class WebViewCore {
             mEventHub.sendMessageAtFrontOfQueue(
                     Message.obtain(null, EventHub.DESTROY));
             mEventHub.blockMessages();
-            WebCoreThreadWatchdog.unregisterWebView(mWebViewClassic);
         }
     }
 
