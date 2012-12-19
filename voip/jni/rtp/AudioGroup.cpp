@@ -407,12 +407,12 @@ void AudioStream::decode(int tick)
             MSG_TRUNC | MSG_DONTWAIT) >> 1;
     } else {
         __attribute__((aligned(4))) union {
-            uint8_t buffer[2048];
-            uint16_t buffer16[1024];
-            uint32_t buffer32[512];
-        };
-        sockaddr_storage remote;
-        socklen_t addrlen = sizeof(remote);
+			uint8_t buffer[2048];
+			uint16_t buffer16[1024];
+			uint32_t buffer32[512];
+		 };
+        	sockaddr_storage remote;
+        	socklen_t addrlen = sizeof(remote);
 
         int length = recvfrom(mSocket, buffer, sizeof(buffer),
             MSG_TRUNC | MSG_DONTWAIT, (sockaddr *)&remote, &addrlen);
