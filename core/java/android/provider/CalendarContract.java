@@ -16,7 +16,6 @@
 
 package android.provider;
 
-
 import android.annotation.SdkConstant;
 import android.annotation.SdkConstant.SdkConstantType;
 import android.app.Activity;
@@ -203,7 +202,6 @@ public final class CalendarContract {
      * through any other Uri.
      */
     protected interface CalendarSyncColumns {
-
 
         /**
          * Generic column for use by sync adapters. Column name.

@@ -23,8 +23,7 @@
 
   <!-- Private symbols that we need to reference from framework code.  See
        frameworks/base/core/res/MakeJavaSymbols.sed for how to easily generate
-       this.
-  -->
+       this. -->
   <java-symbol type="id" name="account_name" />
   <java-symbol type="id" name="account_row_icon" />
   <java-symbol type="id" name="account_row_text" />

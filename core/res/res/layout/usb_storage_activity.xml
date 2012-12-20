@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:padding="18dip"
-    >
+    android:padding="18dip">
 
     <ImageView android:id="@+id/icon"
         android:layout_centerHorizontal="true"
@@ -38,31 +37,28 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dip"
-        >
+        android:layout_marginBottom="20dip">
 
-        <Button android:id="@+id/mount_button" 
+        <Button android:id="@+id/mount_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="18dip"
             android:paddingEnd="18dip"
-            android:text="@string/usb_storage_button_mount"
-            />
+            android:text="@string/usb_storage_button_mount" />
+
         <Button android:id="@+id/unmount_button"
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="18dip"
             android:paddingEnd="18dip"
-            android:text="@string/usb_storage_stop_button_mount"
-            />
+            android:text="@string/usb_storage_stop_button_mount" />
+
         <ProgressBar android:id="@+id/progress"
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            style="?android:attr/progressBarStyle"
-            />
-
+            style="?android:attr/progressBarStyle" />
     </RelativeLayout>
 </RelativeLayout>

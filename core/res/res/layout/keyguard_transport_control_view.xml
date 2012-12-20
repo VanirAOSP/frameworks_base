@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2011 The Android Open Source Project
+<!-- Copyright (C) 2012 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 
-<!-- This is a view to control music playback in keyguard. -->
+<!-- This is a view to control music playback in keyguard -->
 <com.android.internal.policy.impl.keyguard.KeyguardTransportControlView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
@@ -28,6 +28,7 @@
         android:layout_height="match_parent"
         android:foreground="@*android:drawable/ic_lockscreen_player_background"
         android:contentDescription="@*android:string/keygaurd_accessibility_media_controls">
+
         <!-- Use ImageView for its cropping features; otherwise could be android:background -->
         <ImageView
             android:id="@+id/albumart"
@@ -35,8 +36,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="fill"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="false"
-        />
+            android:adjustViewBounds="false" />
     </FrameLayout>
 
     <LinearLayout
@@ -44,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom">
+
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
@@ -54,17 +55,19 @@
             android:gravity="center_horizontal"
             android:singleLine="true"
             android:ellipsize="end"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-        />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="5dip">
+
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
+
                 <ImageView
                     android:id="@+id/btn_prev"
                     android:layout_width="wrap_content"
@@ -74,12 +77,14 @@
                     android:clickable="true"
                     android:background="?android:attr/selectableItemBackground"
                     android:padding="10dip"
-                    android:contentDescription="@*android:string/lockscreen_transport_prev_description"/>
+                    android:contentDescription="@*android:string/lockscreen_transport_prev_description" />
             </FrameLayout>
+
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
+
                 <ImageView
                     android:id="@+id/btn_play"
                     android:layout_width="wrap_content"
@@ -89,12 +94,14 @@
                     android:src="@*android:drawable/ic_media_play"
                     android:background="?android:attr/selectableItemBackground"
                     android:padding="10dip"
-                    android:contentDescription="@*android:string/lockscreen_transport_play_description"/>
+                    android:contentDescription="@*android:string/lockscreen_transport_play_description" />
             </FrameLayout>
+
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
+
                 <ImageView
                     android:id="@+id/btn_next"
                     android:layout_width="wrap_content"
@@ -104,7 +111,7 @@
                     android:src="@*android:drawable/ic_media_next"
                     android:background="?android:attr/selectableItemBackground"
                     android:padding="10dip"
-                    android:contentDescription="@*android:string/lockscreen_transport_next_description"/>
+                    android:contentDescription="@*android:string/lockscreen_transport_next_description" />
             </FrameLayout>
         </LinearLayout>
     </LinearLayout>

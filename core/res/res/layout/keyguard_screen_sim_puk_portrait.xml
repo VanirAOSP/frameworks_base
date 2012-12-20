@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-**
-** Copyright 2008, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License")
-** you may not use this file except in compliance with the License.
-** You may obtain a copy of the License at
-**
-**     http://www.apache.org/licenses/LICENSE-2.0
-**
-** Unless required by applicable law or agreed to in writing, software
-** distributed under the License is distributed on an "AS IS" BASIS,
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-** See the License for the specific language governing permissions and
-** limitations under the License.
-*/
+<!-- Copyright (C) 2012 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -37,7 +34,7 @@
             android:ellipsize="marquee"
             android:layout_marginEnd="6dip"
             android:layout_marginStart="6dip"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <!-- Carrier info -->
         <TextView android:id="@+id/carrier"
@@ -49,7 +46,7 @@
             android:ellipsize="marquee"
             android:layout_marginEnd="6dip"
             android:layout_marginStart="6dip"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -83,18 +80,15 @@
                           android:textStyle="bold"
                           android:inputType="textPassword"
                           android:textColor="#000"
-                          android:hint="@android:string/keyguard_password_enter_puk_prompt"
-                      />
+                          android:hint="@android:string/keyguard_password_enter_puk_prompt" />
 
                       <ImageButton android:id="@+id/pukDel"
                           android:src="@android:drawable/ic_input_delete"
                           android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
                           android:layout_marginEnd="-3dip"
-                          android:layout_marginBottom="-3dip"
-                      />
+                          android:layout_marginBottom="-3dip" />
                   </LinearLayout>
-
 
                   <LinearLayout
                       android:layout_width="match_parent"
@@ -114,16 +108,14 @@
                           android:textStyle="bold"
                           android:inputType="textPassword"
                           android:textColor="#000"
-                          android:hint="@android:string/keyguard_password_enter_pin_prompt"
-                      />
+                          android:hint="@android:string/keyguard_password_enter_pin_prompt" />
 
                       <ImageButton android:id="@+id/pinDel"
                           android:src="@android:drawable/ic_input_delete"
                           android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
                           android:layout_marginEnd="-3dip"
-                          android:layout_marginBottom="-3dip"
-                      />
+                          android:layout_marginBottom="-3dip" />
                   </LinearLayout>
               </LinearLayout>
         </LinearLayout>
@@ -135,8 +127,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/topDisplayGroup"
-        android:layout_marginTop="10dip"
-    />
+        android:layout_marginTop="10dip" />
 
     <!-- spacer below keypad -->
     <View
@@ -145,8 +136,7 @@
         android:layout_height="1dip"
         android:layout_marginTop="6dip"
         android:layout_above="@id/emergencyCallButton"
-        android:background="@android:drawable/divider_horizontal_dark"
-    />
+        android:background="@android:drawable/divider_horizontal_dark" />
 
     <!-- The emergency button should take the rest of the space and be centered vertically -->
     <LinearLayout
@@ -163,8 +153,6 @@
             android:layout_height="wrap_content"
             android:drawableLeft="@android:drawable/ic_emergency"
             android:drawablePadding="4dip"
-            android:text="@android:string/lockscreen_emergency_call"
-        />
+            android:text="@android:string/lockscreen_emergency_call" />
     </LinearLayout>
-
 </LinearLayout>

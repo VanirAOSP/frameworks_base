@@ -29,7 +29,7 @@ easier.
 ===============================================================
                         PLEASE READ
 ===============================================================
- -->
+-->
 <resources>
 
     <!-- The default theme for apps that target API level 14 and higher.
@@ -387,7 +387,6 @@ easier.
     <!-- Variant of {@link #Theme_DeviceDefault_Dialog_NoActionBar} that has a nice minimum width
     for a regular dialog. -->
     <style name="Theme.DeviceDefault.Dialog.NoActionBar.MinWidth" parent="Theme.Holo.Dialog.NoActionBar.MinWidth" >
-
     </style>
 
     <!-- Variant of Theme.DeviceDefault.Dialog that has a fixed size. -->
@@ -431,7 +430,6 @@ easier.
     <!-- Variant of {@link #Theme_DeviceDefault_Light_Dialog_NoActionBar} that has a nice minimum
     width for a regular dialog. -->
     <style name="Theme.DeviceDefault.Light.Dialog.NoActionBar.MinWidth" parent="Theme.Holo.Light.Dialog.NoActionBar.MinWidth" >
-
     </style>
 
     <!-- Variant of Theme.DeviceDefault.Dialog that has a fixed size. -->
@@ -453,24 +451,22 @@ easier.
     <!-- DeviceDefault theme for a window that will be displayed either full-screen on smaller
     screens (small, normal) or as a dialog on larger screens (large, xlarge). -->
     <style name="Theme.DeviceDefault.DialogWhenLarge" parent="Theme.Holo.DialogWhenLarge" >
-
     </style>
     <!-- DeviceDefault theme for a window without an action bar that will be displayed either
     full-screen on smaller screens (small, normal) or as a dialog on larger screens (large,
     xlarge). -->
     <style name="Theme.DeviceDefault.DialogWhenLarge.NoActionBar" parent="Theme.Holo.DialogWhenLarge.NoActionBar" >
-
     </style>
+
     <!-- DeviceDefault light theme for a window that will be displayed either full-screen on smaller
     screens (small, normal) or as a dialog on larger screens (large, xlarge). -->
     <style name="Theme.DeviceDefault.Light.DialogWhenLarge" parent="Theme.Holo.Light.DialogWhenLarge" >
-
     </style>
+
     <!-- DeviceDefault light theme for a window without an action bar that will be displayed either
     full-screen on smaller screens (small, normal) or as a dialog on larger screens (large,
     xlarge). -->
     <style name="Theme.DeviceDefault.Light.DialogWhenLarge.NoActionBar" parent="Theme.Holo.Light.DialogWhenLarge.NoActionBar" >
-
     </style>
 
     <!-- DeviceDefault theme for a presentation window on a secondary display. -->
@@ -485,29 +481,29 @@ easier.
     decorations, so you basically have an empty rectangle in which to place your content. It makes
     the window floating, with a transparent background, and turns off dimming behind the window. -->
     <style name="Theme.DeviceDefault.Panel" parent="Theme.Holo.Panel" >
-
     </style>
+
     <!-- DeviceDefault light theme for panel windows. This removes all extraneous window
     decorations, so you basically have an empty rectangle in which to place your content. It makes
     the window floating, with a transparent background, and turns off dimming behind the window. -->
     <style name="Theme.DeviceDefault.Light.Panel" parent="Theme.Holo.Light.Panel" >
-
     </style>
+
     <!-- DeviceDefault theme for windows that want to have the user's selected wallpaper appear
     behind them. -->
     <style name="Theme.DeviceDefault.Wallpaper" parent="Theme.Holo.Wallpaper" >
-
     </style>
+
     <!-- DeviceDefault theme for windows that want to have the user's selected wallpaper appear
     behind them and without an action bar. -->
     <style name="Theme.DeviceDefault.Wallpaper.NoTitleBar" parent="Theme.Holo.Wallpaper.NoTitleBar" >
-
     </style>
+
     <!-- DeviceDefault style for input methods, which is used by the
          {@link android.inputmethodservice.InputMethodService} class.-->
     <style name="Theme.DeviceDefault.InputMethod" parent="Theme.Holo.InputMethod" >
-
     </style>
+
     <!-- Variant of the DeviceDefault (light) theme that has a solid (opaque) action bar with an
     inverse color profile. -->
     <style name="Theme.DeviceDefault.Light.DarkActionBar" parent="Theme.Holo.Light.DarkActionBar" >
@@ -522,20 +518,20 @@ easier.
         <item name="actionModeStyle">@style/Widget.DeviceDefault.Light.ActionMode.Inverse</item>
         <item name="actionModeCloseButtonStyle">@style/Widget.DeviceDefault.ActionButton.CloseMode</item>
         <item name="actionModePopupWindowStyle">@android:style/Widget.DeviceDefault.PopupWindow.ActionMode</item>
-
     </style>
 
     <style name="Theme.DeviceDefault.Dialog.Alert" parent="Theme.Holo.Dialog.Alert">
         <item name="windowTitleStyle">@android:style/DialogWindowTitle.DeviceDefault</item>
     </style>
+
     <style name="Theme.DeviceDefault.Light.Dialog.Alert" parent="Theme.Holo.Light.Dialog.Alert">
         <item name="windowTitleStyle">@android:style/DialogWindowTitle.DeviceDefault.Light</item>
     </style>
+
     <style name="Theme.DeviceDefault.SearchBar" parent="Theme.Holo.SearchBar">
 
     </style>
     <style name="Theme.DeviceDefault.Light.SearchBar" parent="Theme.Holo.Light.SearchBar">
-
     </style>
 
     <style name="Theme.DeviceDefault.Dialog.NoFrame" parent="Theme.Holo.Dialog.NoFrame">

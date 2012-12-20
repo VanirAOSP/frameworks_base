@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-/* //device/apps/common/assets/res/layout/screen_full.xml
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+<!-- Copyright (C) 2012 The Android Open Source Project
 
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<!--
 This is the basic layout for a screen, with all of its features enabled.
 -->
 
@@ -24,8 +22,8 @@ This is the basic layout for a screen, with all of its features enabled.
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
->
+    android:layout_height="match_parent">
+
     <!-- Popout bar for action modes -->
     <ViewStub android:id="@+id/action_mode_bar_stub"
               android:inflatedId="@+id/action_mode_bar"
@@ -33,11 +31,11 @@ This is the basic layout for a screen, with all of its features enabled.
               android:layout_width="match_parent"
               android:layout_height="wrap_content" />
 
-    <RelativeLayout android:id="@android:id/title_container" 
+    <RelativeLayout android:id="@android:id/title_container"
         style="?android:attr/windowTitleBackgroundStyle"
-        android:layout_width="match_parent" 
-        android:layout_height="?android:attr/windowTitleSize"
-    >
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/windowTitleSize">
+
         <ProgressBar android:id="@+android:id/progress_circular"
             style="?android:attr/progressBarStyleSmallTitle"
             android:layout_width="wrap_content"
@@ -46,8 +44,8 @@ This is the basic layout for a screen, with all of its features enabled.
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:visibility="gone"
-            android:max="10000"
-        />
+            android:max="10000" />
+
         <ProgressBar android:id="@+android:id/progress_horizontal"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
@@ -57,25 +55,24 @@ This is the basic layout for a screen, with all of its features enabled.
             android:layout_toStartOf="@android:id/progress_circular"
             android:layout_centerVertical="true"
             android:visibility="gone"
-            android:max="10000" 
-        />
+            android:max="10000" />
+
         <TextView android:id="@android:id/title"
             style="?android:attr/windowTitleStyle"
-            android:layout_width="match_parent" 
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@android:id/progress_circular"
             android:background="@null"
             android:fadingEdge="horizontal"
             android:gravity="center_vertical"
-            android:scrollHorizontally="true" 
-        />
+            android:scrollHorizontally="true" />
     </RelativeLayout>
+
     <FrameLayout android:id="@android:id/content"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
         android:foregroundGravity="fill_horizontal|top"
-        android:foreground="?android:attr/windowContentOverlay"
-    />
+        android:foreground="?android:attr/windowContentOverlay" />
 </LinearLayout>

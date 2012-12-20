@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 -->
-<TextView xmlns:android="http://schemas.android.com/apk/res/android" 
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/text1"
     style="?android:attr/dropDownItemStyle"
     android:textAppearance="?android:attr/textAppearanceSearchResultTitle"
