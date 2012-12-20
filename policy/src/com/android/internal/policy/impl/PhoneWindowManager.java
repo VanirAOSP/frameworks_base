@@ -892,7 +892,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         WindowManager with no parent window causes a NPE and reboot in 4.2 if we
                         try to display the Toast below. Disable until we can figure out a solution.
                         */
-                        //Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                         break;
                     }
                 }
