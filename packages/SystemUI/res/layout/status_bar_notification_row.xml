@@ -1,6 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <View
         android:id="@+id/top_glow"
@@ -9,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/notification_divider_height"
         android:layout_gravity="top|center_horizontal"
-        android:background="@drawable/top_divider_glow" />
+        android:background="@drawable/top_divider_glow"
+        />
 
     <Button
         android:id="@+id/veto"
@@ -19,7 +21,8 @@
         android:layout_marginRight="-80dp"
         android:background="@null"
         android:paddingRight="8dp"
-        android:paddingLeft="8dp" />
+        android:paddingLeft="8dp"
+        />
 
     <com.android.systemui.statusbar.LatestItemView android:id="@+id/content"
         android:layout_width="match_parent"
@@ -27,11 +30,13 @@
         android:layout_marginBottom="@dimen/notification_divider_height"
         android:layout_marginTop="@dimen/notification_divider_height"
         android:focusable="true"
-        android:clickable="true">
+        android:clickable="true"
+        >
 
         <com.android.internal.widget.SizeAdaptiveLayout android:id="@+id/adaptive"
            android:layout_width="match_parent"
            android:layout_height="wrap_content" />
+
     </com.android.systemui.statusbar.LatestItemView>
 
     <View
@@ -41,7 +46,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/notification_divider_height"
         android:layout_gravity="bottom|center_horizontal"
-        android:background="@drawable/bottom_divider_glow" />
+        android:background="@drawable/bottom_divider_glow"
+        />
 
     <TextView
         android:id="@+id/debug_info"
@@ -53,5 +59,7 @@
         android:textSize="9dp"
         android:textStyle="bold"
         android:textColor="#00A040"
-        android:padding="2dp" />
+        android:padding="2dp"
+        />
+
 </FrameLayout>

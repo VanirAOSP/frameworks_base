@@ -926,16 +926,16 @@
   <!-- Acceleration curve matching Flash's quadratic ease in function. -->
   <public type="anim" name="decelerate_interpolator" id="0x010a0006" />
 
-<!-- ============================================
-     Resources added in version 2 of the platform
-     ============================================ -->
+<!-- ===============================================================
+     Resources added in version 2 of the platform.
+     =============================================================== -->
   <eat-comment />
 
   <public type="attr" name="marqueeRepeatLimit" id="0x0101021d" />
 
-<!-- ======================================================
-     Resources added in version 3 of the platform (Cupcake)
-     ====================================================== -->
+<!-- ===============================================================
+     Resources added in version 3 of the platform (Cupcake).
+     =============================================================== -->
   <eat-comment />
 
   <public type="attr" name="windowNoDisplay" id="0x0101021e" />
@@ -1087,9 +1087,9 @@
   <public type="integer" name="config_mediumAnimTime" id="0x010e0001" />
   <public type="integer" name="config_longAnimTime" id="0x010e0002" />
 
-<!-- ====================================================
-     Resources added in version 4 of the platform (Donut)
-     ==================================================== -->
+<!-- ===============================================================
+     Resources added in version 4 of the platform (Donut).
+     =============================================================== -->
   <eat-comment />
 
   <public type="attr" name="tension" id="0x0101026a" />
@@ -1144,9 +1144,9 @@
   <public type="anim" name="bounce_interpolator" id="0x010a000a" />
   <public type="anim" name="linear_interpolator" id="0x010a000b" />
 
-<!-- =====================================================
-     Resources added in version 5 of the platform (Eclair)
-     ===================================================== -->
+<!-- ===============================================================
+     Resources added in version 5 of the platform (Eclair).
+     =============================================================== -->
   <eat-comment />
 
   <public type="attr" name="required" id="0x0101028e" />
@@ -1198,9 +1198,9 @@
   <public type="drawable" name="screen_background_light_transparent" id="0x010800aa" />
   <public type="drawable" name="stat_notify_sdcard_prepare" id="0x010800ab" />
 
-<!-- ===========================================================
-     Resources added in version 6 of the platform (Eclair 2.0.1)
-     =========================================================== -->
+<!-- ===============================================================
+     Resources added in version 6 of the platform (Eclair 2.0.1).
+     =============================================================== -->
   <eat-comment />
 
   <public type="attr" name="quickContactBadgeStyleWindowSmall" id="0x010102ae" />
@@ -1210,25 +1210,25 @@
   <public type="attr" name="quickContactBadgeStyleSmallWindowMedium" id="0x010102b2" />
   <public type="attr" name="quickContactBadgeStyleSmallWindowLarge" id="0x010102b3" />
 
-<!-- =========================================================
-     Resources added in version 7 of the platform (Eclair MR1)
-     ========================================================= -->
+<!-- ===============================================================
+     Resources added in version 7 of the platform (Eclair MR1).
+     =============================================================== -->
   <eat-comment />
 
   <public type="attr" name="author" id="0x010102b4" />
   <public type="attr" name="autoStart" id="0x010102b5" />
 
 
-<!-- =========================================================
-     Resources added in version 8 of the platform (Eclair MR2)
-     ========================================================= -->
+<!-- ===============================================================
+     Resources added in version 8 of the platform (Eclair MR2).
+     =============================================================== -->
   <eat-comment />
 
   <public type="attr" name="expandableListViewWhiteStyle" id="0x010102b6" />
 
-<!-- ==========================================================
+<!-- ===============================================================
      Resources added in version 8 of the platform (Froyo / 2.2)
-     ========================================================== -->
+     =============================================================== -->
   <eat-comment />
   <public type="attr" name="installLocation" id="0x010102b7" />
   <public type="attr" name="vmSafeMode" id="0x010102b8" />
@@ -1242,9 +1242,9 @@
 
   <public type="anim" name="cycle_interpolator" id="0x010a000c" />
 
-<!-- ================================================================
+<!-- ===============================================================
      Resources added in version 9 of the platform (Gingerbread / 2.3)
-     ================================================================ -->
+     =============================================================== -->
   <eat-comment />
   <public type="attr" name="logo" id="0x010102be" />
   <public type="attr" name="xlargeScreens" id="0x010102bf" />
@@ -1275,7 +1275,7 @@
   <public type="style" name="TextAppearance.StatusBar.EventContent.Title" id="0x01030068" />
 
 <!-- ===============================================================
-     Resources added in version 11 of the platform (Honeycomb / 3.0)
+     Resources added in version 11 of the platform (Honeycomb / 3.0).
      =============================================================== -->
   <eat-comment />
 
@@ -1641,16 +1641,16 @@
   <!-- Default icon for applications that don't specify an icon. -->
   <public type="mipmap" name="sym_def_app_icon" id="0x010d0000" />
 
-<!-- ====================================================================
+<!-- ===============================================================
      Resources added in version 12 of the platform (Honeycomb MR 1 / 3.1)
-     ==================================================================== -->
+     =============================================================== -->
   <eat-comment />
   <public type="attr" name="textCursorDrawable" id="0x01010362" />
   <public type="attr" name="resizeMode" id="0x01010363" />
 
-<!-- ====================================================================
+<!-- ===============================================================
      Resources added in version 13 of the platform (Honeycomb MR 2 / 3.2)
-     ==================================================================== -->
+     =============================================================== -->
   <eat-comment />
   <public type="attr" name="requiresSmallestWidthDp" id="0x01010364" />
   <public type="attr" name="compatibleWidthLimitDp" id="0x01010365" />
@@ -1698,9 +1698,9 @@
   <public type="style" name="TextAppearance.Holo.WindowTitle" id="0x01030116" />
   <public type="style" name="TextAppearance.Holo.DialogWindowTitle" id="0x01030117" />
 
-<!-- ========================================================================
+<!-- ===============================================================
      Resources added in version 14 of the platform (Ice Cream Sandwich / 4.0)
-     ======================================================================== -->
+     =============================================================== -->
   <eat-comment />
   <public type="attr" name="state_hovered" id="0x01010367" />
   <public type="attr" name="state_drag_can_accept" id="0x01010368" />
@@ -1972,9 +1972,9 @@
   <public type="color" name="holo_purple" id="0x0106001a" />
   <public type="color" name="holo_blue_bright" id="0x0106001b" />
 
-<!-- ==========================================================
+<!-- ===============================================================
      Resources added in version 16 of the platform (Jelly Bean)
-     ========================================================== -->
+     =============================================================== -->
   <eat-comment />
   <public type="attr" name="parentActivityName" id="0x010103a7" />
   <public type="attr" name="isolatedProcess" id="0x010103a9" />
@@ -1989,9 +1989,9 @@
   <public type="style" name="Widget.DeviceDefault.MediaRouteButton" id="0x010301d7" />
   <public type="style" name="Widget.DeviceDefault.Light.MediaRouteButton" id="0x010301d8" />
 
-<!-- ==============================================================
+<!-- ===============================================================
      Resources added in version 17 of the platform (Jelly Bean MR1)
-     ============================================================== -->
+     =============================================================== -->
   <eat-comment />
   <public type="attr" name="supportsRtl" id="0x010103af" />
   <public type="attr" name="textDirection" id="0x010103b0" />

@@ -2,28 +2,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="4dp">
-
+    android:padding="4dp"
+    >
     <ImageView android:id="@+id/icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:scaleType="center"
-        android:padding="4dp" />
-
+        android:padding="4dp"
+        />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginStart="40dp"
-        android:orientation="vertical">
-
+        android:orientation="vertical"
+        >
         <TextView android:id="@+id/title"
             android:textAppearance="@style/TextAppearance.StatusBar.EventContent.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="marquee"
-            android:fadingEdge="horizontal" />
-
+            android:fadingEdge="horizontal"
+            />
         <TextView android:id="@+id/text"
             android:textAppearance="@style/TextAppearance.StatusBar.EventContent"
             android:layout_width="match_parent"
@@ -32,17 +32,17 @@
             android:layout_marginTop="-4dp"
             android:singleLine="true"
             android:ellipsize="marquee"
-            android:fadingEdge="horizontal" />
+            android:fadingEdge="horizontal"
+            />
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
         android:orientation="horizontal"
-        android:visibility="gone">
-
+        android:visibility="gone"
+        >
         <Button
             style="?android:attr/buttonBarButtonStyle"
             android:textAppearance="@style/TextAppearance.StatusBar.EventContent.Title"
@@ -50,8 +50,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:visibility="gone" />
-
+            android:visibility="gone"
+            />
         <Button
             style="?android:attr/buttonBarButtonStyle"
             android:textAppearance="@style/TextAppearance.StatusBar.EventContent.Title"
@@ -59,8 +59,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:visibility="gone" />
-
+            android:visibility="gone"
+            />
         <Button
             style="?android:attr/buttonBarButtonStyle"
             android:textAppearance="@style/TextAppearance.StatusBar.EventContent.Title"
@@ -68,6 +68,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:visibility="gone" />
+            android:visibility="gone"
+            />
     </LinearLayout>
 </FrameLayout>

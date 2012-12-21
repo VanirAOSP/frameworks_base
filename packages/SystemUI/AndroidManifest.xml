@@ -76,6 +76,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    
 
     <!-- FOR TORCH -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -213,7 +214,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="com.android.internal.category.PLATLOGO" />
-<!--            <category android:name="android.intent.category.LAUNCHER" /> -->
+<!--            <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
 
@@ -308,6 +309,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.android.systemui.SHORTCUT" />
             </intent-filter>
-        </activity>
+        </activity>    
    </application>
 </manifest>

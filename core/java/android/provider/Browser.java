@@ -397,6 +397,7 @@ public class Browser {
         // TODO make a single request to the provider to do this in a single transaction
         Cursor cursor = null;
         try {
+            
             // Select non-bookmark history, ordered by date
             cursor = cr.query(History.CONTENT_URI,
                     new String[] { History._ID, History.URL, History.DATE_LAST_VISITED },
@@ -553,7 +554,7 @@ public class Browser {
             Log.e(LOGTAG, "clearSearches", e);
         }
     }
-
+    
     /**
      *  Request all icons from the database.  This call must either be called
      *  in the main thread or have had Looper.prepare() invoked in the calling

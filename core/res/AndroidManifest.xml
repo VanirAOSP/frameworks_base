@@ -219,7 +219,7 @@
         android:icon="@drawable/perm_group_messages"
         android:description="@string/permgroupdesc_messages"
         android:permissionGroupFlags="personalInfo"
-        android:priority="360" />
+        android:priority="360"/>
 
   <!-- Allows an application to send SMS messages. -->
     <permission android:name="android.permission.SEND_SMS"
@@ -301,9 +301,9 @@
         android:label="@string/permlab_receiveWapPush"
         android:description="@string/permdesc_receiveWapPush" />
 
-    <!-- =========================================================== -->
+    <!-- =============================================================== -->
     <!-- Permissions for accessing social info (contacts and social) -->
-    <!-- =========================================================== -->
+    <!-- =============================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to the user's social connections,
@@ -373,7 +373,7 @@
         android:label="@string/permlab_writeCallLog"
         android:description="@string/permdesc_writeCallLog" />
 
-    <!-- Allows an application to read from the user's social stream. -->
+  <!-- Allows an application to read from the user's social stream. -->
     <permission android:name="android.permission.READ_SOCIAL_STREAM"
         android:permissionGroup="android.permission-group.SOCIAL_INFO"
         android:protectionLevel="dangerous"
@@ -388,9 +388,9 @@
         android:label="@string/permlab_writeSocialStream"
         android:description="@string/permdesc_writeSocialStream" />
 
-    <!-- ============================================================ -->
-    <!-- Permissions for accessing information about the device owner -->
-    <!-- ============================================================ -->
+    <!-- =============================================================== -->
+    <!-- Permissions for accessing information about the device owner    -->
+    <!-- =============================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to information about the device
@@ -419,9 +419,9 @@
         android:label="@string/permlab_writeProfile"
         android:description="@string/permdesc_writeProfile" />
 
-    <!-- ============================================= -->
-    <!-- Permissions for accessing the device calendar -->
-    <!-- ============================================= -->
+    <!-- =============================================================== -->
+    <!-- Permissions for accessing the device calendar                   -->
+    <!-- =============================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to the device
@@ -448,9 +448,9 @@
         android:label="@string/permlab_writeCalendar"
         android:description="@string/permdesc_writeCalendar" />
 
-    <!-- ============================================= -->
-    <!-- Permissions for accessing the user dictionary -->
-    <!-- ============================================= -->
+    <!-- =============================================================== -->
+    <!-- Permissions for accessing the user dictionary-->
+    <!-- =============================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to the user
@@ -486,9 +486,9 @@
         android:label="@string/permlab_writeDictionary"
         android:description="@string/permdesc_writeDictionary" />
 
-    <!-- ============================================ -->
-    <!-- Permissions for accessing the user bookmarks -->
-    <!-- ============================================ -->
+    <!-- =============================================================== -->
+    <!-- Permissions for accessing the user bookmarks                    -->
+    <!-- =============================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to the user
@@ -516,9 +516,9 @@
         android:description="@string/permdesc_writeHistoryBookmarks"
         android:protectionLevel="dangerous" />
 
-    <!-- ======================================== -->
-    <!-- Permissions for setting the device alarm -->
-    <!-- ======================================== -->
+    <!-- =============================================================== -->
+    <!-- Permissions for setting the device alarm                        -->
+    <!-- =============================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to the user voicemail box. -->
@@ -537,9 +537,9 @@
         android:description="@string/permdesc_setAlarm"
         android:protectionLevel="normal" />
 
-    <!-- ============================================ -->
-    <!-- Permissions for accessing the user voicemail -->
-    <!-- ============================================ -->
+    <!-- =============================================================== -->
+    <!-- Permissions for accessing the user voicemail                    -->
+    <!-- =============================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to the user voicemail box. -->
@@ -607,9 +607,9 @@
         android:label="@string/permlab_installLocationProvider"
         android:description="@string/permdesc_installLocationProvider" />
 
-    <!-- ================================== -->
+    <!-- ======================================= -->
     <!-- Permissions for accessing networks -->
-    <!-- ================================== -->
+    <!-- ======================================= -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to networking services.  The
@@ -642,7 +642,7 @@
         android:protectionLevel="normal"
         android:description="@string/permdesc_accessWifiState"
         android:label="@string/permlab_accessWifiState" />
-
+        
     <!-- Allows applications to change Wi-Fi connectivity state -->
     <permission android:name="android.permission.CHANGE_WIFI_STATE"
         android:permissionGroup="android.permission-group.NETWORK"
@@ -664,9 +664,9 @@
         android:description="@string/permdesc_changeWimaxState"
         android:label="@string/permlab_changeWimaxState" />
 
-    <!-- ================================================ -->
+    <!-- ======================================= -->
     <!-- Permissions for short range, peripheral networks -->
-    <!-- ================================================ -->
+    <!-- ======================================= -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to other devices through Bluetooth.-->
@@ -682,16 +682,17 @@
         android:protectionLevel="dangerous"
         android:description="@string/permdesc_bluetooth"
         android:label="@string/permlab_bluetooth" />
-
+        
     <!-- Allows applications to discover and pair bluetooth devices -->
     <permission android:name="android.permission.BLUETOOTH_ADMIN"
         android:permissionGroup="android.permission-group.BLUETOOTH_NETWORK"
         android:protectionLevel="dangerous"
         android:description="@string/permdesc_bluetoothAdmin"
         android:label="@string/permlab_bluetoothAdmin" />
-
+   
     <!-- Allows bluetooth stack to access files
-         @hide This should only be used by Bluetooth apk. -->
+         @hide This should only be used by Bluetooth apk.
+    -->
     <permission android:name="android.permission.BLUETOOTH_STACK"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="signature" />
@@ -765,14 +766,15 @@
         android:description="@string/permdesc_accountManagerService"
         android:label="@string/permlab_accountManagerService" />
 
-    <!-- =============================================================== -->
-    <!-- Permissions for accessing hardware that may effect battery life -->
-    <!-- =============================================================== -->
+    <!-- ================================== -->
+    <!-- Permissions for accessing hardware that may effect battery life-->
+    <!-- ================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide direct access to the hardware on
          the device that has an effect on battery life.  This includes vibrator,
          flashlight,  etc. -->
+
     <permission-group android:name="android.permission-group.AFFECTS_BATTERY"
         android:label="@string/permgrouplab_affectsBattery"
         android:icon="@drawable/perm_group_affects_battery"
@@ -808,9 +810,9 @@
         android:label="@string/permlab_wakeLock"
         android:description="@string/permdesc_wakeLock" />
 
-    <!-- ============================================== -->
-    <!-- Permissions related to changing audio settings -->
-    <!-- ============================================== -->
+    <!-- ==================================================== -->
+    <!-- Permissions related to changing audio settings   -->
+    <!-- ==================================================== -->
 
     <!-- Used for permissions that provide direct access to speaker settings
          the device. -->
@@ -837,7 +839,7 @@
     <permission-group android:name="android.permission-group.HARDWARE_CONTROLS"
         android:label="@string/permgrouplab_hardwareControls"
         android:description="@string/permgroupdesc_hardwareControls"
-        android:priority="260" />
+        android:priority="260"/>
 
     <!-- Allows an application to manage preferences and permissions for USB devices
          @hide -->
@@ -874,9 +876,9 @@
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="signature" />
 
-    <!-- ========================================= -->
+    <!-- =========================================== -->
     <!-- Permissions associated with audio capture -->
-    <!-- ========================================= -->
+    <!-- =========================================== -->
     <eat-comment />
 
     <!-- Used for permissions that are associated with accessing
@@ -895,9 +897,10 @@
         android:protectionLevel="dangerous"
         android:label="@string/permlab_recordAudio" />
 
-    <!-- ==================================================== -->
+
+    <!-- =========================================== -->
     <!-- Permissions associated with camera and image capture -->
-    <!-- ==================================================== -->
+    <!-- =========================================== -->
     <eat-comment />
 
     <!-- Used for permissions that are associated with accessing
@@ -1053,9 +1056,9 @@
         android:description="@string/permdesc_mediaStorageWrite"
         android:protectionLevel="signature|system" />
 
-    <!-- ========================== -->
-    <!-- Permissions for screenlock -->
-    <!-- ========================== -->
+    <!-- ================================== -->
+    <!-- Permissions for screenlock         -->
+    <!-- ================================== -->
     <eat-comment />
 
     <!-- Group of permissions that are related to the screenlock. -->
@@ -1073,9 +1076,9 @@
         android:description="@string/permdesc_disableKeyguard"
         android:label="@string/permlab_disableKeyguard" />
 
-    <!-- ================================================== -->
-    <!-- Permissions to access other installed applications -->
-    <!-- ================================================== -->
+    <!-- ================================== -->
+    <!-- Permissions to access other installed applications  -->
+    <!-- ================================== -->
     <eat-comment />
 
     <!-- Group of permissions that are related to the other applications
@@ -1121,7 +1124,7 @@
         android:protectionLevel="signature|system"
         android:label="@string/permlab_manageUsers"
         android:description="@string/permdesc_manageUsers" />
-
+    
     <!-- Allows an application to get full detailed information about
          recently running tasks, with full fidelity to the real state.
          @hide -->
@@ -1169,9 +1172,9 @@
         android:label="@string/permlab_killBackgroundProcesses"
         android:description="@string/permdesc_killBackgroundProcesses" />
 
-    <!-- ======================================================= -->
-    <!-- Permissions affecting the display of other applications -->
-    <!-- ======================================================= -->
+    <!-- ================================== -->
+    <!-- Permissions affecting the display of other applications  -->
+    <!-- ================================== -->
     <eat-comment />
 
     <!-- Group of permissions that allow manipulation of how
@@ -1180,7 +1183,7 @@
         android:label="@string/permgrouplab_display"
         android:icon="@drawable/perm_group_display"
         android:description="@string/permgroupdesc_display"
-        android:priority="190" />
+        android:priority="190"/>
 
     <!-- Allows an application to open windows using the type
          {@link android.view.WindowManager.LayoutParams#TYPE_SYSTEM_ALERT},
@@ -1193,9 +1196,9 @@
         android:label="@string/permlab_systemAlertWindow"
         android:description="@string/permdesc_systemAlertWindow" />
 
-    <!-- ========================================== -->
+    <!-- ================================== -->
     <!-- Permissions affecting the system wallpaper -->
-    <!-- ========================================== -->
+    <!-- ================================== -->
     <eat-comment />
 
     <!-- Group of permissions that allow manipulation of how
@@ -1220,9 +1223,9 @@
         android:label="@string/permlab_setWallpaperHints"
         android:description="@string/permdesc_setWallpaperHints" />
 
-    <!-- ========================================= -->
+    <!-- ============================================ -->
     <!-- Permissions for changing the system clock -->
-    <!-- ========================================= -->
+    <!-- ============================================ -->
     <eat-comment />
 
     <!-- Group of permissions that are related to system clock. -->
@@ -1245,9 +1248,9 @@
         android:label="@string/permlab_setTimeZone"
         android:description="@string/permdesc_setTimeZone" />
 
-    <!-- ========================================== -->
-    <!-- Permissions related to changing status bar -->
-    <!-- ========================================== -->
+    <!-- ==================================================== -->
+    <!-- Permissions related to changing status bar   -->
+    <!-- ==================================================== -->
 
     <!-- Used for permissions that change the status bar -->
     <permission-group android:name="android.permission-group.STATUS_BAR"
@@ -1263,9 +1266,9 @@
         android:label="@string/permlab_expandStatusBar"
         android:description="@string/permdesc_expandStatusBar" />
 
-    <!-- ============================================== -->
-    <!-- Permissions related to accessing sync settings -->
-    <!-- ============================================== -->
+    <!-- ==================================================== -->
+    <!-- Permissions related to accessing sync settings   -->
+    <!-- ==================================================== -->
 
     <!-- Used for permissions that access the sync settings or sync
          related information. -->
@@ -1295,6 +1298,7 @@
         android:protectionLevel="normal"
         android:description="@string/permdesc_readSyncStats"
         android:label="@string/permlab_readSyncStats" />
+
 
     <!-- ============================================ -->
     <!-- Permissions for low-level system interaction -->
@@ -1494,10 +1498,10 @@
 
     <!-- Allows applications to write the apn settings -->
     <permission android:name="android.permission.WRITE_APN_SETTINGS"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="signature|system"
-        android:description="@string/permdesc_writeApnSettings"
-        android:label="@string/permlab_writeApnSettings" />
+                android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+                android:protectionLevel="signature|system"
+                android:description="@string/permdesc_writeApnSettings"
+                android:label="@string/permlab_writeApnSettings" />
 
     <!-- Allows an application to allow access the subscribed feeds
          ContentProvider. -->
@@ -1663,7 +1667,7 @@
         android:label="@string/permlab_freezeScreen"
         android:description="@string/permdesc_freezeScreen"
         android:protectionLevel="signature" />
-
+    
     <!-- Allows an application to inject user events (keys, touch, trackball)
          into the event stream and deliver them to ANY window.  Without this
          permission, you can only deliver events to windows in your own process.
@@ -1739,7 +1743,7 @@
         android:description="@string/permdesc_bindInputMethod"
         android:protectionLevel="signature" />
 
-    <!-- Must be required by an {@link android.accessibilityservice.AccessibilityService},
+        <!-- Must be required by an {@link android.accessibilityservice.AccessibilityService},
          to ensure that only the system can bind to it. -->
     <permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
         android:label="@string/permlab_bindAccessibilityService"
@@ -1887,7 +1891,7 @@
         android:description="@string/permdesc_devicePower"
         android:protectionLevel="signature" />
 
-    <!-- @hide Allows low-level access to tun tap driver -->
+   <!-- @hide Allows low-level access to tun tap driver -->
     <permission android:name="android.permission.NET_TUNNELING"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="signature" />
@@ -2084,7 +2088,8 @@
         android:protectionLevel="signature" />
 
     <!-- Internal permission protecting access to the encryption methods
-        @hide -->
+        @hide
+    -->
     <permission android:name="android.permission.CRYPT_KEEPER"
         android:protectionLevel="signature|system" />
 
@@ -2111,13 +2116,15 @@
         android:protectionLevel="signature|system" />
 
     <!-- C2DM permission.
-         @hide Used internally. -->
+         @hide Used internally.
+     -->
     <permission android:name="android.intent.category.MASTER_CLEAR.permission.C2D_MESSAGE"
           android:protectionLevel="signature" />
-    <uses-permission android:name="android.intent.category.MASTER_CLEAR.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.intent.category.MASTER_CLEAR.permission.C2D_MESSAGE"/>
 
     <!-- @hide Package verifier needs to have this permission before the PackageManager will
-         trust it to verify packages. -->
+         trust it to verify packages.
+    -->
     <permission android:name="android.permission.PACKAGE_VERIFICATION_AGENT"
         android:label="@string/permlab_packageVerificationAgent"
         android:description="@string/permdesc_packageVerificationAgent"
@@ -2125,7 +2132,8 @@
 
     <!-- Must be required by package verifier receiver, to ensure that only the
          system can interact with it.
-         @hide -->
+         @hide
+    -->
     <permission android:name="android.permission.BIND_PACKAGE_VERIFIER"
         android:label="@string/permlab_bindPackageVerifier"
         android:description="@string/permdesc_bindPackageVerifier"
@@ -2142,12 +2150,12 @@
          This permission is enforced by the ActivityManagerService on the corresponding APIs,
          in particular ActivityManagerService#getContentProviderExternal(String) and
          ActivityManagerService#removeContentProviderExternal(String).
-         @hide -->
+         @hide
+    -->
     <permission android:name="android.permission.ACCESS_CONTENT_PROVIDERS_EXTERNALLY"
         android:label="@string/permlab_accessContentProvidersExternally"
         android:description="@string/permdesc_accessContentProvidersExternally"
         android:protectionLevel="signature" />
-
     <!-- Allows an application to hold an UpdateLock, recommending that a headless
          OTA reboot *not* occur while the lock is held.
          @hide -->
@@ -2158,17 +2166,17 @@
 
     <!-- The system process is explicitly the only one allowed to launch the
          confirmation UI for full backup/restore -->
-    <uses-permission android:name="android.permission.CONFIRM_FULL_BACKUP" />
+    <uses-permission android:name="android.permission.CONFIRM_FULL_BACKUP"/>
 
     <application android:process="system"
-                android:persistent="true"
-                android:hasCode="false"
-                android:label="@string/android_system_label"
-                android:allowClearUserData="false"
-                android:backupAgent="com.android.server.SystemBackupAgent"
-                android:killAfterRestore="false"
-                android:icon="@drawable/ic_launcher_android"
-                android:supportsRtl="true">
+                 android:persistent="true"
+                 android:hasCode="false"
+                 android:label="@string/android_system_label"
+                 android:allowClearUserData="false"
+                 android:backupAgent="com.android.server.SystemBackupAgent"
+                 android:killAfterRestore="false"
+                 android:icon="@drawable/ic_launcher_android"
+                 android:supportsRtl="true">
         <activity android:name="com.android.internal.app.ChooserActivity"
                 android:theme="@style/Theme.Holo.Dialog.Alert"
                 android:finishOnCloseSystemDialogs="true"
@@ -2233,8 +2241,8 @@
         </activity>
 
         <activity android:name="com.android.server.ShutdownActivity"
-                android:permission="android.permission.SHUTDOWN"
-                android:excludeFromRecents="true">
+            android:permission="android.permission.SHUTDOWN"
+            android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_REQUEST_SHUTDOWN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -2300,4 +2308,5 @@
             android:exported="true" />
 
     </application>
+
 </manifest>

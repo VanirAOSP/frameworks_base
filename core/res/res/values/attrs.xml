@@ -433,9 +433,9 @@
              or later. -->
         <attr name="windowCloseOnTouchOutside" format="boolean" />
 
-        <!-- =================== -->
+        <!-- ============ -->
         <!-- Alert Dialog styles -->
-        <!-- =================== -->
+        <!-- ============ -->
         <eat-comment />
         <attr name="alertDialogStyle" format="reference" />
         <attr name="alertDialogButtonGroupStyle" format="reference" />
@@ -632,9 +632,9 @@
              plays nicely with fastScrollPreviewBackground[Left|Right]. -->
         <attr name="fastScrollTextColor" format="color" />
 
-        <!-- ================= -->
-        <!-- Action bar styles -->
-        <!-- ================= -->
+        <!-- =================== -->
+        <!-- Action bar styles   -->
+        <!-- =================== -->
         <eat-comment />
         <!-- Default style for tabs within an action bar -->
         <attr name="actionBarTabStyle" format="reference" />
@@ -671,9 +671,9 @@
         <!-- Color for text that appears within action menu items. -->
         <attr name="actionMenuTextColor" format="color|reference" />
 
-        <!-- ================== -->
-        <!-- Action mode styles -->
-        <!-- ================== -->
+        <!-- =================== -->
+        <!-- Action mode styles  -->
+        <!-- =================== -->
         <eat-comment />
         <attr name="actionModeStyle" format="reference" />
         <attr name="actionModeCloseButtonStyle" format="reference" />
@@ -702,9 +702,9 @@
         <!-- PopupWindow style to use for action modes when showing as a window overlay. -->
         <attr name="actionModePopupWindowStyle" format="reference" />
 
-        <!-- ================= -->
-        <!-- Preference styles -->
-        <!-- ================= -->
+        <!-- =================== -->
+        <!-- Preference styles   -->
+        <!-- =================== -->
         <eat-comment />
 
         <!-- Default style for PreferenceScreen. -->
@@ -861,9 +861,9 @@
 
     </declare-styleable>
 
-    <!-- ========================== -->
-    <!-- Other non-theme attributes -->
-    <!-- ========================== -->
+    <!-- **************************************************************** -->
+    <!-- Other non-theme attributes. -->
+    <!-- **************************************************************** -->
     <eat-comment />
 
     <!-- Size of text. Recommended dimension type for text is "sp" for scaled-pixels (example: 15sp).
@@ -1314,9 +1314,9 @@
         <enum name="alignMargins" value="1" />
     </attr>
 
-    <!-- ========= -->
-    <!-- Key Codes -->
-    <!-- ========= -->
+    <!-- ========================== -->
+    <!-- Key Codes                  -->
+    <!-- ========================== -->
     <eat-comment />
 
     <!-- This enum provides the same keycode values as can be found in
@@ -1543,13 +1543,13 @@
         <enum name="KEYCODE_KANA" value="218" />
     </attr>
 
-    <!-- ================================================================ -->
-    <!-- These define collections of attributes that can are with classes -->
-    <!-- ================================================================ -->
+    <!-- ***************************************************************** -->
+    <!-- These define collections of attributes that can are with classes. -->
+    <!-- ***************************************************************** -->
 
-    <!-- ========================= -->
-    <!-- Special attribute classes -->
-    <!-- ========================= -->
+    <!-- ========================== -->
+    <!-- Special attribute classes. -->
+    <!-- ========================== -->
     <eat-comment />
 
     <!-- The set of attributes that describe a Windows's theme. -->
@@ -3328,6 +3328,7 @@
         <!-- Layout of the TextView item that will populate the suggestion popup window. -->
         <attr name="textEditSuggestionItemLayout" />
 
+
         <!-- Reference to a drawable that will be drawn under the insertion cursor. -->
         <attr name="textCursorDrawable" />
 
@@ -3487,10 +3488,12 @@
 
     <declare-styleable name="DatePicker">
         <!-- The first year (inclusive), for example "1940".
-             {@deprecated Use minDate instead.} -->
+             {@deprecated Use minDate instead.}
+         -->
         <attr name="startYear" format="integer" />
         <!-- The last year (inclusive), for example "2010".
-             {@deprecated Use maxDate instead.} -->
+             {@deprecated Use maxDate instead.}
+         -->
         <attr name="endYear" format="integer" />
         <!-- Whether the spinners are shown. -->
         <attr name="spinnersShown" format="boolean" />
@@ -4328,9 +4331,9 @@
         <attr name="extraTension" format="float" />
     </declare-styleable>
 
-    <!-- ============================== -->
+    <!-- ========================== -->
     <!-- ValueAnimator class attributes -->
-    <!-- ============================== -->
+    <!-- ========================== -->
     <eat-comment />
 
     <declare-styleable name="Animator">
@@ -4361,9 +4364,9 @@
         </attr>
     </declare-styleable>
 
-    <!-- =============================== -->
+    <!-- ========================== -->
     <!-- ObjectAnimator class attributes -->
-    <!-- =============================== -->
+    <!-- ========================== -->
     <eat-comment />
 
     <declare-styleable name="PropertyAnimator">
@@ -4372,9 +4375,9 @@
     </declare-styleable>
 
 
-    <!-- ============================ -->
+    <!-- ========================== -->
     <!-- AnimatorSet class attributes -->
-    <!-- ============================ -->
+    <!-- ========================== -->
     <eat-comment />
 
     <declare-styleable name="AnimatorSet">
@@ -4387,9 +4390,9 @@
         </attr>
     </declare-styleable>
 
-    <!-- ================ -->
-    <!-- State attributes -->
-    <!-- ================ -->
+    <!-- ========================== -->
+    <!-- State attributes           -->
+    <!-- ========================== -->
     <eat-comment />
 
     <!-- Drawable states.
@@ -4536,9 +4539,9 @@
         <attr name="state_multiline" format="boolean" />
     </declare-styleable>
 
-    <!-- ================================= -->
-    <!-- Support for Searchable activities -->
-    <!-- ================================= -->
+    <!-- ***************************************************************** -->
+    <!-- Support for Searchable activities. -->
+    <!-- ***************************************************************** -->
     <eat-comment />
 
     <!-- Searchable activities and applications must provide search configuration information
@@ -4685,7 +4688,8 @@
 
     <!-- In order to process special action keys during search, you must define them using
             one or more "ActionKey" elements in your Searchable metadata.  For a more in-depth
-            discussion of action code handling, please refer to {@link android.app.SearchManager}. -->
+            discussion of action code handling, please refer to {@link android.app.SearchManager}.
+    -->
     <declare-styleable name="SearchableActionKey">
         <!-- This attribute denotes the action key you wish to respond to.  Note that not
             all action keys are actually supported using this mechanism, as many of them are
@@ -4733,9 +4737,9 @@
 
     </declare-styleable>
 
-    <!-- =================== -->
-    <!-- Support for MapView -->
-    <!-- =================== -->
+    <!-- ***************************************************************** -->
+    <!-- Support for MapView. -->
+    <!-- ***************************************************************** -->
     <eat-comment />
 
     <!-- The set of attributes for a MapView. -->
@@ -4744,9 +4748,9 @@
         <attr name="apiKey" format="string" />
     </declare-styleable>
 
-    <!-- ================== -->
-    <!-- Menu XML inflation -->
-    <!-- ================== -->
+    <!-- **************************************************************** -->
+    <!-- Menu XML inflation. -->
+    <!-- **************************************************************** -->
     <eat-comment />
 
     <!-- Base attributes that are available to all Menu objects. -->
@@ -4899,9 +4903,9 @@
         <attr name="expandActivityOverflowButtonDrawable" format="reference" />
     </declare-styleable>
 
-    <!-- ===================== -->
-    <!-- Preferences framework -->
-    <!-- ===================== -->
+    <!-- **************************************************************** -->
+    <!-- Preferences framework. -->
+    <!-- **************************************************************** -->
     <eat-comment />
 
     <!-- Base attributes available to PreferenceGroup. -->
@@ -5180,9 +5184,9 @@
         <attr name="keyboardMode" />
     </declare-styleable>
 
-    <!-- ================================== -->
+    <!-- =============================== -->
     <!-- AppWidget package class attributes -->
-    <!-- ================================== -->
+    <!-- =============================== -->
     <eat-comment />
 
     <!-- Use <code>appwidget-provider</code> as the root tag of the XML resource that
@@ -5229,9 +5233,9 @@
         </attr>
     </declare-styleable>
 
-    <!-- ============================ -->
-    <!-- Wallpaper preview attributes -->
-    <!-- ============================ -->
+    <!-- =============================== -->
+    <!-- Wallpaper preview attributes    -->
+    <!-- =============================== -->
     <eat-comment />
 
     <!-- Use <code>wallpaper-preview</code> as the root tag of the XML resource that
@@ -5241,9 +5245,9 @@
         <attr name="staticWallpaperPreview" format="reference" />
     </declare-styleable>
 
-    <!-- ============================ -->
+    <!-- =============================== -->
     <!-- App package class attributes -->
-    <!-- ============================ -->
+    <!-- =============================== -->
     <eat-comment />
 
     <!-- ============================= -->
@@ -5327,9 +5331,9 @@
         <attr name="settingsActivity" />
     </declare-styleable>
 
-    <!-- ================================= -->
+    <!-- =============================== -->
     <!-- Accounts package class attributes -->
-    <!-- ================================= -->
+    <!-- =============================== -->
     <eat-comment />
 
     <!-- Use <code>account-authenticator</code> as the root tag of the XML resource that
@@ -5352,9 +5356,9 @@
         <attr name="customTokens" format="boolean"/>
     </declare-styleable>
 
-    <!-- ================================= -->
+    <!-- =============================== -->
     <!-- Accounts package class attributes -->
-    <!-- ================================= -->
+    <!-- =============================== -->
     <eat-comment />
 
     <!-- Use <code>account-authenticator</code> as the root tag of the XML resource that
@@ -5384,9 +5388,9 @@
         <attr name="settingsActivity"/>
     </declare-styleable>
 
-    <!-- ============================= -->
+    <!-- =============================== -->
     <!-- Contacts meta-data attributes -->
-    <!-- ============================= -->
+    <!-- =============================== -->
     <eat-comment />
 
     <!-- TODO: remove this deprecated styleable. -->
@@ -5419,9 +5423,9 @@
         <attr name="allContactsName" format="string" />
     </declare-styleable>
 
-    <!-- ============================ -->
+    <!-- =============================== -->
     <!-- TabSelector class attributes -->
-    <!-- ============================ -->
+    <!-- =============================== -->
     <eat-comment />
 
     <declare-styleable name="SlidingTab">
@@ -5429,9 +5433,9 @@
         <attr name="orientation" />
     </declare-styleable>
 
-    <!-- ============================ -->
+    <!-- =============================== -->
     <!-- GlowPadView class attributes -->
-    <!-- ============================ -->
+    <!-- =============================== -->
     <eat-comment />
     <declare-styleable name="GlowPadView">
         <!-- Reference to an array resource that be shown as targets around a circle. -->
@@ -5487,9 +5491,9 @@
         <attr name="allowScaling" format="boolean" />
     </declare-styleable>
 
-    <!-- ============================== -->
+    <!-- =============================== -->
     <!-- MultiWaveView class attributes -->
-    <!-- ============================== -->
+    <!-- =============================== -->
     <eat-comment />
     <declare-styleable name="MultiWaveView">
         <!-- Reference to an array resource that be shown as targets around a circle. -->
@@ -5526,9 +5530,9 @@
         <attr name="alwaysTrackFinger" format="boolean" />
     </declare-styleable>
 
-    <!-- =================================== -->
+    <!-- =============================== -->
     <!-- SizeAdaptiveLayout class attributes -->
-    <!-- =================================== -->
+    <!-- =============================== -->
     <eat-comment />
     <declare-styleable name="SizeAdaptiveLayout_Layout">
       <!-- The maximum valid height for this item. -->
@@ -5541,9 +5545,9 @@
     </declare-styleable>
     <declare-styleable name="SizeAdaptiveLayout" />
 
-    <!-- ================================ -->
+    <!-- =============================== -->
     <!-- LockPatternView class attributes -->
-    <!-- ================================ -->
+    <!-- =============================== -->
     <eat-comment />
 
     <declare-styleable name="LockPatternView">

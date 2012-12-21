@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2012, The Android Open Source Project
-
-  Licensed under the Apache License, Version 2.0 (the "License")
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+<!--
+ * Copyright (C) 2010 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 -->
 
 <!-- notification icons & panel access -->
@@ -24,13 +25,15 @@
     android:layout_alignParentRight="true"
     android:orientation="horizontal"
     android:background="?android:attr/listChoiceBackgroundIndicator"
-    android:clickable="true">
+    android:clickable="true"
+    >
 
     <LinearLayout
         android:id="@+id/feedbackIconArea"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        >
 
         <com.android.systemui.statusbar.tablet.InputMethodButton
             android:id="@+id/imeSwitchButton"
@@ -39,7 +42,8 @@
             android:layout_marginLeft="8dip"
             android:src="@drawable/ic_sysbar_ime_default"
             android:visibility="gone"
-            android:contentDescription="@string/accessibility_ime_switch_button" />
+            android:contentDescription="@string/accessibility_ime_switch_button"
+            />
 
         <com.android.systemui.statusbar.policy.CompatModeButton
             android:id="@+id/compatModeButton"
@@ -48,13 +52,14 @@
             android:layout_marginLeft="8dip"
             android:src="@drawable/ic_sysbar_zoom"
             android:visibility="gone"
-            android:contentDescription="@string/accessibility_compatibility_zoom_button" />
+            android:contentDescription="@string/accessibility_compatibility_zoom_button"
+            />
 
         <com.android.systemui.statusbar.tablet.NotificationIconArea
             android:id="@+id/notificationIcons"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            >
             <view
                 class="com.android.systemui.statusbar.tablet.NotificationIconArea$IconLayout"
                 android:id="@+id/icons"
@@ -62,7 +67,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="8dp"
-                android:alpha="0.4" />
+                android:alpha="0.4"
+                />
         </com.android.systemui.statusbar.tablet.NotificationIconArea>
     </LinearLayout>
 
@@ -70,8 +76,8 @@
         android:id="@+id/notificationTrigger"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="center">
-
+        android:gravity="center"
+        >
         <com.android.systemui.statusbar.policy.Clock
             android:id="@+id/clock"
             android:textAppearance="@style/TextAppearance.StatusBar.Clock"
@@ -81,7 +87,8 @@
             android:paddingLeft="6dip"
             android:layout_marginRight="8dip"
             android:gravity="center_vertical|left"
-            android:clickable="false" />
+            android:clickable="false"
+            />
 
         <TextView
             android:id="@+id/network_text"
@@ -93,7 +100,8 @@
             android:singleLine="true"
             android:visibility="gone"
             android:textSize="16sp"
-            android:textColor="#606060" />
+            android:textColor="#606060"
+            />
 
         <LinearLayout
             android:id="@+id/signal_battery_cluster"
@@ -101,25 +109,26 @@
             android:layout_height="match_parent"
             android:layout_marginRight="16dp"
             android:orientation="horizontal"
-            android:gravity="center">
-
-            <include layout="@layout/signal_cluster_view"
+            android:gravity="center"
+            >
+            <include layout="@layout/signal_cluster_view" 
                 android:id="@+id/signal_cluster"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
+                android:layout_height="wrap_content"
+                />
             <ImageView
                 android:id="@+id/bluetooth"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:paddingLeft="4dip"
-                android:visibility="gone" />
-
+                android:visibility="gone"
+                />
             <ImageView
                 android:id="@+id/battery"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:paddingLeft="4dip" />
+                android:paddingLeft="4dip"
+                />
         </LinearLayout>
     </LinearLayout>
 </com.android.systemui.statusbar.tablet.NotificationArea>

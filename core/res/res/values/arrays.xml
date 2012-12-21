@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/*
+/* //device/apps/common/assets/res/any/colors.xml
+**
 ** Copyright 2006, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
@@ -412,14 +413,14 @@
         <item>TUV</item><!-- 8 -->
         <item>WXYZ</item><!-- 9 -->
     </string-array>
-
+    
     <!-- Defines the shutdown options shown in the reboot dialog. -->
     <array name="shutdown_reboot_options" translatable="false">
         <item>@string/reboot_reboot</item>
         <item>@string/reboot_recovery</item>
         <item>@string/reboot_bootloader</item>
     </array>
-
+	
     <!-- Do not translate. Defines the shutdown actions passed to the kernel.
          The first item should be empty for regular reboot. -->
     <string-array name="shutdown_reboot_actions" translatable="false">
@@ -427,5 +428,5 @@
         <item>recovery</item>
         <item>bootloader</item>
     </string-array>
-
+    
 </resources>

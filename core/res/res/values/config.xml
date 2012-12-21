@@ -239,7 +239,8 @@
                 }
             }
 
-        See src/com/android/settings/TetherSettings.java for more details. -->
+        See src/com/android/settings/TetherSettings.java for more details.
+        -->
     <!-- The first element is the package name and the second element is the class name
          of the provisioning app -->
     <string-array translatable="false" name="config_mobile_hotspot_provision_app">
@@ -399,7 +400,8 @@
     <!-- Control the behavior when the user long presses the power button.
             0 - Nothing
             1 - Global actions menu
-            2 - Power off (with confirmation) -->
+            2 - Power off (with confirmation)
+    -->
     <integer name="config_longPressOnPowerBehavior">1</integer>
 
     <!-- Package name for default keyguard appwidget [DO NOT TRANSLATE] -->
@@ -414,12 +416,14 @@
     <!-- List of file paths for USB host busses to exclude from USB host support.
          For example, if the first USB bus on the device is used to communicate
          with the modem or some other restricted hardware, add "/dev/bus/usb/001/"
-         to this list.  If this is empty, no parts of the host USB bus will be excluded. -->
+         to this list.  If this is empty, no parts of the host USB bus will be excluded.
+    -->
     <string-array name="config_usbHostBlacklist" translatable="false">
     </string-array>
 
     <!-- List of paths to serial ports that are available to the serial manager.
-         for example, /dev/ttyUSB0 -->
+         for example, /dev/ttyUSB0
+    -->
     <string-array translatable="false" name="config_serialPorts">
     </string-array>
 
@@ -536,7 +540,8 @@
             1 - Recent apps dialog
             2 - Recent apps view in SystemUI
          This needs to match the constants in
-         policy/src/com/android/internal/policy/impl/PhoneWindowManager.java -->
+         policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
+    -->
     <integer name="config_longPressOnHomeBehavior">2</integer>
 
     <!-- Array of light sensor LUX values to define our levels for auto backlight brightness support.
@@ -636,7 +641,8 @@
          The location framework also has support for installation
          of new location providers at run-time. The new package does not
          have to be explicitly listed here, however it must have a signature
-         that matches the signature of at least one package on this list. -->
+         that matches the signature of at least one package on this list.
+         -->
     <string-array name="config_locationProviderPackageNames" translatable="false">
         <!-- The standard AOSP fused location provider -->
                 <item>com.android.location.fused</item>
@@ -847,6 +853,7 @@
     <!-- Set to true if the RSSI should always display CDMA signal strength even on EVDO -->
     <bool name="config_alwaysUseCdmaRssi">false</bool>
 
+
     <!-- If this value is true, duplicate Source/Destination port fields
          in WDP header of some carriers OMADM wap push are supported.
          ex: MSGTYPE-TotalSegments-CurrentSegment
@@ -965,7 +972,8 @@
            remote submix module.  This module is used to record and stream system
            audio output to the WiFi display encoder in the media server.
          * The remote submix module "audio.r_submix.default" must be installed on the device.
-         * The device must be provisioned with HDCP keys (for protected content). -->
+         * The device must be provisioned with HDCP keys (for protected content).
+    -->
     <bool name="config_enableWifiDisplay">false</bool>
 
     <!-- When true use the linux /dev/input/event subsystem to detect the switch changes
@@ -985,7 +993,8 @@
          the content may be blanked.
 
          This flag controls whether the {@link Display#FLAG_SUPPORTS_PROTECTED_BUFFERS}
-         flag is set for wifi displays. -->
+         flag is set for wifi displays.
+    -->
     <bool name="config_wifiDisplaySupportsProtectedBuffers">false</bool>
 
     <!-- Whether camera shutter sound is forced or not  (country specific). -->
@@ -998,7 +1007,8 @@
     <bool name="config_dontPreferApn">false</bool>
 
     <!-- Vibrator pattern to be used as the default for notifications
-         that specify DEFAULT_VIBRATE. -->
+         that specify DEFAULT_VIBRATE.
+     -->
     <integer-array name="config_defaultNotificationVibePattern">
         <item>0</item>
         <item>350</item>
@@ -1008,21 +1018,21 @@
 
     <!-- Vibrator pattern to be used as the default for notifications
          that do not specify vibration but vibrate anyway because the device
-         is in vibrate mode. -->
+         is in vibrate mode.
+     -->
     <integer-array name="config_notificationFallbackVibePattern">
         <item>0</item>
         <item>100</item>
         <item>150</item>
         <item>100</item>
     </integer-array>
-
     <!-- Flag indicating if the speed up audio on mt call code should be executed -->
     <bool name="config_speed_up_audio_on_mt_calls">false</bool>
     
     <!-- Timeout in MS for how long you have to long-press the back key to
               kill the foreground app. -->
     <integer name="config_backKillTimeout">1200</integer>
-
+    
     <!-- Boolean to enable stk functionality on Samsung phones -->
     <bool name="config_samsung_stk">false</bool>
 
