@@ -957,7 +957,7 @@ static int getprocname(pid_t pid, char *buf, size_t len) {
     sprintf(filename, "/proc/%d/cmdline", pid);
     f = fopen(filename, "r");
     if (!f) { *buf = '\0'; return 1; }
-    if (!fgets(buf, len, f)) { *buf = '\0'; return 2; }
+    if (!fgets(buf, len, f)) { *buf = '\0'; fclose(f); return 2; }
     fclose(f);
     return 0;
 }
