@@ -397,7 +397,6 @@ public class ActionMenuPresenter extends BaseMenuPresenter
         }
 
         // Flag as many more requested items as will fit.
-        // Compute required items prior to optional items
         for (int i = 0; i < itemsSize; i++) {
             MenuItemImpl item = visibleItems.get(i);
 
@@ -422,12 +421,7 @@ public class ActionMenuPresenter extends BaseMenuPresenter
                     seenGroups.put(groupId, true);
                 }
                 item.setIsActionButton(true);
-            }
-        }
-        for (int i = 0; i < itemsSize; i++) {
-            MenuItemImpl item = visibleItems.get(i);
-
-            if (item.requestsActionButton()) {
+            } else if (item.requestsActionButton()) {
                 // Items in a group with other items that already have an action slot
                 // can break the max actions rule, but not the width limit.
                 final int groupId = item.getGroupId();
