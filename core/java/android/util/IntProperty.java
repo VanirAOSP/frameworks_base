@@ -42,7 +42,7 @@ public abstract class IntProperty<T> extends Property<T, Integer> {
 
     @Override
     final public void set(T object, Integer value) {
-        setValue(object, value.intValue());
+        set(object, value.intValue());
     }
 
 }
