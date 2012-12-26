@@ -131,12 +131,19 @@ final class ElectronBeam {
 
         mMode = mode;
 
-        // Get the display size and layer stack.
-        // This is not expected to change while the electron beam surface is showing.
-        DisplayInfo displayInfo = mDisplayManager.getDisplayInfo(Display.DEFAULT_DISPLAY);
-        mDisplayLayerStack = displayInfo.layerStack;
-        mDisplayWidth = displayInfo.getNaturalWidth();
-        mDisplayHeight = displayInfo.getNaturalHeight();
+        // Get the display size and adjust it for rotation.
+        mDisplay.getDisplayInfo(mDisplayInfo);
+        mDisplayLayerStack = mDisplay.getLayerStack();
+        mDisplayRotation = (mDisplayInfo.rotation +
+                android.os.SystemProperties.getInt("ro.sf.hwrotation", 0) / 90) % 4;
+        if (mDisplayRotation == Surface.ROTATION_90
+                || mDisplayRotation == Surface.ROTATION_270) {
+            mDisplayWidth = mDisplayInfo.logicalHeight;
+            mDisplayHeight = mDisplayInfo.logicalWidth;
+        } else {
+            mDisplayWidth = mDisplayInfo.logicalWidth;
+            mDisplayHeight = mDisplayInfo.logicalHeight;
+        }
 
         // Prepare the surface for drawing.
         if (!tryPrepare()) {
