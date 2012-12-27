@@ -302,6 +302,7 @@
             <intent-filter>
                  <action android:name="com.android.systemui.INTENT_TORCH_ON"/>
                  <action android:name="com.android.systemui.INTENT_TORCH_OFF"/>
+                 <action android:name="com.android.systemui.INTENT_TORCH" />
                  <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>

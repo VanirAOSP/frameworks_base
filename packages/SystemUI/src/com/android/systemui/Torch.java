@@ -23,7 +23,8 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Parameters;
@@ -53,7 +54,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private View button;
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
-    private SharedPreferences prefs;
 
     private WakeLock wakeLock;
 
@@ -188,22 +188,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 reallystarted = false;         
                 previewOn = true;   
                 mCamera.startPreview();
-                /*try{
-                    mCamera.autoFocus(new AutoFocusCallback() {
-                        public void onAutoFocus(boolean success, Camera camera) {
-                            db("onAutoFocus("+success+")");
-                            if (!reallystarted)
-                            {
-                                reallystarted = true;
-                                brute.post(force);
-                            }
-                        }
-                    });
-                }
-                catch(Exception e)
-                {
-                    reallystarted = true;
-                }*/
             }       
             db("startPreview() succeeded");
             return true;
@@ -277,13 +261,12 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         surfaceView = (SurfaceView) this.findViewById(R.id.surfaceview);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
-        prefs = getSharedPreferences("torch", Context.MODE_WORLD_READABLE);
         Log.i(TAG, "onCreate");
     }
 
     private void toggleTorch() {
         db("--------- TOGGLING ----------");
-        if (prefs.getBoolean(KEY_TORCH_ON, false)) // find torch state
+        if (Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false)) // find torch state
             stopTorch(); // torch is on - turn it off
         else
             startTorch(); // torch is off, turn it on
@@ -296,7 +279,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         {            
             startWakeLock();
             db("--- Trying to start torch");
-            if (!prefs.getBoolean(KEY_TORCH_ON, false))
+            if (!Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false))
             {
                 getCamera();
                 startPreview();
@@ -315,11 +298,9 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 brute.removeCallbacks(force);
                 if (reallystarted)
                 {
-                    if (!prefs.getBoolean(KEY_TORCH_ON, false))
+                    if (!Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false))
                     {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putBoolean(KEY_TORCH_ON, true);
-                        editor.commit();         
+                        Settings.System.putBoolean(getContentResolver(), Settings.System.TORCH_STATE, true);
                     }
                 }
                 else
@@ -335,7 +316,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         synchronized(padlock)
         {                
             brute.removeCallbacks(force);
-            db("--- Trying to stop torch -- pref="+prefs.getBoolean(KEY_TORCH_ON, false));            
+            db("--- Trying to stop torch -- pref="+Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false));
             turnLightOff();
             stopPreview();
             if (mCamera != null)     
@@ -343,15 +324,13 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 mCamera.release();
                 mCamera = null;                
             }
-            if (!reallystarted || prefs.getBoolean(KEY_TORCH_ON, false))
+            if (!reallystarted || Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false))
             {
                 if (!reallystarted)
                     db("SETTING SHAREDPREF false BECAUSE !reallystarted");
                 else
                     db("SETTING SHAREDPREF false BECAUSE STOPPING AND IT WAS true");
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean(KEY_TORCH_ON, false);
-                editor.commit();
+                Settings.System.putBoolean(getContentResolver(), Settings.System.TORCH_STATE, false);
             }
             stopWakeLock();
             db("--- Torch stopped");
@@ -416,7 +395,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     public void onNewIntent(Intent intent) {
         setIntent(intent);
         db("--------- onNewIntent (action="+intent.getAction()+") ----------");
-        if (intent.getAction() != lastIntent)
+        if (intent.getAction() != lastIntent || intent.getAction() == "com.android.systemui.INTENT_TORCH")
             doSomething(intent.getAction());
     }
 
@@ -427,7 +406,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         {
             reallystarted = true;
         }
-//        moveTaskToBack(true); // once Surface is set up - we should be able to
+        moveTaskToBack(true); // once Surface is set up - we should be able to
                               // background ourselves.      
     }
 

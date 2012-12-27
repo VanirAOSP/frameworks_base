@@ -137,6 +137,12 @@ public class VanirTarget {
             mContext.startActivity(intent);
             return true;
         }
+        if (action.equals(ACTION_TORCH)) {
+            Intent intent = new Intent("com.android.systemui.INTENT_TORCH");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+            return true;
+        }
         if (action.equals(ACTION_KILL)) {
             mHandler.post(mKillTask);
             return true;
