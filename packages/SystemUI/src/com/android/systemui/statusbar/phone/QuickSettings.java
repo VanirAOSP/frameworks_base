@@ -117,7 +117,6 @@ class QuickSettings {
     private static final int BATTERY_TILE = 9;
     private static final int AIRPLANE_TILE = 10;
     private static final int BLUETOOTH_TILE = 11;
-    private static final int SWAGGER_TILE = 12;
     private static final int VIBRATE_TILE = 13;
     private static final int SILENT_TILE = 14;
     private static final int FCHARGE_TILE = 15;
@@ -143,7 +142,6 @@ class QuickSettings {
     public static final String BATTERY_TOGGLE = "BATTERY";
     public static final String AIRPLANE_TOGGLE = "AIRPLANE_MODE";
     public static final String BLUETOOTH_TOGGLE = "BLUETOOTH";
-    public static final String SWAGGER_TOGGLE = "SWAGGER";
     public static final String VIBRATE_TOGGLE = "VIBRATE";
     public static final String SILENT_TOGGLE = "SILENT";
     public static final String FCHARGE_TOGGLE = "FCHARGE";
@@ -203,8 +201,6 @@ class QuickSettings {
 
     private ArrayList<String> toggles;
     private String userToggles = null;
-    private long tacoSwagger = 0;
-    private boolean tacoToggle = false;
     private int mTileTextSize = 12;
     private String mFastChargePath;
 
@@ -225,7 +221,6 @@ class QuickSettings {
             toggleMap.put(BATTERY_TOGGLE, BATTERY_TILE);
             toggleMap.put(AIRPLANE_TOGGLE, AIRPLANE_TILE);
             toggleMap.put(BLUETOOTH_TOGGLE, BLUETOOTH_TILE);
-            toggleMap.put(SWAGGER_TOGGLE, SWAGGER_TILE);
             toggleMap.put(VIBRATE_TOGGLE, VIBRATE_TILE);
             toggleMap.put(SILENT_TOGGLE, SILENT_TILE);
             toggleMap.put(FCHARGE_TOGGLE, FCHARGE_TILE);
@@ -1227,42 +1222,6 @@ class QuickSettings {
                             tv.setText(state.label);
                             tv.setTextSize(1, mTileTextSize);
                         }
-                    }
-                });
-                break;
-            case SWAGGER_TILE:
-                quick = (QuickSettingsTileView)
-                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setContent(R.layout.quick_settings_tile_swagger, inflater);
-                TextView tv = (TextView) quick.findViewById(R.id.swagger_textview);
-                tv.setTextSize(1, mTileTextSize);
-                quick.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        switch (event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                if (tacoToggle) {
-                                    TextView tv = (TextView) v.findViewById(R.id.swagger_textview);
-                                    tv.setText(R.string.quick_settings_swagger);
-                                    tv.setTextSize(1, mTileTextSize);
-                                    tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_qs_swagger, 0, 0);
-                                    tacoSwagger = event.getEventTime();
-                                    tacoToggle = false;
-                                } else {
-                                    tacoSwagger = event.getEventTime();
-                                }
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                if ((event.getEventTime() - tacoSwagger) > 2500) {
-                                    TextView tv = (TextView) v.findViewById(R.id.swagger_textview);
-                                    tv.setText(R.string.quick_settings_fbgt);
-                                    tv.setTextSize(1, mTileTextSize);
-                                    tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_qs_fbgt_on, 0, 0);
-                                    tacoToggle = true;
-                                }
-                                break;
-                        }
-                        return true;
                     }
                 });
                 break;
