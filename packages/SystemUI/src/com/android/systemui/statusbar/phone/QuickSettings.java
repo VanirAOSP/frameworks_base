@@ -123,12 +123,12 @@ class QuickSettings {
     private static final int FCHARGE_TILE = 15;
     private static final int SYNC_TILE = 16;
     private static final int NFC_TILE = 17;
-//    private static final int TORCH_TILE = 18;
-    private static final int WIFI_TETHER_TILE = 18;
+    private static final int TORCH_TILE = 18;
     private static final int USB_TETHER_TILE = 19;
     private static final int TWOG_TILE = 20;
     private static final int LTE_TILE = 21;
     private static final int FAV_CONTACT_TILE = 22;
+    private static final int WIFI_TETHER_TILE = 23;
    // private static final int BT_TETHER_TILE = 23;
 
     public static final String USER_TOGGLE = "USER";
@@ -149,7 +149,7 @@ class QuickSettings {
     public static final String FCHARGE_TOGGLE = "FCHARGE";
     public static final String SYNC_TOGGLE = "SYNC";
     public static final String NFC_TOGGLE = "NFC";
-//    public static final String TORCH_TOGGLE = "TORCH";
+    public static final String TORCH_TOGGLE = "TORCH";
     public static final String WIFI_TETHER_TOGGLE = "WIFITETHER";
    // public static final String BT_TETHER_TOGGLE = "BTTETHER";
     public static final String USB_TETHER_TOGGLE = "USBTETHER";
@@ -231,7 +231,7 @@ class QuickSettings {
             toggleMap.put(FCHARGE_TOGGLE, FCHARGE_TILE);
             toggleMap.put(SYNC_TOGGLE, SYNC_TILE);
             toggleMap.put(NFC_TOGGLE, NFC_TILE);
-//            toggleMap.put(TORCH_TOGGLE, TORCH_TILE);
+            toggleMap.put(TORCH_TOGGLE, TORCH_TILE);
             toggleMap.put(WIFI_TETHER_TOGGLE, WIFI_TETHER_TILE);
             toggleMap.put(USB_TETHER_TOGGLE, USB_TETHER_TILE);
             toggleMap.put(TWOG_TOGGLE, TWOG_TILE);
@@ -834,7 +834,7 @@ class QuickSettings {
                     }
                 });
                 break;
-/*            case TORCH_TILE:
+            case TORCH_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
                 quick.setContent(R.layout.quick_settings_tile_torch, inflater);
@@ -895,7 +895,7 @@ class QuickSettings {
                 });
                 restoreFChargeState();
                 break;
-*/            case WIFI_TETHER_TILE:
+            case WIFI_TETHER_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
                 quick.setContent(R.layout.quick_settings_tile_wifi_tether, inflater);

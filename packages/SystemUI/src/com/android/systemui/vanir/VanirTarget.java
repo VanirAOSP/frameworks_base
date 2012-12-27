@@ -77,6 +77,7 @@ public class VanirTarget {
     public final static String ACTION_RECENTS = "**recents**";
     public final static String ACTION_IME = "**ime**";
     public final static String ACTION_KILL = "**kill**";
+    public final static String ACTION_TORCH = "**torch**";
     public final static String ACTION_ASSIST = "**assist**";
     public final static String ACTION_CUSTOM = "**custom**";
     public final static String ACTION_SILENT = "**ring_silent**";

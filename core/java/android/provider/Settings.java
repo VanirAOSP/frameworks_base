@@ -2472,6 +2472,19 @@ public final class Settings {
         public static final String MODE_VOLUME_OVERLAY = "mode_volume_overlay";
 
         /**
+         * whether to hide the Ram Usage Bar on recent switcher
+         *
+         * @hide
+         */
+        public static final String RAM_USAGE_BAR = "ram_usage_bar";
+
+       /**
+        * Key to store Torch state.
+        * @hide 
+        */
+        public static final String TORCH_STATE = "torch_state";
+
+        /**
          * Boolean value whether to link ringtone and notification volumes
          * 
          * @hide
