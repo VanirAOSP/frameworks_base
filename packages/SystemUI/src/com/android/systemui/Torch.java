@@ -351,12 +351,18 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
         db("--------- onStart (action="+getIntent().getAction()+") ----------");
     }
 
+    private void intelligentIntent()
+    {
+        String s = getIntent().getAction();
+        if (s.equals("com.android.systemui.INTENT_TORCH") || s.equals("com.android.systemui.INTENT_TORCH_TOGGLE") || !s.equals(lastIntent))
+            doSomething(s);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         db("--------- onResume (action="+getIntent().getAction()+") ----------");   
-        if (getIntent().getAction() != lastIntent)
-            doSomething(getIntent().getAction());        
+        intelligentIntent();
     }
     
     private void doSomething(String action)
@@ -395,8 +401,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     public void onNewIntent(Intent intent) {
         setIntent(intent);
         db("--------- onNewIntent (action="+intent.getAction()+") ----------");
-        if (intent.getAction() != lastIntent || intent.getAction() == "com.android.systemui.INTENT_TORCH")
-            doSomething(intent.getAction());
+        intelligentIntent();
     }
 
     @Override
