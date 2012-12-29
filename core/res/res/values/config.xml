@@ -384,6 +384,10 @@
          a car dock make the accelerometer more a physical input (like a lid). -->
     <bool name="config_carDockEnablesAccelerometer">true</bool>
 
+    <!-- Controls whether window orientation should use non-polling mode accelerometer.
+         set default to false to use polling mode. -->
+    <bool name="config_nonPollingWindowOrientation">false</bool>
+
     <!-- Indicate whether the lid state impacts the accessibility of
          the physical keyboard.  0 means it doesn't, 1 means it is accessible
          when the lid is open, 2 means it is accessible when the lid is

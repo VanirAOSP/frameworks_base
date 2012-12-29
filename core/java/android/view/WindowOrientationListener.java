@@ -61,6 +61,10 @@ public abstract class WindowOrientationListener {
      */
     public WindowOrientationListener(Context context) {
         this(context, SensorManager.SENSOR_DELAY_UI);
+        boolean nonPolling = context.getResources().getBoolean(
+                com.android.internal.R.bool.config_nonPollingWindowOrientation);
+        if (nonPolling)
+            mRate = SensorManager.SENSOR_DELAY_NOPOLL;
     }
     
     /**

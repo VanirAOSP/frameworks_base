@@ -185,6 +185,12 @@ class HTML5VideoViewProxy extends Handler
             }
         }
 
+        public static void setMediaControllerHidden() {
+            if (mHTML5VideoView != null) {
+                mHTML5VideoView.setMediaControllerHidden();
+            }
+        }
+
         // This is on the UI thread.
         // When native tell Java to play, we need to check whether or not it is
         // still the same video by using videoLayerId and treat it differently.
@@ -769,6 +775,11 @@ class HTML5VideoViewProxy extends Handler
     public void exitFullScreenVideo() {
         VideoPlayer.exitFullScreenVideo(this, mWebView);
     }
+
+    public void setMediaControllerHidden() {
+        VideoPlayer.setMediaControllerHidden();
+    }
+
 
     /**
      * The factory for HTML5VideoViewProxy instances.
