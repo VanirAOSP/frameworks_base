@@ -23,6 +23,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.text.format.DateFormat;
@@ -30,6 +31,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewParent;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.systemui.R;
@@ -38,6 +40,8 @@ import java.util.Date;
 
 public class DateView extends TextView implements OnClickListener {
     private static final String TAG = "DateView";
+
+    private RelativeLayout mParent;
 
     private boolean mAttachedToWindow;
     private boolean mWindowVisible;
@@ -71,7 +75,21 @@ public class DateView extends TextView implements OnClickListener {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mAttachedToWindow = false;
+        if (mParent != null) {
+            mParent.setOnClickListener(null);
+            mParent = null;
+        }
         setUpdates();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (mParent == null) {
+            mParent = (RelativeLayout) getParent();
+            mParent.setOnClickListener(this);
+        }
+
+        super.onDraw(canvas);
     }
 
     @Override

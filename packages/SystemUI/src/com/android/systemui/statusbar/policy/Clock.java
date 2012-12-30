@@ -19,6 +19,7 @@ package com.android.systemui.statusbar.policy;
 import android.app.ActivityManagerNative;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -333,7 +334,11 @@ public class Clock extends TextView implements OnClickListener {
 	
 	    @Override
 	    public void onClick(View v) {
-	        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+	        // start com.android.deskclock/.DeskClock
+        ComponentName clock = new ComponentName("com.android.deskclock",
+                "com.android.deskclock.DeskClock");
+        Intent intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+                .setComponent(clock);
 	        collapseStartActivity(intent);
 	    }
 }
