@@ -31,7 +31,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewParent;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.systemui.R;
@@ -41,7 +40,7 @@ import java.util.Date;
 public class DateView extends TextView implements OnClickListener {
     private static final String TAG = "DateView";
 
-    private RelativeLayout mParent;
+    private View mParent;
 
     private boolean mAttachedToWindow;
     private boolean mWindowVisible;
@@ -69,6 +68,14 @@ public class DateView extends TextView implements OnClickListener {
         super.onAttachedToWindow();
         mAttachedToWindow = true;
         setUpdates();
+
+        if (mParent == null) {
+            final ViewParent parent = getParent();
+            if (parent instanceof View) {
+                mParent = (View)parent;
+                mParent.setOnClickListener(this);
+            }
+        }
     }
     
     @Override
@@ -80,16 +87,6 @@ public class DateView extends TextView implements OnClickListener {
             mParent = null;
         }
         setUpdates();
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        if (mParent == null) {
-            mParent = (RelativeLayout) getParent();
-            mParent.setOnClickListener(this);
-        }
-
-        super.onDraw(canvas);
     }
 
     @Override
