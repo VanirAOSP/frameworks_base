@@ -532,7 +532,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 R.drawable.ic_qs_airplane_on :
                 R.drawable.ic_qs_airplane_off);
         mAirplaneModeState.label = mContext.getString(R.string.quick_settings_airplane_mode_label);
-        if (togglesContain(QuickSettings.GPS_TOGGLE))
+        if (togglesContain(QuickSettings.AIRPLANE_TOGGLE))
             mAirplaneModeCallback.refreshView(mAirplaneModeTile, mAirplaneModeState);
     }
 
