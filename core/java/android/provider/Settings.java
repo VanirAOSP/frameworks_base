@@ -2162,6 +2162,11 @@ public final class Settings {
          */
         @Deprecated
         public static final String SHOW_WEB_SUGGESTIONS = "show_web_suggestions";
+        
+        /**
+         * @hide
+         */
+        public static final String SYSTEMUI_RECENTS_MEM_DISPLAY = "vanir_interface_recents_mem_display";
 
         /**
          * Whether the notification LED should repeatedly flash when a notification is
