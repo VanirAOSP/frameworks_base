@@ -403,7 +403,7 @@ final class ActivityStack {
                             Slog.w(TAG, "Launch timeout has expired, giving up wake lock!");
                             mLaunchingActivity.release();
                         }
-                    }                    
+                    }
                 } break;
                 case RESUME_TOP_ACTIVITY_MSG: {
                     synchronized (mService) {
@@ -3607,9 +3607,9 @@ final class ActivityStack {
 
         // Stop any activities that are scheduled to do so but have been
         // waiting for the next one to start.
-        synchronized (mService) {
-            for (i=0; i<NS; i++) {
-                ActivityRecord r = (ActivityRecord)stops.get(i);
+       for (i=0; i<NS; i++) {
+            ActivityRecord r = (ActivityRecord)stops.get(i);
+            synchronized (mService) {
                 if (r.finishing) {
                     finishCurrentActivityLocked(r, FINISH_IMMEDIATELY, false);
                 } else {
@@ -3621,8 +3621,8 @@ final class ActivityStack {
 
         // Finish any activities that are scheduled to do so but have been
         // waiting for the next one to start.
-        synchronized (mService) {
-            for (i=0; i<NF; i++) {
+        for (i=0; i<NF; i++) {
+            synchronized (mService) {
                 ActivityRecord r = (ActivityRecord)finishes.get(i);
                 activityRemoved = destroyActivityLocked(r, true, false, "finish-idle");
             }
