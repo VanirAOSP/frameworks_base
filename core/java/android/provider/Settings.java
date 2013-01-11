@@ -2343,6 +2343,12 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_TARGETS = "lockscreen_targets";
+        
+         /**  
+         * Allows lockscreen to be rotated
+         * @hide
+         */
+        public static final String LOCKSCREEN_ALLOW_ROTATION = "lockscreen_allow_rotation";
 
         /**
          * Wether the hints for the left and right widgets are shown when the screen is turned on
