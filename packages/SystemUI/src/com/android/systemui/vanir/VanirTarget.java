@@ -122,6 +122,10 @@ public class VanirTarget {
             injectKeyDelayed(KeyEvent.KEYCODE_MENU);
             return true;
         }
+        if (action.equals(ACTION_SEARCH)) {
+            injectKeyDelayed(KeyEvent.KEYCODE_SEARCH);
+            return true;
+        }
         if (action.equals(ACTION_POWER)) {
             injectKeyDelayed(KeyEvent.KEYCODE_POWER);
             return true;
