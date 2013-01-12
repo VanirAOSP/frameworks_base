@@ -21,6 +21,7 @@ import java.io.File;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
+import android.app.KeyguardManager;
 import android.app.StatusBarManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -99,9 +100,12 @@ public class NavigationBarView extends LinearLayout {
      */
     int mCurrentUIMode = 0;
 
-    public String[] mClickActions = new String[5];
-    public String[] mLongpressActions = new String[5];
-    public String[] mPortraitIcons = new String[5];
+    private float mNavigationBarAlpha;
+    public static final float KEYGUARD_ALPHA = 0.44f;
+
+    public String[] mClickActions = new String[7];
+    public String[] mLongpressActions = new String[7];
+    public String[] mPortraitIcons = new String[7];
 
     public final static int StockButtonsQty = 3;
     public final static String[] StockClickActions = {
@@ -416,6 +420,13 @@ public class NavigationBarView extends LinearLayout {
                 v.setVisibility(View.GONE);
                 v.setSupportsLongPress(true);
                 break;
+            case KEY_BACK_ALT:
+                v = new KeyButtonView(mContext, null);
+                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v.setImageResource(R.drawable.ic_sysbar_back_ime);
+                v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                        : R.drawable.ic_sysbar_highlight);
+                v.setTint(true);
         }
 
         return v;
@@ -432,24 +443,6 @@ public class NavigationBarView extends LinearLayout {
         v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                 : R.drawable.ic_sysbar_highlight);
         return v;
-    }
-    
-    private int[] getAppIconPadding() {
-        int[] padding = new int[4];
-        // left
-        padding[0] = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources()
-                .getDisplayMetrics());
-        // top
-        padding[1] = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-                .getDisplayMetrics());
-        // right
-        padding[2] = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources()
-                .getDisplayMetrics());
-        // bottom
-        padding[3] = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
-                getResources()
-                        .getDisplayMetrics());
-        return padding;
     }
 
     
@@ -519,10 +512,32 @@ public class NavigationBarView extends LinearLayout {
             getRecentsButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
         }
         updateMenuArrowKeys();
+        updateKeyguardAlpha();
     }
 
     public void setDisabledFlags(int disabledFlags) {
         setDisabledFlags(disabledFlags, false);
+    }
+
+    private boolean areKeyguardHintsEnabled() {
+        return ((mDisabledFlags & View.STATUS_BAR_DISABLE_HOME) != 0) && !((mDisabledFlags & View.STATUS_BAR_DISABLE_SEARCH) != 0);
+    }
+
+    private boolean isKeyguardEnabled() {
+        KeyguardManager km = (KeyguardManager)mContext.getSystemService(Context.KEYGUARD_SERVICE);
+        if(km == null) return false;
+
+        return km.isKeyguardLocked();
+    }
+
+    private void updateKeyguardAlpha() {
+        if(!isKeyguardEnabled() && (mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0) {
+            // keyboard up, always darken it
+            setBackgroundAlpha(1);
+        } else {
+            // if the user set alpha is below what the keygaurd alpha, match the keyguard alpha and be pretty
+            setBackgroundAlpha(isKeyguardEnabled() && mNavigationBarAlpha < KEYGUARD_ALPHA ? KEYGUARD_ALPHA : mNavigationBarAlpha);
+        }
     }
 
     public void setDisabledFlags(int disabledFlags, boolean force) {
@@ -535,6 +550,7 @@ public class NavigationBarView extends LinearLayout {
         final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0)
                 && ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) == 0);
         final boolean disableSearch = ((disabledFlags & View.STATUS_BAR_DISABLE_SEARCH) != 0);
+        final boolean keygaurdProbablyEnabled = areKeyguardHintsEnabled();
 
         if (mCurrentUIMode != 1 && SLIPPERY_WHEN_DISABLED) { // Tabletmode doesn't deal with slippery
             setSlippery(disableHome && disableRecent && disableBack && disableSearch);
