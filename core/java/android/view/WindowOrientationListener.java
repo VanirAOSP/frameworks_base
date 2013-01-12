@@ -42,8 +42,10 @@ import android.util.Slog;
  */
 public abstract class WindowOrientationListener {
     private static final String TAG = "WindowOrientationListener";
-    private static final boolean LOG = SystemProperties.getBoolean(
-            "debug.orientation.log", false);
+    private static final boolean LOG = SystemProperties.getBoolean( "debug.orientation.log", false);
+    private static final float MAGNITUDE_THRESHOLD = ((float)SystemProperties.getLong( "orientation.magnitude.threshold", 0))/1000.0f;
+
+
 
     private static final boolean USE_GRAVITY_SENSOR = false;
 
@@ -425,23 +427,15 @@ public abstract class WindowOrientationListener {
             mLastFilteredY = y;
             mLastFilteredZ = z;
 
-            boolean isAccelerating = false;
             boolean isFlat = false;
             boolean isSwinging = false;
             if (!skipSample) {
                 // Calculate the magnitude of the acceleration vector.
                 final float magnitude = FloatMath.sqrt(x * x + y * y + z * z);
-                if (magnitude < NEAR_ZERO_MAGNITUDE) {
-                    if (LOG) {
-                        Slog.v(TAG, "Ignoring sensor data, magnitude too close to zero.");
-                    }
+                if (isMagnitudeOutOfRange(magnitude) || Math.abs(magnitude - SensorManager.STANDARD_GRAVITY) < MAGNITUDE_THRESHOLD) {
+                    if (LOG) { Slog.v(TAG, "Ignoring sensor data"); }
                     clearPredictedRotation();
                 } else {
-                    // Determine whether the device appears to be undergoing external acceleration.
-                    if (isAccelerating(magnitude)) {
-                        isAccelerating = true;
-                        mAccelerationTimestampNanos = now;
-                    }
 
                     // Calculate the tilt angle.
                     // This is the angle between the up vector and the x-y plane (the plane of
@@ -449,8 +443,7 @@ public abstract class WindowOrientationListener {
                     //   -90 degrees: screen horizontal and facing the ground (overhead)
                     //     0 degrees: screen vertical
                     //    90 degrees: screen horizontal and facing the sky (on table)
-                    final int tiltAngle = (int) Math.round(
-                            Math.asin(z / magnitude) * RADIANS_TO_DEGREES);
+                    final int tiltAngle = (int) Math.round( Math.asin(z / magnitude) * RADIANS_TO_DEGREES);
                     addTiltHistoryEntry(now, tiltAngle);
 
                     // Determine whether the device appears to be flat or swinging.
@@ -526,7 +519,6 @@ public abstract class WindowOrientationListener {
                         + ", proposedRotation=" + mProposedRotation
                         + ", predictedRotation=" + mPredictedRotation
                         + ", timeDeltaMS=" + timeDeltaMS
-                        + ", isAccelerating=" + isAccelerating
                         + ", isFlat=" + isFlat
                         + ", isSwinging=" + isSwinging
                         + ", timeUntilSettledMS=" + remainingMS(now,
@@ -545,6 +537,7 @@ public abstract class WindowOrientationListener {
                     Slog.v(TAG, "Proposed rotation changed!  proposedRotation=" + mProposedRotation
                             + ", oldProposedRotation=" + oldProposedRotation);
                 }
+		mAccelerationTimestampNanos = now;
                 mOrientationListener.onProposedRotationChanged(mProposedRotation);
             }
         }
@@ -663,7 +656,7 @@ public abstract class WindowOrientationListener {
             }
         }
 
-        private boolean isAccelerating(float magnitude) {
+        private boolean isMagnitudeOutOfRange(float magnitude) {
             return magnitude < MIN_ACCELERATION_MAGNITUDE
                     || magnitude > MAX_ACCELERATION_MAGNITUDE;
         }
