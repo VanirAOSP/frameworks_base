@@ -84,8 +84,8 @@ public class VanirTarget {
     public final static String ACTION_ALARM = "**alarm**";
     public final static String ACTION_TODAY = "**today**";
     public final static String ACTION_CLOCKOPTIONS = "**clockoptions**";
-	public final static String ACTION_VOICEASSIST = "**voiceassist**";
-	public final static String ACTION_SEARCH = "**search**";
+    public final static String ACTION_VOICEASSIST = "**voiceassist**";
+    public final static String ACTION_SEARCH = "**search**";
     public final static String ACTION_NULL = "**null**";
 
     private int mInjectKeyCode;
@@ -171,11 +171,11 @@ public class VanirTarget {
             return true;
         }
         if (action.equals(ACTION_ALARM)) {
-			Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
-			return true;
-		}
+            return true;
+        }
         if (action.equals(ACTION_ASSIST)) {
             Intent intent = new Intent(Intent.ACTION_ASSIST);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -271,7 +271,6 @@ public class VanirTarget {
         return false; // we didn't handle the action!
     }
 
-
     //not using yet and dont want to take time to get drawables... yes lazy dev.
     // Yes Steve, You are a lazy Dev.  I need this :)  - Zaphod 12-01-12
     public Drawable getIconImage(String uri) {
@@ -306,7 +305,7 @@ public class VanirTarget {
                 e.printStackTrace();
             }
         return mContext.getResources().getDrawable(R.drawable.ic_sysbar_null);
-    } 
+    }
 
     public String getProperSummary(String uri) {
         if (uri.equals(ACTION_HOME))
@@ -354,7 +353,7 @@ public class VanirTarget {
             }
         }
 
-        return (friendlyName != null)  ? friendlyName : intent.toUri(0);
+        return (friendlyName != null) ? friendlyName : intent.toUri(0);
     }
 
     private String getFriendlyShortcutName(Intent intent) {
