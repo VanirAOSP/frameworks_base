@@ -153,7 +153,7 @@ public abstract class OrientationEventListener {
      * Returns true if sensor is enabled and false otherwise
      */
     public boolean canDetectOrientation() {
-        return mSensor != null;
+        return mSensor != null && mEnabled;
     }
 
     /**
