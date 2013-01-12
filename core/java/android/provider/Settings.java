@@ -2374,6 +2374,12 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_HIDE_INITIAL_PAGE_HINTS = "lockscreen_hide_initial_page_hints";
+        
+        /**
+         * Whether to use the carousel as widget container
+         * @hide
+         */
+        public static final String LOCKSCREEN_USE_WIDGET_CONTAINER_CAROUSEL = "lockscreen_use_widget_container_carousel";
 
          /**
          * Whether to enable quiet hours.
@@ -2835,12 +2841,6 @@ public final class Settings {
 
         public static final String CURRENT_UI_MODE = "current_ui_mode";
 
-        /**
-         * Whether to use the custom quick unlock screen control
-         * @hide
-         */
-        public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
-        
         /**
          * enabled and order of quick toggles
          * 
