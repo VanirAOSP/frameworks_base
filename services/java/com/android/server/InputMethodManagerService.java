@@ -1618,6 +1618,13 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             mCurMethodId = null;
             unbindCurrentMethodLocked(true, false);
         }
+        try {
+            mShowOngoingImeSwitcherForPhones = Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.STATUS_BAR_IME_SWITCHER) == 1;
+        } catch (SettingNotFoundException e) {
+            mShowOngoingImeSwitcherForPhones = mRes.getBoolean(
+            com.android.internal.R.bool.config_show_IMEswitcher);
+        }
     }
 
     /* package */ void setInputMethodLocked(String id, int subtypeId) {

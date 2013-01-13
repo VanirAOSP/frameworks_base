@@ -1053,4 +1053,8 @@
     <!-- empty string to disable, or like: /sys/kernel/fast_charge/force_fast_charge
          it is disabled by default so devices need to add an overlay to enable-->
     <string name="config_fastChargePath" translatable="false"></string>
+
+    <!-- Setting to false will disable the IME switcher implementation for tablets -->	
+    <bool name="config_show_IMEswitcher">true</bool>
+
 </resources>

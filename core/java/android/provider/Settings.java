@@ -2151,6 +2151,12 @@ public final class Settings {
         public static final String SOUND_EFFECTS_ENABLED = "sound_effects_enabled";
 
         /**
+         * Whether to show the IME switcher in the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_IME_SWITCHER = "status_bar_ime_switcher";
+
+        /**
          * Whether the haptic feedback (long presses, ...) are enabled. The value is
          * boolean (1 or 0).
          */
