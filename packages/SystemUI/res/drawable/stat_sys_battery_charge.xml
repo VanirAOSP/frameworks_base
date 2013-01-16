@@ -237,7 +237,6 @@
 
     <item android:maxLevel="75">
         <animation-list xmlns:android="http://schemas.android.com/apk/res/android" android:oneshot="false">
-        <item android:duration="300" android:drawable="@drawable/stat_sys_battery_charge_anim11"/>
         <item android:duration="300" android:drawable="@drawable/stat_sys_battery_charge_anim12"/>
         <item android:duration="300" android:drawable="@drawable/stat_sys_battery_charge_anim13"/>
         <item android:duration="300" android:drawable="@drawable/stat_sys_battery_charge_anim14"/>
@@ -246,7 +245,7 @@
     </animation-list>
     </item>
 
-    <item android:maxLevel="85">
+    <item android:maxLevel="83">
         <animation-list xmlns:android="http://schemas.android.com/apk/res/android" android:oneshot="false">
         <item android:duration="300" android:drawable="@drawable/stat_sys_battery_charge_anim13"/>
         <item android:duration="300" android:drawable="@drawable/stat_sys_battery_charge_anim14"/>
@@ -255,7 +254,7 @@
     </animation-list>
     </item>
 
-    <item android:maxLevel="94">
+    <item android:maxLevel="95">
         <animation-list xmlns:android="http://schemas.android.com/apk/res/android" android:oneshot="false">
         <item android:duration="1000" android:drawable="@drawable/stat_sys_battery_100"/>
     </animation-list>
