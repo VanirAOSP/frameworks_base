@@ -63,6 +63,7 @@ public class KeyButtonView extends ImageView {
     int mDurationSpeedOff = 50;
     float mGlowAlpha = 0f, mGlowScale = 1f, mDrawingAlpha = 1f;
     boolean mSupportsLongpress = true;
+    boolean mColorable = true;
     protected boolean mHandlingLongpress = false;
     RectF mRect = new RectF(0f,0f,0f,0f);
     AnimatorSet mPressedAnim;
@@ -90,7 +91,17 @@ public class KeyButtonView extends ImageView {
     }
 
     public KeyButtonView(Context context, AttributeSet attrs, int defStyle) {
+        this(context, attrs, defStyle, true);
+    }
+
+    public KeyButtonView(Context context, AttributeSet attrs, boolean colorable) {
+        this(context, attrs, 0, colorable);
+    }
+
+    public KeyButtonView(Context context, AttributeSet attrs, int defStyle, boolean colorable) {
         super(context, attrs);
+
+        mColorable = colorable;
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
                 defStyle, 0);
@@ -401,7 +412,7 @@ public class KeyButtonView extends ImageView {
                     com.android.internal.R.color.white);
         int color = Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_TINT, defaultButtonColor);
-        if (color == Integer.MIN_VALUE) {
+        if (!mColorable || color == Integer.MIN_VALUE) {
             setColorFilter(null);
         } else {
             setColorFilter(null);

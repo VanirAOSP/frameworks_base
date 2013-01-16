@@ -22,7 +22,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
     public String mClickAction, mLongpress;
 
     public ExtensibleKeyButtonView(Context context, AttributeSet attrs, String ClickAction, String Longpress) {
-        super(context, attrs);
+        super(context, attrs, ClickAction.startsWith("**"));
         setActions(ClickAction,Longpress);
     }
 
