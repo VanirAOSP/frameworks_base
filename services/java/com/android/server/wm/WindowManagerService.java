@@ -9522,28 +9522,30 @@ public class WindowManagerService extends IWindowManager.Stub
                 if (DEBUG_ORIENTATION &&
                         winAnimator.mDrawState == WindowStateAnimator.DRAW_PENDING) Slog.i(
                         TAG, "Resizing " + win + " WITH DRAW PENDING");
+                final boolean reportDraw
+                        = winAnimator.mDrawState == WindowStateAnimator.DRAW_PENDING;
+                final Configuration newConfig = configChanged ? win.mConfiguration : null;
                 if (win.mClient instanceof IWindow.Stub) {
                     // Simulate one-way call if win.mClient is a local object.
                     final IWindow client = win.mClient;
                     final Rect frame = win.mFrame;
                     final Rect contentInsets = win.mLastContentInsets;
                     final Rect visibleInsets = win.mLastVisibleInsets;
-                    final boolean reportDraw = winAnimator.mDrawState == WindowStateAnimator.DRAW_PENDING;
-                    final Configuration newConfig = configChanged ? win.mConfiguration : null;
                     mH.post(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                client.resized(frame, contentInsets, visibleInsets, reportDraw, newConfig);
+                                client.resized(frame, contentInsets, visibleInsets,
+                                               reportDraw, newConfig);
                             } catch (RemoteException e) {
-                                // Actually, it's not a remote call. RemoteException mustn't be raised.
+                                // Actually, it's not a remote call.
+                                // RemoteException mustn't be raised.
                             }
                         }
                     });
                 } else {
                     win.mClient.resized(win.mFrame, win.mLastContentInsets, win.mLastVisibleInsets,
-                            winAnimator.mDrawState == WindowStateAnimator.DRAW_PENDING,
-                            configChanged ? win.mConfiguration : null);
+                                        reportDraw, newConfig);
                 }
                 win.mContentInsetsChanged = false;
                 win.mVisibleInsetsChanged = false;
