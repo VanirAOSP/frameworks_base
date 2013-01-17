@@ -72,7 +72,7 @@ final class DisplayPowerState {
     private Runnable mCleanListener;
 
     public DisplayPowerState(ElectronBeam electronBean,
-           DisplayBlanker displayBlanker, LightsService.Light backlight) {
+            DisplayBlanker displayBlanker, LightsService.Light backlight) {
         mHandler = new Handler(true /*async*/);
         mChoreographer = Choreographer.getInstance();
         mElectronBeam = electronBean;
