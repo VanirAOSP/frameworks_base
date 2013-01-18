@@ -82,7 +82,8 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:layout_gravity="top|right"
-            android:src="@drawable/ic_notify_clear" />
+            android:src="@drawable/ic_notify_clear"
+            android:state_pressed="true" android:drawable="@drawable/ic_notify_clear_pressed" />
 
     </FrameLayout>
 
