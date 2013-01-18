@@ -90,6 +90,7 @@ import android.widget.Toast;
 
 import com.android.internal.telephony.PhoneConstants;
 import com.android.systemui.vanir.VanirTarget;
+import com.vanir.util.CMDProcessor;
 
 import java.io.File;
 import java.io.InputStream;
@@ -203,6 +204,12 @@ class QuickSettings {
     private String userToggles = null;
     private int mTileTextSize = 12;
     private String mFastChargePath;
+
+    //this is doing it the wrong way... assumes that toggle changes will have taken effect
+    //within 3 seconds, which is reasonable, but I'd rather the unobservable toggles be polled
+    //while the toggles are visible... just wasn't getting it to start working.
+    private static final int TICKS_UNTIL_CONFIDENT_QS_UPDATED=12; //3 seoncds at 4 hz
+    private int ticksleft;
 
     private HashMap<String, Integer> toggleMap;
 
@@ -669,7 +676,6 @@ class QuickSettings {
                         } else {
                             changeWifiState(false);
                         }
-                        mHandler.postDelayed(delayedRefresh, 1000);
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
@@ -836,8 +842,8 @@ class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        dothingsthewrongway();
                         mVanirTarget.launchAction(mVanirTarget.ACTION_TORCH);
-                        mHandler.postDelayed(delayedRefresh, 1000);
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
@@ -860,6 +866,12 @@ class QuickSettings {
             case FCHARGE_TILE:
                 if((mFastChargePath == null || mFastChargePath.isEmpty()) ||
                         !new File(mFastChargePath).exists()) {
+                    if (mFastChargePath == null)                        
+                        Log.e("VANIR", "OH NOEZ FCHARGE PATH NULL!");
+                    else if (mFastChargePath.isEmpty())
+                        Log.e("VANIR", "OH NOEZ FCHARGE PATH EMPTY!");
+                    else
+                        Log.e("VANIR", "OH NOEZ "+mFastChargePath+" DOESN'T EXIST!");
                     // config not set or config set and kernel doesn't support it?
                     break;
                 }
@@ -904,7 +916,7 @@ class QuickSettings {
                         } else {
                             changeWifiApState(false);
                         }
-                        mHandler.postDelayed(delayedRefresh, 1000);
+                        dothingsthewrongway();
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
@@ -933,7 +945,7 @@ class QuickSettings {
                     public void onClick(View v) {
                         boolean enabled = updateUsbState() ? false : true;
                         if (connManager.setUsbTethering(enabled) == ConnectivityManager.TETHER_ERROR_NO_ERROR) {
-                            mHandler.postDelayed(delayedRefresh, 1000);  
+                            dothingsthewrongway();
                         }
                     }
                 });
@@ -1586,17 +1598,24 @@ class QuickSettings {
     };
 
     private void setFastCharge(final boolean on) {
-        Intent fastChargeIntent = new Intent("com.aokp.romcontrol.ACTION_CHANGE_FCHARGE_STATE");
-        fastChargeIntent.setPackage("com.aokp.romcontrol");
-        fastChargeIntent.putExtra("newState", on);
-        mContext.sendBroadcast(fastChargeIntent);
-        mHandler.postDelayed(new Runnable() {
+        mHandler.post(new Runnable() {
             public void run() {
-                mModel.refreshFChargeTile();
+                final String fCHargePath = mContext.getString(com.android.internal.R.string.config_fastChargePath);
+                if (fCHargePath == null || fCHargePath.isEmpty() || !new File(fCHargePath).exists()) {
+                    Log.e("VANIR", "Attempted to change fast charge state but it's not enabled?");
+                    return;
+                }
+                final String value = on ? "1" : "0";
+                new CMDProcessor().sh.run("echo " + value + " > " + fCHargePath+" || echo "+value+" | tee "+fCHargePath+" >& /dev/null");
+                mHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        mModel.refreshFChargeTile();
+                    }
+                }, 250);
             }
-        }, 250);
+        });
     }
-        
+
     private void changeWifiApState(final boolean desiredState) {
         if (wifiManager == null) {
             return;
@@ -1652,11 +1671,28 @@ class QuickSettings {
       return false;
     }
 
+    void startTicking() {
+        //start updating while QS visible... should be invoked in PhoneStatsBarView.java
+    }
+
+    void stopTicking() {
+        //stop updating while QS visible... should be invoked in PhoneStatsBarView.java
+    }
+
+    void dothingsthewrongway() {
+        ticksleft = TICKS_UNTIL_CONFIDENT_QS_UPDATED;
+        mHandler.removeCallbacks(delayedRefresh);
+        mHandler.postDelayed(delayedRefresh, 250);
+    }
+
     final Runnable delayedRefresh = new Runnable () {
         public void run() {
+            mHandler.removeCallbacks(delayedRefresh);
             mModel.refreshWifiTetherTile();
             mModel.refreshUSBTetherTile();
             mModel.refreshTorchTile();
+            if ((--ticksleft) > 0)
+                mHandler.postDelayed(delayedRefresh, 250);            
         }
     };
 

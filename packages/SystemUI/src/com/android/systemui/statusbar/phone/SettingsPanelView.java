@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,18 @@ public class SettingsPanelView extends PanelView {
 
     public SettingsPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    void startQSPolling() {
+        if (mQS == null)
+            return;
+        mQS.startTicking();
+    }
+
+    void stopQSPolling() {
+        if (mQS == null)
+            return;
+        mQS.stopTicking();
     }
 
     @Override

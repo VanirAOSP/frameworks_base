@@ -288,6 +288,20 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
+    //start polling quicksettings that can't automagically update themselves
+    private void startQSPolling() {
+        if (mSettingsPanel == null)
+            return;
+        mSettingsPanel.startQSPolling();
+    }
+
+    //stop polling quicksettings that can't automagically update themselves
+    private void stopQSPolling() {
+        if (mSettingsPanel == null)
+            return;
+        mSettingsPanel.stopQSPolling();
+    }
+
     // XXX: gesture research
     private final GestureRecorder mGestureRec = DEBUG_GESTURES
         ? new GestureRecorder("/sdcard/statusbar_gestures.dat") 
@@ -1365,10 +1379,12 @@ public class PhoneStatusBar extends BaseStatusBar {
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
         mWindowManager.updateViewLayout(mStatusBarWindow, lp);
 
+        stopQSPolling();
+
         // Updating the window layout will force an expensive traversal/redraw.
         // Kick off the reveal animation after this is complete to avoid animation latency.
         if (revealAfterDraw) {
-//            mHandler.post(mStartRevealAnimation);
+            //mHandler.post(mStartRevealAnimation);
         }
 
         visibilityChanged(true);
@@ -1401,6 +1417,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mStatusBarWindow.cancelExpandHelper();
         mStatusBarView.collapseAllPanels(true);
+
+        stopQSPolling();
     }
 
     public ViewPropertyAnimator setVisibilityWhenDone(
@@ -1461,6 +1479,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         if (mHasFlipSettings && mScrollView.getVisibility() != View.VISIBLE) {
             flipToNotifications();
         }
+        stopQSPolling();
 
         if (false) postStartTracing();
     }
@@ -1503,6 +1522,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                 updateCarrierLabelVisibility(false);
             }
         }, FLIP_DURATION - 150);
+
+        stopQSPolling();
     }
 
     @Override
@@ -1517,11 +1538,13 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         if (mHasFlipSettings) {
             mNotificationPanel.expand();
+            stopQSPolling();
             if (mFlipSettingsView.getVisibility() != View.VISIBLE) {
                 flipToSettings();
             }
         } else if (mSettingsPanel != null) {
             mSettingsPanel.expand();
+            startQSPolling();
         }
 
         if (false) postStartTracing();
@@ -1539,6 +1562,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         mNotificationButton.setVisibility(View.VISIBLE);
         mNotificationButton.setAlpha(1f);
         mClearButton.setVisibility(View.GONE);
+        
+        startQSPolling();
     }
 
     public void flipToSettings() {
@@ -1585,6 +1610,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                 updateCarrierLabelVisibility(false);
             }
         }, FLIP_DURATION - 150);
+        
+        startQSPolling();
     }
 
     public void flipPanels() {
@@ -1599,6 +1626,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     public void animateCollapseQuickSettings() {
         mStatusBarView.collapseAllPanels(true);
+
+        stopQSPolling();
     }
 
     void makeExpandedInvisibleSoon() {
@@ -1615,6 +1644,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         // Ensure the panel is fully collapsed (just in case; bug 6765842, 7260868)
         mStatusBarView.collapseAllPanels(/*animate=*/ false);
+        stopQSPolling();
 
         if (mHasFlipSettings) {
             // reset things to their proper state
