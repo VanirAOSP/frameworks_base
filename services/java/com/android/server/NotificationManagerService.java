@@ -1190,7 +1190,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                     sendAccessibilityEvent(notification, pkg);
                 }
             } else {
-                Slog.e(TAG, "Ignoring notification with icon==0: " + notification);
+                //Slog.e(TAG, "Ignoring notification with icon==0: " + notification);
                 if (old != null && old.statusBarKey != null) {
                     long identity = Binder.clearCallingIdentity();
                     try {
