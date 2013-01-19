@@ -2241,6 +2241,14 @@ public final class Settings {
         */
         public static final String NOTIFICATION_LIGHT_PULSE_VMAIL_LED_ON = "notification_light_pulse_vmail_led_on";
 
+        /**  
+         * Defines the shortcuts to be shown on lockscreen
+         * Usage is like this: target:icon|target:icon|target:icon
+         * if :icon is not set, default application icon will be used
+         * @hide
+         */
+         public static final String LOCKSCREEN_SHORTCUTS = "lockscreen_shortcuts";
+
         /**
          * How long to wait between flashes for the voicemail notification LED
          * @hide

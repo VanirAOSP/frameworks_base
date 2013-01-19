@@ -39,41 +39,38 @@
         android:clipToPadding="false"
         android:gravity="center">
 
-     <View
-       android:id="@+id/keyguard_selector_view_frame"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:layout_marginLeft="16dp"
-       android:layout_marginRight="16dp"
+        <View
+            android:id="@+id/keyguard_selector_view_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:background="@*android:drawable/kg_bouncer_bg_white"/>
- 
-      <include layout="@layout/keyguard_glow_pad_container" />
 
-      <include layout="@layout/keyguard_eca"
+        <include layout="@layout/keyguard_glow_pad_container" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal">
+
+            <include layout="@layout/keyguard_shortcuts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"/>
+
+            <include layout="@layout/keyguard_message_area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal" />
+        </LinearLayout>
+
+        <include layout="@layout/keyguard_eca"
             android:id="@+id/keyguard_selector_fade_container"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="bottom|center_horizontal" />
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
-
-            <include layout="@layout/keyguard_shortcuts"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_gravity="top|center_horizontal"/>
- 
-            <include layout="@layout/keyguard_message_area"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_gravity="bottom|center_horizontal" />
- 
-        </LinearLayout>
-
-       
     </FrameLayout>
 
 </com.android.internal.policy.impl.keyguard.KeyguardSelectorView>

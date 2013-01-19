@@ -1372,6 +1372,7 @@
   <java-symbol type="id" name="keyguard_user_selector" />
   <java-symbol type="id" name="key_enter" />
   <java-symbol type="id" name="keyguard_selector_view_frame" />
+  <java-symbol type="id" name="shortcuts" />
   <java-symbol type="integer" name="config_carDockRotation" />
   <java-symbol type="integer" name="config_defaultUiModeType" />
   <java-symbol type="integer" name="config_deskDockRotation" />
@@ -1395,6 +1396,7 @@
   <java-symbol type="layout" name="keyguard_screen_unlock_landscape" />
   <java-symbol type="layout" name="keyguard_screen_unlock_portrait" />
   <java-symbol type="layout" name="keyguard_selector_view" />
+   <java-symbol type="layout" name="keyguard_shortcuts" />
   <java-symbol type="layout" name="keyguard_pattern_view" />
   <java-symbol type="layout" name="keyguard_password_view" />
   <java-symbol type="layout" name="keyguard_pin_view" />
@@ -1870,5 +1872,28 @@
   <java-symbol type="drawable" name="ic_lock_reboot" />
   <java-symbol type="drawable" name="ic_lock_expanded_desktop" />
   <java-symbol type="drawable" name="ic_lock_expanded_desktop_off" />
-  
+
+   <!-- From lockscreen targets -->
+  <java-symbol type="drawable" name="list_selector_holo_dark" />
+  <java-symbol type="drawable" name="ic_lockscreen_alarm" />
+  <java-symbol type="drawable" name="ic_lockscreen_browser" />
+  <java-symbol type="drawable" name="ic_lockscreen_calendar" />
+  <java-symbol type="drawable" name="ic_lockscreen_camera" />
+  <java-symbol type="drawable" name="ic_lockscreen_email" />
+  <java-symbol type="drawable" name="ic_lockscreen_email2" />
+  <java-symbol type="drawable" name="ic_lockscreen_facebook" />
+  <java-symbol type="drawable" name="ic_lockscreen_gallery" />
+  <java-symbol type="drawable" name="ic_lockscreen_google_small" />
+  <java-symbol type="drawable" name="ic_lockscreen_gplus" />
+  <java-symbol type="drawable" name="ic_lockscreen_gtalk" />
+  <java-symbol type="drawable" name="ic_lockscreen_maps" />
+  <java-symbol type="drawable" name="ic_lockscreen_movie" />
+  <java-symbol type="drawable" name="ic_lockscreen_music" />
+  <java-symbol type="drawable" name="ic_lockscreen_nav" />
+  <java-symbol type="drawable" name="ic_lockscreen_phone" />
+  <java-symbol type="drawable" name="ic_lockscreen_podcast" />
+  <java-symbol type="drawable" name="ic_lockscreen_rss" />
+  <java-symbol type="drawable" name="ic_lockscreen_sms" />
+  <java-symbol type="drawable" name="ic_lockscreen_twitter" />
+
 </resources>
