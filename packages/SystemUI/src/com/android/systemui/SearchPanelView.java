@@ -74,6 +74,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+
+
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.GlowPadView.OnTriggerListener;
 import com.android.internal.widget.multiwaveview.TargetDrawable;
@@ -84,7 +86,7 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
-import com.android.systemui.vanir.VanirTarget;
+import com.android.systemui.aokp.AwesomeAction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,6 +120,7 @@ public class SearchPanelView extends FrameLayout implements
     private int startPosOffset;
 
     private int mNavRingAmount;
+    private boolean mLefty;
     private boolean mLongPress;
     private boolean mSearchPanelLock;
     private int mTarget;
@@ -143,19 +146,21 @@ public class SearchPanelView extends FrameLayout implements
         
         mVanirTarget = new VanirTarget(context);
 
+        mContentResolver = mContext.getContentResolver();
+
         SettingsObserver observer = new SettingsObserver(new Handler());
         observer.observe();
         updateSettings();
 
-   }
-   
-   private class H extends Handler {
+    }
+    private class H extends Handler {
         public void handleMessage(Message m) {
             switch (m.what) {
             }
         }
     }
     
+
     private H mHandler = new H();
 
     class GlowPadTriggerListener implements GlowPadView.OnTriggerListener {
@@ -163,25 +168,26 @@ public class SearchPanelView extends FrameLayout implements
         
         final Runnable SetLongPress = new Runnable () {
 
+       final Runnable SetLongPress = new Runnable () {
             public void run() {
                 if (!mSearchPanelLock) {
                     mLongPress = true;
                     Log.d(TAG,"LongPress!");
                     mBar.hideSearchPanel();
-                    mVanirTarget.launchAction(longList.get(mTarget));
+                    AwesomeAction.getInstance(mContext).launchAction(longList.get(mTarget));
                     mSearchPanelLock = true;
-                }
+                 }
             }
         };
 
         public void onGrabbed(View v, int handle) {
-			mSearchPanelLock = false;
+            mSearchPanelLock = false;
         }
 
         public void onReleased(View v, int handle) {
         }
 
-         public void onTargetChange(View v, final int target) {
+        public void onTargetChange(View v, final int target) {
             if (target == -1) {
                 mHandler.removeCallbacks(SetLongPress);
                 mLongPress = false;
@@ -207,8 +213,8 @@ public class SearchPanelView extends FrameLayout implements
             final int resId = mGlowPadView.getResourceIdForTarget(target);
             mTarget = target;
             if (!mLongPress) {
-               mVanirTarget.launchAction(intentList.get(target));
-               mHandler.removeCallbacks(SetLongPress);           
+                AwesomeAction.getInstance(mContext).launchAction(intentList.get(target));
+               mHandler.removeCallbacks(SetLongPress);
             }
         }
 
@@ -236,10 +242,12 @@ public class SearchPanelView extends FrameLayout implements
         // TODO: fetch views
         mGlowPadView = (GlowPadView) findViewById(R.id.glow_pad_view);
         mGlowPadView.setOnTriggerListener(mGlowPadViewListener);
+
         updateSettings();
         setDrawables();
     }
     
+
     private void setDrawables() {
         mLongPress = false;
         mSearchPanelLock = false;
@@ -255,12 +263,20 @@ public class SearchPanelView extends FrameLayout implements
         int middleBlanks = 0;
 
          if (screenLayout() == Configuration.SCREENLAYOUT_SIZE_LARGE || isScreenPortrait()) {
-             startPosOffset = 1;
-             endPosOffset = (mNavRingAmount) + 1;
+             startPosOffset =  1;
+             endPosOffset =  (mNavRingAmount) + 1;
          } else {
-                    startPosOffset = (Math.min(1,mNavRingAmount / 2)) + 2;
-                    endPosOffset = startPosOffset - 1;
-                
+            // next is landscape for lefty navbar is on left
+                if (mLefty) {
+                    startPosOffset =  1 - (mNavRingAmount % 2);
+                    middleBlanks = mNavRingAmount + 2;
+                    endPosOffset = 0;
+
+                } else {
+                //lastly the standard landscape with navbar on right
+                    startPosOffset =  (Math.min(1,mNavRingAmount / 2)) + 2;
+                    endPosOffset =  startPosOffset - 1;
+                }
         }
 
         intentList.clear();
@@ -296,12 +312,12 @@ public class SearchPanelView extends FrameLayout implements
         }
 
         // Add Rest of User Targets for leftys
- //       for (int j = 0; j < middleFinish; j++) {
-  //          int i = j + middleStart;
-  //          intentList.add(targetActivities[i]);
-  //          longList.add(longActivities[i]);
-   //         storedDraw.add(getTargetDrawable(targetActivities[i]));
-   //     }
+        for (int j = 0; j < middleFinish; j++) {
+            int i = j + middleStart;
+            intentList.add(targetActivities[i]);
+            longList.add(longActivities[i]);
+            storedDraw.add(getTargetDrawable(targetActivities[i]));
+        }
 
         // Add End Place Holder Targets
         for (int i = 0; i < endPosOffset; i++) {
@@ -356,7 +372,7 @@ public class SearchPanelView extends FrameLayout implements
             return new TargetDrawable(mResources, selector);
         } catch (Exception e) {
             return cDrawable;
-        } 
+        }
     }
 
     private void maybeSwapSearchIcon() {
@@ -537,12 +553,14 @@ public class SearchPanelView extends FrameLayout implements
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_LEFTY_MODE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SYSTEMUI_NAVRING_AMOUNT), false, this);
 
             for (int i = 0; i < 5; i++) {
-                           resolver.registerContentObserver(
+	            resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.SYSTEMUI_NAVRING[i]), false, this);
-                           resolver.registerContentObserver(
+	            resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.SYSTEMUI_NAVRING_LONG[i]), false, this);
             }
 
@@ -563,6 +581,9 @@ public class SearchPanelView extends FrameLayout implements
             longActivities[i] = Settings.System.getString(
                     mContext.getContentResolver(), Settings.System.SYSTEMUI_NAVRING_LONG[i]);
         }
+
+        mLefty = (Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_LEFTY_MODE, false));
 
         mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
                          Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);

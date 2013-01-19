@@ -96,6 +96,28 @@ public class GlowPadView extends View {
      */
     public final static String EMPTY_TARGET = "empty";
 
+
+    /**
+     * @hide
+     */
+    public final static String ICON_RESOURCE = "icon_resource";
+
+    /**
+     * @hide
+     */
+    public final static String ICON_PACKAGE = "icon_package";
+
+    /**
+     * @hide
+     */
+    public final static String ICON_FILE = "icon_file";
+
+    /**
+     *
+     * @hide
+     */
+    public final static String EMPTY_TARGET = "empty";
+
     // Animation properties.
     private static final float SNAP_MARGIN_DEFAULT = 20.0f; // distance to ring before we snap to it
 
@@ -105,6 +127,7 @@ public class GlowPadView extends View {
         public void onGrabbed(View v, int handle);
         public void onReleased(View v, int handle);
         public void onTrigger(View v, int target);
+        public void onTargetChange(View v, int target);
         public void onGrabbedStateChange(View v, int handle);
         public void onFinishFinalAnimation();
     }
@@ -222,7 +245,7 @@ public class GlowPadView extends View {
                 internalSetTargetResources(mNewTargetResources);
                 mNewTargetResources = 0;
                 hideTargets(false, false);
-                } else if (mNewTargetDrawables != null) {
+            } else if (mNewTargetDrawables != null) {
                 internalSetTargetResources(mNewTargetDrawables);
                 mNewTargetDrawables = null;
                 hideTargets(false, false);
@@ -470,7 +493,9 @@ public class GlowPadView extends View {
             target.setState(TargetDrawable.STATE_INACTIVE);
         }
         mActiveTarget = -1;
-    
+        if (mOnTriggerListener != null) {
+            mOnTriggerListener.onTargetChange(this, mActiveTarget);
+        }
     }
 
     /**
@@ -1001,7 +1026,9 @@ public class GlowPadView extends View {
             }
         }
         mActiveTarget = activeTarget;
-    
+        if (mOnTriggerListener !=null) {
+            mOnTriggerListener.onTargetChange(this, mActiveTarget);
+        }
     }
 
     @Override

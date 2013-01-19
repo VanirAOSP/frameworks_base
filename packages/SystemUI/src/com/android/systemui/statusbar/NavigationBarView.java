@@ -39,26 +39,24 @@ import android.os.ServiceManager;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
-import android.util.TypedValue;
-import android.view.animation.AccelerateInterpolator;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Surface;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.systemui.vanir.VanirTarget;
 import com.android.systemui.R;
-import com.android.systemui.statusbar.BaseStatusBar;
-import com.android.systemui.statusbar.DelegateViewHelper;
+import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.statusbar.policy.KeyButtonView;
-import com.android.systemui.statusbar.policy.ExtensibleKeyButtonView;
+import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
+import com.android.systemui.statusbar.policy.key.RecentsKeyButtonView;
 
 public class NavigationBarView extends LinearLayout {
     final static boolean DEBUG = false;
@@ -83,19 +81,19 @@ public class NavigationBarView extends LinearLayout {
     boolean mHidden, mLowProfile, mShowMenu;
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
-
     private Drawable mBackIcon, mBackLandIcon, mBackAltIcon, mBackAltLandIcon;
     private boolean mMenuArrowKeys;
     
     public DelegateViewHelper mDelegateHelper;
-
-    private VanirTarget mVanirTarget;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
     final static int MSG_CHECK_INVALID_LAYOUT = 8686;
 
     int mNumberOfButtons = 3;
+
+    // Will determine if NavBar goes to the left side in Landscape Mode
+    private boolean mLeftyMode;
 
     /* 0 = Phone UI
      * 1 = Tablet UI
@@ -104,9 +102,9 @@ public class NavigationBarView extends LinearLayout {
     int mCurrentUIMode = 0;
 
     int mNavigationBarColor = -1;
+
     private float mNavigationBarAlpha;
     public static final float KEYGUARD_ALPHA = 0.44f;
-
 
     public String[] mClickActions = new String[7];
     public String[] mLongpressActions = new String[7];
@@ -114,25 +112,25 @@ public class NavigationBarView extends LinearLayout {
 
     public final static int StockButtonsQty = 3;
     public final static String[] StockClickActions = {
-        VanirTarget.ACTION_BACK,
-        VanirTarget.ACTION_HOME,
-        VanirTarget.ACTION_RECENTS,
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL };
+        AwesomeAction.ACTION_BACK,
+        AwesomeAction.ACTION_HOME,
+        AwesomeAction.ACTION_RECENTS,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL };
     public final static String[] StockLongpress = {
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL,
-        VanirTarget.ACTION_NULL };
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL };
 
     FrameLayout rot0;
     FrameLayout rot90;
-    
+
     //Definitions for NavBar Menu button customization
     public final static int SHOW_LEFT_MENU = 1;
     public final static int SHOW_RIGHT_MENU = 0;
@@ -148,6 +146,7 @@ public class NavigationBarView extends LinearLayout {
     public static final int KEY_MENU_LEFT = 5;
     public static final int KEY_ARROW_LEFT = 21; // pretty cute right
     public static final int KEY_ARROW_RIGHT = 22;
+    public static final int KEY_BACK_ALT = 1000;
 
 
 
@@ -155,7 +154,6 @@ public class NavigationBarView extends LinearLayout {
     private int mMenuLocation;
     private boolean mHasBigMenuButton = false;
 
-    
     private class H extends Handler {
         public void handleMessage(Message m) {
             switch (m.what) {
@@ -181,6 +179,7 @@ public class NavigationBarView extends LinearLayout {
 
     public void setDelegateView(View view) {
         mDelegateHelper.setDelegateView(view);
+        //mDelegateHelper.setLefty(mLeftyMode);
     }
 
     public void setBar(BaseStatusBar phoneStatusBar) {
@@ -201,7 +200,7 @@ public class NavigationBarView extends LinearLayout {
     }
 
     private H mHandler = new H();
-    
+
     public View getLeftMenuButton() {
         return mCurrentView.findViewById(R.id.menu_left);
     }
@@ -253,9 +252,8 @@ public class NavigationBarView extends LinearLayout {
 
         mBackIcon = res.getDrawable(R.drawable.ic_sysbar_back);
         mBackLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_land);
-        mBackAltIcon = res.getDrawable(R.drawable.ic_sysbar_back_ime);
-        mBackAltLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_ime);
-        mVanirTarget = new VanirTarget(context);
+        mBackAltIcon = ((KeyButtonView)generateKey(false, KEY_BACK_ALT)).getDrawable(); //res.getDrawable(R.drawable.ic_sysbar_back_ime);
+        mBackAltLandIcon = ((KeyButtonView)generateKey(true, KEY_BACK_ALT)).getDrawable(); // res.getDrawable(R.drawable.ic_sysbar_back_ime);
     }
 
     private void makeBar() {
@@ -284,7 +282,7 @@ public class NavigationBarView extends LinearLayout {
                         mLongpressActions[j],
                         mPortraitIcons[j]);
                 v.setTag((landscape ? "key_land_" : "key_") + j);
-                v.setVanirTarget(mVanirTarget);
+//                v.setAokpTarget(mAokpTarget);
                 iconUri = mPortraitIcons[j];
                 if (iconUri != null && iconUri.length() > 0) {
                     // custom icon from the URI here
@@ -292,12 +290,14 @@ public class NavigationBarView extends LinearLayout {
                     if (f.exists()) {
                         v.setImageDrawable(new BitmapDrawable(getResources(), f.getAbsolutePath()));
                     }
+                    v.setTint(false);
                 } else {
-                        v.setImageDrawable(mVanirTarget.getIconImage(mClickActions[j]));
+                    v.setImageDrawable(AwesomeAction.getInstance(mContext).getIconImage(mClickActions[j]));
+                    v.setTint(mClickActions[j].startsWith("**"));
                 }
-                addButton(navButtonLayout, v, landscape);
+                addButton(navButtonLayout, v, landscape && !mLeftyMode);
                 // if we are in LeftyMode, then we want to add to end, like Portrait
-                addLightsOutButton(lightsOut, v, landscape, false);
+                addLightsOutButton(lightsOut, v, landscape && !mLeftyMode, false);
 
                 if (v.getId() == R.id.back){
                 	mBackIcon = mBackLandIcon = v.getDrawable();
@@ -321,12 +321,12 @@ public class NavigationBarView extends LinearLayout {
                     // since we didn't add these at the beginning, we need to insert it now
                     // the behavior is backwards from landscape (ie, insert at beginning
                     // if portrait, add to end if landscape
-                    addButton(navButtonLayout, leftMenuKey, !landscape || (landscape));
-                    addLightsOutButton(lightsOut, leftMenuKey, !landscape || (landscape), true);
+                    addButton(navButtonLayout, leftMenuKey, !landscape || (landscape && mLeftyMode));
+                    addLightsOutButton(lightsOut, leftMenuKey, !landscape || (landscape && mLeftyMode), true);
 
                     View rightMenuKey = generateKey(landscape, KEY_MENU_RIGHT);
-                    addButton(navButtonLayout, rightMenuKey, landscape);
-                    addLightsOutButton(lightsOut, rightMenuKey, landscape, true);
+                    addButton(navButtonLayout, rightMenuKey, landscape && !mLeftyMode);
+                    addLightsOutButton(lightsOut, rightMenuKey, landscape && !mLeftyMode, true);
                 }
             } else {
                 // there's a big menu button.
@@ -344,7 +344,7 @@ public class NavigationBarView extends LinearLayout {
         }
         setBackgroundAlpha(mNavigationBarAlpha);
     }
-    
+
     private void addLightsOutButton(LinearLayout root, View v, boolean landscape, boolean empty) {
 
         ImageView addMe = new ImageView(mContext);
@@ -358,7 +358,6 @@ public class NavigationBarView extends LinearLayout {
             root.addView(addMe, 0);
         else
             root.addView(addMe);
-
     }
 
     private void addButton(ViewGroup root, View addMe, boolean landscape) {
@@ -367,7 +366,7 @@ public class NavigationBarView extends LinearLayout {
         else
             root.addView(addMe);
     }
-    
+
     private View generateKey(boolean landscape, int keyId) {
         KeyButtonView v = null;
         Resources r = getResources();
@@ -391,6 +390,7 @@ public class NavigationBarView extends LinearLayout {
                 v.setContentDescription(r.getString(R.string.accessibility_menu));
                 v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                         : R.drawable.ic_sysbar_highlight);
+                v.setTint(true);
                 break;
             case KEY_MENU_LEFT:
                 v = new KeyButtonView(mContext, null);
@@ -409,6 +409,7 @@ public class NavigationBarView extends LinearLayout {
                 v.setContentDescription(r.getString(R.string.accessibility_menu));
                 v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                         : R.drawable.ic_sysbar_highlight);
+                v.setTint(true);
                 break;
             case KEY_ARROW_LEFT:
                 v = new KeyButtonView(mContext, null);
@@ -420,6 +421,7 @@ public class NavigationBarView extends LinearLayout {
                         : R.drawable.ic_sysbar_highlight);
                 v.setVisibility(View.GONE);
                 v.setSupportsLongPress(true);
+                v.setTint(true);
                 break;
             case KEY_ARROW_RIGHT:
                 v = new KeyButtonView(mContext, null);
@@ -431,25 +433,38 @@ public class NavigationBarView extends LinearLayout {
                         : R.drawable.ic_sysbar_highlight);
                 v.setVisibility(View.GONE);
                 v.setSupportsLongPress(true);
+                v.setTint(true);
                 break;
+            case KEY_BACK_ALT:
+                v = new KeyButtonView(mContext, null);
+                v.setLayoutParams(getLayoutParams(landscape, 80));
+                v.setImageResource(R.drawable.ic_sysbar_back_ime);
+                v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                        : R.drawable.ic_sysbar_highlight);
+                v.setTint(true);
         }
 
         return v;
     }
-    
+
     private ExtensibleKeyButtonView generateKey(boolean landscape, String clickAction,
             String longpress,
             String iconUri) {
 
         final int iconSize = 80;
-        ExtensibleKeyButtonView v = new ExtensibleKeyButtonView(mContext, null, clickAction,
+        ExtensibleKeyButtonView v = null;
+        if(AwesomeAction.ACTION_RECENTS.equals(clickAction)) {
+            v = new RecentsKeyButtonView(mContext, null, clickAction, longpress);
+        } else {
+            v = new ExtensibleKeyButtonView(mContext, null, clickAction,
                 longpress);
+        }
         v.setLayoutParams(getLayoutParams(landscape, iconSize));
         v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                 : R.drawable.ic_sysbar_highlight);
         return v;
     }
-    
+
     private LayoutParams getLayoutParams(boolean landscape, float dp) {
         float px = dp * getResources().getDisplayMetrics().density;
         return landscape ?
@@ -552,14 +567,13 @@ public class NavigationBarView extends LinearLayout {
         final boolean disableHome = ((disabledFlags & View.STATUS_BAR_DISABLE_HOME) != 0);
         final boolean disableRecent = ((disabledFlags & View.STATUS_BAR_DISABLE_RECENT) != 0);
         final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0)
-                && ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) == 0);
+              && ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) == 0);
         final boolean disableSearch = ((disabledFlags & View.STATUS_BAR_DISABLE_SEARCH) != 0);
         final boolean keygaurdProbablyEnabled = areKeyguardHintsEnabled();
 
         if (mCurrentUIMode != 1 && SLIPPERY_WHEN_DISABLED) { // Tabletmode doesn't deal with slippery
             setSlippery(disableHome && disableRecent && disableBack && disableSearch);
         }
-
         if (!mScreenOn && mCurrentView != null) {
             ViewGroup navButtons = (ViewGroup) mCurrentView.findViewById(R.id.nav_buttons);
             LayoutTransition lt = navButtons == null ? null : navButtons.getLayoutTransition();
@@ -569,7 +583,6 @@ public class NavigationBarView extends LinearLayout {
                         LayoutTransition.APPEARING | LayoutTransition.DISAPPEARING);
             }
         }
-
         for (int j = 0; j < mNumberOfButtons; j++) {
             View v = (View) findViewWithTag((mVertical ? "key_land_" : "key_") + j);
             if (v != null) {
@@ -586,7 +599,7 @@ public class NavigationBarView extends LinearLayout {
         }
         getSearchLight().setVisibility(keygaurdProbablyEnabled ? View.VISIBLE : View.GONE);
         updateMenuArrowKeys();
-        updateKeyguardAlpha(); 
+        updateKeyguardAlpha();
     }
 
     public void setSlippery(boolean newSlippery) {
@@ -700,7 +713,7 @@ public class NavigationBarView extends LinearLayout {
                 }
                 break;
         }
-    }    
+    }
 
     public void setLowProfile(final boolean lightsOut) {
         setLowProfile(lightsOut, true, false);
@@ -935,7 +948,7 @@ public class NavigationBarView extends LinearLayout {
         return super.onInterceptTouchEvent(ev);
     }
     */
-        
+
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -943,17 +956,22 @@ public class NavigationBarView extends LinearLayout {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-          
+
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_ALPHA), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_COLOR), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.MENU_LOCATION), false,
                     this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.MENU_VISIBILITY), false,
                     this);
-
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY), false,
                     this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_LEFTY_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_MENU_ARROW_KEYS), false, this);
 
@@ -1004,16 +1022,23 @@ public class NavigationBarView extends LinearLayout {
 
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-        
+
         mMenuLocation = Settings.System.getInt(resolver,
                 Settings.System.MENU_LOCATION, SHOW_RIGHT_MENU);
-
+        mNavigationBarAlpha = Settings.System.getFloat(resolver,
+                Settings.System.NAVIGATION_BAR_ALPHA,
+                new Float(mContext.getResources().getInteger(
+                        R.integer.navigation_bar_transparency) / 255));
+        mNavigationBarColor = Settings.System.getInt(resolver,
+                Settings.System.NAVIGATION_BAR_COLOR, -1);
         mMenuVisbility = Settings.System.getInt(resolver,
                 Settings.System.MENU_VISIBILITY, VISIBILITY_SYSTEM);
         mMenuArrowKeys = Settings.System.getBoolean(resolver,
                 Settings.System.NAVIGATION_BAR_MENU_ARROW_KEYS, true);
         mCurrentUIMode = Settings.System.getInt(resolver,
                 Settings.System.CURRENT_UI_MODE,0);
+        mLeftyMode = Settings.System.getBoolean(resolver,
+                Settings.System.NAVIGATION_BAR_LEFTY_MODE, false);
         mNumberOfButtons = Settings.System.getInt(resolver,
                 Settings.System.NAVIGATION_BAR_BUTTONS_QTY, 0);
         if (mNumberOfButtons == 0) {
