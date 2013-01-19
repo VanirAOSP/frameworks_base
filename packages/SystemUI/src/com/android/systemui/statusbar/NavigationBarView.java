@@ -27,8 +27,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
@@ -100,8 +103,10 @@ public class NavigationBarView extends LinearLayout {
      */
     int mCurrentUIMode = 0;
 
+    int mNavigationBarColor = -1;
     private float mNavigationBarAlpha;
     public static final float KEYGUARD_ALPHA = 0.44f;
+
 
     public String[] mClickActions = new String[7];
     public String[] mLongpressActions = new String[7];
@@ -331,6 +336,13 @@ public class NavigationBarView extends LinearLayout {
                  }
             }
         }
+        Drawable bg = mContext.getResources().getDrawable(R.drawable.nav_bar_bg);
+        if(bg instanceof ColorDrawable) {
+            BackgroundAlphaColorDrawable bacd = new BackgroundAlphaColorDrawable(
+                    mNavigationBarColor > 0 ? mNavigationBarColor : ((ColorDrawable) bg).getColor());
+            setBackground(bacd);
+        }
+        setBackgroundAlpha(mNavigationBarAlpha);
     }
     
     private void addLightsOutButton(LinearLayout root, View v, boolean landscape, boolean empty) {
@@ -420,13 +432,6 @@ public class NavigationBarView extends LinearLayout {
                 v.setVisibility(View.GONE);
                 v.setSupportsLongPress(true);
                 break;
-            case KEY_BACK_ALT:
-                v = new KeyButtonView(mContext, null);
-                v.setLayoutParams(getLayoutParams(landscape, 80));
-                v.setImageResource(R.drawable.ic_sysbar_back_ime);
-                v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
-                        : R.drawable.ic_sysbar_highlight);
-                v.setTint(true);
         }
 
         return v;
@@ -444,7 +449,6 @@ public class NavigationBarView extends LinearLayout {
                 : R.drawable.ic_sysbar_highlight);
         return v;
     }
-
     
     private LayoutParams getLayoutParams(boolean landscape, float dp) {
         float px = dp * getResources().getDisplayMetrics().density;
@@ -531,7 +535,7 @@ public class NavigationBarView extends LinearLayout {
     }
 
     private void updateKeyguardAlpha() {
-        if(!isKeyguardEnabled() && (mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0) {
+        if((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0) {
             // keyboard up, always darken it
             setBackgroundAlpha(1);
         } else {
@@ -580,9 +584,9 @@ public class NavigationBarView extends LinearLayout {
 
             }
         }
-
-        getSearchLight().setVisibility((disableHome && !disableSearch) ? View.VISIBLE : View.GONE);
+        getSearchLight().setVisibility(keygaurdProbablyEnabled ? View.VISIBLE : View.GONE);
         updateMenuArrowKeys();
+        updateKeyguardAlpha(); 
     }
 
     public void setSlippery(boolean newSlippery) {
@@ -696,7 +700,7 @@ public class NavigationBarView extends LinearLayout {
                 }
                 break;
         }
-    }
+    }    
 
     public void setLowProfile(final boolean lightsOut) {
         setLowProfile(lightsOut, true, false);
@@ -953,7 +957,7 @@ public class NavigationBarView extends LinearLayout {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_MENU_ARROW_KEYS), false, this);
 
-            for (int j = 0; j < 5; j++) { // watch all 5 settings for changes.
+            for (int j = 0; j < 7; j++) { // watch all 7 settings for changes.
                 resolver.registerContentObserver(
                         Settings.System.getUriFor(Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j]),
                         false,
@@ -977,6 +981,27 @@ public class NavigationBarView extends LinearLayout {
         }
     }
 
+    /*
+     * ]0 < alpha < 1[
+     */
+    private void setBackgroundAlpha(float alpha) {
+        Drawable bg = getBackground();
+        if(bg == null) return;
+
+        if(bg instanceof BackgroundAlphaColorDrawable) {
+         // if there's a custom color while the lockscreen is on, clear it momentarily, otherwise it won't match.
+            if(mNavigationBarColor > 0) {
+                if(isKeyguardEnabled()) {
+                    ((BackgroundAlphaColorDrawable) bg).setBgColor(-1);
+                } else {
+                    ((BackgroundAlphaColorDrawable) bg).setBgColor(mNavigationBarColor);
+                }
+            }
+        }
+        int a = Math.round(alpha * 255);
+        bg.setAlpha(a);
+    }
+
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         
@@ -997,7 +1022,7 @@ public class NavigationBarView extends LinearLayout {
                     Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);
         }
 
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < 7; j++) {
             mClickActions[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j]);
             if (mClickActions[j] == null) {
