@@ -104,6 +104,13 @@ public class PowerUI extends SystemUI {
         throw new RuntimeException("not possible!");
     }
 
+    private boolean isBatteryWarningDisabled() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SYSTEM_DISABLE_LOW_BATTERY_WARNING,
+                Settings.System.SYSTEM_DISABLE_LOW_BATTERY_WARNING_DEF)
+                == Settings.System.SYSTEM_DISABLE_LOW_BATTERY_WARNING_DEF ? false : true;
+    }
+
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -145,6 +152,9 @@ public class PowerUI extends SystemUI {
                     dismissInvalidChargerDialog();
                 } else if (mInvalidChargerDialog != null) {
                     // if invalid charger is showing, don't show low battery
+                    return;
+                // i know my battery is low, stop making it worse!
+                } else if (isBatteryWarningDisabled()) {
                     return;
                 }
 

@@ -2638,6 +2638,16 @@ public final class Settings {
                 "navring_long_4",
         };
 
+	    /**
+         * @hide
+         */
+        public static final String SYSTEM_DISABLE_LOW_BATTERY_WARNING = "eos_system_disable_low_battery_warning";
+
+        /**
+         * @hide
+         */
+        public static final int SYSTEM_DISABLE_LOW_BATTERY_WARNING_DEF = 0;
+
         /**
          * NFC polling mode configuration key
          *
@@ -2866,6 +2876,11 @@ public final class Settings {
          * @hide
          */
         public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD = "mute_annoying_notifications_threshold";
+        
+        /**
+         * @hide
+         */
+        public static final String KG_CAMERA_WIDGET = "kg_camera_widget";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
