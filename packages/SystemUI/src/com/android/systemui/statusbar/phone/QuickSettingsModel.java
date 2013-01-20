@@ -73,8 +73,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     // Sett InputMethoManagerService
     private static final String TAG_TRY_SUPPRESSING_IME_SWITCHER = "TrySuppressingImeSwitcher";
 
-    public static final String FAST_CHARGE_DIR = "/sys/kernel/fast_charge";
-    public static final String FAST_CHARGE_FILE = "force_fast_charge";
+    private String mFastChargePath;
+    
+    private int dataState = -1;
 
     private WifiManager wifiManager;
 
@@ -263,6 +264,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mSilentCallback;
     private State mSilentState = new State();
 
+    private QuickSettingsTileView mSoundStateTile;
+    private RefreshCallback mSoundStateCallback;
+    private State mSoundStateState = new State();
+
     private QuickSettingsTileView mFChargeTile;
     private RefreshCallback mFChargeCallback;
     private State mFChargeState = new State();
@@ -359,6 +364,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 refreshSettingsTile();
             if (toggle.equals(QuickSettings.BATTERY_TOGGLE))
                 refreshBatteryTile();
+            if (toggle.equals(QuickSettings.GPS_TOGGLE))
+                refreshLocationTile();
             if (toggle.equals(QuickSettings.BLUETOOTH_TOGGLE))
                 refreshBluetoothTile();
             if (toggle.equals(QuickSettings.BRIGHTNESS_TOGGLE))
@@ -383,8 +390,34 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 refreshBTTetherTile();  */
             if (toggle.equals(QuickSettings.FCHARGE_TOGGLE))
                 refreshFChargeTile();
+            if (toggle.equals(QuickSettings.TWOG_TOGGLE))
+                refresh2gTile();
+            if (toggle.equals(QuickSettings.LTE_TOGGLE))
+                refreshLTETile();
         }
 
+    }
+
+    void refreshFChargeTile() {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                return isFastChargeOn();
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                Prefs.setLastFastChargeState(mContext, result);
+                updateFastChargeTile(result);
+            }
+        }.execute();
+    }
+
+    void removeAllViews() {
+        if (mUserTile != null)
+            mUserTile.removeAllViews();
+        if (mSettingsTile != null)
+            mSettingsTile.removeAllViews();
     }
 
     // Settings
@@ -395,7 +428,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     void refreshSettingsTile() {
-        mSettingsState.label = mContext.getString(R.string.quick_settings_settings_label);
+        Resources r = mContext.getResources();
+        mSettingsState.label = r.getString(R.string.quick_settings_settings_label);
         mSettingsCallback.refreshView(mSettingsTile, mSettingsState);
     }
 
@@ -497,11 +531,12 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     @Override
     public void onAirplaneModeChanged(boolean enabled) {
         // TODO: If view is in awaiting state, disable
+        Resources r = mContext.getResources();
         mAirplaneModeState.enabled = enabled;
         mAirplaneModeState.iconId = (enabled ?
                 R.drawable.ic_qs_airplane_on :
                 R.drawable.ic_qs_airplane_off);
-        mAirplaneModeState.label = mContext.getString(R.string.quick_settings_airplane_mode_label);
+        mAirplaneModeState.label = r.getString(R.string.quick_settings_airplane_mode_label);
         if (togglesContain(QuickSettings.AIRPLANE_TOGGLE))
             mAirplaneModeCallback.refreshView(mAirplaneModeTile, mAirplaneModeState);
     }
@@ -513,50 +548,34 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mWifiCallback.refreshView(mWifiTile, mWifiState);
     }
 
-    //SSIDs don't change much... let's only use String.substring when we need to
-    private static String oldssidinput, oldssidoutput;
-
     // Remove the double quotes that the SSID may contain
     public static String removeDoubleQuotes(String string) {
         if (string == null)
             return null;
-
-        //short-circuit string-mangling if the ssid is the same
-        if (string.equals(oldssidinput))
-            return oldssidoutput;
-        oldssidinput = string;
         final int length = string.length();
-
-        if ((length > 1) && (string.charAt(0) == '"') && (string.charAt(length - 1) == '"'))
-            oldssidoutput = string.substring(1, length-1);
-        else
-            oldssidoutput = string;
-
-        return oldssidoutput;
+        if ((length > 1) && (string.charAt(0) == '"') && (string.charAt(length - 1) == '"')) {
+            return string.substring(1, length - 1);
+        }
+        return string;
     }
 
     // Remove the period from the network name
-    private static String oldperinput, oldperoutput;
     public static String removeTrailingPeriod(String string) {
         if (string == null)
             return null;
-        if (string.equals(oldperinput))
-            return oldperoutput;
-        oldperinput = string;
         final int length = string.length();
         if (string.endsWith(".")) {
             string.substring(0, length - 1);
         }
-        oldperoutput = string;
-        return oldperoutput;
+        return string;
     }
-
-    private static String  descnowifi, labelnowifi, descwifioff, labelwifioff;
 
     // NetworkSignalChanged callback
     @Override
     public void onWifiSignalChanged(boolean enabled, int wifiSignalIconId,
             String wifiSignalContentDescription, String enabledDesc) {
+        // TODO: If view is in awaiting state, disable
+        Resources r = mContext.getResources();
 
         boolean wifiConnected = enabled && (wifiSignalIconId > 0) && (enabledDesc != null);
         boolean wifiNotConnected = (wifiSignalIconId > 0) && (enabledDesc == null);
@@ -566,26 +585,14 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             mWifiState.iconId = wifiSignalIconId;
             mWifiState.label = removeDoubleQuotes(enabledDesc);
             mWifiState.signalContentDescription = wifiSignalContentDescription;
+        } else if (wifiNotConnected) {
+            mWifiState.iconId = R.drawable.ic_qs_wifi_0;
+            mWifiState.label = r.getString(R.string.quick_settings_wifi_label);
+            mWifiState.signalContentDescription = r.getString(R.string.accessibility_no_wifi);
         } else {
-            //this check isn't needed until we get HERE
-            if (descnowifi == null)
-            {
-                Resources r = mContext.getResources();
-                descnowifi = r.getString(R.string.accessibility_no_wifi);
-                labelnowifi = r.getString(R.string.quick_settings_wifi_label);
-                descwifioff = r.getString(R.string.accessibility_wifi_off);
-                labelwifioff = r.getString(R.string.quick_settings_wifi_off_label);
-                r = null; //R2-D2 can't stop all of the garbage compactors on THIS DETENTION LEVEL!
-            }
-            if (wifiNotConnected) {
-                mWifiState.iconId = R.drawable.ic_qs_wifi_0;
-                mWifiState.label = labelnowifi;
-                mWifiState.signalContentDescription = descnowifi;
-            } else {
-                mWifiState.iconId = R.drawable.ic_qs_wifi_no_network;
-                mWifiState.label = labelwifioff;
-                mWifiState.signalContentDescription = descwifioff;
-            }
+            mWifiState.iconId = R.drawable.ic_qs_wifi_no_network;
+            mWifiState.label = r.getString(R.string.quick_settings_wifi_off_label);
+            mWifiState.signalContentDescription = r.getString(R.string.accessibility_wifi_off);
         }
         if (togglesContain(QuickSettings.WIFI_TOGGLE))
             mWifiCallback.refreshView(mWifiTile, mWifiState);
@@ -601,53 +608,29 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mRSSICallback = cb;
         mRSSICallback.refreshView(mRSSITile, mRSSIState);
     }
-    //these don't change, so may as well not instantiate a resource EVERY TIME
-    private static String nodatastring,nosignalstring,callamberlamps;
-
     // NetworkSignalChanged callback
     @Override
     public void onMobileDataSignalChanged(
             boolean enabled, int mobileSignalIconId, String signalContentDescription,
             int dataTypeIconId, String dataContentDescription, String enabledDesc) {
         if (deviceHasMobileData()) {
-            if (enabled)
-            {
-                //only get these once, because they're not going to change.
-                if (nodatastring == null)
-                {
-                    Resources r = mContext.getResources();
-                    nosignalstring = r.getString(R.string.accessibility_no_signal);
-                    nodatastring = r.getString(R.string.accessibility_no_data);
-                    callamberlamps = r.getString(R.string.quick_settings_rssi_emergency_only);
-                    r = null; //R2-D2 can't stop all of the garbage compactors on THIS DETENTION LEVEL!
-                }
-                if (mobileSignalIconId > 0)
-                {
-                    mRSSIState.signalIconId = mobileSignalIconId;
-                    mRSSIState.signalContentDescription = signalContentDescription;
-                }
-                else
-                {
-                    mRSSIState.signalIconId = R.drawable.ic_qs_signal_no_signal;
-                    mRSSIState.signalContentDescription = nosignalstring;
-                }
-
-                if ((dataTypeIconId > 0) && !mWifiState.enabled)
-                {
-                    mRSSIState.dataTypeIconId = dataTypeIconId;
-                    mRSSIState.dataContentDescription = dataContentDescription;
-                }
-                else
-                {
-                    mRSSIState.dataTypeIconId = 0;
-                    mRSSIState.dataContentDescription = nodatastring;
-                }
-
-                mRSSIState.label = removeTrailingPeriod(enabledDesc);
-            }
-            else
-                mRSSIState.label = callamberlamps;
-
+            // TODO: If view is in awaiting state, disable
+            Resources r = mContext.getResources();
+            mRSSIState.signalIconId = enabled && (mobileSignalIconId > 0)
+                    ? mobileSignalIconId
+                    : R.drawable.ic_qs_signal_no_signal;
+            mRSSIState.signalContentDescription = enabled && (mobileSignalIconId > 0)
+                    ? signalContentDescription
+                    : r.getString(R.string.accessibility_no_signal);
+            mRSSIState.dataTypeIconId = enabled && (dataTypeIconId > 0) && !mWifiState.enabled
+                    ? dataTypeIconId
+                    : 0;
+            mRSSIState.dataContentDescription = enabled && (dataTypeIconId > 0) && !mWifiState.enabled
+                    ? dataContentDescription
+                    : r.getString(R.string.accessibility_no_data);
+            mRSSIState.label = enabled
+                    ? removeTrailingPeriod(enabledDesc)
+                    : r.getString(R.string.quick_settings_rssi_emergency_only);
             if (togglesContain(QuickSettings.SIGNAL_TOGGLE))
                 mRSSICallback.refreshView(mRSSITile, mRSSIState);
         }
@@ -676,33 +659,24 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         onBluetoothStateChange(mBluetoothState);
     }
 
-    private static String conndesc, noconndesc, enlab, dislab, disdesc;
     public void onBluetoothStateChange(BluetoothState bluetoothStateIn) {
-        if (conndesc == null)
-        {
-            Resources r = mContext.getResources();
-            conndesc = r.getString(R.string.accessibility_desc_connected);
-            noconndesc = r.getString(R.string.accessibility_desc_on);
-            enlab = r.getString(R.string.quick_settings_bluetooth_label);
-            dislab = r.getString(R.string.quick_settings_bluetooth_off_label);
-            disdesc = r.getString(R.string.accessibility_desc_off);
-            r = null; //R2-D2 can't stop all of the garbage compactors on THIS DETENTION LEVEL!
-        }
+        // TODO: If view is in awaiting state, disable
+        Resources r = mContext.getResources();
         mBluetoothState.enabled = bluetoothStateIn.enabled;
         mBluetoothState.connected = bluetoothStateIn.connected;
         if (mBluetoothState.enabled) {
             if (mBluetoothState.connected) {
                 mBluetoothState.iconId = R.drawable.ic_qs_bluetooth_on;
-                mBluetoothState.stateContentDescription = conndesc;
+                mBluetoothState.stateContentDescription = r.getString(R.string.accessibility_desc_connected);
             } else {
                 mBluetoothState.iconId = R.drawable.ic_qs_bluetooth_not_connected;
-                mBluetoothState.stateContentDescription = noconndesc;
+                mBluetoothState.stateContentDescription = r.getString(R.string.accessibility_desc_on);
             }
-            mBluetoothState.label = enlab;
+            mBluetoothState.label = r.getString(R.string.quick_settings_bluetooth_label);
         } else {
             mBluetoothState.iconId = R.drawable.ic_qs_bluetooth_off;
-            mBluetoothState.label = dislab;
-            mBluetoothState.stateContentDescription = disdesc;
+            mBluetoothState.label = r.getString(R.string.quick_settings_bluetooth_off_label);
+            mBluetoothState.stateContentDescription = r.getString(R.string.accessibility_desc_off);
         }
         if(mBluetoothTile != null) {
             mBluetoothCallback.refreshView(mBluetoothTile, mBluetoothState);
@@ -749,15 +723,13 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     // LocationController callback
     @Override
     public void onLocationGpsStateChanged(boolean inUse, String description) {
+        mLocationState.enabled = inUse;
+        mLocationState.iconId = inUse
+                ? R.drawable.ic_qs_gps_on
+                : R.drawable.ic_qs_gps_off;
+        mLocationState.label = description;
         if (togglesContain(QuickSettings.GPS_TOGGLE))
-        {
-            mLocationState.enabled = inUse;
-            mLocationState.iconId = inUse
-                    ? R.drawable.ic_qs_gps_on
-                    : R.drawable.ic_qs_gps_off;
-            mLocationState.label = description;
             mLocationCallback.refreshView(mLocationTile, mLocationState);
-        }
     }
 
     // Bug report
@@ -798,6 +770,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             mWifiDisplayState.iconId = R.drawable.ic_qs_remote_display;
         }
         mWifiDisplayCallback.refreshView(mWifiDisplayTile, mWifiDisplayState);
+
     }
 
     // IME
@@ -810,8 +783,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     /*
      * This implementation is taken from
      * InputMethodManagerService.needsToShowImeSwitchOngoingNotification().
-     *
-     * And if it weren't it'd be GROSS... oh wait... still gross.      O.o
      */
     private boolean needsToShowImeSwitchOngoingNotification(InputMethodManager imm) {
         List<InputMethodInfo> imis = imm.getEnabledInputMethodList();
@@ -900,25 +871,19 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         onRotationLockChanged();
     }
 
-    private static String rotlock, rotunlock;
     void onRotationLockChanged() {
-        if (mRotationLockTile != null && mRotationLockCallback != null) {
-            boolean locked = RotationPolicy.isRotationLocked(mContext);
-            mRotationLockState.enabled = locked;
-            mRotationLockState.iconId = locked
-                    ? R.drawable.ic_qs_rotation_locked
-                    : R.drawable.ic_qs_auto_rotate;
-            if (rotlock == null)
-            {
-                Resources r = mContext.getResources();
-                rotlock = r.getString(R.string.quick_settings_rotation_locked_label);
-                rotunlock = r.getString(R.string.quick_settings_rotation_unlocked_label);
-                r = null; //R2-D2 can't stop all of the garbage compactors on THIS DETENTION LEVEL!
-            }
-            mRotationLockState.label = locked
-                    ? rotlock
-                    : rotunlock;
+        boolean locked = RotationPolicy.isRotationLocked(mContext);
+        mRotationLockState.enabled = locked;
+        mRotationLockState.iconId = locked
+                ? R.drawable.ic_qs_rotation_locked
+                : R.drawable.ic_qs_auto_rotate;
+        mRotationLockState.label = locked
+                ? mContext.getString(R.string.quick_settings_rotation_locked_label)
+                : mContext.getString(R.string.quick_settings_rotation_unlocked_label);
 
+        // may be called before addRotationLockTile due to
+        // RotationPolicyListener in QuickSettings
+        if (mRotationLockTile != null && mRotationLockCallback != null) {
             mRotationLockCallback.refreshView(mRotationLockTile, mRotationLockState);
         }
     }
@@ -965,6 +930,12 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         onSilentChanged();
     }
 
+    void addSoundStateTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mSoundStateTile = view;
+        mSoundStateCallback = cb;
+        refreshSoundStateTile();
+    }
+
     void onSilentChanged() {
         AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         boolean enabled = am.getRingerMode() == AudioManager.RINGER_MODE_SILENT;
@@ -987,43 +958,60 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
     }
 
+    void refreshSoundStateTile() {
+        if (mSoundStateTile != null) {
+            AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+            boolean enabled;
+            int iconId;
+            int label;
+            switch(am.getRingerMode()) {
+                case AudioManager.RINGER_MODE_NORMAL:
+                default:
+                    enabled = false;
+                    iconId = R.drawable.ic_qs_sound_off;
+                    label = R.string.quick_settings_sound_on;
+                    break;
+                case AudioManager.RINGER_MODE_VIBRATE:
+                    enabled = true;
+                    iconId = R.drawable.ic_qs_vibrate_on;
+                    label = R.string.quick_settings_vibrate_on_label;
+                    break;
+                case AudioManager.RINGER_MODE_SILENT:
+                    enabled = true;
+                    iconId = R.drawable.ic_qs_silence_on;
+                    label = R.string.quick_settings_silent_on_label;
+                    break;
+            }
+            mSoundStateState.enabled = enabled;
+            mSoundStateState.iconId = iconId;
+            mSoundStateState.label = mContext.getString(label);
+
+            if (mSoundStateCallback != null) {
+                mSoundStateCallback.refreshView(mSoundStateTile, mSoundStateState);
+            }
+        }
+    }
+
     // Fcharge
     void addFChargeTile(QuickSettingsTileView view, RefreshCallback cb) {
         mFChargeTile = view;
         mFChargeCallback = cb;
-        onFChargeChanged();
+        refreshFChargeTile();
     }
 
-    void onFChargeChanged() {
-        boolean enabled = isFastChargeOn();
-        mFChargeState.enabled = enabled;
-        mFChargeState.iconId = enabled
-                ? R.drawable.ic_qs_fcharge_on
-                : R.drawable.ic_qs_fcharge_off;
-        mFChargeState.label = enabled
-                ? mContext.getString(R.string.quick_settings_fcharge_on_label)
-                : mContext.getString(R.string.quick_settings_fcharge_off_label);
-
-        if (mFChargeTile != null && mFChargeCallback != null) {
-            mFChargeCallback.refreshView(mFChargeTile, mFChargeState);
-        }
-    }
-
-    void refreshFChargeTile() {
+    void updateFastChargeTile(boolean enabled) {
         if (mFChargeTile != null) {
-            onFChargeChanged();
-        }
-    }
+            mFChargeState.enabled = enabled;
+            mFChargeState.iconId = enabled
+                    ? R.drawable.ic_qs_fcharge_on
+                    : R.drawable.ic_qs_fcharge_off;
+            mFChargeState.label = enabled
+                    ? mContext.getString(R.string.quick_settings_fcharge_on_label)
+                    : mContext.getString(R.string.quick_settings_fcharge_off_label);
 
-    public boolean isFastChargeOn() {
-        try {
-            File fastcharge = new File(FAST_CHARGE_DIR, FAST_CHARGE_FILE);
-            FileReader reader = new FileReader(fastcharge);
-            BufferedReader breader = new BufferedReader(reader);
-            return (breader.readLine().equals("1"));
-        } catch (IOException e) {
-            Log.e("FChargeToggle", "Couldn't read fast_charge file");
-            return false;
+            if (mFChargeTile != null && mFChargeCallback != null) {
+                mFChargeCallback.refreshView(mFChargeTile, mFChargeState);
+            }
         }
     }
 
@@ -1055,15 +1043,84 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
     }
 
+    // LTE
+    void addLTETile(QuickSettingsTileView view, RefreshCallback cb) {
+        mLTETile = view;
+        mLTECallback = cb;
+        onLTEChanged();
+    }
+
+    void onLTEChanged() {
+        try {
+            dataState = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.PREFERRED_NETWORK_MODE);
+        } catch (SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+        boolean enabled = (dataState == PhoneConstants.NT_MODE_LTE_CDMA_EVDO) || (dataState == PhoneConstants.NT_MODE_GLOBAL);
+        mLTEState.enabled = enabled;
+        mLTEState.iconId = enabled
+                ? R.drawable.ic_qs_lte_on
+                : R.drawable.ic_qs_lte_off;
+        mLTEState.label = enabled
+                ? mContext.getString(R.string.quick_settings_lte_on_label)
+                : mContext.getString(R.string.quick_settings_lte_off_label);
+
+        if (mLTETile != null && mLTECallback != null) {
+            mLTECallback.refreshView(mLTETile, mLTEState);
+        }
+    }
+
+    void refreshLTETile() {
+        if (mLTETile != null) {
+            onLTEChanged();
+        }
+    }
+
+    // 2g
+    void add2gTile(QuickSettingsTileView view, RefreshCallback cb) {
+        m2gTile = view;
+        m2gCallback = cb;
+        on2gChanged();
+    }
+
+    void on2gChanged() {
+        try {
+            dataState = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.PREFERRED_NETWORK_MODE);
+        } catch (SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+        boolean enabled = dataState == PhoneConstants.NT_MODE_GSM_ONLY;
+        m2gState.enabled = enabled;
+        m2gState.iconId = enabled
+                ? R.drawable.ic_qs_2g_on
+                : R.drawable.ic_qs_2g_off;
+        m2gState.label = enabled
+                ? mContext.getString(R.string.quick_settings_twog_on_label)
+                : mContext.getString(R.string.quick_settings_twog_off_label);
+
+        if (m2gTile != null && m2gCallback != null) {
+            m2gCallback.refreshView(m2gTile, m2gState);
+        }
+    }
+
+    void refresh2gTile() {
+        if (m2gTile != null) {
+            on2gChanged();
+        }
+    }
+
     // NFC
     void addNFCTile(QuickSettingsTileView view, RefreshCallback cb) {
         mNFCTile = view;
         mNFCCallback = cb;
-        onNFCChanged();
+        refreshNFCTile();
     }
 
     void onNFCChanged() {
-        boolean enabled = adapter.isEnabled();
+        boolean enabled = false;
+        if (mNfcAdapter != null) {
+            enabled = mNfcAdapter.isEnabled();
+        }
         mNFCState.enabled = enabled;
         mNFCState.iconId = enabled
                 ? R.drawable.ic_qs_nfc_on
@@ -1216,14 +1273,14 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
     /**
      * Method checks for if a tile is being used or not
-     *
+     * 
      * @param QuickSettings Tile String Constant
      * @return if that tile is being used
      */
     private boolean togglesContain(String tile) {
         ContentResolver resolver = mContext.getContentResolver();
         String toggles = Settings.System.getString(resolver, Settings.System.QUICK_TOGGLES);
-
+       
         if (toggles != null) {
             ArrayList tiles = new ArrayList();
             String[] splitter = toggles.split("\\|");
@@ -1235,7 +1292,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
         return getDefaultTiles().contains(tile);
     }
-
+    
     private ArrayList getDefaultTiles() {
         ArrayList tiles = new ArrayList();
         tiles.add(QuickSettings.USER_TOGGLE);

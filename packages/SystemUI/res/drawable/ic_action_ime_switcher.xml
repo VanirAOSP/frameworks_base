@@ -27,10 +27,4 @@
         android:state_focused="false"
         android:drawable="@drawable/ic_navbar_ime_switcher_activated" />
 
-    <item
-        android:state_enabled="true"
-        android:state_active="false"
-        android:state_focused="true"
-        android:drawable="@drawable/ic_navbar_ime_switcher_activated" />
-
 </selector>

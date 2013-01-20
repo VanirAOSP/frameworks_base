@@ -579,9 +579,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.DEFAULT_INPUT_METHOD), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.VOLUME_MUSIC_CONTROLS), false, this,
+                    Settings.System.ENABLE_FAST_TORCH), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_SHOW), false, this);
@@ -597,7 +595,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.ENABLE_FAST_TORCH), false, this,
                     Settings.System.VOLBTN_MUSIC_CONTROLS), false, this,
                     UserHandle.USER_ALL);
             updateSettings();

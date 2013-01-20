@@ -1057,5 +1057,7 @@
 
     <!-- Setting to false will disable the IME switcher implementation for tablets -->	
     <bool name="config_show_IMEswitcher">true</bool>
-
+ 
+    <!-- Workaround for devices with broken keyboards -->
+    <bool name="config_forceDisableHardwareKeyboard">false</bool>
 </resources>

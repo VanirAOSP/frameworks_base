@@ -16,30 +16,34 @@
 
 package com.android.systemui.vanir;
 
-import java.net.URISyntaxException;
-
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityManagerNative;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.Intent.ShortcutIconResource;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.net.Uri;
+import android.os.Vibrator;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
@@ -47,7 +51,9 @@ import android.os.Vibrator;
 import android.provider.AlarmClock;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
+import android.provider.Settings;
 import android.speech.RecognizerIntent;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyCharacterMap;
@@ -57,13 +63,14 @@ import android.widget.Toast;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 
+import java.net.URISyntaxException;
+
 /*
- * Helper classes for managing Vanir custom actions
+ * Helper classes for managing AOKP custom actions
  */
+public class VanirAwesome {
 
-public class VanirTarget {
-
-    final String TAG = "VanirTarget";
+    public final static String TAG = "VanirTarget";
 
     public final static String ACTION_HOME = "**home**";
     public final static String ACTION_BACK = "**back**";
@@ -74,7 +81,6 @@ public class VanirTarget {
     public final static String ACTION_RECENTS = "**recents**";
     public final static String ACTION_IME = "**ime**";
     public final static String ACTION_KILL = "**kill**";
-    public final static String ACTION_TORCH = "**torch**";
     public final static String ACTION_ASSIST = "**assist**";
     public final static String ACTION_CUSTOM = "**custom**";
     public final static String ACTION_SILENT = "**ring_silent**";
@@ -85,30 +91,42 @@ public class VanirTarget {
     public final static String ACTION_TODAY = "**today**";
     public final static String ACTION_CLOCKOPTIONS = "**clockoptions**";
     public final static String ACTION_VOICEASSIST = "**voiceassist**";
+    public final static String ACTION_TORCH = "**torch**";
     public final static String ACTION_SEARCH = "**search**";
     public final static String ACTION_NULL = "**null**";
 
     private int mInjectKeyCode;
-    private Context mContext;
-    private Handler mHandler;
+    final private Context mContext;
+    final private Handler mHandler;
 
     final Object mScreenshotLock = new Object();
     ServiceConnection mScreenshotConnection = null;
 
-    public VanirTarget (Context context){
+    private static VanirAwesome sInstance = null;
+
+    public static VanirAwesome getInstance(Context c) {
+        if (sInstance == null) {
+            sInstance = new VanirAwesome(c);
+        }
+        return sInstance;
+    }
+
+    public VanirAwesome(Context context) {
         mContext = context;
         mHandler = new Handler();
     }
 
-    public boolean launchAction (String action){
-
-        try {
-            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-        } catch (RemoteException e) {
-        }
-
+    public boolean launchAction(String action) {
         if (action == null || action.equals(ACTION_NULL)) {
             return false;
+        } else if (action.equals(ACTION_RECENTS)) {
+            try {
+                IStatusBarService.Stub.asInterface(
+                        ServiceManager.getService(Context.STATUS_BAR_SERVICE))
+                        .toggleRecentApps();
+            } catch (RemoteException e) {
+                // nuu
+            }
         }
         if (action.equals(ACTION_HOME)) {
             injectKeyDelayed(KeyEvent.KEYCODE_HOME);
@@ -121,12 +139,10 @@ public class VanirTarget {
         if (action.equals(ACTION_MENU)) {
             injectKeyDelayed(KeyEvent.KEYCODE_MENU);
             return true;
-        }
-        if (action.equals(ACTION_SEARCH)) {
+        } else if (action.equals(ACTION_SEARCH)) {
             injectKeyDelayed(KeyEvent.KEYCODE_SEARCH);
             return true;
-        }
-        if (action.equals(ACTION_POWER)) {
+        } else if (action.equals(ACTION_POWER)) {
             injectKeyDelayed(KeyEvent.KEYCODE_POWER);
             return true;
         }
@@ -139,7 +155,7 @@ public class VanirTarget {
             return true;
         }
         if (action.equals(ACTION_TORCH)) {
-            Intent intent = new Intent("com.android.systemui.INTENT_TORCH");
+            Intent intent = new Intent("com.android.systemui.INTENT_TORCH_TOGGLE");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
             return true;
@@ -150,7 +166,7 @@ public class VanirTarget {
             builder.appendPath("time");
             ContentUris.appendId(builder, startMillis);
             Intent intent = new Intent(Intent.ACTION_VIEW)
-                      .setData(builder.build());
+                    .setData(builder.build());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
             return true;
@@ -163,7 +179,7 @@ public class VanirTarget {
         }
         if (action.equals(ACTION_EVENT)) {
             Intent intent = new Intent(Intent.ACTION_INSERT)
-                      .setData(Events.CONTENT_URI);
+                    .setData(Events.CONTENT_URI);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
             return true;
@@ -175,11 +191,11 @@ public class VanirTarget {
             return true;
         }
         if (action.equals(ACTION_ALARM)) {
-                Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
-            return true;
-        }
+			return true;
+		}
         if (action.equals(ACTION_ASSIST)) {
             Intent intent = new Intent(Intent.ACTION_ASSIST);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -193,17 +209,18 @@ public class VanirTarget {
 
         if (action.equals(ACTION_VIB)) {
             AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-            if(am != null){
-                if(am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
+            if (am != null) {
+                if (am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
                     am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
                     Vibrator vib = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                    if(vib != null){
+                    if (vib != null) {
                         vib.vibrate(50);
                     }
-                }else{
+                } else {
                     am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
-                    if(tg != null){
+                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,
+                            (int) (ToneGenerator.MAX_VOLUME * 0.85));
+                    if (tg != null) {
                         tg.startTone(ToneGenerator.TONE_PROP_BEEP);
                     }
                 }
@@ -212,13 +229,14 @@ public class VanirTarget {
         }
         if (action.equals(ACTION_SILENT)) {
             AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-            if(am != null){
-                if(am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
+            if (am != null) {
+                if (am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
                     am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                }else{
+                } else {
                     am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
-                    if(tg != null){
+                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,
+                            (int) (ToneGenerator.MAX_VOLUME * 0.85));
+                    if (tg != null) {
                         tg.startTone(ToneGenerator.TONE_PROP_BEEP);
                     }
                 }
@@ -227,19 +245,20 @@ public class VanirTarget {
         }
         if (action.equals(ACTION_SILENT_VIB)) {
             AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-            if(am != null){
-                if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+            if (am != null) {
+                if (am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
                     am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
                     Vibrator vib = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                    if(vib != null){
+                    if (vib != null) {
                         vib.vibrate(50);
                     }
-                } else if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+                } else if (am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
                     am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
                 } else {
                     am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
-                    if(tg != null){
+                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,
+                            (int) (ToneGenerator.MAX_VOLUME * 0.85));
+                    if (tg != null) {
                         tg.startTone(ToneGenerator.TONE_PROP_BEEP);
                     }
                 }
@@ -248,13 +267,10 @@ public class VanirTarget {
         }
 
         if (action.equals(ACTION_RECENTS)) {
-            mHandler.post(mToggleRecents);
-            return true;
-        }
-        if (action.equals(ACTION_NOTIFICATIONS)) {
             try {
                 IStatusBarService.Stub.asInterface(
-                        ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandNotificationsPanel();
+                        ServiceManager.getService(Context.STATUS_BAR_SERVICE))
+                        .expandNotificationsPanel();
             } catch (RemoteException e) {
                 // A RemoteException is like a cold
                 // Let's hope we don't catch one!
@@ -267,18 +283,15 @@ public class VanirTarget {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
             return true;
-            } catch (URISyntaxException e) {
-                    Log.e(TAG, "URISyntaxException: [" + action + "]");
-            } catch (ActivityNotFoundException e){
-                    Log.e(TAG, "ActivityNotFound: [" + action + "]");
-            }
+        } catch (URISyntaxException e) {
+            Log.e(TAG, "URISyntaxException: [" + action + "]");
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "ActivityNotFound: [" + action + "]");
+        }
         return false; // we didn't handle the action!
     }
 
-    //not using yet and dont want to take time to get drawables... yes lazy dev.
-    // Yes Steve, You are a lazy Dev.  I need this :)  - Zaphod 12-01-12
     public Drawable getIconImage(String uri) {
-
         if (uri == null)
             return mContext.getResources().getDrawable(R.drawable.ic_sysbar_null);
         if (uri.equals(ACTION_HOME))
@@ -303,11 +316,11 @@ public class VanirTarget {
             return mContext.getResources().getDrawable(R.drawable.ic_sysbar_notifications);
         try {
             return mContext.getPackageManager().getActivityIcon(Intent.parseUri(uri, 0));
-            } catch (NameNotFoundException e) {
-                e.printStackTrace();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         return mContext.getResources().getDrawable(R.drawable.ic_sysbar_null);
     }
 
@@ -370,18 +383,21 @@ public class VanirTarget {
         return name != null ? name : intent.toUri(0);
     }
 
-    private void injectKeyDelayed(int keycode){
+    private void injectKeyDelayed(int keycode) {
         mInjectKeyCode = keycode;
         mHandler.removeCallbacks(onInjectKey_Down);
         mHandler.removeCallbacks(onInjectKey_Up);
         mHandler.post(onInjectKey_Down);
-        mHandler.postDelayed(onInjectKey_Up,10); // introduce small delay to handle key press
+        mHandler.postDelayed(onInjectKey_Up, 10); // introduce small delay to
+                                                  // handle key press
     }
 
     final Runnable onInjectKey_Down = new Runnable() {
         public void run() {
-            final KeyEvent ev = new KeyEvent(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                    KeyEvent.ACTION_DOWN, mInjectKeyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+            final KeyEvent ev = new KeyEvent(SystemClock.uptimeMillis(),
+                    SystemClock.uptimeMillis(),
+                    KeyEvent.ACTION_DOWN, mInjectKeyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD,
+                    0,
                     KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY,
                     InputDevice.SOURCE_KEYBOARD);
             InputManager.getInstance().injectInputEvent(ev,
@@ -391,7 +407,8 @@ public class VanirTarget {
 
     final Runnable onInjectKey_Up = new Runnable() {
         public void run() {
-            final KeyEvent ev = new KeyEvent(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
+            final KeyEvent ev = new KeyEvent(SystemClock.uptimeMillis(),
+                    SystemClock.uptimeMillis(),
                     KeyEvent.ACTION_UP, mInjectKeyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
                     KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY,
                     InputDevice.SOURCE_KEYBOARD);
@@ -403,7 +420,8 @@ public class VanirTarget {
     Runnable mKillTask = new Runnable() {
         public void run() {
             final Intent intent = new Intent(Intent.ACTION_MAIN);
-            final ActivityManager am = (ActivityManager) mContext.getSystemService(Activity.ACTIVITY_SERVICE);
+            final ActivityManager am = (ActivityManager) mContext
+                    .getSystemService(Activity.ACTIVITY_SERVICE);
             String defaultHomePackage = "com.android.launcher";
             intent.addCategory(Intent.CATEGORY_HOME);
             final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
@@ -412,19 +430,8 @@ public class VanirTarget {
             }
             String packageName = am.getRunningTasks(1).get(0).topActivity.getPackageName();
             if (!defaultHomePackage.equals(packageName)) {
-                    am.forceStopPackage(packageName);
-                    Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
-    Runnable mToggleRecents = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                IStatusBarService.Stub.asInterface(
-                        ServiceManager.getService(Context.STATUS_BAR_SERVICE)).toggleRecentApps();
-            } catch (RemoteException e) {
+                am.forceStopPackage(packageName);
+                Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -500,7 +507,7 @@ public class VanirTarget {
                 public void onServiceDisconnected(ComponentName name) {
                 }
             };
-            if (mContext.bindService(intent, conn, mContext.BIND_AUTO_CREATE)) {
+            if (mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE)) {
                 mScreenshotConnection = conn;
                 H.postDelayed(mScreenshotTimeout, 10000);
             }

@@ -101,7 +101,7 @@ import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.policy.OnSizeChangedListener;
 import com.android.systemui.statusbar.policy.Prefs;
-import com.android.systemui.aokp.AwesomeAction;
+import com.android.systemui.vanir.VanirAwesome;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -173,8 +173,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     StatusBarWindowView mStatusBarWindow;
     PhoneStatusBarView mStatusBarView;
-    
-    private VanirTarget mVanirTarget;
 
     int mPixelFormat;
     Object mQueueLock = new Object();
@@ -287,20 +285,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
-    //start polling quicksettings that can't automagically update themselves
-    private void startQSPolling() {
-        if (mSettingsPanel == null)
-            return;
-        mSettingsPanel.startQSPolling();
-    }
-
-    //stop polling quicksettings that can't automagically update themselves
-    private void stopQSPolling() {
-        if (mSettingsPanel == null)
-            return;
-        mSettingsPanel.stopQSPolling();
-    }
-
     // XXX: gesture research
     private final GestureRecorder mGestureRec = DEBUG_GESTURES
         ? new GestureRecorder("/sdcard/statusbar_gestures.dat") 
@@ -373,8 +357,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     // ================================================================================
     protected PhoneStatusBarView makeStatusBarView() {
         final Context context = mContext;
-        
-        mVanirTarget = new VanirTarget(mContext);
 
         Resources res = context.getResources();
 
@@ -704,6 +686,10 @@ public class PhoneStatusBar extends BaseStatusBar {
                 ? MSG_CLOSE_PANELS : MSG_OPEN_NOTIFICATION_PANEL;
         mHandler.removeMessages(msg);
         mHandler.sendEmptyMessage(msg);
+    }
+
+    void onBarViewDetached() {
+     //   WindowManagerImpl.getDefault().removeView(mStatusBarWindow);
     }
 
     @Override
@@ -1376,8 +1362,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
         mWindowManager.updateViewLayout(mStatusBarWindow, lp);
 
-        stopQSPolling();
-
         // Updating the window layout will force an expensive traversal/redraw.
         // Kick off the reveal animation after this is complete to avoid animation latency.
         if (revealAfterDraw) {
@@ -1414,8 +1398,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mStatusBarWindow.cancelExpandHelper();
         mStatusBarView.collapseAllPanels(true);
-
-        stopQSPolling();
     }
 
     public ViewPropertyAnimator setVisibilityWhenDone(
@@ -1488,7 +1470,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         if (mHasFlipSettings && mScrollView.getVisibility() != View.VISIBLE) {
             flipToNotifications();
         }
-        stopQSPolling();
 
         if (false) postStartTracing();
     }
@@ -1534,8 +1515,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 updateCarrierLabelVisibility(false);
             }
         }, FLIP_DURATION - 150);
-
-        stopQSPolling();
     }
 
     @Override
@@ -1550,13 +1529,11 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         if (mHasFlipSettings) {
             mNotificationPanel.expand();
-            stopQSPolling();
             if (mFlipSettingsView.getVisibility() != View.VISIBLE) {
                 flipToSettings();
             }
         } else if (mSettingsPanel != null) {
             mSettingsPanel.expand();
-            startQSPolling();
         }
 
         if (false) postStartTracing();
@@ -1574,8 +1551,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mNotificationButton.setVisibility(View.VISIBLE);
         mNotificationButton.setAlpha(1f);
         mClearButton.setVisibility(View.GONE);
-        
-        startQSPolling();
     }
     
     public boolean isShowingSettings() {
@@ -1676,8 +1651,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 updateCarrierLabelVisibility(false);
             }
         }, FLIP_DURATION - 150);
-        
-        startQSPolling();
     }
 
     public void flipPanels() {
@@ -1692,8 +1665,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     public void animateCollapseQuickSettings() {
         mStatusBarView.collapseAllPanels(true);
-
-        stopQSPolling();
     }
 
     void makeExpandedInvisibleSoon() {
@@ -1710,7 +1681,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         // Ensure the panel is fully collapsed (just in case; bug 6765842, 7260868)
         mStatusBarView.collapseAllPanels(/*animate=*/ false);
-        stopQSPolling();
 
         if (mHasFlipSettings) {
             // reset things to their proper state
@@ -2302,49 +2272,9 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
     };
 
-       final Runnable DelayShortPress = new Runnable () {
-            public void run() {
-                    doubleClickCounter = 0;
-                    animateCollapsePanels();
-                    AwesomeAction.getInstance(mContext).launchAction(mClockActions[shortClick]);
-            }
-        };
-
-       final Runnable ResetDoubleClickCounter = new Runnable () {
-            public void run() {
-                    doubleClickCounter = 0;
-            }
-        };
-
     private View.OnClickListener mClockClickListener = new View.OnClickListener() {
         public void onClick(View v) {
-            if (mClockDoubleClicked) {
-                if (doubleClickCounter > 0) {
-                    mHandler.removeCallbacks(DelayShortPress);
-                    vibrate();
-                    animateCollapsePanels();
-                    AwesomeAction.getInstance(mContext).launchAction(mClockActions[doubleClick]);
-                    mHandler.postDelayed(ResetDoubleClickCounter, 50);
-                } else {
-                    doubleClickCounter = doubleClickCounter + 1;
-                    vibrate();
-                    mHandler.postDelayed(DelayShortPress, 400);
-                }
-            } else {
-                vibrate();
-                animateCollapsePanels();
-                AwesomeAction.getInstance(mContext).launchAction(mClockActions[shortClick]);
-            }
-
-        }
-    };
-
-    private View.OnLongClickListener mClockLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            animateCollapsePanels();
-            AwesomeAction.getInstance(mContext).launchAction(mClockActions[longClick]);
-            return true;
+            //fixme
         }
     };
 
@@ -2614,12 +2544,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 		void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[shortClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[longClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[doubleClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.CURRENT_UI_MODE), false, this);
         }
 
@@ -2632,27 +2556,6 @@ public class PhoneStatusBar extends BaseStatusBar {
    protected void updateSettings() {
         ContentResolver cr = mContext.getContentResolver();
 
-        mClockActions[shortClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[shortClick]);
-
-        mClockActions[longClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[longClick]);
-
-        mClockActions[doubleClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[doubleClick]);
-
-        if (mClockActions[shortClick]  == null ||mClockActions[shortClick].equals("")) {
-            mClockActions[shortClick] = "**clockoptions**";
-        }
-        if (mClockActions[longClick]  == null || mClockActions[longClick].equals("")) {
-            mClockActions[longClick] = "**null**";
-		}
-        if (mClockActions[doubleClick] == null || mClockActions[doubleClick].equals("") || mClockActions[doubleClick].equals("**null**")) {
-            mClockActions[doubleClick] = "**null**";
-            mClockDoubleClicked = false;
-		} else {
-            mClockDoubleClicked = true;
-        }
         mCurrentUIMode = Settings.System.getInt(cr,
                 Settings.System.CURRENT_UI_MODE, 0);
     }

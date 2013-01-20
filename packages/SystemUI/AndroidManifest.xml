@@ -219,7 +219,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.systemui.aokp.NavbarToggle"
+            android:name="com.android.systemui.vanir.NavbarToggle"
             android:label="@string/toggle_navbar"
             android:icon="@drawable/toggle_navbar"
             android:theme="@android:style/Theme.Holo.Panel"
@@ -232,7 +232,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.systemui.aokp.WidgetToggle"
+            android:name="com.android.systemui.vanir.WidgetToggle"
             android:label="@string/toggle_widgets"
             android:icon="@drawable/ic_sysbar_widget"
             android:theme="@android:style/Theme.Holo.Panel"
@@ -245,7 +245,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.systemui.aokp.RingVibToggle"
+            android:name="com.android.systemui.vanir.RingVibToggle"
             android:label="@string/toggle_ring_vib"
             android:icon="@drawable/ic_lockscreen_vib"
             android:theme="@android:style/Theme.Holo.Panel"
@@ -258,7 +258,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.systemui.aokp.RingSilentToggle"
+            android:name="com.android.systemui.vanir.RingSilentToggle"
             android:label="@string/toggle_ring_silent"
             android:icon="@drawable/ic_lockscreen_silent"
             android:theme="@android:style/Theme.Holo.Panel"
@@ -271,7 +271,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.systemui.aokp.RingVibSilentToggle"
+            android:name="com.android.systemui.vanir.RingVibSilentToggle"
             android:label="@string/toggle_ring_vib_silent"
             android:icon="@drawable/ic_lockscreen_soundon"
             android:theme="@android:style/Theme.Holo.Panel"

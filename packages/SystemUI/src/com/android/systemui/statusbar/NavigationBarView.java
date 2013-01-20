@@ -53,7 +53,7 @@ import android.widget.LinearLayout;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
-import com.android.systemui.aokp.AwesomeAction;
+import com.android.systemui.vanir.VanirAwesome;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
 import com.android.systemui.statusbar.policy.key.RecentsKeyButtonView;
@@ -112,21 +112,21 @@ public class NavigationBarView extends LinearLayout {
 
     public final static int StockButtonsQty = 3;
     public final static String[] StockClickActions = {
-        AwesomeAction.ACTION_BACK,
-        AwesomeAction.ACTION_HOME,
-        AwesomeAction.ACTION_RECENTS,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL };
+        VanirAwesome.ACTION_BACK,
+        VanirAwesome.ACTION_HOME,
+        VanirAwesome.ACTION_RECENTS,
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL };
     public final static String[] StockLongpress = {
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL };
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL,
+        VanirAwesome.ACTION_NULL };
 
     FrameLayout rot0;
     FrameLayout rot90;
@@ -292,7 +292,7 @@ public class NavigationBarView extends LinearLayout {
                     }
                     v.setTint(false);
                 } else {
-                    v.setImageDrawable(AwesomeAction.getInstance(mContext).getIconImage(mClickActions[j]));
+                    v.setImageDrawable(VanirAwesome.getInstance(mContext).getIconImage(mClickActions[j]));
                     v.setTint(mClickActions[j].startsWith("**"));
                 }
                 addButton(navButtonLayout, v, landscape && !mLeftyMode);
@@ -453,7 +453,7 @@ public class NavigationBarView extends LinearLayout {
 
         final int iconSize = 80;
         ExtensibleKeyButtonView v = null;
-        if(AwesomeAction.ACTION_RECENTS.equals(clickAction)) {
+        if(VanirAwesome.ACTION_RECENTS.equals(clickAction)) {
             v = new RecentsKeyButtonView(mContext, null, clickAction, longpress);
         } else {
             v = new ExtensibleKeyButtonView(mContext, null, clickAction,

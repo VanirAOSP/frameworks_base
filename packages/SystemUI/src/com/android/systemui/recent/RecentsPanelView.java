@@ -52,6 +52,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -340,7 +341,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mWaitingToShow = true;
             refreshRecentTasksList(recentTaskDescriptions, firstScreenful);
             showIfReady();
-            showMemDisplay();
         } else {
             showImpl(false);
         }

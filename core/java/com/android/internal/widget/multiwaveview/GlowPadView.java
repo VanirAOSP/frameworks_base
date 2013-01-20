@@ -96,28 +96,6 @@ public class GlowPadView extends View {
      */
     public final static String EMPTY_TARGET = "empty";
 
-
-    /**
-     * @hide
-     */
-    public final static String ICON_RESOURCE = "icon_resource";
-
-    /**
-     * @hide
-     */
-    public final static String ICON_PACKAGE = "icon_package";
-
-    /**
-     * @hide
-     */
-    public final static String ICON_FILE = "icon_file";
-
-    /**
-     *
-     * @hide
-     */
-    public final static String EMPTY_TARGET = "empty";
-
     // Animation properties.
     private static final float SNAP_MARGIN_DEFAULT = 20.0f; // distance to ring before we snap to it
 

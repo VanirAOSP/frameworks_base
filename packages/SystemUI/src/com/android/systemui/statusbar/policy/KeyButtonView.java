@@ -101,8 +101,6 @@ public class KeyButtonView extends ImageView {
     public KeyButtonView(Context context, AttributeSet attrs, int defStyle, boolean colorable) {
         super(context, attrs);
 
-        mColorable = colorable;
-
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
                 defStyle, 0);
 

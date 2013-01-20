@@ -49,18 +49,6 @@ public class SettingsPanelView extends PanelView {
         super(context, attrs);
     }
 
-    void startQSPolling() {
-        if (mQS == null)
-            return;
-        mQS.startTicking();
-    }
-
-    void stopQSPolling() {
-        if (mQS == null)
-            return;
-        mQS.stopTicking();
-    }
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();

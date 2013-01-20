@@ -28,7 +28,7 @@ import android.provider.Settings;
  * Toggle Ring/Vibrate/Silent
  */
 
-public class RingVibSilentToggle extends Activity {
+public class RingVibSilentToggle extends Activity  {
   public RingVibSilentToggle() {
     super();
   }

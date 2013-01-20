@@ -466,6 +466,11 @@
     <!-- Textual description of Ethernet connections -->
     <string name="ethernet_label">Ethernet</string>
 
+    <string name="widgets">Widgets</string>
+    <string name="toggle_navbar">NavBar - Toggle</string>
+    <string name="toggle_widgets">Widgets - Toggle</string>
+    <string name="recents_kill_all_button_text">Kill all</string>
+
     <!-- QuickSettings: Airplane mode [CHAR LIMIT=NONE] -->
     <string name="quick_settings_airplane_mode_label">Airplane mode</string>
     <!-- QuickSettings: Battery Charging [CHAR LIMIT=NONE] -->
@@ -578,6 +583,7 @@
     <string name="quick_settings_gps_off_label">GPS Off</string>
     <string name="quick_settings_data_on_label">Data On</string>
     <string name="quick_settings_data_off_label">Data Off</string>
+    <string name="quick_settings_sound_on">Sound on</string>
 
 
     <!--  RamBar -->

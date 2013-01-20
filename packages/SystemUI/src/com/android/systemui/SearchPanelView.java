@@ -86,7 +86,7 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
-import com.android.systemui.aokp.AwesomeAction;
+import com.android.systemui.vanir.VanirAwesome;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,8 +108,6 @@ public class SearchPanelView extends FrameLayout implements
     private View mSearchTargetsContainer;
     private GlowPadView mGlowPadView;
     private IWindowManager mWm;
-    
-    private VanirTarget mVanirTarget;
 
     private PackageManager mPackageManager;
     private Resources mResources;
@@ -143,8 +141,6 @@ public class SearchPanelView extends FrameLayout implements
         mResources = mContext.getResources();
         
         mContentResolver = mContext.getContentResolver();
-        
-        mVanirTarget = new VanirTarget(context);
 
         mContentResolver = mContext.getContentResolver();
 
@@ -165,8 +161,6 @@ public class SearchPanelView extends FrameLayout implements
 
     class GlowPadTriggerListener implements GlowPadView.OnTriggerListener {
         boolean mWaitingForLaunch;
-        
-        final Runnable SetLongPress = new Runnable () {
 
        final Runnable SetLongPress = new Runnable () {
             public void run() {
@@ -174,7 +168,7 @@ public class SearchPanelView extends FrameLayout implements
                     mLongPress = true;
                     Log.d(TAG,"LongPress!");
                     mBar.hideSearchPanel();
-                    AwesomeAction.getInstance(mContext).launchAction(longList.get(mTarget));
+                    VanirAwesome.getInstance(mContext).launchAction(longList.get(mTarget));
                     mSearchPanelLock = true;
                  }
             }
@@ -213,7 +207,7 @@ public class SearchPanelView extends FrameLayout implements
             final int resId = mGlowPadView.getResourceIdForTarget(target);
             mTarget = target;
             if (!mLongPress) {
-                AwesomeAction.getInstance(mContext).launchAction(intentList.get(target));
+                VanirAwesome.getInstance(mContext).launchAction(intentList.get(target));
                mHandler.removeCallbacks(SetLongPress);
             }
         }
