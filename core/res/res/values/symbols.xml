@@ -1839,6 +1839,9 @@
   <java-symbol type="integer" name="config_backKillTimeout" />
   <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
   <java-symbol type="bool" name="config_samsung_stk" />
+  
+  <!-- Samsung's Audio Policy HAL -->
+  <java-symbol type="bool" name="config_noDelayInATwoDP" />
 
   <!-- Power menu -->
   <java-symbol type="string" name="global_action_screenshot" />
