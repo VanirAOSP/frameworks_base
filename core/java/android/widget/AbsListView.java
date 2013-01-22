@@ -3425,7 +3425,6 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                                     if (!mDataChanged) {
                                         performClick.run();
                                     }
-                                    mTouchModeReset = null;
                                 }
                             };
                             postDelayed(mTouchModeReset,
