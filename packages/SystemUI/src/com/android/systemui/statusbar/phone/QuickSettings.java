@@ -186,7 +186,6 @@ class QuickSettings {
     private BluetoothState mBluetoothState;
     private TelephonyManager tm;
     private ConnectivityManager mConnService;
-    private NfcAdapter mNfcAdapter;
 
     private BrightnessController mBrightnessController;
     private BluetoothController mBluetoothController;
@@ -264,7 +263,6 @@ class QuickSettings {
         mContainerView = container;
         mModel = new QuickSettingsModel(context);
         mWifiDisplayStatus = new WifiDisplayStatus();
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
         wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
         tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         connManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -1020,15 +1018,18 @@ class QuickSettings {
                     @Override
                     public void onClick(View v) {
                         boolean enabled = false;
-                        if (mNfcAdapter == null) {
-                            mNfcAdapter = NfcAdapter.getDefaultAdapter();
-                            mModel.setNfcAdapter(mNfcAdapter);
-                        }
-                        enabled = mNfcAdapter.isEnabled();
-                        if (enabled) {
-                            mNfcAdapter.disable();
-                        } else {
-                            mNfcAdapter.enable();
+                        if (mModel.getNfcAdapter() != null) {
+                            try {
+                                enabled = mModel.getNfcAdapter().isEnabled();
+                                if (enabled) {                                    
+                                    mModel.getNfcAdapter().disable();
+                                } else {
+                                    mModel.getNfcAdapter().enable();
+                                }
+                            } catch (NullPointerException ex) {
+                                // we'll ignore this click
+                                Log.e(TAG, "NFC QS Click Fail!\n"+ex); 
+                            }
                         }
                     }
                 });
