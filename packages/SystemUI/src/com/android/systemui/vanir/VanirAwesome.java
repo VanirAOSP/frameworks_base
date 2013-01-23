@@ -127,6 +127,7 @@ public class VanirAwesome {
             } catch (RemoteException e) {
                 // nuu
             }
+            return true;
         }
         if (action.equals(ACTION_HOME)) {
             injectKeyDelayed(KeyEvent.KEYCODE_HOME);
@@ -266,7 +267,7 @@ public class VanirAwesome {
             return true;
         }
 
-        if (action.equals(ACTION_RECENTS)) {
+        if (action.equals(ACTION_NOTIFICATIONS)) {
             try {
                 IStatusBarService.Stub.asInterface(
                         ServiceManager.getService(Context.STATUS_BAR_SERVICE))
