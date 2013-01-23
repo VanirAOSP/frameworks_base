@@ -1844,7 +1844,6 @@
   <java-symbol type="bool" name="config_noDelayInATwoDP" />
 
   <!-- Power menu -->
-  <java-symbol type="string" name="global_action_screenshot" />
   <java-symbol type="string" name="global_action_reboot" />
   <java-symbol type="string" name="global_actions" />
   <java-symbol type="string" name="reboot_system" />
@@ -1866,4 +1865,9 @@
   <java-symbol type="id" name="navbarhome" />
   <java-symbol type="id" name="navbarback" />
   <java-symbol type="id" name="navbarmenu" />
+  
+  <java-symbol type="drawable" name="ic_lock_reboot" />
+  <java-symbol type="drawable" name="ic_lock_expanded_desktop" />
+  <java-symbol type="drawable" name="ic_lock_expanded_desktop_off" />
+  
 </resources>
