@@ -335,12 +335,12 @@
             <intent-filter>
                  <action android:name="com.android.systemui.INTENT_TORCH_ON"/>
                  <action android:name="com.android.systemui.INTENT_TORCH_OFF"/>
-                 <action android:name="com.android.systemui.INTENT_TORCH" />
+                 <action android:name="com.android.systemui.INTENT_TORCH_TOGGLE" />
                  <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.android.systemui.INTENT_TORCH_TOGGLE" />
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.android.systemui.INTENT_TORCH" />
                 <category android:name="com.android.systemui.SHORTCUT" />
             </intent-filter>
         </activity>    
