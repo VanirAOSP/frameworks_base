@@ -932,6 +932,7 @@ class QuickSettings {
                         } else {
                             changeWifiApState(false);
                         }
+                        dothingsthewrongway();
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
@@ -960,8 +961,9 @@ class QuickSettings {
                     public void onClick(View v) {
                         boolean enabled = updateUsbState() ? false : true;
                         if (connManager.setUsbTethering(enabled) == ConnectivityManager.TETHER_ERROR_NO_ERROR) {
-                            dothingsthewrongway();
+                            Log.e(TAG, "Usb tether state setting failed! Is it plugged in?");
                         }
+                        dothingsthewrongway();
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
