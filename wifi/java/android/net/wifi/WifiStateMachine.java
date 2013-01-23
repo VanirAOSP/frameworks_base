@@ -1351,7 +1351,15 @@ public class WifiStateMachine extends StateMachine {
         if (countryCode != null && !countryCode.isEmpty()) {
             setCountryCode(countryCode, false);
         } else {
-            //use driver default
+            // On wifi-only devices, some drivers don't find hidden SSIDs unless DRIVER COUNTRY
+            // is called. Use the default country code to ping the driver.
+            ConnectivityManager cm =
+                    (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (!cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE)) {
+                setCountryCode(mCountryCode, false);
+            }
+
+            // In other case, mcc tables from carrier do the trick of starting up the wifi driver
         }
     }
 
@@ -2816,11 +2824,12 @@ public class WifiStateMachine extends StateMachine {
                     break;
                 case CMD_SET_COUNTRY_CODE:
                     String country = (String) message.obj;
-                    if (DBG) log("set country code " + country);
-                    if (mWifiNative.setCountryCode(country.toUpperCase())) {
-                        mCountryCode = country;
+                    String countryCode = country != null ? country.toUpperCase() : null;
+                    if (DBG) log("set country code " + countryCode);
+                    if (mWifiNative.setCountryCode(countryCode)) {
+                        mCountryCode = countryCode;
                     } else {
-                        loge("Failed to set country code " + country);
+                        loge("Failed to set country code " + countryCode);
                     }
                     break;
                 case CMD_SET_FREQUENCY_BAND:
