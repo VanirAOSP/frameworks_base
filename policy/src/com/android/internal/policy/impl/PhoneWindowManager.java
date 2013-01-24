@@ -206,7 +206,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 KeyEvent.KEYCODE_CALCULATOR, Intent.CATEGORY_APP_CALCULATOR);
     }
 
-    DeviceKeyHandler mDeviceKeyHandler;
+    private DeviceKeyHandler mDeviceKeyHandler;
 
     /**
      * Lock protecting internal state.  Must not call out into window
@@ -1175,9 +1175,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 Constructor<?> constructor = klass.getConstructor(Context.class);
                 mDeviceKeyHandler = (DeviceKeyHandler) constructor.newInstance(
                         mContext);
-                Slog.d(TAG, "Device key handler loaded");
+                if(DEBUG) Slog.d(TAG, "Device key handler loaded");
             } catch (Exception e) {
-                Slog.d(TAG, "Could not instantiate device key handler "
+                Slog.w(TAG, "Could not instantiate device key handler "
                         + deviceKeyHandlerClass + " from class "
                         + deviceKeyHandlerLib, e);
             }
