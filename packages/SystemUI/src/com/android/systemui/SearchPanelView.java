@@ -168,6 +168,7 @@ public class SearchPanelView extends FrameLayout implements
                     mLongPress = true;
                     Log.d(TAG,"LongPress!");
                     mBar.hideSearchPanel();
+                    maybeSkipKeyguard();
                     VanirAwesome.getInstance(mContext).launchAction(longList.get(mTarget));
                     mSearchPanelLock = true;
                  }
@@ -204,11 +205,15 @@ public class SearchPanelView extends FrameLayout implements
         }
 
         public void onTrigger(View v, final int target) {
-            final int resId = mGlowPadView.getResourceIdForTarget(target);
             mTarget = target;
             if (!mLongPress) {
-                VanirAwesome.getInstance(mContext).launchAction(intentList.get(target));
-               mHandler.removeCallbacks(SetLongPress);
+                if (VanirAwesome.ACTION_ASSIST.equals(intentList.get(target))) {
+                    startAssistActivity();
+                } else {
+                    maybeSkipKeyguard();
+                    VanirAwesome.getInstance(mContext).launchAction(intentList.get(target));
+                }
+                mHandler.removeCallbacks(SetLongPress);
             }
         }
 
@@ -241,6 +246,14 @@ public class SearchPanelView extends FrameLayout implements
         setDrawables();
     }
     
+	private void maybeSkipKeyguard() {
+		try {
+			if (mWm.isKeyguardLocked() && !mWm.isKeyguardSecure()) {
+			    ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+			}
+		} catch (RemoteException ignored) {
+		}
+	}
 
     private void setDrawables() {
         mLongPress = false;
@@ -321,6 +334,41 @@ public class SearchPanelView extends FrameLayout implements
         }
 
         mGlowPadView.setTargetResources(storedDraw);
+    }
+
+
+    private void startAssistActivity() {
+        if (!mBar.isDeviceProvisioned()) return;
+
+        // Close Recent Apps if needed
+        mBar.animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_SEARCH_PANEL);
+        boolean isKeyguardShowing = false;
+        try {
+            isKeyguardShowing = mWm.isKeyguardLocked();
+        } catch (RemoteException e) {
+
+        }
+
+        if (isKeyguardShowing) {
+            // Have keyguard show the bouncer and launch the activity if the user succeeds.
+            try {
+                mWm.showAssistant();
+            } catch (RemoteException e) {
+                // too bad, so sad...
+            }
+            onAnimationStarted();
+        } else {
+            // Otherwise, keyguard isn't showing so launch it from here.
+            Intent intent = ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                    .getAssistIntent(mContext, UserHandle.USER_CURRENT);
+            if (intent == null) return;
+
+            try {
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+                // too bad, so sad...
+            }
+        }
     }
 
     private TargetDrawable getTargetDrawable (String action){
