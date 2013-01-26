@@ -109,7 +109,7 @@ public class DateView extends TextView implements OnClickListener {
     }
 
     protected void updateClock() {
-        final String dateFormat = getContext().getString(R.string.abbrev_wday_month_day_no_year);
+        final String dateFormat = getContext().getString(R.string.full_wday_month_day_no_year_split);
         setText(DateFormat.format(dateFormat, new Date()));
     }
 
