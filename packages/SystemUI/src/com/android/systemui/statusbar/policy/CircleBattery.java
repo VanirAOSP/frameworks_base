@@ -250,7 +250,7 @@ public class CircleBattery extends ImageView {
 
         Paint usePaint = mPaintSystem;
         // turn red at 14% - same level android battery warning appears
-        if (mLevel <= 14) {
+        if (mLevel <= 15) {
             usePaint = mPaintRed;
         }
 
