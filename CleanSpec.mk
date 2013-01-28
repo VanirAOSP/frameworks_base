@@ -140,6 +140,20 @@ $(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/APPS/ImageProcessing_
 $(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/telephony/java/com/android/internal/telephony/IExtendedNetworkService.java)
 $(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/telephony/java/com/android/internal/telephony/IExtendedNetworkService.P)
 $(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/APPS/ImageProcessing_intermediates)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/core/java/android/view/IDisplayContentChangeListener.java)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/core/java/android/view/IDisplayContentChangeListener.P)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/core/java/android/view/IWindowManager.java)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/core/java/android/view/IWindowManager.P)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/core/java/android/view/IDisplayMagnificationController.java)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/core/java/android/view/IDisplayMagnificationController.P)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/core/java/android/view/IDisplayMagnificationMediator.java)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/core/java/android/view/IDisplayMagnificationMediator.P)
+$(call add-clean-step, rm -rf $(OUT_DIR)/target/common/obj/JAVA_LIBRARIES/framework_intermediates/src/voip)
+$(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/SHARED_LIBRARIES/librtp_jni_intermediates)
+$(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/lib/librtp_jni.so)
+$(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/lib/librtp_jni.so)
+$(call add-clean-step, rm -rf $(PRODUCT_OUT)/symbols/system/lib/librtp_jni.so)
+
 # ************************************************
 # NEWER CLEAN STEPS MUST BE AT THE END OF THE LIST
 # ************************************************
