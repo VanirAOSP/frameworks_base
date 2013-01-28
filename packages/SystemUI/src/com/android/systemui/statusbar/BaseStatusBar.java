@@ -25,6 +25,7 @@ import com.android.internal.widget.SizeAdaptiveLayout;
 import com.android.systemui.R;
 import com.android.systemui.SearchPanelView;
 import com.android.systemui.SystemUI;
+import com.android.systemui.TransparencyManager;
 import com.android.systemui.recent.RecentTasksLoader;
 import com.android.systemui.recent.RecentsActivity;
 import com.android.systemui.recent.TaskDescription;
@@ -140,6 +141,8 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected IWindowManager mWindowManagerService;
     protected Display mDisplay;
 
+    public TransparencyManager mTransparencyManager;
+
     private boolean mDeviceProvisioned = false;
 
     public IStatusBarService getStatusBarService() {
@@ -221,7 +224,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         } catch (RemoteException ex) {
             // If the system process isn't there we're doomed anyway.
         }
-
+        mTransparencyManager = new TransparencyManager(mContext);
         createAndAddWindows();
         // create WidgetView
         mWidgetView = new WidgetView(mContext,null);
