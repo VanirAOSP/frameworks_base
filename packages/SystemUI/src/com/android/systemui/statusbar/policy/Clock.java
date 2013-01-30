@@ -202,12 +202,12 @@ public class Clock extends TextView implements OnClickListener {
 
         String result = sdf.format(mCalendar.getTime());
 
-        if (IsShade() || AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
+        if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
             int magic1 = result.indexOf(MAGIC1);
             int magic2 = result.indexOf(MAGIC2);
             if (magic1 >= 0 && magic2 > magic1) {
                 SpannableStringBuilder formatted = new SpannableStringBuilder(result);
-                if (IsShade() || AM_PM_STYLE == AM_PM_STYLE_GONE) {
+                if (AM_PM_STYLE == AM_PM_STYLE_GONE) {
                     formatted.delete(magic1, magic2+1);
                 } else {
                     if (AM_PM_STYLE == AM_PM_STYLE_SMALL) {
