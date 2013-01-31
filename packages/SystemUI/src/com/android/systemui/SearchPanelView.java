@@ -20,6 +20,7 @@ import android.animation.LayoutTransition;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.KeyguardManager;
 import android.app.SearchManager;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
@@ -147,8 +148,8 @@ public class SearchPanelView extends FrameLayout implements
         SettingsObserver observer = new SettingsObserver(new Handler());
         observer.observe();
         updateSettings();
-
     }
+
     private class H extends Handler {
         public void handleMessage(Message m) {
             switch (m.what) {
@@ -246,14 +247,15 @@ public class SearchPanelView extends FrameLayout implements
         setDrawables();
     }
     
-	private void maybeSkipKeyguard() {
-		try {
-			if (mWm.isKeyguardLocked() && !mWm.isKeyguardSecure()) {
-			    ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-			}
-		} catch (RemoteException ignored) {
-		}
-	}
+
+    private void maybeSkipKeyguard() {
+        try {
+            if (mWm.isKeyguardLocked() && !mWm.isKeyguardSecure()) {
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            }
+        } catch (RemoteException ignored) {
+        }
+    }
 
     private void setDrawables() {
         mLongPress = false;
@@ -336,7 +338,6 @@ public class SearchPanelView extends FrameLayout implements
         mGlowPadView.setTargetResources(storedDraw);
     }
 
-
     private void startAssistActivity() {
         if (!mBar.isDeviceProvisioned()) return;
 
@@ -367,6 +368,18 @@ public class SearchPanelView extends FrameLayout implements
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
                 // too bad, so sad...
+            }
+
+            try {
+                ActivityOptions opts = ActivityOptions.makeCustomAnimation(mContext,
+                        R.anim.search_launch_enter, R.anim.search_launch_exit,
+                        getHandler(), this);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivityAsUser(intent, opts.toBundle(),
+                        new UserHandle(UserHandle.USER_CURRENT));
+            } catch (ActivityNotFoundException e) {
+                Slog.w(TAG, "Activity not found for " + intent.getAction());
+                onAnimationStarted();
             }
         }
     }
