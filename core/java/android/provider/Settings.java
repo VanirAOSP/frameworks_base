@@ -549,6 +549,7 @@ public final class Settings {
     @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
     public static final String ACTION_INTERNAL_STORAGE_SETTINGS =
             "android.settings.INTERNAL_STORAGE_SETTINGS";
+
     /**
      * Activity Action: Show settings for memory card storage.
      * <p>
@@ -1170,7 +1171,7 @@ public final class Settings {
             }
             return value;
         }
-        
+
         /**
          * @hide
          * Convenience function for retrieving a single system settings value
@@ -1196,7 +1197,7 @@ public final class Settings {
                 return def;
            }
         }
-        
+
         /**
         * @hide
         * Convenience function for updating a single settings value as a
@@ -1635,7 +1636,6 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_STATIC_DNS2 = "wifi_static_dns2";
 
-
         /**
          * Determines whether remote devices may discover and/or connect to
          * this device.
@@ -1644,16 +1644,14 @@ public final class Settings {
          * 1 -- connectable but not discoverable
          * 0 -- neither connectable nor discoverable
          */
-        public static final String BLUETOOTH_DISCOVERABILITY =
-            "bluetooth_discoverability";
+        public static final String BLUETOOTH_DISCOVERABILITY = "bluetooth_discoverability";
 
         /**
          * Bluetooth discoverability timeout.  If this value is nonzero, then
          * Bluetooth becomes discoverable for a certain number of seconds,
          * after which is becomes simply connectable.  The value is in seconds.
          */
-        public static final String BLUETOOTH_DISCOVERABILITY_TIMEOUT =
-            "bluetooth_discoverability_timeout";
+        public static final String BLUETOOTH_DISCOVERABILITY_TIMEOUT = "bluetooth_discoverability_timeout";
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#LOCK_PATTERN_ENABLED}
@@ -1675,9 +1673,7 @@ public final class Settings {
          * instead
          */
         @Deprecated
-        public static final String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED =
-            "lock_pattern_tactile_feedback_enabled";
-
+        public static final String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
 
         /**
          * A formatted string of the next alarm that is set, or the empty string
@@ -1874,8 +1870,7 @@ public final class Settings {
          * @deprecated
          */
         @Deprecated
-        public static final String NOTIFICATIONS_USE_RING_VOLUME =
-            "notifications_use_ring_volume";
+        public static final String NOTIFICATIONS_USE_RING_VOLUME = "notifications_use_ring_volume";
 
         /**
          * Whether silent mode should allow vibration feedback. This is used
@@ -1987,8 +1982,7 @@ public final class Settings {
          */
         public static final String TEXT_SHOW_PASSWORD = "show_password";
 
-        public static final String SHOW_GTALK_SERVICE_STATUS =
-                "SHOW_GTALK_SERVICE_STATUS";
+        public static final String SHOW_GTALK_SERVICE_STATUS = "SHOW_GTALK_SERVICE_STATUS";
 
         /**
          * Name of activity to use for wallpaper on the home screen.
@@ -2106,8 +2100,7 @@ public final class Settings {
          *
          * @hide
          */
-        public static final String HIDE_ROTATION_LOCK_TOGGLE_FOR_ACCESSIBILITY =
-                "hide_rotation_lock_toggle_for_accessibility";
+        public static final String HIDE_ROTATION_LOCK_TOGGLE_FOR_ACCESSIBILITY = "hide_rotation_lock_toggle_for_accessibility";
 
         /**
          * Whether the phone vibrates when it is ringing due to an incoming call. This will
@@ -2132,8 +2125,8 @@ public final class Settings {
         /**
          * CDMA only settings
          * DTMF tone type played by the dialer when dialing.
-         *                 0 = Normal
-         *                 1 = Long
+         * 0 = Normal
+         * 1 = Long
          * @hide
          */
         public static final String DTMF_TONE_TYPE_WHEN_DIALING = "dtmf_tone_type";
@@ -2187,7 +2180,7 @@ public final class Settings {
          */
         @Deprecated
         public static final String SHOW_WEB_SUGGESTIONS = "show_web_suggestions";
-        
+
         /**
          * @hide
          */
@@ -2199,7 +2192,7 @@ public final class Settings {
          * @hide
          */
         public static final String NOTIFICATION_LIGHT_PULSE = "notification_light_pulse";
-        
+
         /**
          * What color to use for the notification LED by default
          * @hide
@@ -2265,7 +2258,7 @@ public final class Settings {
          * @hide
          */
         public static final String NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES = "notification_light_pulse_custom_values";
-        
+
         /**
          * Whether the battery light should be enabled (if hardware supports it)
          * The value is boolean (1 or 0).
@@ -2326,8 +2319,7 @@ public final class Settings {
          * 1 = yes
          * @hide
          */
-        public static final String WINDOW_ORIENTATION_LISTENER_LOG =
-                "window_orientation_listener_log";
+        public static final String WINDOW_ORIENTATION_LISTENER_LOG = "window_orientation_listener_log";
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#POWER_SOUNDS_ENABLED}
@@ -2356,20 +2348,20 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_DISABLED = "lockscreen.disabled";
-        
+
         /**
          * Weather to minimize lockscreen challenge on screen turned on
          * @hide
          */
         public static final String LOCKSCREEN_MAXIMIZE_WIDGETS = "lockscreen_maximize_widgets";
-        
+
         /**
          * Stores values for custom lockscreen targets
          * @hide
          */
         public static final String LOCKSCREEN_TARGETS = "lockscreen_targets";
-        
-         /**  
+
+         /**
          * Allows lockscreen to be rotated
          * @hide
          */
@@ -2380,7 +2372,7 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_HIDE_INITIAL_PAGE_HINTS = "lockscreen_hide_initial_page_hints";
-        
+
         /**
          * Whether to use the carousel as widget container
          * @hide
@@ -2536,8 +2528,6 @@ public final class Settings {
          * @hide
          */
         public static final String POINTER_SPEED = "pointer_speed";
-        
-        /**  
 
         /**
          * Statusbar State
@@ -2605,7 +2595,7 @@ public final class Settings {
          * @hide
          */
         public static final String MODE_VOLUME_OVERLAY = "mode_volume_overlay";
-        
+
         /**
          * Ability to enable/disable Daul pane prefs.
          */
@@ -2634,14 +2624,13 @@ public final class Settings {
         *
         * @hide
         */
-
         public static final String SYSTEMUI_NAVRING_LONG_ENABLE = "systemui_navring_long_enable";
+
         /**
          * Custom navring actions
          *
          * @hide
          */
-
         public static final String[] SYSTEMUI_NAVRING = new String[] {
                 "navring_0",
                 "navring_1",
@@ -2663,7 +2652,7 @@ public final class Settings {
                 "navring_long_4",
         };
 
-	    /**
+       /**
          * @hide
          */
         public static final String SYSTEM_DISABLE_LOW_BATTERY_WARNING = "eos_system_disable_low_battery_warning";
@@ -2829,26 +2818,25 @@ public final class Settings {
                 "navigation_custom_app_icon_6",
         };
 
-        /**
+       /**
         * @hide
         */
         public static final String NAVIGATION_BAR_SHOW = "navigation_bar_show";
-        
+
        /**
         * @hide
         */
         public static final String NAVIGATION_BAR_SHOW_NOW = "navigation_bar_show_now";
 
         /**
-        * @hide
-        */
+         * @hide
+         */
         public static final String NAVIGATION_BAR_HEIGHT_LANDSCAPE = "navigation_bar_height_landscape";
 
-        
         /**
          * WEHH THE API CHANGED... WEHH... STFU, GOOGLE!
          * @hide
-         */         
+         */
         public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
 
         /**
@@ -2857,7 +2845,6 @@ public final class Settings {
          */
         public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
 
-       
         /**
          *
          * Whether to enable torch by long pressing power from a screen off state
@@ -2882,13 +2869,13 @@ public final class Settings {
         */
         public static final String HEADSET_CONNECT_PLAYER = "headset_connect_player";
 
-    	/**
+        /**
          * Show the NavBar dialog in Power menu
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_NAVBAR_HIDE = "power_dialog_show_navbar_hide";
 
-         /**
+        /**
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
@@ -2928,7 +2915,7 @@ public final class Settings {
          * @hide
          */
         public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD = "mute_annoying_notifications_threshold";
-        
+
         /**
          * @hide
          */
@@ -2974,6 +2961,14 @@ public final class Settings {
          *  @hide
          */
         public static final String USER_UI_MODE = "user_ui_mode";
+
+        /**
+         * toggle to "fix" the following: (found in NotificationManagerService)
+         *  new in 4.2: if there was supposed to be a sound and we're in vibrate mode,
+         *  we always vibrate, even if no vibration was specified
+         * @hide
+         */
+        public static final String NOTIFICATION_CONVERT_SOUND_TO_VIBRATION = "convert_sound_to_vibration";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -3281,13 +3276,6 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
-
-        /**
-         * toggle to "fix" the following: (found in NotificationManagerService)
-         *  new in 4.2: if there was supposed to be a sound and we're in vibrate mode,
-         *  we always vibrate, even if no vibration was specified
-         */
-        public static final String NOTIFICATION_CONVERT_SOUND_TO_VIBRATION = "convert_sound_to_vibration";
 
         /**
          * boolean value. toggles using arrow key locations on nav bar
@@ -6037,9 +6025,10 @@ public final class Settings {
 
         /**
          * CDMA only settings
-         * Emergency Tone  0 = Off
-         *                 1 = Alert
-         *                 2 = Vibrate
+         * Emergency Tone
+         * 0 = Off
+         * 1 = Alert
+         * 2 = Vibrate
          * @hide
          */
         public static final String EMERGENCY_TONE = "emergency_tone";
@@ -6053,22 +6042,24 @@ public final class Settings {
         public static final String CALL_AUTO_RETRY = "call_auto_retry";
 
         /**
-         * The preferred network mode   7 = Global
-         *                              6 = EvDo only
-         *                              5 = CDMA w/o EvDo
-         *                              4 = CDMA / EvDo auto
-         *                              3 = GSM / WCDMA auto
-         *                              2 = WCDMA only
-         *                              1 = GSM only
-         *                              0 = GSM / WCDMA preferred
+         * The preferred network mode
+         * 7 = Global
+         * 6 = EvDo only
+         * 5 = CDMA w/o EvDo
+         * 4 = CDMA / EvDo auto
+         * 3 = GSM / WCDMA auto
+         * 2 = WCDMA only
+         * 1 = GSM only
+         * 0 = GSM / WCDMA preferred
          * @hide
          */
         public static final String PREFERRED_NETWORK_MODE =
                 "preferred_network_mode";
 
         /**
-         * The cdma subscription 0 = Subscription from RUIM, when available
-         *                       1 = Subscription from NV
+         * The cdma subscription
+         * 0 = Subscription from RUIM, when available
+         * 1 = Subscription from NV
          * @hide
          */
         public static final String PREFERRED_CDMA_SUBSCRIPTION =
