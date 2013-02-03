@@ -530,6 +530,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         intentFilter.addAction(Intent.ACTION_BOOT_COMPLETED);
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(Intent.ACTION_USER_BACKGROUND);
         intentFilter.addAction(Intent.ACTION_USER_SWITCHED);
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
 
@@ -4031,8 +4032,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 }
             } else if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
                 mBootCompleted = true;
-                sendMsg(mAudioHandler, MSG_LOAD_SOUND_EFFECTS, SENDMSG_NOOP,
-                        0, 0, null, 0);
+                sendMsg(mAudioHandler, MSG_LOAD_SOUND_EFFECTS, SENDMSG_NOOP, 0, 0, null, 0);
 
                 mKeyguardManager =
                         (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
@@ -4054,11 +4054,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
 
                 sendMsg(mAudioHandler,
                         MSG_CONFIGURE_SAFE_MEDIA_VOLUME_FORCED,
-                        SENDMSG_REPLACE,
-                        0,
-                        0,
-                        null,
-                        SAFE_VOLUME_CONFIGURE_TIMEOUT_MS);
+                        SENDMSG_REPLACE, 0, 0, null, SAFE_VOLUME_CONFIGURE_TIMEOUT_MS);
             } else if (action.equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
                     // a package is being removed, not replaced
@@ -4073,15 +4069,12 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 AudioSystem.setParameters("screen_state=off");
             } else if (action.equalsIgnoreCase(Intent.ACTION_CONFIGURATION_CHANGED)) {
                 handleConfigurationChanged(context);
-            } else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
+            } else if (action.equals(Intent.ACTION_USER_BACKGROUND)) {
                 // attempt to stop music playback for background user
                 sendMsg(mAudioHandler,
                         MSG_BROADCAST_AUDIO_BECOMING_NOISY,
-                        SENDMSG_REPLACE,
-                        0,
-                        0,
-                        null,
-                        0);
+                        SENDMSG_REPLACE, 0, 0, null, 0);
+            } else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
                 // the current audio focus owner is no longer valid
                 discardAudioFocusOwner();
 
@@ -4090,9 +4083,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 // preserve STREAM_MUSIC volume from one user to the next.
                 sendMsg(mAudioHandler,
                         MSG_SET_ALL_VOLUMES,
-                        SENDMSG_QUEUE,
-                        0,
-                        0,
+                        SENDMSG_QUEUE, 0, 0,
                         mStreamStates[AudioSystem.STREAM_MUSIC], 0);
             }
         }
