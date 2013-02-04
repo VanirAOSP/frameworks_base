@@ -1149,6 +1149,7 @@
   <java-symbol type="style" name="Animation.Dream" />
   <java-symbol type="style" name="Theme.DeviceDefault.Dialog.Alert" />
   <java-symbol type="style" name="Theme.DeviceDefault.Light.Dialog.Alert" />
+  <java-symbol type="style" name="Theme.DeviceDefault.Light.Dialog.Alert.ActPic" />
   <java-symbol type="style" name="Theme.Dialog.Alert" />
   <java-symbol type="style" name="Theme.Holo.Dialog.Alert" />
   <java-symbol type="style" name="Theme.Holo.Light.Dialog.Alert" />

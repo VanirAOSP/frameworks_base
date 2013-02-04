@@ -531,6 +531,9 @@ easier.
     <style name="Theme.DeviceDefault.Light.Dialog.Alert" parent="Theme.Holo.Light.Dialog.Alert">
         <item name="windowTitleStyle">@android:style/DialogWindowTitle.DeviceDefault.Light</item>
     </style>
+    <style name="Theme.DeviceDefault.Light.Dialog.Alert.ActPic" parent="Theme.Holo.Light.Dialog.Alert.ActPic">
+        <item name="windowTitleStyle">@android:style/DialogWindowTitle.DeviceDefault.Light</item>
+    </style>
     <style name="Theme.DeviceDefault.SearchBar" parent="Theme.Holo.SearchBar">
 
     </style>

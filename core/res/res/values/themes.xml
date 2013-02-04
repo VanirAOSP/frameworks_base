@@ -1791,6 +1791,13 @@ please see themes_device_defaults.xml.
         <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
         <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
     </style>
+    <style name="Theme.Holo.Light.Dialog.Alert.ActPic">
+        <item name="windowBackground">@android:color/transparent</item>
+        <item name="windowTitleStyle">@android:style/DialogWindowTitle.Holo.Light</item>
+        <item name="windowContentOverlay">@null</item>
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+    </style>
 
     <!-- Theme for a presentation window on a secondary display. -->
     <style name="Theme.Holo.Light.Dialog.Presentation" parent="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen" >
