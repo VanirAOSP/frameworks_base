@@ -637,10 +637,18 @@ public class ImageWallpaper extends WallpaperService {
     
             mEglConfig = chooseEglConfig();
             if (mEglConfig == null) {
-                throw new RuntimeException("eglConfig not initialized");
+                //chooseEGLConfig fail since no egl render type EGL_OPENGL_ES2_BIT when disable gpu acceleration,
+                //should switch to SW canvas renderer without throwing exception in this case.
+                checkEglError();
+                return false;
             }
             
             mEglContext = createContext(mEgl, mEglDisplay, mEglConfig);
+
+            if(mEglContext == EGL10.EGL_NO_CONTEXT){
+                checkEglError();
+                return false;
+            }
     
             mEglSurface = mEgl.eglCreateWindowSurface(mEglDisplay, mEglConfig, surfaceHolder, null);
     
