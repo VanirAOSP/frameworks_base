@@ -114,7 +114,7 @@ public class KeyButtonView extends ImageView {
             mGlowWidth = mGlowBG.getIntrinsicWidth();
             mGlowHeight = mGlowBG.getIntrinsicHeight();
         }
-        
+
         a.recycle();
 
         setClickable(true);
@@ -122,7 +122,6 @@ public class KeyButtonView extends ImageView {
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
     }
-    
 
     public void setSupportsLongPress(boolean supports) {
         mSupportsLongpress = supports;
@@ -232,7 +231,7 @@ public class KeyButtonView extends ImageView {
 
             // also invalidate our immediate parent to help avoid situations where nearby glows
             // interfere
-            ((View)getParent()).invalidate();
+            ((View)getParent().getParent()).invalidate();
         }
     }
 
@@ -422,4 +421,3 @@ public class KeyButtonView extends ImageView {
         invalidate();
     }
 }
-
