@@ -42,7 +42,6 @@
             android:layout_marginEnd="12dip"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true" />
-
     </FrameLayout>
 
     <FrameLayout
@@ -64,7 +63,5 @@
             android:layout_marginEnd="12dip"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true" />
-
     </FrameLayout>
-
 </LinearLayout>

@@ -30,11 +30,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <View android:id="@+id/titleDividerTop"
             android:layout_width="match_parent"
             android:layout_height="2dip"
             android:visibility="gone"
             android:background="@android:color/holo_blue_light" />
+
         <LinearLayout android:id="@+id/title_template"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,11 +45,13 @@
             android:minHeight="@dimen/alert_dialog_title_height"
             android:layout_marginStart="16dip"
             android:layout_marginEnd="16dip">
+
             <ImageView android:id="@+id/icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="8dip"
                 android:src="@null" />
+
             <com.android.internal.widget.DialogTitle android:id="@+id/alertTitle"
                 style="?android:attr/windowTitleStyle"
                 android:singleLine="true"
@@ -55,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
+
         <View android:id="@+id/titleDivider"
             android:layout_width="match_parent"
             android:layout_height="2dip"
@@ -69,10 +74,12 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:minHeight="64dp">
+
         <ScrollView android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false">
+
             <TextView android:id="@+id/message"
                 style="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
@@ -89,6 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:minHeight="64dp">
+
         <FrameLayout android:id="@+android:id/custom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -102,6 +110,7 @@
         android:divider="?android:attr/dividerHorizontal"
         android:showDividers="beginning"
         android:dividerPadding="0dip">
+
         <LinearLayout
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
@@ -109,6 +118,7 @@
             android:orientation="horizontal"
             android:layoutDirection="locale"
             android:measureWithLargestChild="true">
+
             <Button android:id="@+id/button2"
                 android:layout_width="wrap_content"
                 android:layout_gravity="start"
@@ -118,6 +128,7 @@
                 android:textSize="14sp"
                 android:minHeight="@dimen/alert_dialog_button_bar_height"
                 android:layout_height="wrap_content" />
+
             <Button android:id="@+id/button3"
                 android:layout_width="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -127,6 +138,7 @@
                 android:textSize="14sp"
                 android:minHeight="@dimen/alert_dialog_button_bar_height"
                 android:layout_height="wrap_content" />
+
             <Button android:id="@+id/button1"
                 android:layout_width="wrap_content"
                 android:layout_gravity="end"

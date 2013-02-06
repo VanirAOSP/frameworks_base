@@ -31,5 +31,4 @@
         android:layout_weight="1"
         android:drawSelectorOnTop="false"
         android:scrollbarAlwaysDrawVerticalTrack="true" />
-
 </LinearLayout>

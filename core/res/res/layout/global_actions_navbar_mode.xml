@@ -14,18 +14,19 @@
      limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
    <TextView
-        android:text="@string/global_actions_toggle_navbar_hide"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.Small" />
+       android:text="@string/global_actions_toggle_navbar_hide"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:gravity="center"
+       android:textAppearance="@style/TextAppearance.Small" />
 
    <LinearLayout
         android:layout_width="match_parent"
@@ -37,8 +38,8 @@
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:focusable="true"
-        android:background="@drawable/silent_mode_indicator"
-        >
+        android:background="@drawable/silent_mode_indicator">
+
         <ImageView
             android:layout_width="48dp"
             android:layout_height="match_parent"
@@ -50,22 +51,22 @@
             android:src="@drawable/ic_lock_power_off"
             android:scaleType="center"
             android:background="?android:attr/actionBarItemBackground"
-            android:duplicateParentState="true"
-            />
+            android:duplicateParentState="true" />
     </LinearLayout>
+
     <!-- Spacer -->
     <View android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
     <LinearLayout
         android:id="@+id/navbarhome"
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:background="?android:attr/actionBarItemBackground"
-        android:focusable="true"
-        >
+        android:focusable="true">
+
         <ImageView
             android:layout_width="48dp"
             android:layout_height="match_parent"
@@ -77,23 +78,22 @@
             android:src="@drawable/ic_menu_home"
             android:scaleType="center"
             android:duplicateParentState="true"
-            android:background="@drawable/silent_mode_indicator"
-            />
+            android:background="@drawable/silent_mode_indicator" />
     </LinearLayout>
 
     <!-- Spacer -->
     <View android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
     <LinearLayout
         android:id="@+id/navbarback"
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:background="?android:attr/actionBarItemBackground"
-        android:focusable="true"
-        >
+        android:focusable="true">
+
         <ImageView
             android:layout_width="48dp"
             android:layout_height="match_parent"
@@ -105,22 +105,23 @@
             android:src="@drawable/ic_menu_back"
             android:scaleType="center"
             android:duplicateParentState="true"
-            android:background="@drawable/silent_mode_indicator"
-            />
+            android:background="@drawable/silent_mode_indicator" />
     </LinearLayout>
+
     <!-- Spacer -->
-    <View android:layout_width="0dp"
+    <View
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
     <LinearLayout
         android:id="@+id/navbarmenu"
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:background="?android:attr/actionBarItemBackground"
-        android:focusable="true"
-        >
+        android:focusable="true">
+
         <ImageView
             android:layout_width="48dp"
             android:layout_height="match_parent"
@@ -132,8 +133,7 @@
             android:src="@drawable/ic_menu_moreoverflow_normal_holo_dark"
             android:scaleType="center"
             android:duplicateParentState="true"
-            android:background="@drawable/silent_mode_indicator"
-            />
+            android:background="@drawable/silent_mode_indicator" />
     </LinearLayout>
   </LinearLayout>
 </LinearLayout>

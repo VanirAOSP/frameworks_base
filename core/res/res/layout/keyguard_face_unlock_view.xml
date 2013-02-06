@@ -17,7 +17,7 @@
 */
 -->
 
-<!-- This is the screen that allows the user to unlock by showing their face.  -->
+<!-- This is the screen that allows the user to unlock by showing their face. -->
 <com.android.internal.policy.impl.keyguard.KeyguardFaceUnlockView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/keyguard_face_unlock_view"
@@ -28,18 +28,18 @@
     android:layout_maxHeight="@dimen/keyguard_security_height"
     android:contentDescription="@string/keyguard_accessibility_face_unlock">
 
-    <include layout="@layout/keyguard_message_area"
+    <include
+        layout="@layout/keyguard_message_area"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
 
     <FrameLayout
        android:id="@+id/keyguard_bouncer_frame"
        android:background="@*android:drawable/kg_bouncer_bg_white"
        android:layout_width="match_parent"
        android:layout_height="0dp"
-       android:layout_weight="1"
-       >
+       android:layout_weight="1">
+
        <com.android.internal.widget.FaceUnlockView
            android:id="@+id/face_unlock_area_view"
            android:layout_width="match_parent"
@@ -52,8 +52,7 @@
                android:id="@+id/spotlightMask"
                android:layout_width="match_parent"
                android:layout_height="match_parent"
-               android:background="@*android:color/facelock_spotlight_mask"
-           />
+               android:background="@*android:color/facelock_spotlight_mask" />
 
            <ImageButton
                android:id="@+id/face_unlock_cancel_button"
@@ -63,12 +62,12 @@
                android:layout_alignParentTop="true"
                android:layout_alignParentEnd="true"
                android:background="#00000000"
-               android:src="@*android:drawable/ic_facial_backup"
-           />
+               android:src="@*android:drawable/ic_facial_backup" />
        </com.android.internal.widget.FaceUnlockView>
     </FrameLayout>
 
-    <include layout="@layout/keyguard_eca"
+    <include
+        layout="@layout/keyguard_eca"
         android:id="@+id/keyguard_selector_fade_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

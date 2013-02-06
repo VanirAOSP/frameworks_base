@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"
         android:minHeight="54dip"
         android:orientation="vertical">
+
         <LinearLayout android:id="@+id/title_template"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,6 +44,7 @@
             android:layout_marginBottom="9dip"
             android:layout_marginStart="10dip"
             android:layout_marginEnd="10dip">
+
             <ImageView android:id="@+id/icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,6 +52,7 @@
                 android:paddingTop="6dip"
                 android:paddingEnd="10dip"
                 android:src="@drawable/ic_dialog_info" />
+
             <com.android.internal.widget.DialogTitle android:id="@+id/alertTitle"
                 style="?android:attr/textAppearanceLarge"
                 android:singleLine="true"
@@ -57,6 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
+
         <ImageView android:id="@+id/titleDivider"
             android:layout_width="match_parent"
             android:layout_height="1dip"
@@ -72,6 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
+
         <ScrollView android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,6 +85,7 @@
             android:paddingStart="14dip"
             android:paddingEnd="10dip"
             android:overScrollMode="ifContentScrolls">
+
             <TextView android:id="@+id/message"
                 style="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
@@ -92,6 +98,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1">
+
         <FrameLayout android:id="@+android:id/custom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -103,7 +110,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="54dip"
-        android:orientation="vertical" >
+        android:orientation="vertical">
+
         <LinearLayout
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
@@ -113,12 +121,14 @@
             android:paddingStart="2dip"
             android:paddingEnd="2dip"
             android:measureWithLargestChild="true">
+
             <LinearLayout android:id="@+id/leftSpacer"
                 android:layout_weight="0.25"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:visibility="gone" />
+
             <Button android:id="@+id/button1"
                 android:layout_width="0dip"
                 android:layout_gravity="start"
@@ -126,6 +136,7 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:maxLines="2"
                 android:layout_height="wrap_content" />
+
             <Button android:id="@+id/button3"
                 android:layout_width="0dip"
                 android:layout_gravity="center_horizontal"
@@ -133,6 +144,7 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:maxLines="2"
                 android:layout_height="wrap_content" />
+
             <Button android:id="@+id/button2"
                 android:layout_width="0dip"
                 android:layout_gravity="end"
@@ -140,6 +152,7 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:maxLines="2"
                 android:layout_height="wrap_content" />
+
             <LinearLayout android:id="@+id/rightSpacer"
                 android:layout_width="0dip"
                 android:layout_weight="0.25"

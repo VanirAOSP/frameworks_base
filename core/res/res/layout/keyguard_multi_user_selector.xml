@@ -35,5 +35,4 @@
         android:layout_marginBottom="@dimen/keyguard_muliuser_selector_margin"
         android:layout_height="@dimen/keyguard_avatar_size"
         android:layout_gravity="center|bottom" />
-
 </com.android.internal.policy.impl.keyguard.KeyguardMultiUserSelectorView>

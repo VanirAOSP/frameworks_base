@@ -25,9 +25,10 @@
     android:layout_maxHeight="@dimen/keyguard_security_height"
     android:orientation="vertical">
 
-    <include layout="@layout/keyguard_message_area"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+    <include
+        layout="@layout/keyguard_message_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -43,8 +44,7 @@
             android:layout_marginEnd="7dip"
             android:layout_alignParentTop="true"
             android:hint="@string/kg_login_username_hint"
-            android:inputType="textEmailAddress"
-            />
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/password"
@@ -58,8 +58,7 @@
             android:inputType="textPassword"
             android:hint="@string/kg_login_password_hint"
             android:nextFocusRight="@+id/ok"
-            android:nextFocusDown="@+id/ok"
-            />
+            android:nextFocusDown="@+id/ok" />
 
         <!-- ok below password, aligned to right of screen -->
         <Button
@@ -69,12 +68,10 @@
             android:layout_margin="7dip"
             android:layout_alignParentEnd="true"
             android:layout_below="@id/login"
-            android:text="@string/kg_login_submit_button"
-            />
-
+            android:text="@string/kg_login_submit_button" />
     </RelativeLayout>
 
-    <!--  no room for ECA on this screen right now
+    <!-- no room for ECA on this screen right now
     <include layout="@layout/keyguard_eca"
         android:id="@+id/keyguard_selector_fade_container"
         android:layout_width="match_parent"

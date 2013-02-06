@@ -14,28 +14,26 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@android:id/left_icon"
+        android:src="?attr/dividerVertical"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        >
-    <ImageView
-            android:id="@android:id/left_icon"
-            android:src="?attr/dividerVertical"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            android:layout_marginTop="12dip"
-            android:layout_marginBottom="12dip"
-        />
+        android:scaleType="fitXY"
+        android:layout_marginTop="12dip"
+        android:layout_marginBottom="12dip" />
 
     <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingStart="8dip"
-            android:paddingEnd="8dip"
-            android:gravity="center_vertical"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:background="?android:attr/selectableItemBackground"
-            />
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingStart="8dip"
+        android:paddingEnd="8dip"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:background="?android:attr/selectableItemBackground" />
 </LinearLayout>

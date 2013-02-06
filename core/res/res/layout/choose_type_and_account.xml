@@ -31,8 +31,7 @@
         android:paddingTop="16dip"
         android:paddingBottom="16dip"
         android:paddingStart="16dip"
-        android:paddingEnd="16dip"
-    />
+        android:paddingEnd="16dip" />
 
     <!-- List of accounts, with "Add new account" as the last item -->
     <ListView android:id="@android:id/list"
@@ -54,12 +53,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:measureWithLargestChild="true">
+
         <Button android:id="@android:id/button1"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@android:string/no"
             android:onClick="onCancelButtonClicked" />
+
         <Button android:id="@android:id/button2"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
