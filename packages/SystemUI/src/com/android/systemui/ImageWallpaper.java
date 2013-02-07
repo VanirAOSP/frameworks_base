@@ -378,6 +378,7 @@ public class ImageWallpaper extends WallpaperService {
             if (DEBUG) {
                 Log.d(TAG, "Redrawing wallpaper");
             }
+
             if (mIsHwAccelerated) {
                 if (!drawWallpaperWithOpenGL(sh, availw, availh, xPixels, yPixels)) {
                     drawWallpaperWithCanvas(sh, availw, availh, xPixels, yPixels);
@@ -645,8 +646,9 @@ public class ImageWallpaper extends WallpaperService {
     
             if (mEglSurface == null || mEglSurface == EGL_NO_SURFACE) {
                 int error = mEgl.eglGetError();
-                if (error == EGL_BAD_NATIVE_WINDOW) {
-                    Log.e(GL_LOG_TAG, "createWindowSurface returned EGL_BAD_NATIVE_WINDOW.");
+                if (error == EGL_BAD_NATIVE_WINDOW || error == EGL_BAD_ALLOC) {
+                    Log.e(GL_LOG_TAG, "createWindowSurface returned " +
+                                         GLUtils.getEGLErrorString(error) + ".");
                     return false;
                 }
                 throw new RuntimeException("createWindowSurface failed " +
