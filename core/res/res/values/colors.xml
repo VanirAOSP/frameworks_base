@@ -91,7 +91,7 @@
     <color name="perms_dangerous_perm_color">#33b5e5</color>
     <color name="shadow">#cc222222</color>
     <color name="perms_costs_money">#ffffbb33</color>
-    
+
     <!-- For search-related UIs -->
     <color name="search_url_text_normal">#7fa87f</color>
     <color name="search_url_text_selected">@android:color/black</color>
@@ -124,8 +124,8 @@
     <color name="facelock_spotlight_mask">#CC000000</color>
 
     <!-- For holo theme -->
-      <drawable name="screen_background_holo_light">#fff3f3f3</drawable>
-      <drawable name="screen_background_holo_dark">#ff000000</drawable>
+    <drawable name="screen_background_holo_light">#fff3f3f3</drawable>
+    <drawable name="screen_background_holo_dark">#ff000000</drawable>
     <color name="background_holo_dark">#ff000000</color>
     <color name="background_holo_light">#fff3f3f3</color>
     <color name="bright_foreground_holo_dark">@android:color/background_holo_light</color>
@@ -196,4 +196,3 @@
     <color name="keyguard_avatar_nick_color">#ffffffff</color>
     <color name="keyguard_avatar_frame_pressed_color">#ff35b5e5</color>
 </resources>
-
