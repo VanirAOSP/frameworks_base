@@ -21,6 +21,7 @@ import android.app.FragmentBreadCrumbs;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListActivity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -703,8 +704,9 @@ public abstract class PreferenceActivity extends ListActivity implements
      * enough.
      */
     public boolean onIsMultiPane() {
-        boolean preferMultiPane = getResources().getBoolean(
-                com.android.internal.R.bool.preferences_prefer_dual_pane);
+        boolean preferMultiPane = Settings.System.getBoolean(
+                getContentResolver(), Settings.System.FORCE_DUAL_PANEL, getResources().getBoolean(
+                com.android.internal.R.bool.preferences_prefer_dual_pane));
                 int multiPaneMode = Settings.System.getInt(getContentResolver(),
                 Settings.System.DUAL_PANE_PREFS, (preferMultiPane ? 1 : 0));
         switch (multiPaneMode) {

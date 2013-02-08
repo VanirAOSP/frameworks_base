@@ -2890,6 +2890,13 @@ public final class Settings {
         public static final String HEADSET_CONNECT_PLAYER = "headset_connect_player";
 
         /**
+         * This is used to change from singlepane mode forcing it to
+         * Change into multipane mode. Default is disabled.
+         * @hide
+         */
+        public static final String FORCE_DUAL_PANEL = "force_dualpanel";
+
+        /**
          * Show the NavBar dialog in Power menu
          * @hide
          */
@@ -3302,7 +3309,7 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
-            
+
         /**
          * Holds the text for the Carrier label. An empty string
          * will bring the default text back.
