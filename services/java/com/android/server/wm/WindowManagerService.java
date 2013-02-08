@@ -5467,19 +5467,19 @@ public class WindowManagerService extends IWindowManager.Stub
     // Called by window manager policy.  Not exposed externally.
     @Override
     public void shutdown(boolean confirm) {
-        ShutdownThread.shutdown(getUiContext(), confirm);
+        ShutdownThread.shutdown(getUiContext(), true);
     }
 
     // Called by window manager policy. Not exposed externally.
     @Override
     public void rebootSafeMode(boolean confirm) {
-        ShutdownThread.rebootSafeMode(getUiContext(), confirm);
+        ShutdownThread.rebootSafeMode(getUiContext(), true);
     }
 
     // Called by window manager policy.  Not exposed externally.
     @Override
     public void reboot(boolean confirm) {
-        ShutdownThread.reboot(mContext, "PowerMenu", confirm);
+        ShutdownThread.reboot(getUiContext(), null, true);
     }
 
     public void setInputFilter(IInputFilter filter) {
