@@ -2586,6 +2586,18 @@ public final class Settings {
          */
         public static final String PREF_ENABLE = "clock_style";
 
+        /**
+         * Setting for clock color
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
+
+        /**
+         * Setting for clock color
+         * @hide
+         */
+        public static final String STATUSBAR_EXPANDED_CLOCK_COLOR = "statusbar_expanded_clock_color";
+
          /**
          * Volume Overlay Mode. This is the style of the volume overlay panel.
          *      0 - Single
