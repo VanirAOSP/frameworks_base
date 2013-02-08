@@ -217,7 +217,7 @@ LOCAL_CFLAGS += -DHAVE_SELINUX
 endif # HAVE_SELINUX
 
 ifeq ($(TARGET_ARCH), arm)
-  ifeq ($(ARCH_ARM_HAVE_NEON), true)
+  ifeq ($(TARGET_USE_KRAIT_BIONIC_OPTIMIZATION), true)
     TARGET_arm_CFLAGS += -DUSE_NEON_BITMAP_OPTS -mvectorize-with-neon-quad
     LOCAL_SRC_FILES+= \
 		android/graphics/Bitmap.cpp.arm
