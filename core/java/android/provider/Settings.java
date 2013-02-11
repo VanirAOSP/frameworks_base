@@ -2606,6 +2606,12 @@ public final class Settings {
          */
         public static final String STATUSBAR_EXPANDED_CLOCK_COLOR = "statusbar_expanded_clock_color";
 
+        /**
+         * Show the pending notification counts as overlays on the status bar
+         * @hide
+         */
+        public static final String STATUSBAR_NOTIF_COUNT = "statusbar_notif_count";
+
          /**
          * Volume Overlay Mode. This is the style of the volume overlay panel.
          *      0 - Single
