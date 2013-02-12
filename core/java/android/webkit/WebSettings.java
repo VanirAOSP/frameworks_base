@@ -1127,6 +1127,16 @@ public abstract class WebSettings {
         throw new MustOverrideException();
     }
 
+     /**
+     * Sets whether the web sockets API is enabled. The default value is
+     * false.
+     *
+     * @param flag true if the WebView should use the web sockets API
+     */
+    public synchronized void setWebSocketsEnabled(boolean flag) {
+        throw new MustOverrideException();
+    }
+
     /**
      * Sets whether the DOM storage API is enabled. The default value is false.
      *
@@ -1166,22 +1176,19 @@ public abstract class WebSettings {
     }
 
     /**
-     * Sets whether Geolocation is enabled. The default is true.
-     * <p>
-     * Please note that in order for the Geolocation API to be usable
-     * by a page in the WebView, the following requirements must be met:
-     * <ul>
-     *   <li>an application must have permission to access the device location,
-     *   see {@link android.Manifest.permission#ACCESS_COARSE_LOCATION},
-     *   {@link android.Manifest.permission#ACCESS_FINE_LOCATION};
-     *   <li>an application must provide an implementation of the
-     *   {@link WebChromeClient#onGeolocationPermissionsShowPrompt} callback
-     *   to receive notifications that a page is requesting access to location
-     *   via the JavaScript Geolocation API.
-     * </ul>
-     * <p>
-     * As an option, it is possible to store previous locations and web origin
-     * permissions in a database. See {@link #setGeolocationDatabasePath}.
+     * Gets whether the web sockets API is enabled.
+     *
+     * @return true if the web sockets API is enabled
+     * @see #setWebSocketsEnabled
+     */
+    public synchronized boolean getWebSocketsEnabled() {
+        throw new MustOverrideException();
+    }
+
+    /**
+     * Sets whether Geolocation is enabled. The default is true. See also
+     * {@link #setGeolocationDatabasePath} for how to correctly set up
+     * Geolocation.
      *
      * @param flag whether Geolocation should be enabled
      */
