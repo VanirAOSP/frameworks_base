@@ -60,6 +60,7 @@ import com.android.internal.R;
 public class Clock extends TextView implements OnClickListener {
     private boolean mAttached;
     private Calendar mCalendar;
+    private Locale mLocale;
     private static String mClockFormatString;
     private static String mExpandedClockFormatString;
     private static SimpleDateFormat mClockFormat;

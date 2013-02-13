@@ -1304,7 +1304,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         tiles.add(QuickSettings.BRIGHTNESS_TOGGLE);
         tiles.add(QuickSettings.SETTINGS_TOGGLE);
         tiles.add(QuickSettings.WIFI_TOGGLE);
-        if (deviceSupportsTelephony()) {
+        if (deviceHasMobileData()) {
             tiles.add(QuickSettings.SIGNAL_TOGGLE);
         }
         if (mContext.getResources().getBoolean(R.bool.quick_settings_show_rotation_lock)) {

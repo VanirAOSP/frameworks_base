@@ -184,8 +184,8 @@ class QuickSettings {
     private LocationManager locationManager;
     private PhoneStatusBar mStatusBarService;
     private BluetoothState mBluetoothState;
+    private BluetoothAdapter mBluetoothAdapter;
     private TelephonyManager tm;
-    private ConnectivityManager mConnService;
 
     private BrightnessController mBrightnessController;
     private BluetoothController mBluetoothController;
@@ -269,7 +269,6 @@ class QuickSettings {
         locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         mBluetoothState = new QuickSettingsModel.BluetoothState();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 
         mHandler = new Handler();
 
@@ -507,8 +506,7 @@ class QuickSettings {
                                 (UserManager) mContext.getSystemService(Context.USER_SERVICE);
                         if (um.getUsers(true).size() > 1) {
                             try {
-                                WindowManagerGlobal.getWindowManagerService().lockNow(
-                                        LockPatternUtils.USER_SWITCH_LOCK_OPTIONS);
+                                WindowManagerGlobal.getWindowManagerService().lockNow(null);
                             } catch (RemoteException e) {
                                 Log.e(TAG, "Couldn't show user switcher", e);
                             }
@@ -563,7 +561,7 @@ class QuickSettings {
                 });
                 break;
             case SIGNAL_TILE:
-                if (mModel.deviceSupportsTelephony()) {
+                if (mModel.deviceHasMobileData()) {
                     // Mobile Network state
                     quick = (QuickSettingsTileView)
                             inflater.inflate(R.layout.quick_settings_tile, parent, false);
@@ -1320,7 +1318,7 @@ class QuickSettings {
         tiles.add(BRIGHTNESS_TOGGLE);
         tiles.add(SETTINGS_TOGGLE);
         tiles.add(WIFI_TOGGLE);
-        if (mModel.deviceSupportsTelephony()) {
+        if (mModel.deviceHasMobileData()) {
             tiles.add(SIGNAL_TOGGLE);
         }
         if (mContext.getResources().getBoolean(R.bool.quick_settings_show_rotation_lock)) {
