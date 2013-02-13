@@ -356,6 +356,8 @@ public class ScrollingTabContainerView extends HorizontalScrollView
     }
 
     private class TabView extends LinearLayout implements OnLongClickListener {
+        private final boolean mIsForList;
+
         private ActionBar.Tab mTab;
         private TextView mTextView;
         private ImageView mIconView;
@@ -363,6 +365,7 @@ public class ScrollingTabContainerView extends HorizontalScrollView
 
         public TabView(Context context, ActionBar.Tab tab, boolean forList) {
             super(context, null, com.android.internal.R.attr.actionBarTabStyle);
+            mIsForList = forList;
             mTab = tab;
 
             if (forList) {
@@ -444,6 +447,10 @@ public class ScrollingTabContainerView extends HorizontalScrollView
                     }
                     mTextView.setText(text);
                     mTextView.setVisibility(VISIBLE);
+                    mTextView.setGravity((!mIsForList &&
+                            (mIconView == null || mIconView.getVisibility() == View.GONE))
+                            ? Gravity.CENTER_HORIZONTAL
+                            : Gravity.START);
                 } else if (mTextView != null) {
                     mTextView.setVisibility(GONE);
                     mTextView.setText(null);
