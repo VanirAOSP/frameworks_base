@@ -45,12 +45,12 @@ public class Policy {
         "android.process.media",
         "com.android.bluetooth",
         "com.android.calendar",
+        "com.android.deskclock",
         "com.android.inputmethod.latin",
         "com.android.phone",
         "com.google.android.apps.maps.FriendService", // pre froyo
         "com.google.android.apps.maps:FriendService", // froyo
         "com.google.android.apps.maps.LocationFriendService",
-        "com.google.android.deskclock",
         "com.google.process.gapps",
         "android.tts"
     ));
