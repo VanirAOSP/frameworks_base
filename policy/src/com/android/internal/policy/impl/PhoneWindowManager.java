@@ -20,6 +20,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
+import android.app.AppGlobals;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.IUiModeManager;
@@ -1001,6 +1002,36 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } catch (RemoteException ex) { }
         mSettingsObserver = new SettingsObserver(mHandler);
         mSettingsObserver.observe();
+
+        // Expanded desktop
+        mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.EXPANDED_DESKTOP_STATE),
+                    false, new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean selfChange) {
+ 
+               // Restart default launcher activity
+               final PackageManager mPm = mContext.getPackageManager();
+               final ActivityManager am = (ActivityManager)mContext
+                        .getSystemService(Context.ACTIVITY_SERVICE);
+               final Intent intent = new Intent(Intent.ACTION_MAIN); 
+               intent.addCategory(Intent.CATEGORY_HOME); 
+               final ResolveInfo res = mPm.resolveActivity(intent, 0);
+ 
+               // Launcher is running task #1
+               List<ActivityManager.RunningTaskInfo> runningTasks = am.getRunningTasks(1);
+               if (runningTasks != null) {
+                  for (ActivityManager.RunningTaskInfo task : runningTasks) {
+                        String packageName = task.baseActivity.getPackageName();
+                        if (packageName.equals(res.activityInfo.packageName)) {
+                            closeApplication(packageName);
+                            break;
+                        }
+                     }
+                 }
+            }
+       });
+
         mShortcutManager = new ShortcutManager(context, mHandler);
         mShortcutManager.observe();
         mUiMode = context.getResources().getInteger(
@@ -1250,6 +1281,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
         mHdmiRotationLock = SystemProperties.getBoolean("persist.demo.hdmirotationlock", true);
     }
+
+    private void closeApplication(String packageName) {
+        try {
+            ActivityManagerNative.getDefault().killApplicationProcess(
+                    packageName, AppGlobals.getPackageManager().getPackageUid(
+                    packageName, UserHandle.myUserId()));
+        } catch (RemoteException e) {
+           // Good luck next time!
+        }
+   }
 
     public void updateSettings() {
         DisplayMetrics metrics = new DisplayMetrics();

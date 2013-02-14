@@ -38,6 +38,7 @@ import android.widget.RelativeLayout;
 
 import com.android.systemui.ExpandHelper;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 
 public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
@@ -65,6 +66,8 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     View mClearButton;
     static Interpolator sAccelerateInterpolator = new AccelerateInterpolator();
     static Interpolator sDecelerateInterpolator = new DecelerateInterpolator();
+    
+    QuickSettingsContainerView mSettingsContainer;
 
     // amount to slide mContentParent down by when mContentFrame is missing
     float mContentFrameMissingTranslation;
