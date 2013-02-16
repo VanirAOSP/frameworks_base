@@ -16,7 +16,13 @@
 
 package com.android.server.wm;
 
-import android.os.RemoteCallbackList;
+import static com.android.server.wm.WindowManagerService.FORWARD_ITERATOR;
+import static com.android.server.wm.WindowManagerService.REVERSE_ITERATOR;
+
+import android.graphics.Rect;
+import android.os.Debug;
+import android.util.Slog;
+import android.util.SparseArray;
 import android.view.Display;
 import android.view.DisplayInfo;
 import android.view.IDisplayContentChangeListener;
@@ -127,10 +133,51 @@ class DisplayContent {
             pw.print("x"); pw.print(mDisplayInfo.smallestNominalAppHeight);
             pw.print("-"); pw.print(mDisplayInfo.largestNominalAppWidth);
             pw.print("x"); pw.println(mDisplayInfo.largestNominalAppHeight);
-        pw.print(subPrefix); pw.print("layoutNeeded="); pw.print(layoutNeeded);
-        if (mMagnificationSpec != null) {
-            pw.print(" mMagnificationSpec="); pw.print(mMagnificationSpec);
-        }
+            pw.print(subPrefix); pw.print("layoutNeeded="); pw.println(layoutNeeded);
+            AppTokenIterator iterator = getTmpAppIterator(REVERSE_ITERATOR);
+            int ndx = iterator.size() - 1;
+            if (ndx >= 0) {
+                pw.println();
+                pw.println("  Application tokens in Z order:");
+                while (iterator.hasNext()) {
+                    AppWindowToken wtoken = iterator.next();
+                    pw.print("  App #"); pw.print(ndx--);
+                            pw.print(' '); pw.print(wtoken); pw.println(":");
+                    wtoken.dump(pw, "    ");
+                }
+            }
+            if (mExitingTokens.size() > 0) {
+                pw.println();
+                pw.println("  Exiting tokens:");
+                for (int i=mExitingTokens.size()-1; i>=0; i--) {
+                    WindowToken token = mExitingTokens.get(i);
+                    pw.print("  Exiting #"); pw.print(i);
+                    pw.print(' '); pw.print(token);
+                    pw.println(':');
+                    token.dump(pw, "    ");
+                }
+            }
+            if (mExitingAppTokens.size() > 0) {
+                pw.println();
+                pw.println("  Exiting application tokens:");
+                for (int i=mExitingAppTokens.size()-1; i>=0; i--) {
+                    WindowToken token = mExitingAppTokens.get(i);
+                    pw.print("  Exiting App #"); pw.print(i);
+                      pw.print(' '); pw.print(token);
+                      pw.println(':');
+                      token.dump(pw, "    ");
+                }
+            }
+            if (mTaskIdToTaskList.size() > 0) {
+                pw.println();
+                for (int i = 0; i < mTaskIdToTaskList.size(); ++i) {
+                    pw.print("  TaskList #"); pw.print(i);
+                      pw.print(" taskId="); pw.println(mTaskIdToTaskList.keyAt(i));
+                    pw.print("    mAppTokens=");
+                      pw.println(mTaskIdToTaskList.valueAt(i).mAppTokens);
+                    pw.println();
+                }
+            }
         pw.println();
     }
 }
