@@ -71,7 +71,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.VolumePanel;
-import android.provider.Settings.SettingNotFoundException;
 
 import com.android.internal.app.ThemeUtils;
 import com.android.internal.telephony.ITelephony;
@@ -245,7 +244,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
      * NOTE: do not create loops in aliases!
      * Some streams alias to different streams according to device category (phone or tablet) or
      * use case (in call s off call...).See updateStreamVolumeAlias() for more details
-     *  STREAM_VOLUME_ALIAS contains the default aliases for a voice capable device (phone) and
+     *  mStreamVolumeAlias contains the default aliases for a voice capable device (phone) and
      *  STREAM_VOLUME_ALIAS_NON_VOICE for a non voice capable device (tablet).*/
     private final int[] STREAM_VOLUME_ALIAS = new int[] {
         AudioSystem.STREAM_VOICE_CALL,      // STREAM_VOICE_CALL
@@ -286,12 +285,6 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             "STREAM_DTMF",
             "STREAM_TTS"
     };
-
-    private boolean mLinkNotificationWithVolume;
-
-    // Cap used for safe headset volume restore. The value directly applies
-    // to AudioSystem.STREAM_MUSIC volume and is rescaled for other streams.
-    private static final int HEADSET_VOLUME_RESTORE_CAP = 10;
 
     private final AudioSystem.ErrorCallback mAudioSystemCallback = new AudioSystem.ErrorCallback() {
         public void onError(int error) {
@@ -427,7 +420,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
 
     private int mDeviceOrientation = Configuration.ORIENTATION_UNDEFINED;
 
-    // Request to override default use of A2DP for media
+    // Request to override default use of A2DP for media.
     private boolean mBluetoothA2dpEnabled;
     private final Object mBluetoothA2dpEnabledLock = new Object();
 
@@ -532,7 +525,6 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
         intentFilter.addAction(Intent.ACTION_USER_BACKGROUND);
         intentFilter.addAction(Intent.ACTION_USER_SWITCHED);
-        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
 
         intentFilter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         // Register a configuration change listener only if requested by system properties
@@ -653,13 +645,6 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             dtmfStreamAlias = AudioSystem.STREAM_VOICE_CALL;
         }
         mStreamVolumeAlias[AudioSystem.STREAM_DTMF] = dtmfStreamAlias;
-
-        if (mLinkNotificationWithVolume) {
-            mStreamVolumeAlias[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
-        } else {
-            mStreamVolumeAlias[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
-        }
-
         if (updateVolumes) {
             mStreamStates[AudioSystem.STREAM_DTMF].setAllIndexes(mStreamStates[dtmfStreamAlias],
                                                                  false /*lastAudible*/);
@@ -770,9 +755,6 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         }
         Settings.System.putInt(cr,
                 Settings.System.MODE_RINGER_STREAMS_AFFECTED, mRingerModeAffectedStreams);
-
-        mLinkNotificationWithVolume = Settings.System.getInt(cr,
-                Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
 
         mMuteAffectedStreams = System.getIntForUser(cr,
                 System.MUTE_STREAMS_AFFECTED,
@@ -2643,12 +2625,12 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         int device = AudioSystem.getDevicesForStream(stream);
         if ((device & (device - 1)) != 0) {
             // Multiple device selection is either:
-            //  - speaker + one other device: give priority to the non-speaker device in this case.
+            //  - speaker + one other device: give priority to speaker in this case.
             //  - one A2DP device + another device: happens with duplicated output. In this case
             // retain the device on the A2DP output as the other must not correspond to an active
             // selection if not the speaker.
             if ((device & AudioSystem.DEVICE_OUT_SPEAKER) != 0) {
-                device ^= AudioSystem.DEVICE_OUT_SPEAKER;
+                device = AudioSystem.DEVICE_OUT_SPEAKER;
             } else {
                 device &= AudioSystem.DEVICE_OUT_ALL_A2DP;
             }
@@ -3575,14 +3557,14 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     mRingerModeAffectedStreams = ringerModeAffectedStreams;
                     setRingerModeInt(getRingerMode(), false);
                 }
-
-                mLinkNotificationWithVolume = Settings.System.getInt(mContentResolver,
+                boolean linkNotificationWithVolume = Settings.System.getInt(mContentResolver,
                         Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
-                if (mLinkNotificationWithVolume) {
-                    mStreamVolumeAlias[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
+                if (linkNotificationWithVolume) {
+                    STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
                 } else {
-                    mStreamVolumeAlias[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
+                    STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
                 }
+                readDockAudioSettings(mContentResolver);
             }
         }
     }
@@ -3918,55 +3900,6 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         } else {
                             mBluetoothHeadsetDevice = null;
                             resetBluetoothSco();
-                        }
-                    }
-                }
-            } else if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
-                state = intent.getIntExtra("state", 0);
-                if (state == 1) {
-                    // Headset plugged in
-                    // Avoid connection glitches
-                    if (noDelayInATwoDP) {
-                        setBluetoothA2dpOnInt(false);
-                    }
-
-                    // Volume restore capping
-                    final boolean capVolumeRestore = Settings.System.getInt(mContentResolver,
-                            Settings.System.SAFE_HEADSET_VOLUME_RESTORE, 1) == 1;
-
-                    for (int stream = 0; stream < AudioSystem.getNumStreamTypes(); stream++) {
-                        if (stream == mStreamVolumeAlias[stream]) {
-                            VolumeStreamState streamState = mStreamStates[mStreamVolumeAlias[stream]];
-                            device = getDeviceForStream(stream);
-                            // apply stored value for device
-                            streamState.applyDeviceVolume(device);
-
-                            // now reduce volume if required
-                            if (capVolumeRestore) {
-                                final int volume = getStreamVolume(stream);
-                                final int restoreCap = rescaleIndex(HEADSET_VOLUME_RESTORE_CAP,
-                                        AudioSystem.STREAM_MUSIC, stream);
-                                if (volume > restoreCap) {
-                                    setStreamVolume(stream, restoreCap, 0);
-                                }
-                            }
-                        }
-                    }
-                } else {
-
-                    // Headset disconnected
-                    // Avoid disconnection glitches
-                    if (noDelayInATwoDP) {
-                        setBluetoothA2dpOnInt(true);
-                    }
-
-                    // Restore volumes
-                    for (int stream = 0; stream < AudioSystem.getNumStreamTypes(); stream++) {
-                        if (stream == mStreamVolumeAlias[stream]) {
-                            VolumeStreamState streamState = mStreamStates[mStreamVolumeAlias[stream]];
-                            device = getDeviceForStream(stream);
-                            // apply stored value for device
-                            streamState.applyDeviceVolume(device);
                         }
                     }
                 }
