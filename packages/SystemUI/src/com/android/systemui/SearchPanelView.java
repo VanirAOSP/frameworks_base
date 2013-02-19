@@ -112,6 +112,7 @@ public class SearchPanelView extends FrameLayout implements
 
     private PackageManager mPackageManager;
     private Resources mResources;
+    private SettingsObserver mSettingsObserver;
     private TargetObserver mTargetObserver;
     private ContentResolver mContentResolver;
     private String[] targetActivities = new String[5];
@@ -142,12 +143,18 @@ public class SearchPanelView extends FrameLayout implements
         mResources = mContext.getResources();
         
         mContentResolver = mContext.getContentResolver();
+    }
 
-        mContentResolver = mContext.getContentResolver();
-
-        SettingsObserver observer = new SettingsObserver(new Handler());
-        observer.observe();
+    @Override
+    protected void onAttachedToWindow() {
+        mSettingsObserver = new SettingsObserver(new Handler());
+        mSettingsObserver.observe();
         updateSettings();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        mContentResolver.unregisterContentObserver(mSettingsObserver);
     }
 
     private class H extends Handler {
