@@ -622,7 +622,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
            upgradeVersion = 47;
        }
 
-
         if (upgradeVersion == 47) {
             /*
              * The password mode constants have changed again; reset back to no
@@ -1980,7 +1979,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 R.bool.def_sound_effects_enabled);
         loadBooleanSetting(stmt, Settings.System.HAPTIC_FEEDBACK_ENABLED,
                 R.bool.def_haptic_feedback);
-
         loadIntegerSetting(stmt, Settings.System.LOCKSCREEN_SOUNDS_ENABLED,
             R.integer.def_lockscreen_sounds_enabled);
     }
@@ -2229,7 +2227,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int type;
             if (TelephonyManager.getLteOnCdmaModeStatic() == PhoneConstants.LTE_ON_CDMA_TRUE) {
                 type = Phone.NT_MODE_GLOBAL;
-        	} else {
+            } else {
                 type = SystemProperties.getInt("ro.telephony.default_network",
                         RILConstants.PREFERRED_NETWORK_MODE);
             }
