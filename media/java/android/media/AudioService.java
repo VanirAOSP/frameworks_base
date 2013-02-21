@@ -230,8 +230,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         10,  // STREAM_VOICE_CALL
         10,  // STREAM_SYSTEM
         10,  // STREAM_RING
-        25, // STREAM_MUSIC
-        15,  // STREAM_ALARM
+        18, // STREAM_MUSIC
+        12,  // STREAM_ALARM
         10,  // STREAM_NOTIFICATION
         15, // STREAM_BLUETOOTH_SCO
         12,  // STREAM_SYSTEM_ENFORCED
