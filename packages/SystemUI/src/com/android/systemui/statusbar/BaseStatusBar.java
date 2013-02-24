@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2010 The Android Open Source Project
  *
@@ -167,7 +166,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     public SignalClusterView mSignalCluster;
     public Clock mClock;
 
-    // left-hand icons 
+    // left-hand icons
     public LinearLayout mStatusIcons;
 
     // Statusbar view container
@@ -231,8 +230,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.PIE_GRAVITY), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PIE_TRIGGER), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -310,13 +307,13 @@ public abstract class BaseStatusBar extends SystemUI implements
                 switch(action) {
                     case MotionEvent.ACTION_DOWN:
                         centerPie = Settings.System.getInt(mContext.getContentResolver(), Settings.System.PIE_CENTER, 1) == 1;
- 	                actionDown = true;
+                        actionDown = true;
                         initialX = event.getX();
                         initialY = event.getY();
                         break;
                     case MotionEvent.ACTION_MOVE:
                         if (actionDown != true) break;
-                   
+
                         float deltaX = Math.abs(event.getX() - initialX);
                         float deltaY = Math.abs(event.getY() - initialY);
                         float distance = orient == Gravity.BOTTOM ||
@@ -324,8 +321,8 @@ public abstract class BaseStatusBar extends SystemUI implements
                         // Swipe up
                         if (distance > 10) {
                             orient = mPieControlPanel.getOrientation();
- 	                    mPieControlPanel.show(centerPie ? -1 : (int)(orient == Gravity.BOTTOM ||
- 	                         orient == Gravity.TOP ? initialX : initialY));
+                            mPieControlPanel.show(centerPie ? -1 : (int)(orient == Gravity.BOTTOM ||
+                                 orient == Gravity.TOP ? initialX : initialY));
                             event.setAction(MotionEvent.ACTION_DOWN);
                             mPieControlPanel.onTouchEvent(event);
                             actionDown = false;
@@ -424,6 +421,16 @@ public abstract class BaseStatusBar extends SystemUI implements
                 }
             }}, filter);
 
+            // Listen for PIE gravity
+            mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.PIE_GRAVITY), false, new ContentObserver(new Handler()) {
+                @Override
+                public void onChange(boolean selfChange) {
+                if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.PIE_STICK, 0) == 0) {
+                updatePieControls();
+            }}});
+
 
         attachPie();
 
@@ -449,7 +456,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             if (mContainer == null) {
                 // Add panel window, one to be used by all pies that is
                 LayoutInflater inflater = (LayoutInflater) mContext
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 mContainer = inflater.inflate(R.layout.pie_expanded_panel, null);
                 mWindowManager.addView(mContainer, PieStatusPanel.getFlipPanelLayoutParams());
             }
@@ -522,7 +529,8 @@ public abstract class BaseStatusBar extends SystemUI implements
               WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL,
                       WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                       | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                      | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                      | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
+                      | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
               PixelFormat.TRANSLUCENT);
         lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;
@@ -927,9 +935,9 @@ public abstract class BaseStatusBar extends SystemUI implements
                  break;
              case MSG_CLOSE_SEARCH_PANEL:
                  if (DEBUG) Slog.d(TAG, "closing search panel");
- 	         if (mSearchPanelView != null && mSearchPanelView.isShowing()) {
- 	             mSearchPanelView.show(false, true);
- 	         }
+                 if (mSearchPanelView != null && mSearchPanelView.isShowing()) {
+                     mSearchPanelView.show(false, true);
+                 }
                  break;
             }
         }
