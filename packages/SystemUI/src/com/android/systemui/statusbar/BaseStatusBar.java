@@ -427,10 +427,9 @@ public abstract class BaseStatusBar extends SystemUI implements
                 @Override
                 public void onChange(boolean selfChange) {
                 if (Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.PIE_STICK, 0) == 0) {
+                    Settings.System.PIE_STICK, 1) == 0) {
                 updatePieControls();
             }}});
-
 
         attachPie();
 
@@ -580,7 +579,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         return vetoButton;
     }
 
-
     protected void applyLegacyRowBackground(StatusBarNotification sbn, View content) {
         if (sbn.notification.contentView.getLayoutId() !=
                 com.android.internal.R.layout.notification_template_base) {
@@ -696,7 +694,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected abstract WindowManager.LayoutParams getSearchLayoutParams(
             LayoutParams layoutParams);
 
-
     protected void updateSearchPanel() {
         // Search Panel
         boolean visible = false;
@@ -779,7 +776,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                         throw new RuntimeException("Recents thumbnail is null");
                     }
                 }
-
 
                 DisplayMetrics dm = new DisplayMetrics();
                 mDisplay.getMetrics(dm);
