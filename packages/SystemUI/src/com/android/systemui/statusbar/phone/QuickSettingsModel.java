@@ -45,6 +45,7 @@ import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 
+import com.android.internal.util.MemInfoReader;
 import com.android.internal.view.RotationPolicy;
 import com.android.internal.telephony.PhoneConstants;
 import com.android.systemui.R;
@@ -77,6 +78,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
     private String mFastChargePath;
     
+    private MemInfoReader mMemInfoReader = new MemInfoReader();
+
     private int dataState = -1;
 
     private WifiManager wifiManager;
@@ -194,13 +197,33 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                     false, this, mUserTracker.getCurrentUserId());
         }
     }
+ /*   private class WeatherObserver extends ContentObserver {
+        public WeatherObserver(Handler handler) {
+            super(handler);
+        }
 
-    private final Context mContext;
+        @Override
+        public void onChange(boolean selfChange) {
+            onWeatherChanged();
+        }
+
+        public void startObserving() {
+            final ContentResolver cr = mContext.getContentResolver();
+            cr.unregisterContentObserver(this);
+            cr.registerContentObserver(
+                    Settings.Secure.getUriFor(Settings.Secure.LOCK_CLOCK_CACHED_WEATHER),
+                    false, this);
+                    
+            onChange(false);
+        }
+    }
+ */   private final Context mContext;
     private final Handler mHandler;
     private final CurrentUserTracker mUserTracker;
     private final NextAlarmObserver mNextAlarmObserver;
     private final BugreportObserver mBugreportObserver;
     private final BrightnessObserver mBrightnessObserver;
+ //   private final WeatherObserver mWeatherObserver;
     private NfcAdapter mNfcAdapter;
 
     private final boolean mHasMobileData;
@@ -245,6 +268,14 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private QuickSettingsTileView mBatteryTile;
     private RefreshCallback mBatteryCallback;
     private BatteryState mBatteryState = new BatteryState();
+
+ //   private QuickSettingsTileView mWeatherTile;
+ //   private RefreshCallback mWeatherCallback;
+ //   private State mWeatherState = new State();
+
+    private QuickSettingsTileView mMemoryTile;
+    private RefreshCallback mMemoryCallback;
+    private State mMemoryState = new State();
 
     private QuickSettingsTileView mLocationTile;
     private RefreshCallback mLocationCallback;
@@ -340,6 +371,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mBugreportObserver.startObserving();
         mBrightnessObserver = new BrightnessObserver(mHandler);
         mBrightnessObserver.startObserving();
+
+   //     mWeatherObserver = new WeatherObserver(mHandler);
+   //     mWeatherObserver.startObserving();
 
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -696,7 +730,73 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             onBluetoothStateChange(mBluetoothState.enabled);
         }
     }
-
+    
+    void addMemoryTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mMemoryTile = view;
+        mMemoryCallback = cb;
+        updateMemoryState();
+        refreshMemoryTile();
+        mHandler.postDelayed(new Runnable() { @Override public void run() { 
+            updateMemoryState();
+            refreshMemoryTile();
+            
+            if (mMemoryTile != null)
+                mHandler.postDelayed(this, 20000);
+                
+        } }, 20000);
+    }
+    
+    void refreshMemoryTile() {
+        if (mMemoryCallback != null)
+            mMemoryCallback.refreshView(mMemoryTile, mMemoryState);
+    }
+    
+    void updateMemoryState() {
+        mMemInfoReader.readMemInfo();
+        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        
+        int availMem = (int)((mMemInfoReader.getFreeSize() + mMemInfoReader.getCachedSize()
+            - memInfo.secondaryServerThreshold) / 1048576); // = 1024*1024
+        if (availMem < 0) {
+            availMem = 0;
+        }
+        
+        mMemoryState.label = availMem + "MB Free";
+        mMemoryState.iconId = R.drawable.ic_qs_memory;
+    }
+    
+ /*   void addWeatherTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mWeatherTile = view;
+        mWeatherCallback = cb;
+        mWeatherCallback.refreshView(mWeatherTile, mWeatherState);
+    }
+    void onWeatherChanged() {
+        String raw = Settings.Secure.getString(mContext.getContentResolver(),
+                Settings.Secure.LOCK_CLOCK_CACHED_WEATHER);
+        
+        mWeatherState.label = "N/A";
+        mWeatherState.iconId = R.drawable.weather_na;
+            
+        if (raw != null)
+        {
+        String[] split = raw.split("\\|");
+        if (split.length > 3)
+        {
+        int code = Integer.parseInt(split[3]);
+        mWeatherState.label = split[0];
+        int resId = mContext.getResources().getIdentifier("weather_" + code, "drawable", mContext.getPackageName());
+        mWeatherState.iconId = resId;
+        }
+        }
+        
+        refreshWeatherTile();
+    }
+    
+    void refreshWeatherTile() {
+        if (mWeatherCallback != null)
+            mWeatherCallback.refreshView(mWeatherTile, mWeatherState);
+    }
+  */  
     // Battery
     void addBatteryTile(QuickSettingsTileView view, RefreshCallback cb) {
         mBatteryTile = view;
