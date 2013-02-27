@@ -294,7 +294,7 @@ public class CircleBattery extends ImageView {
         if (mAnimOffset > 360) {
             mAnimOffset = 0;
         } else {
-            mAnimOffset += 3;
+            mAnimOffset += 4;
         }
 
         mHandler.removeCallbacks(mInvalidate);
