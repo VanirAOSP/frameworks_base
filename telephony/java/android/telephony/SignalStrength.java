@@ -730,43 +730,37 @@ public class SignalStrength implements Parcelable {
          * dB= Number of Resource blocksxRSRP/RSSI SNR = gain=signal/noise ratio
          * = -10log P1/P2 dB
          */
-        int rssiIconLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN, rsrpIconLevel = -1, snrIconLevel = -1;
+        int rssiIconLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN, rsrpIconLevel = -1, rsrqIconLevel = -1;
 
         if (mLteRsrp > -44) rsrpIconLevel = -1;
-        else if (mLteRsrp >= -85) rsrpIconLevel = SIGNAL_STRENGTH_GREAT;
-        else if (mLteRsrp >= -95) rsrpIconLevel = SIGNAL_STRENGTH_GOOD;
-        else if (mLteRsrp >= -105) rsrpIconLevel = SIGNAL_STRENGTH_MODERATE;
-        else if (mLteRsrp >= -115) rsrpIconLevel = SIGNAL_STRENGTH_POOR;
+        else if (mLteRsrp >= -113) rsrpIconLevel = SIGNAL_STRENGTH_GREAT;
+        else if (mLteRsrp >= -118) rsrpIconLevel = SIGNAL_STRENGTH_GOOD;
+        else if (mLteRsrp >= -123) rsrpIconLevel = SIGNAL_STRENGTH_MODERATE;
+        else if (mLteRsrp >= -128) rsrpIconLevel = SIGNAL_STRENGTH_POOR;
         else if (mLteRsrp >= -140) rsrpIconLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
 
-        /*
-         * Values are -200 dB to +300 (SNR*10dB) RS_SNR >= 13.0 dB =>4 bars 4.5
-         * dB <= RS_SNR < 13.0 dB => 3 bars 1.0 dB <= RS_SNR < 4.5 dB => 2 bars
-         * -3.0 dB <= RS_SNR < 1.0 dB 1 bar RS_SNR < -3.0 dB/No Service Antenna
-         * Icon Only
-         */
-        if (mLteRssnr > 300) snrIconLevel = -1;
-        else if (mLteRssnr >= 130) snrIconLevel = SIGNAL_STRENGTH_GREAT;
-        else if (mLteRssnr >= 45) snrIconLevel = SIGNAL_STRENGTH_GOOD;
-        else if (mLteRssnr >= 10) snrIconLevel = SIGNAL_STRENGTH_MODERATE;
-        else if (mLteRssnr >= -30) snrIconLevel = SIGNAL_STRENGTH_POOR;
-        else if (mLteRssnr >= -200)
-            snrIconLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
+        if (mLteRsrq > -3) rsrqIconLevel = -1;
+        else if (mLteRsrq >= -12) rsrqIconLevel = SIGNAL_STRENGTH_GREAT;
+        else if (mLteRsrq >= -14) rsrqIconLevel = SIGNAL_STRENGTH_GOOD;
+        else if (mLteRsrq >= -17) rsrqIconLevel = SIGNAL_STRENGTH_MODERATE;
+        else if (mLteRsrq >= -19) rsrqIconLevel = SIGNAL_STRENGTH_POOR;
+        else if (mLteRsrq >= -34)
+            rsrqIconLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
 
-        if (DBG) log("getLTELevel - rsrp:" + mLteRsrp + " snr:" + mLteRssnr + " rsrpIconLevel:"
-                + rsrpIconLevel + " snrIconLevel:" + snrIconLevel);
+        if (DBG) log("getLTELevel - rsrp:" + mLteRsrp + " rsrq:" + mLteRsrq + " rsrpIconLevel:"
+                + rsrpIconLevel + " rsrqIconLevel:" + rsrqIconLevel);
 
         /* Choose a measurement type to use for notification */
-        if (snrIconLevel != -1 && rsrpIconLevel != -1) {
+        if (rsrqIconLevel != -1 && rsrpIconLevel != -1) {
             /*
              * The number of bars displayed shall be the smaller of the bars
              * associated with LTE RSRP and the bars associated with the LTE
-             * RS_SNR
+             * RSRQ
              */
-            return (rsrpIconLevel < snrIconLevel ? rsrpIconLevel : snrIconLevel);
+            return (rsrpIconLevel < rsrqIconLevel ? rsrpIconLevel : rsrqIconLevel);
         }
 
-        if (snrIconLevel != -1) return snrIconLevel;
+        if (rsrqIconLevel != -1) return rsrqIconLevel;
 
         if (rsrpIconLevel != -1) return rsrpIconLevel;
 
