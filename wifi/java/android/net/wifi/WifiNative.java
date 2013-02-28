@@ -42,7 +42,7 @@ public class WifiNative {
 
     private static final boolean DBG = false;
     private final String mTAG;
-    private static final int DEFAULT_GROUP_OWNER_INTENT = 6;
+    private static final int DEFAULT_GROUP_OWNER_INTENT = 7;
 
     static final int BLUETOOTH_COEXISTENCE_MODE_ENABLED = 0;
     static final int BLUETOOTH_COEXISTENCE_MODE_DISABLED = 1;
@@ -798,4 +798,18 @@ public class WifiNative {
     public boolean p2pServDiscCancelReq(String id) {
         return doBooleanCommand("P2P_SERV_DISC_CANCEL_REQ " + id);
     }
+
+    public boolean getModeCapability(String mode) {
+        String ret = doStringCommand("GET_CAPABILITY modes");
+        if (!TextUtils.isEmpty(ret)) {
+            String[] tokens = ret.split(" ");
+            for (String t : tokens) {
+                if (t.compareTo(mode) == 0)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public native static boolean setMode(int mode);
 }
