@@ -13,7 +13,7 @@
      limitations under the License.
 -->
 
-<LinearLayout
+<com.android.systemui.statusbar.view.PieExpandPanel
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
     android:id="@+id/content_frame"
@@ -23,13 +23,13 @@
     android:orientation="vertical"
     android:gravity="center_vertical">
 
-        <ScrollView
-            android:id="@+id/content_scroll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="20dip"
-            android:paddingRight="20dip"
-            android:fadingEdge="none"
-            android:overScrollMode="ifContentScrolls"/>
+    <ScrollView
+        android:id="@+id/content_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dip"
+        android:paddingRight="20dip"
+        android:fadingEdge="none"
+        android:overScrollMode="ifContentScrolls" />
 
-</LinearLayout>
+</com.android.systemui.statusbar.view.PieExpandPanel>
