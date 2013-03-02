@@ -121,6 +121,8 @@ import com.android.systemui.R;
 }
 
     public void onReceive(Context context, Intent intent) {
+    	if (mContext == null)
+    		mContext = context;
         final String action = intent.getAction();
         if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
             final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
@@ -136,6 +138,7 @@ import com.android.systemui.R;
             N = mLabelViews.size();
             for (int i=0; i<N; i++) {
                 TextView v = mLabelViews.get(i);
+                if (v != null)
                 v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN,
                         level));
             }
@@ -172,7 +175,7 @@ import com.android.systemui.R;
         N = mLabelViews.size();
         for (int i=0; i<N; i++) {
             TextView v = mLabelViews.get(i);
-            v.setVisibility(mText);
+            if (v != null) v.setVisibility(mText);
         }
     }
 
