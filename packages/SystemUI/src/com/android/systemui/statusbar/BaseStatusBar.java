@@ -106,6 +106,7 @@ import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.view.PieStatusPanel;
+import com.android.systemui.statusbar.view.PieExpandPanel;
 
 import java.util.ArrayList;
 
@@ -154,10 +155,10 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected int mCurrentUserId = 0;
 
-     // Pie controls
+    // Pie controls
     public PieControlPanel mPieControlPanel;
     public View mPieControlsTrigger;
-    public View mContainer;
+    public PieExpandPanel mContainer;
     int mIndex;
 
     // Policy
@@ -177,7 +178,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     private Canvas mNewCanvas;
     private TransitionDrawable mTransition;
 
-
     // UI-specific methods
 
     /**
@@ -194,7 +194,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     private boolean mDeviceProvisioned = false;
 
-     public void collapse() {
+    public void collapse() {
     }
 
     @Override
@@ -456,7 +456,8 @@ public abstract class BaseStatusBar extends SystemUI implements
                 // Add panel window, one to be used by all pies that is
                 LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                mContainer = inflater.inflate(R.layout.pie_expanded_panel, null);
+                mContainer = (PieExpandPanel)inflater.inflate(R.layout.pie_expanded_panel, null);
+                mContainer.init(mPile);
                 mWindowManager.addView(mContainer, PieStatusPanel.getFlipPanelLayoutParams());
             }
 
