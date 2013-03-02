@@ -143,11 +143,11 @@ public class SearchPanelView extends FrameLayout implements
         mResources = mContext.getResources();
         
         mContentResolver = mContext.getContentResolver();
+        mSettingsObserver = new SettingsObserver(new Handler());
     }
 
     @Override
     protected void onAttachedToWindow() {
-        mSettingsObserver = new SettingsObserver(new Handler());
         mSettingsObserver.observe();
         updateSettings();
     }
