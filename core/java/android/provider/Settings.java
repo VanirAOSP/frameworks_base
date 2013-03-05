@@ -2680,8 +2680,20 @@ public final class Settings {
         * @hide
         */
         public static final String EXPANDED_DESKTOP_STATE = "expanded_desktop_state";
+        
+        /**
+         * Status bar State
+         * @hide
+         */
+        public static final String EXPANDED_DESKTOP_STATUS_BAR_STATE = "expanded_desktop_status_bar_state";
 
-        /*
+       /**
+        * Whether power menu expanded desktop is enabled
+        * @hide
+        */
+        public static final String POWER_MENU_EXPANDED_DESKTOP_ENABLED = "power_menu_expanded_desktop_enabled";
+
+        /**
          * On or off the Pie.
          *
          * @hide
