@@ -328,7 +328,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 });
 
         // next: expanded desktop
-        mItems.add(mExpandDesktopModeOn);
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.EXPANDED_DESKTOP_STATUS_BAR_STATE, 0) != 2) {
+                mItems.add(mExpandDesktopModeOn);
+        }
 
         // next: airplane mode
         mItems.add(mAirplaneModeOn);
