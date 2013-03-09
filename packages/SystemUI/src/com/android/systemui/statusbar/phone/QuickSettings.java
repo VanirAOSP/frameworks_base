@@ -735,8 +735,11 @@ public class QuickSettings {
                             ImageView iov = (ImageView) view.findViewById(R.id.rssi_overlay_image);
                             TextView tv = (TextView) view.findViewById(R.id.rssi_textview);
                             iv.setImageResource(rssiState.signalIconId);
+                            mWifiState = wifiManager.getWifiState();
                             if (rssiState.dataTypeIconId > 0) {
                                 iov.setImageResource(rssiState.dataTypeIconId);
+                            } else if (!mModel.getWifiConnected()) {
+                                iov.setImageResource(R.drawable.ic_qs_signal_data_off);
                             } else {
                                 iov.setImageDrawable(null);
                             }
