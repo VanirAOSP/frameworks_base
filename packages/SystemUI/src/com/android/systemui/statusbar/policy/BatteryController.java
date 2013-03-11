@@ -55,12 +55,15 @@ import com.android.systemui.R;
      */
     public static final int BATTERY_STYLE_CIRCLE         = 2;
     public static final int BATTERY_STYLE_CIRCLE_PERCENT = 3;
-    private static final int BATTERY_STYLE_GONE           = 4;
+    private static final int BATTERY_STYLE_GONE          = 4;
+    private static final int BATTERY_STYLE_GEAR          = 5;
 
     private static final int BATTERY_ICON_STYLE_NORMAL      = R.drawable.stat_sys_battery;
     private static final int BATTERY_ICON_STYLE_CHARGE      = R.drawable.stat_sys_battery_charge;
     private static final int BATTERY_ICON_STYLE_NORMAL_MIN  = R.drawable.stat_sys_battery_min;
     private static final int BATTERY_ICON_STYLE_CHARGE_MIN  = R.drawable.stat_sys_battery_charge_min;
+    private static final int BATTERY_ICON_STYLE_NORMAL_GEAR = R.drawable.stat_sys_battery_gear;
+    private static final int BATTERY_ICON_STYLE_CHARGE_GEAR = R.drawable.stat_sys_battery_gear_charge;
 
     private static final int BATTERY_TEXT_STYLE_NORMAL  = R.string.status_bar_settings_battery_meter_format;
     private static final int BATTERY_TEXT_STYLE_MIN     = R.string.status_bar_settings_battery_meter_min_format;
@@ -94,7 +97,6 @@ import com.android.systemui.R;
         public void onBatteryLevelChanged(int level, boolean pluggedIn);
     }
 
-
     public BatteryController(Context context) {
         mContext = context;
         mHandler = new Handler();
@@ -118,11 +120,11 @@ import com.android.systemui.R;
 
     public void addStateChangedCallback(BatteryStateChangeCallback cb) {		
         mChangeCallbacks.add(cb);
-}
+    }
 
     public void onReceive(Context context, Intent intent) {
-    	if (mContext == null)
-    		mContext = context;
+        if (mContext == null)
+            mContext = context;
         final String action = intent.getAction();
         if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
             final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
@@ -164,6 +166,10 @@ import com.android.systemui.R;
             mText = (View.VISIBLE);
             mIconStyle = mBatteryPlugged ? BATTERY_ICON_STYLE_CHARGE_MIN
                     : BATTERY_ICON_STYLE_NORMAL_MIN;
+        } else if (mBatteryStyle == 5) {
+            mIcon = (View.VISIBLE);
+            mIconStyle = mBatteryPlugged ? BATTERY_ICON_STYLE_CHARGE_GEAR
+                    : BATTERY_ICON_STYLE_NORMAL_GEAR;
         }
 
         int N = mIconViews.size();
