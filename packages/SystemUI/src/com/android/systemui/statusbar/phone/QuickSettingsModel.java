@@ -84,6 +84,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
     private WifiManager wifiManager;
 
+    private Object wifilock = new Object();
+
+    private boolean isWifiConnected;
+
     /** Represents the state of a given attribute. */
     static class State {
         int iconId = 0;
@@ -612,6 +616,13 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         return string;
     }
 
+    public boolean getWifiConnected()
+    {
+        synchronized(wifilock) {
+            return isWifiConnected;
+        }
+    }
+
     // NetworkSignalChanged callback
     @Override
     public void onWifiSignalChanged(boolean enabled, int wifiSignalIconId,
@@ -623,18 +634,23 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         boolean wifiNotConnected = (wifiSignalIconId > 0) && (enabledDesc == null);
         mWifiState.enabled = enabled;
         mWifiState.connected = wifiConnected;
-        if (wifiConnected) {
-            mWifiState.iconId = wifiSignalIconId;
-            mWifiState.label = removeDoubleQuotes(enabledDesc);
-            mWifiState.signalContentDescription = wifiSignalContentDescription;
-        } else if (wifiNotConnected) {
-            mWifiState.iconId = R.drawable.ic_qs_wifi_0;
-            mWifiState.label = r.getString(R.string.quick_settings_wifi_label);
-            mWifiState.signalContentDescription = r.getString(R.string.accessibility_no_wifi);
-        } else {
-            mWifiState.iconId = R.drawable.ic_qs_wifi_no_network;
-            mWifiState.label = r.getString(R.string.quick_settings_wifi_off_label);
-            mWifiState.signalContentDescription = r.getString(R.string.accessibility_wifi_off);
+        synchronized(wifilock) {
+            if (wifiConnected) {
+                mWifiState.iconId = wifiSignalIconId;
+                mWifiState.label = removeDoubleQuotes(enabledDesc);
+                mWifiState.signalContentDescription = wifiSignalContentDescription;
+                isWifiConnected = true;
+            } else if (wifiNotConnected) {
+                mWifiState.iconId = R.drawable.ic_qs_wifi_0;
+                mWifiState.label = r.getString(R.string.quick_settings_wifi_label);
+                mWifiState.signalContentDescription = r.getString(R.string.accessibility_no_wifi);
+                isWifiConnected = false;
+            } else {
+                mWifiState.iconId = R.drawable.ic_qs_wifi_no_network;
+                mWifiState.label = r.getString(R.string.quick_settings_wifi_off_label);
+                mWifiState.signalContentDescription = r.getString(R.string.accessibility_wifi_off);
+                isWifiConnected = false;
+            }
         }
         if (togglesContain(QuickSettings.WIFI_TOGGLE))
             mWifiCallback.refreshView(mWifiTile, mWifiState);
