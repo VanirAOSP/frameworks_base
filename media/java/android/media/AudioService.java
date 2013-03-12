@@ -286,6 +286,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             "STREAM_TTS"
     };
 
+    private boolean mLinkNotificationWithVolume;
+
     private final AudioSystem.ErrorCallback mAudioSystemCallback = new AudioSystem.ErrorCallback() {
         public void onError(int error) {
             switch (error) {
@@ -645,6 +647,13 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             dtmfStreamAlias = AudioSystem.STREAM_VOICE_CALL;
         }
         mStreamVolumeAlias[AudioSystem.STREAM_DTMF] = dtmfStreamAlias;
+
+        if (mLinkNotificationWithVolume) {
+            mStreamVolumeAlias[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
+        } else {
+            mStreamVolumeAlias[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
+        }
+
         if (updateVolumes) {
             mStreamStates[AudioSystem.STREAM_DTMF].setAllIndexes(mStreamStates[dtmfStreamAlias],
                                                                  false /*lastAudible*/);
@@ -746,13 +755,18 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
 
             readDockAudioSettings(cr);
         }
-        boolean linkNotificationWithVolume = Settings.System.getInt(mContentResolver,
+
+        Settings.System.putInt(cr,
+                Settings.System.MODE_RINGER_STREAMS_AFFECTED, mRingerModeAffectedStreams);
+
+        mLinkNotificationWithVolume = Settings.System.getInt(cr,
                 Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
-        if (linkNotificationWithVolume) {
+        if (mLinkNotificationWithVolume) {
             STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
         } else {
             STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
         }
+
         Settings.System.putInt(cr,
                 Settings.System.MODE_RINGER_STREAMS_AFFECTED, mRingerModeAffectedStreams);
 
@@ -2754,8 +2768,10 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 }
                 // retrieve current volume for device
                 String name = getSettingNameForDevice(false /* lastAudible */, device);
-                // if no volume stored for current stream and device, use default volume
-                int defaultIndex = AudioManager.DEFAULT_STREAM_VOLUME[mStreamType];
+                // if no volume stored for current stream and device, use default volume if default
+                // device, continue otherwise
+                int defaultIndex = (device == AudioSystem.DEVICE_OUT_DEFAULT) ?
+                                        AudioManager.DEFAULT_STREAM_VOLUME[mStreamType] : -1;
                 int index = Settings.System.getIntForUser(
                         mContentResolver, name, defaultIndex, UserHandle.USER_CURRENT);
                 if (index == -1) {
@@ -3557,9 +3573,10 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     mRingerModeAffectedStreams = ringerModeAffectedStreams;
                     setRingerModeInt(getRingerMode(), false);
                 }
-                boolean linkNotificationWithVolume = Settings.System.getInt(mContentResolver,
+
+                mLinkNotificationWithVolume = Settings.System.getInt(mContentResolver,
                         Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
-                if (linkNotificationWithVolume) {
+                if (mLinkNotificationWithVolume) {
                     STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
                 } else {
                     STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
