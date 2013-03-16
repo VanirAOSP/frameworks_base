@@ -329,6 +329,14 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mTorchCallback;
     private State mTorchState = new State();
 
+    private QuickSettingsTileView mPieTile;
+    private RefreshCallback mPieCallback;
+    private State mPieState = new State();
+
+    private QuickSettingsTileView mExpandedDesktopTile;
+    private RefreshCallback mExpandedDesktopCallback;
+    private State mExpandedDesktopState = new State();
+
     private QuickSettingsTileView mQuickRecordTile;
     private RefreshCallback mQuickRecordCallback;
     private State mQuickRecordState = new State();
@@ -432,6 +440,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 refreshSyncTile();
             if (toggle.equals(QuickSettings.TORCH_TOGGLE))
                 refreshTorchTile();
+            if (toggle.equals(QuickSettings.PIE_TOGGLE))
+                refreshPieTile();
+            if (toggle.equals(QuickSettings.EXPANDED_DESKTOP_TOGGLE))
+                refreshExpandedDesktopTile();
             if (toggle.equals(QuickSettings.WIFI_TETHER_TOGGLE))
                 refreshWifiTetherTile();
             if (toggle.equals(QuickSettings.USB_TETHER_TOGGLE))
@@ -1376,6 +1388,62 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     void refreshTorchTile() {
         if (mTorchTile != null) {
             onTorchChanged();
+        }
+    }
+
+    //PIE
+    void addPieTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mPieTile = view;
+        mPieCallback = cb;
+        onPieChanged();
+    }
+
+    void onPieChanged() {
+        boolean enabled = Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.PIE_CONTROLS, false);
+        mPieState.enabled = enabled;
+        mPieState.iconId = enabled
+            ? R.drawable.ic_qs_pie_on
+            : R.drawable.ic_qs_pie_off;
+        mPieState.label = enabled
+            ? mContext.getString(R.string.quick_settings_pie_on_label)
+            : mContext.getString(R.string.quick_settings_pie_off_label);
+
+        if (mPieTile != null && mPieCallback != null) {
+            mPieCallback.refreshView(mPieTile, mPieState);
+        }
+    }
+
+    void refreshPieTile() {
+        if (mPieTile != null) {
+            onPieChanged();
+        }
+    }
+
+    // Expanded Desktop
+    void addExpandedDesktopTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mExpandedDesktopTile = view;
+        mExpandedDesktopCallback = cb;
+        onExpandedDesktopChanged();
+    }
+
+    void onExpandedDesktopChanged() {
+        boolean enabled = Settings.System.getInt(mContext.getContentResolver(), Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
+        mExpandedDesktopState.enabled = enabled;
+        mExpandedDesktopState.iconId = enabled
+            ? R.drawable.ic_qs_expanded_desktop_on
+            : R.drawable.ic_qs_expanded_desktop_off;
+        mExpandedDesktopState.label = enabled
+            ? mContext.getString(R.string.quick_settings_expanded_desktop_on_label)
+            : mContext.getString(R.string.quick_settings_expanded_desktop_off_label);
+
+        if (mExpandedDesktopTile != null && mExpandedDesktopCallback != null) {
+            mExpandedDesktopCallback.refreshView(mExpandedDesktopTile, mExpandedDesktopState);
+        }
+    }
+
+    void refreshExpandedDesktopTile() {
+        if (mExpandedDesktopTile != null) {
+            onExpandedDesktopChanged();
         }
     }
 
