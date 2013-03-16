@@ -42,6 +42,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -65,6 +66,9 @@ public class Clock extends TextView implements OnClickListener {
     private static String mExpandedClockFormatString;
     private static SimpleDateFormat mClockFormat;
     private static SimpleDateFormat mExpandedClockFormat;
+    private static int mUiMode = 0;
+    private SettingsObserver settingsObserver;
+    private Handler mHandler;
 
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
@@ -87,8 +91,6 @@ public class Clock extends TextView implements OnClickListener {
     protected static int mExpandedClockColor = com.android.internal.R.color.white;
     protected static int defaultColor, defaultExpandedColor;
 
-    Handler mHandler;
-
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -98,6 +100,8 @@ public class Clock extends TextView implements OnClickListener {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_AM_PM), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.USER_UI_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CLOCK), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -122,7 +126,9 @@ public class Clock extends TextView implements OnClickListener {
 
     public Clock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-    
+
+        mUiMode = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CURRENT_UI_MODE, 0);
+
         if(isClickable()){
 	            setOnClickListener(this);
 	    }
@@ -153,8 +159,12 @@ public class Clock extends TextView implements OnClickListener {
 
         // Make sure we update to the current time
         //updateClock();
-        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-        settingsObserver.observe();
+        if (settingsObserver == null)
+        {
+            mHandler = new Handler();
+            settingsObserver = new SettingsObserver(mHandler);
+            settingsObserver.observe();
+        }
         updateSettings();
     }
 
@@ -164,6 +174,12 @@ public class Clock extends TextView implements OnClickListener {
         if (mAttached) {
             getContext().unregisterReceiver(mIntentReceiver);
             mAttached = false;
+        }
+
+        if (settingsObserver != null)
+        {
+            settingsObserver = null;
+            mHandler = null;
         }
     }
 
@@ -284,7 +300,12 @@ public class Clock extends TextView implements OnClickListener {
 
         mAmPmStyle = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_AM_PM, 2));
-        mClockStyle = Settings.System.getInt(resolver,
+        mUiMode = Settings.System.getInt(resolver,
+                Settings.System.USER_UI_MODE, mUiMode);
+        if (mUiMode == 1)
+            mClockStyle = STYLE_CLOCK_RIGHT;
+        else
+            mClockStyle = Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_CLOCK, STYLE_CLOCK_RIGHT);
 
         if (mAmPmStyle != AM_PM_STYLE) {
@@ -296,18 +317,18 @@ public class Clock extends TextView implements OnClickListener {
             defaultExpandedColor = getCurrentTextColor();
             mExpandedClockColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_EXPANDED_CLOCK_COLOR, defaultExpandedColor);
-            if (mClockColor == Integer.MIN_VALUE) {
+            if (mExpandedClockColor == Integer.MIN_VALUE) {
                 // flag to reset the color
-                mClockColor = defaultColor;
+                mExpandedClockColor = defaultExpandedColor;
             }
             setTextColor(mExpandedClockColor);
         } else {
             defaultColor = getCurrentTextColor();
             mClockColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_COLOR, defaultColor);
-            if (mExpandedClockColor == Integer.MIN_VALUE) {
+            if (mClockColor == Integer.MIN_VALUE) {
                 // flag to reset the color
-                mExpandedClockColor = defaultExpandedColor;
+                mClockColor = defaultColor;
             }
             setTextColor(mClockColor);
         }

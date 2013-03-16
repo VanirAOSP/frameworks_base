@@ -20,12 +20,16 @@ import android.app.ActivityManagerNative;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.graphics.Canvas;
+import android.os.Handler;
 import android.net.Uri;
 import android.provider.CalendarContract;
+import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -46,6 +50,10 @@ public class DateView extends TextView implements OnClickListener {
     private boolean mWindowVisible;
     private boolean mUpdating;
 
+    private int mUiMode;
+    private SettingsObserver settingsObserver;
+    private Handler mHandler;
+
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -59,8 +67,31 @@ public class DateView extends TextView implements OnClickListener {
         }
     };
 
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.USER_UI_MODE), false, this);
+            updateSettings();
+        }
+
+        @Override public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
     public DateView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mUiMode = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CURRENT_UI_MODE, 0);
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
+        updateSettings();
+
         setOnClickListener(this);
     }
 
@@ -77,6 +108,13 @@ public class DateView extends TextView implements OnClickListener {
                 mParent.setOnClickListener(this);
             }
         }
+        if (settingsObserver == null)
+        {
+            mHandler = new Handler();
+            settingsObserver = new SettingsObserver(mHandler);
+            settingsObserver.observe();
+        }
+        updateSettings();
     }
     
     @Override
@@ -86,6 +124,11 @@ public class DateView extends TextView implements OnClickListener {
         if (mParent != null) {
             mParent.setOnClickListener(null);
             mParent = null;
+        }
+        if (settingsObserver != null)
+        {
+            settingsObserver = null;
+            mHandler = null;
         }
         setUpdates();
     }
@@ -110,7 +153,7 @@ public class DateView extends TextView implements OnClickListener {
     }
 
     protected void updateClock() {
-        final String dateFormat = getContext().getString(R.string.full_wday_month_day_no_year_split);
+        final String dateFormat = getContext().getString( (mUiMode==1) ? R.string.full_wday_month_day_no_year : R.string.full_wday_month_day_no_year_split );
         setText(DateFormat.format(dateFormat, new Date()));
     }
 
@@ -148,32 +191,40 @@ public class DateView extends TextView implements OnClickListener {
         }
     }
     private void collapseStartActivity(Intent what) {
-	        // collapse status bar
-	        StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(
-	                Context.STATUS_BAR_SERVICE);
-	        statusBarManager.collapsePanels();
-	
-	        // dismiss keyguard in case it was active and no passcode set
-	        try {
-	            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-	        } catch (Exception ex) {
-	            // no action needed here
-	        }
-	
-	        // start activity
-	        what.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	        mContext.startActivity(what);
-	    }
-	
-	    @Override
-	    public void onClick(View v) {
-	        long nowMillis = System.currentTimeMillis();
-	
-	        Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
-	        builder.appendPath("time");
-	        ContentUris.appendId(builder, nowMillis);
-	        Intent intent = new Intent(Intent.ACTION_VIEW)
-	                .setData(builder.build());
-	        collapseStartActivity(intent);
-	    }
+        // collapse status bar
+        StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(
+                Context.STATUS_BAR_SERVICE);
+        statusBarManager.collapsePanels();
+
+        // dismiss keyguard in case it was active and no passcode set
+        try {
+            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+        } catch (Exception ex) {
+            // no action needed here
+        }
+
+        // start activity
+        what.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(what);
+    }
+
+    @Override
+    public void onClick(View v) {
+        long nowMillis = System.currentTimeMillis();
+
+        Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
+        builder.appendPath("time");
+        ContentUris.appendId(builder, nowMillis);
+        Intent intent = new Intent(Intent.ACTION_VIEW)
+                .setData(builder.build());
+        collapseStartActivity(intent);
+    }
+
+    private void updateSettings(){
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mUiMode = Settings.System.getInt(resolver,
+                Settings.System.USER_UI_MODE, mUiMode);
+        updateClock();
+    }
 }

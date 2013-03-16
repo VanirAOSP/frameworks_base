@@ -19,4 +19,6 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Date format for display in status bar  -->
     <string name="full_wday_month_day_no_year_split">@*android:string/full_wday_month_day_no_year_split</string>
+    <!-- Date format for display in tablet mode statusbar -->
+    <string name="full_wday_month_day_no_year">@*android:string/full_wday_month_day_no_year</string>
 </resources>
