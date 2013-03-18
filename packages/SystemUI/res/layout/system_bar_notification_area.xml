@@ -122,7 +122,7 @@
                 android:id="@+id/bluetooth"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:paddingLeft="4dip"
+                android:paddingLeft="5dip"
                 android:visibility="gone"
                 />
             <com.android.systemui.statusbar.policy.CircleBattery
@@ -130,15 +130,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:singleLine="true"
-                android:paddingLeft="4dip"
-                android:layout_marginRight="-3dip"
+                android:paddingLeft="2dip"
+                android:paddingRight="4dp"
                 android:gravity="center_vertical|left"
                 />
             <ImageView
                 android:id="@+id/battery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="centerInside"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="4dip"
+                android:paddingRight="4dp"
+                android:contentDescription="@null"
             />
+            <TextView
+                android:id="@+id/battery_text"
+                style="@style/SystemBarNotificationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:paddingRight="2dp"
+                android:singleLine="true"
+                android:text="@string/status_bar_settings_settings_button"
+                />
         </LinearLayout>
     </LinearLayout>
 </com.android.systemui.statusbar.tablet.NotificationArea>

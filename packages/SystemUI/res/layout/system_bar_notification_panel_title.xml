@@ -151,7 +151,15 @@
                 android:singleLine="true"
                 android:text="@string/status_bar_settings_settings_button"
                 />
-
+             <com.android.systemui.statusbar.policy.CircleBattery
+                android:id="@+id/dock_circle_battery"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:singleLine="true"
+                android:paddingLeft="3dip"
+                android:paddingRight="4dp"
+                android:gravity="center_vertical|left"
+                />
             <!-- this will stretch to eat up available space -->
             <View
                 android:layout_width="0dp"
