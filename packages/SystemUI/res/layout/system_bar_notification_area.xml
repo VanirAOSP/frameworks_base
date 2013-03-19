@@ -36,6 +36,17 @@
         android:orientation="horizontal"
         >
 
+        <com.android.systemui.statusbar.policy.CompatModeButton
+            android:id="@+id/compatModeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dip"
+            android:paddingRight="-4dip"
+            android:src="@drawable/ic_sysbar_zoom"
+            android:visibility="gone"
+            android:contentDescription="@string/accessibility_compatibility_zoom_button"
+            />
+   
         <com.android.systemui.statusbar.tablet.InputMethodButton
             android:id="@+id/imeSwitchButton"
             android:layout_width="wrap_content"
@@ -44,16 +55,6 @@
             android:src="@drawable/ic_sysbar_ime_default"
             android:visibility="gone"
             android:contentDescription="@string/accessibility_ime_switch_button"
-            />
-
-        <com.android.systemui.statusbar.policy.CompatModeButton
-            android:id="@+id/compatModeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="8dip"
-            android:src="@drawable/ic_sysbar_zoom"
-            android:visibility="gone"
-            android:contentDescription="@string/accessibility_compatibility_zoom_button"
             />
 
         <com.android.systemui.statusbar.tablet.NotificationIconArea
@@ -86,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:singleLine="true"
-            android:paddingLeft="6dip"
+            android:paddingLeft="5dip"
             android:layout_marginRight="8dip"
             android:gravity="center_vertical|left"
             android:clickable="false"
@@ -122,7 +123,7 @@
                 android:id="@+id/bluetooth"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:paddingLeft="5dip"
+                android:paddingLeft="6dip"
                 android:visibility="gone"
                 />
             <com.android.systemui.statusbar.policy.CircleBattery
@@ -130,7 +131,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:singleLine="true"
-                android:paddingLeft="2dip"
+                android:paddingLeft="4dip"
                 android:paddingRight="4dp"
                 android:gravity="center_vertical|left"
                 />

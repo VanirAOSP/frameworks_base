@@ -125,7 +125,7 @@
                 android:textAppearance="@style/TextAppearance.StatusBar.Battery"
                 android:singleLine="true"
                 android:gravity="bottom"
-                android:paddingLeft="4dip"
+                android:paddingLeft="3dip"
                 />
             </LinearLayout>
     
