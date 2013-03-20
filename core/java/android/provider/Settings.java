@@ -3570,13 +3570,6 @@ public final class Settings {
         public static final String NAVIGATION_BAR_MENU_ARROW_KEYS = "navigation_bar_menu_arrow_keys";
 
         /**
-         * Navigation bar alpha while in homescreen and lockscreen.
-         *
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_ALPHA = "navigation_bar_alpha";
-
-        /**
          * Navigation bar color.
          *
          * @hide
