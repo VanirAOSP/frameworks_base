@@ -18,7 +18,7 @@
 
 <animation-list android:oneshot="false"
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:duration="20" android:drawable="@drawable/stat_sys_upload_anim0" />
+    <item android:duration="40" android:drawable="@drawable/stat_sys_upload_anim0" />
     <item android:duration="80" android:drawable="@drawable/stat_sys_upload_anim1" />
     <item android:duration="80" android:drawable="@drawable/stat_sys_upload_anim2" />
     <item android:duration="80" android:drawable="@drawable/stat_sys_upload_anim3" />
@@ -35,5 +35,5 @@
     <item android:duration="80" android:drawable="@drawable/stat_sys_upload_anim14" />
     <item android:duration="80" android:drawable="@drawable/stat_sys_upload_anim15" />
     <item android:duration="80" android:drawable="@drawable/stat_sys_upload_anim16" />
-    <item android:duration="80" android:drawable="@drawable/stat_sys_upload_anim17" />
+    <item android:duration="40" android:drawable="@drawable/stat_sys_upload_anim17" />
 </animation-list>
