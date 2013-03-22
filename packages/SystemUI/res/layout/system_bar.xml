@@ -16,7 +16,7 @@
 -->
 
 <!-- TabletStatusBarView extends FrameLayout -->
-<com.android.systemui.statusbar.tablet.TabletStatusBarView
+ <com.android.systemui.statusbar.tablet.TabletStatusBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
     android:background="@drawable/system_bar_background"
@@ -46,7 +46,8 @@
             android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="5" >
-            <com.android.systemui.statusbar.policy.EventHole android:id="@+id/fake_space_bar"
+            <com.android.systemui.statusbar.policy.EventHole 
+                android:id="@+id/fake_space_bar"
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:paddingLeft="8dip"
