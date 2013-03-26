@@ -160,16 +160,11 @@ public class PanelView extends FrameLayout {
                 last = event;
                 i++;
             }
-            if (totalweight > 0) {
+
+            if (j != 0) {
                 mVX /= totalweight;
                 mVY /= totalweight;
-            } else {
-                if (DEBUG_NAN) {
-                    Slog.v("FlingTracker", "computeCurrentVelocity warning: totalweight=0",
-                            new Throwable());
-                }
-                // so as not to contaminate the velocities with NaN
-                mVX = mVY = 0;
+
             }
 
             if (FlingTracker.DEBUG) {
