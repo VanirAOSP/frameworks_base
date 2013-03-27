@@ -884,6 +884,18 @@ public class WifiManager {
     }
 
     /**
+     * Get a list of supported channels / frequencies
+     * @return a List of WifiChannels
+     */
+    public List<WifiChannel> getSupportedChannels() {
+        try {
+            return mService.getSupportedChannels();
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+    /**
      * Return the DHCP-assigned addresses from the last successful DHCP request,
      * if any.
      * @return the DHCP information
