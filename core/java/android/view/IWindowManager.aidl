@@ -265,4 +265,9 @@ interface IWindowManager
      * credentials.
      */
     void showAssistant();
+
+    /**
+     * YIPPIE KIE-YAY MOTHER FUCKER
+     */
+    void updateDisplayMetrics();
 }
