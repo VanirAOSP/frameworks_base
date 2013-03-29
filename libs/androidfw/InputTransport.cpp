@@ -390,7 +390,6 @@ status_t InputConsumer::consume(InputEventFactoryInterface* factory,
             mChannel->getName().string(), consumeBatches ? "true" : "false", frameTime);
 #endif
 
-    bool mIsBatchPending = false;
     *outSeq = 0;
     *outEvent = NULL;
 
@@ -402,14 +401,8 @@ status_t InputConsumer::consume(InputEventFactoryInterface* factory,
             // that has not yet been processed.
             mMsgDeferred = false;
         } else {
-            status_t result;
-            if (!mIsBatchPending) {
-                // Receive a fresh message.
-                result = mChannel->receiveMessage(&mMsg);
-            } else {
-                mIsBatchPending = false;
-                result = -1;
-            }
+            // Receive a fresh message.
+            status_t result = mChannel->receiveMessage(&mMsg);
             if (result) {
                 // Consume the next batched event unless batches are being held for later.
                 if (consumeBatches || result != WOULD_BLOCK) {
@@ -481,7 +474,6 @@ status_t InputConsumer::consume(InputEventFactoryInterface* factory,
                 ALOGD("channel '%s' consumer ~ started batch event",
                         mChannel->getName().string());
 #endif
-                mIsBatchPending = true;
                 break;
             }
 
