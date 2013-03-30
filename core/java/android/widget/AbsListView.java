@@ -4441,7 +4441,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                     return;
                 }
 
-                if (lastPos == mLastSeenPos) {
+                if (lastPos == mLastSeenPos && getChildCount() > 1) {
                     // No new views, let things keep going.
                     postOnAnimation(this);
                     return;
@@ -4474,7 +4474,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                 }
                 final int nextPos = firstPos + nextViewIndex;
 
-                if (nextPos == mLastSeenPos) {
+                if (nextPos == mLastSeenPos && getChildCount() > 1) {
                     // No new views, let things keep going.
                     postOnAnimation(this);
                     return;
@@ -4500,7 +4500,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
             }
 
             case MOVE_UP_POS: {
-                if (firstPos == mLastSeenPos) {
+                if (firstPos == mLastSeenPos && getChildCount() > 1) {
                     // No new views, let things keep going.
                     postOnAnimation(this);
                     return;
@@ -4531,7 +4531,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                 }
                 final int lastPos = firstPos + lastViewIndex;
 
-                if (lastPos == mLastSeenPos) {
+                if (lastPos == mLastSeenPos && getChildCount() > 1) {
                     // No new views, let things keep going.
                     postOnAnimation(this);
                     return;
@@ -4557,7 +4557,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
             }
 
             case MOVE_OFFSET: {
-                if (mLastSeenPos == firstPos) {
+                if (mLastSeenPos == firstPos && getChildCount() > 1) {
                     // No new views, let things keep going.
                     postOnAnimation(this);
                     return;
