@@ -14,7 +14,7 @@
 ** limitations under the License.
 */
 
-#include <sys/capability.h>
+#include <linux/capability.h>
 #include <linux/prctl.h>
 
 #include "installd.h"
