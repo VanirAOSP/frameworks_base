@@ -197,6 +197,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libETC1 \
 	libhardware \
 	libhardware_legacy \
+	libselinux \
 	libsonivox \
 	libcrypto \
 	libssl \

@@ -2108,6 +2108,7 @@ libcore.icu.NativeDecimalFormat$FieldPositionIterator
 libcore.icu.NativeIDN
 libcore.icu.NativeNormalizer
 libcore.icu.NativePluralRules
+libcore.icu.TimeZoneNames
 libcore.internal.StringPool
 libcore.io.AsynchronousCloseMonitor
 libcore.io.Base64

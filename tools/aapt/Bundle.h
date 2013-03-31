@@ -39,7 +39,6 @@ typedef enum Command {
     kCommandRemove,
     kCommandPackage,
     kCommandCrunch,
-    kCommandSingleCrunch,
 } Command;
 
 /*
@@ -64,7 +63,6 @@ public:
           mVersionCode(NULL), mVersionName(NULL), mCustomPackage(NULL), mExtraPackages(NULL),
           mMaxResVersion(NULL), mDebugMode(false), mNonConstantId(false), mProduct(NULL),
           mUseCrunchCache(false), mErrorOnFailedInsert(false), mOutputTextSymbols(NULL),
-          mSingleCrunchInputFile(NULL), mSingleCrunchOutputFile(NULL),
           mArgc(0), mArgv(NULL)
         {}
     ~Bundle(void) {}
@@ -181,10 +179,6 @@ public:
     bool getUseCrunchCache() const { return mUseCrunchCache; }
     const char* getOutputTextSymbols() const { return mOutputTextSymbols; }
     void setOutputTextSymbols(const char* val) { mOutputTextSymbols = val; }
-    const char* getSingleCrunchInputFile() const { return mSingleCrunchInputFile; }
-    void setSingleCrunchInputFile(const char* val) { mSingleCrunchInputFile = val; }
-    const char* getSingleCrunchOutputFile() const { return mSingleCrunchOutputFile; }
-    void setSingleCrunchOutputFile(const char* val) { mSingleCrunchOutputFile = val; }
 
     /*
      * Set and get the file specification.
@@ -293,8 +287,6 @@ private:
     bool        mUseCrunchCache;
     bool        mErrorOnFailedInsert;
     const char* mOutputTextSymbols;
-    const char* mSingleCrunchInputFile;
-    const char* mSingleCrunchOutputFile;
 
     /* file specification */
     int         mArgc;

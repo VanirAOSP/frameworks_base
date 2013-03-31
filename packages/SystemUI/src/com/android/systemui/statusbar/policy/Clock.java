@@ -53,6 +53,8 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import libcore.icu.LocaleData;
+
 import com.android.internal.R;
 
 /**
