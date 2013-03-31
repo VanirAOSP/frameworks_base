@@ -14,7 +14,7 @@
 ** limitations under the License.
 */
 
-#include <sys/capability.h>
+#include <linux/capability.h>
 #include "installd.h"
 #include <diskusage/dirsize.h>
 #include <selinux/android.h>
