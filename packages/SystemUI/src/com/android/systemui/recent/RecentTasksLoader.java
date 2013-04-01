@@ -90,6 +90,8 @@ public class RecentTasksLoader implements View.OnTouchListener {
 
         // get the icon size we want -- on tablets, we use bigger icons
         boolean isTablet = res.getBoolean(R.bool.config_recents_interface_for_tablets);
+        boolean isPhablet = res.getBoolean(R.bool.config_recents_interface_for_phablets);
+
         if (isTablet) {
             ActivityManager activityManager =
                     (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -103,15 +105,28 @@ public class RecentTasksLoader implements View.OnTouchListener {
         int iconSize = (int) (defaultIconSize * mIconDpi / res.getDisplayMetrics().densityDpi);
         mDefaultIconBackground = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888);
 
-        // Render the default thumbnail background
-        int thumbnailWidth =
-                (int) res.getDimensionPixelSize(com.android.internal.R.dimen.thumbnail_width);
-        int thumbnailHeight =
-                (int) res.getDimensionPixelSize(com.android.internal.R.dimen.thumbnail_height);
-        int color = res.getColor(R.drawable.status_bar_recents_app_thumbnail_background);
+        // Render the default thumbnail background.. using hardcoded values for larger images on
+        // tablets/phablets until it can be calculated via display metrics for a better view.
+        if (isPhablet || isTablet) {
+                int thumbnailWidth =
+                        (int) res.getDimensionPixelSize(com.android.internal.R.dimen.tablet_thumbnail_width);
+                int thumbnailHeight =
+                        (int) res.getDimensionPixelSize(com.android.internal.R.dimen.tablet_thumbnail_height);
 
-        mDefaultThumbnailBackground =
+                mDefaultThumbnailBackground =
                 Bitmap.createBitmap(thumbnailWidth, thumbnailHeight, Bitmap.Config.ARGB_8888);
+	    } else {
+	            int thumbnailWidth =
+                        (int) res.getDimensionPixelSize(com.android.internal.R.dimen.thumbnail_width);
+                int thumbnailHeight =
+                        (int) res.getDimensionPixelSize(com.android.internal.R.dimen.thumbnail_height);
+
+                mDefaultThumbnailBackground =
+                Bitmap.createBitmap(thumbnailWidth, thumbnailHeight, Bitmap.Config.ARGB_8888);
+	    }
+
+	    int color = res.getColor(R.drawable.status_bar_recents_app_thumbnail_background);
+
         Canvas c = new Canvas(mDefaultThumbnailBackground);
         c.drawColor(color);
     }
