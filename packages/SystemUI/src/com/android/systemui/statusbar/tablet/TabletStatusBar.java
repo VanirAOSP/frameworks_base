@@ -209,6 +209,7 @@ public class TabletStatusBar extends BaseStatusBar implements
     KeyEvent mSpaceBarKeyEvent = null;
 
     View mCompatibilityHelpDialog = null;
+    View mDummyView;
 
     // for disabling the status bar
     int mDisabled = 0;
@@ -249,7 +250,7 @@ public class TabletStatusBar extends BaseStatusBar implements
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                     | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
                     | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
-                PixelFormat.OPAQUE);
+                PixelFormat.TRANSLUCENT);
 
         // We explicitly leave FLAG_HARDWARE_ACCELERATED out of the flags.  The status bar occupies
         // very little screen real-estate and is updated fairly frequently.  By using CPU rendering
@@ -431,7 +432,7 @@ public class TabletStatusBar extends BaseStatusBar implements
 
     private void recreateStatusBar() {
         mRecreating = true;
-//        mStatusBarContainer.removeAllViews();
+        mStatusBarContainer.removeAllViews();
 
         // extract notifications.
         int nNotifs = mNotificationData.size();
@@ -440,7 +441,7 @@ public class TabletStatusBar extends BaseStatusBar implements
         copyNotifications(notifications, mNotificationData);
         mNotificationData.clear();
 
-//        mStatusBarContainer.addView(makeStatusBarView());
+        mStatusBarContainer.addView(makeStatusBarView());
 
         // recreate notifications.
         for (int i = 0; i < nNotifs; i++) {
@@ -564,6 +565,10 @@ public class TabletStatusBar extends BaseStatusBar implements
 
         sb.setHandler(mHandler);
 
+        
+        mDummyView = new View(mContext);
+        mWindowManager.addView(mDummyView, getDummyTriggerLayoutParams(mContext,Gravity.TOP));
+
         mBarContents = (ViewGroup) sb.findViewById(R.id.bar_contents);
 
         // the whole right-hand side of the bar
@@ -604,6 +609,8 @@ public class TabletStatusBar extends BaseStatusBar implements
         final SignalClusterView signalCluster =
                 (SignalClusterView)sb.findViewById(R.id.signal_cluster);
         mNetworkController.addSignalCluster(signalCluster);
+
+        mBarView = (ViewGroup) mStatusBarView; 
 
         mNavigationArea = (ViewGroup) sb.findViewById(R.id.navigationArea);
         mNavBarView = (NavigationBarView) sb.findViewById(R.id.navigationBar);
