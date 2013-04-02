@@ -27,7 +27,7 @@
 #include <JNIHelp.h>
 #include "android_runtime/AndroidRuntime.h"
 
-#include <linux/capability.h>
+#include <sys/capability.h>
 #include <sys/prctl.h>
 
 namespace android {
