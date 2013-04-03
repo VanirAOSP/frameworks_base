@@ -288,10 +288,9 @@
         <activity
             android:name="com.android.systemui.CreateShortcut"
             android:label="@string/shortcut_label"
-            android:icon="@drawable/vanir_actions">
+            android:icon="@drawable/ic_sysbar_null">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
-                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

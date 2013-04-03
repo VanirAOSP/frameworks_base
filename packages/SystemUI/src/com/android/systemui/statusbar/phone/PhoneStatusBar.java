@@ -411,8 +411,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             mNotificationPanelDebugText.setVisibility(View.VISIBLE);
         }
 
-        updateShowSearchHoldoff();
-
         try {
             boolean showNav = mWindowManagerService.hasNavigationBar();
             if (DEBUG) Slog.v(TAG, "hasNavigationBar=" + showNav);
@@ -739,7 +737,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private int mShowSearchHoldoff = 0;
     private Runnable mShowSearchPanel = new Runnable() {
-		@Override
         public void run() {
             showSearchPanel();
             awakenDreams();
@@ -778,14 +775,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
-
-        if (mNavigationBarView.getHomeButton() != null) {
-        mNavigationBarView.getHomeButton().setOnTouchListener(mHomeSearchActionListener);
-        }
-
         mNavigationBarView.getSearchLight().setOnTouchListener(mHomeSearchActionListener);
         updateSearchPanel();
-
     }
 
     // For small-screen devices (read: phones) that lack hardware navigation buttons
@@ -978,11 +969,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         setAreThereNotifications();
     }
-
-    private void updateShowSearchHoldoff() {
-        mShowSearchHoldoff = mContext.getResources().getInteger(
-            R.integer.config_show_search_delay);
-    } 
 
     private void loadNotificationShade() {
         if (mPile == null) return;
@@ -2331,14 +2317,14 @@ public class PhoneStatusBar extends BaseStatusBar {
                 updateResources();
                 repositionNavigationBar();
                 updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
-                updateShowSearchHoldoff();
                 if (mNavigationBarView != null && mNavigationBarView.mDelegateHelper != null) {
                     // if We are in Landscape/Phone Mode then swap the XY coordinates for NaVRing Swipe
                     mNavigationBarView.mDelegateHelper.setSwapXY((
                             mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
                             && (mCurrentUIMode == 0));
                 }
-            } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
+            }
+            else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 // work around problem where mDisplay.getRotation() is not stable while screen is off (bug 7086018)
                 repositionNavigationBar();
                 notifyNavigationBarScreenOn(true);

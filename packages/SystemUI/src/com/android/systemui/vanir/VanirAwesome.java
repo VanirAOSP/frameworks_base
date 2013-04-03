@@ -93,7 +93,6 @@ public class VanirAwesome {
     public final static String ACTION_VOICEASSIST = "**voiceassist**";
     public final static String ACTION_TORCH = "**torch**";
     public final static String ACTION_SEARCH = "**search**";
-    public final static String ACTION_BLANK = "**blank**";
     public final static String ACTION_NULL = "**null**";
 
     public final static int INT_ACTION_HOME = 0;
@@ -117,8 +116,7 @@ public class VanirAwesome {
     public final static int INT_ACTION_VOICEASSIST = 18;
     public final static int INT_ACTION_TORCH = 19;
     public final static int INT_ACTION_SEARCH = 20;
-    public final static int INT_ACTION_BLANK = 21;
-    public final static int INT_ACTION_NULL = 22;
+    public final static int INT_ACTION_NULL = 21;
 
     private HashMap<String, Integer> actionMap;
 
@@ -146,7 +144,6 @@ public class VanirAwesome {
             actionMap.put(ACTION_VOICEASSIST, INT_ACTION_VOICEASSIST);
             actionMap.put(ACTION_TORCH, INT_ACTION_TORCH);
             actionMap.put(ACTION_SEARCH, INT_ACTION_SEARCH);
-            actionMap.put(ACTION_BLANK, INT_ACTION_BLANK);
             actionMap.put(ACTION_NULL, INT_ACTION_NULL);
         }
         return actionMap;
@@ -314,9 +311,6 @@ public class VanirAwesome {
                     // Let's hope we don't catch one!
                 }
                 break;
-            case INT_ACTION_BLANK:
-                // FRRRRRT...
-                break;
             default:
             break;
             }
@@ -359,8 +353,6 @@ public class VanirAwesome {
             return mContext.getResources().getDrawable(R.drawable.ic_sysbar_search);
         if (uri.equals(ACTION_NOTIFICATIONS))
             return mContext.getResources().getDrawable(R.drawable.ic_sysbar_notifications);
-        if (uri.equals(ACTION_BLANK))
-            return mContext.getResources().getDrawable(R.drawable.ic_sysbar_blank);
         try {
             return mContext.getPackageManager().getActivityIcon(Intent.parseUri(uri, 0));
         } catch (NameNotFoundException e) {
@@ -392,8 +384,6 @@ public class VanirAwesome {
             return mContext.getResources().getString(R.string.action_search);
         if (uri.equals(ACTION_NOTIFICATIONS))
             return mContext.getResources().getString(R.string.action_notifications);
-        if (uri.equals(ACTION_BLANK))
-            return mContext.getResources().getString(R.string.action_blank);
         if (uri.equals(ACTION_NULL))
             return mContext.getResources().getString(R.string.action_none);
         try {
