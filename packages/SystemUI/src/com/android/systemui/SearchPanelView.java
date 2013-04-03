@@ -121,7 +121,6 @@ public class SearchPanelView extends FrameLayout implements
 
     private int mNavRingAmount;
     private int mCurrentUIMode;
-    private boolean mLefty;
     private boolean mLongPress;
     private boolean mSearchPanelLock;
     private int mTarget;
@@ -284,10 +283,6 @@ public class SearchPanelView extends FrameLayout implements
                 if (isScreenPortrait()) { // NavRing on Bottom
                     startPosOffset =  1;
                     endPosOffset =  (mNavRingAmount) + 1;
-                } else if (mLefty) { // either lefty or... (Ring is actually on right side of screen)
-                        startPosOffset =  1 - (mNavRingAmount % 2);
-                        middleBlanks = mNavRingAmount + 2;
-                        endPosOffset = 0;
 
                 } else { // righty... (Ring actually on left side of tablet)
                     startPosOffset =  (Math.min(1,mNavRingAmount / 2)) + 2;
@@ -295,17 +290,12 @@ public class SearchPanelView extends FrameLayout implements
                 }
                 break;
             case 1 : // Tablet Mode
-                if (mLefty) { // either lefty or... (Ring is actually on right side of screen)
-                    startPosOffset =  (mNavRingAmount) + 1;
-                    endPosOffset =  (mNavRingAmount *2) + 1;
-                } else { // righty... (Ring actually on left side of tablet)
                     startPosOffset =  1;
                     endPosOffset = (mNavRingAmount * 3) + 1;
-                }
                 break;
             case 2 : // Phablet Mode - Search Ring stays at bottom
-                startPosOffset =  1;
-                endPosOffset =  (mNavRingAmount) + 1;
+                    startPosOffset =  1;
+                    endPosOffset =  (mNavRingAmount) + 1;
                 break;
          } 
 
@@ -629,8 +619,6 @@ public class SearchPanelView extends FrameLayout implements
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_LEFTY_MODE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SYSTEMUI_NAVRING_AMOUNT), false, this);
 
             for (int i = 0; i < 5; i++) {
@@ -657,9 +645,6 @@ public class SearchPanelView extends FrameLayout implements
             longActivities[i] = Settings.System.getString(
                     mContext.getContentResolver(), Settings.System.SYSTEMUI_NAVRING_LONG[i]);
         }
-
-        mLefty = (Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.NAVIGATION_BAR_LEFTY_MODE, false));
 
         mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
                          Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);
