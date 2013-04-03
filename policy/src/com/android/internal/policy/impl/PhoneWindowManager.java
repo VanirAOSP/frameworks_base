@@ -4259,7 +4259,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private void waitForKeyguardWindowDrawn(IBinder windowToken,
             final ScreenOnListener screenOnListener) {
-        if (windowToken != null) {
+        if (windowToken != null) { 
             try {
                 if (mWindowManager.waitForWindowDrawn(
                         windowToken, new IRemoteCallback.Stub() {
@@ -4274,6 +4274,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             } catch (RemoteException ex) {
                 // Can't happen in system process.
             }
+            synchronized(mLock) {
+                    mLastSystemUiFlags = 0;
+                    updateSystemUiVisibilityLw();
+           }
         }
 
         Slog.i(TAG, "No lock screen!");
