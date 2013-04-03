@@ -93,8 +93,8 @@ public class VanirAwesome {
     public final static String ACTION_VOICEASSIST = "**voiceassist**";
     public final static String ACTION_TORCH = "**torch**";
     public final static String ACTION_SEARCH = "**search**";
-    public final static String ACTION_BLANK = "**blank**";
     public final static String ACTION_NULL = "**null**";
+    public final static String ACTION_BLANK = "**blank**";
 
     public final static int INT_ACTION_HOME = 0;
     public final static int INT_ACTION_BACK = 1;
@@ -117,8 +117,8 @@ public class VanirAwesome {
     public final static int INT_ACTION_VOICEASSIST = 18;
     public final static int INT_ACTION_TORCH = 19;
     public final static int INT_ACTION_SEARCH = 20;
-    public final static int INT_ACTION_BLANK = 21;
-    public final static int INT_ACTION_NULL = 22;
+    public final static int INT_ACTION_NULL = 21;
+    public final static int INT_ACTION_BLANK = 22;
 
     private HashMap<String, Integer> actionMap;
 
@@ -146,8 +146,8 @@ public class VanirAwesome {
             actionMap.put(ACTION_VOICEASSIST, INT_ACTION_VOICEASSIST);
             actionMap.put(ACTION_TORCH, INT_ACTION_TORCH);
             actionMap.put(ACTION_SEARCH, INT_ACTION_SEARCH);
-            actionMap.put(ACTION_BLANK, INT_ACTION_BLANK);
             actionMap.put(ACTION_NULL, INT_ACTION_NULL);
+            actionMap.put(ACTION_BLANK, INT_ACTION_BLANK);
         }
         return actionMap;
     }
