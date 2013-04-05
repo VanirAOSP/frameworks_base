@@ -52,6 +52,7 @@ public class AudioManager {
     private long mVolumeKeyUpTime;
     private final boolean mUseMasterVolume;
     private final boolean mUseVolumeKeySounds;
+    private final Binder mToken = new Binder();
     private static String TAG = "AudioManager";
     private final WindowManager mWindowManager;
 
@@ -2058,7 +2059,8 @@ public class AudioManager {
         IAudioService service = getService();
         try {
             // pi != null
-            service.registerMediaButtonIntent(pi, eventReceiver);
+            service.registerMediaButtonIntent(pi, eventReceiver,
+                    eventReceiver == null ? mToken : null);
         } catch (RemoteException e) {
             Log.e(TAG, "Dead object in registerMediaButtonIntent"+e);
         }

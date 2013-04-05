@@ -545,6 +545,9 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         // Register for package removal intent broadcasts for media button receiver persistence
         IntentFilter pkgFilter = new IntentFilter();
         pkgFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        pkgFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        pkgFilter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        pkgFilter.addAction(Intent.ACTION_PACKAGE_DATA_CLEARED);
         pkgFilter.addDataScheme("package");
         context.registerReceiver(mReceiver, pkgFilter);
 
@@ -4021,15 +4024,20 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         0,
                         null,
                         SAFE_VOLUME_CONFIGURE_TIMEOUT_MS);
-
-                adjustCurrentStreamVolume();
-            } else if (action.equals(Intent.ACTION_PACKAGE_REMOVED)) {
+            } else if (action.equals(Intent.ACTION_PACKAGE_REMOVED)
+                    || action.equals(Intent.ACTION_PACKAGE_DATA_CLEARED)) {
                 if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
                     // a package is being removed, not replaced
                     String packageName = intent.getData().getSchemeSpecificPart();
                     if (packageName != null) {
-                        removeMediaButtonReceiverForPackage(packageName);
+                        cleanupMediaButtonReceiverForPackage(packageName, true);
                     }
+                }
+            } else if (action.equals(Intent.ACTION_PACKAGE_ADDED)
+                    || action.equals(Intent.ACTION_PACKAGE_CHANGED)) {
+                String packageName = intent.getData().getSchemeSpecificPart();
+                if (packageName != null) {
+                    cleanupMediaButtonReceiverForPackage(packageName, false);
                 }
             } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
                 AudioSystem.setParameters("screen_state=on");
@@ -4824,18 +4832,20 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
      */
     private boolean mHasRemotePlayback;
 
-    private static class RemoteControlStackEntry {
+    private static class RemoteControlStackEntry implements DeathRecipient {
         public int mRccId = RemoteControlClient.RCSE_ID_UNREGISTERED;
+        final public AudioService mService;
         /**
          * The target for the ACTION_MEDIA_BUTTON events.
          * Always non null.
          */
-        public PendingIntent mMediaIntent;
+        final public PendingIntent mMediaIntent;
         /**
          * The registered media button event receiver.
          * Always non null.
          */
-        public ComponentName mReceiverComponent;
+        final public ComponentName mReceiverComponent;
+        public IBinder mToken;
         public String mCallingPackageName;
         public int mCallingUid;
         /**
@@ -4866,14 +4876,28 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         }
 
         /** precondition: mediaIntent != null, eventReceiver != null */
-        public RemoteControlStackEntry(PendingIntent mediaIntent, ComponentName eventReceiver) {
+        public RemoteControlStackEntry(AudioService service, PendingIntent mediaIntent,
+                ComponentName eventReceiver, IBinder token) {
+            mService = service;
             mMediaIntent = mediaIntent;
             mReceiverComponent = eventReceiver;
+            mToken = token;
             mCallingUid = -1;
             mRcClient = null;
             mRccId = ++sLastRccId;
 
             resetPlaybackInfo();
+            if (mToken != null) {
+                try {
+                    mToken.linkToDeath(this, 0);
+                } catch (RemoteException e) {
+                    mService.mAudioHandler.post(new Runnable() {
+                        @Override public void run() {
+                            mService.unregisterMediaButtonIntent(mMediaIntent);
+                        }
+                    });
+                }
+            }
         }
 
         public void unlinkToRcClientDeath() {
@@ -4889,9 +4913,22 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             }
         }
 
+        public void destroy() {
+            unlinkToRcClientDeath();
+            if (mToken != null) {
+                mToken.unlinkToDeath(this, 0);
+                mToken = null;
+            }
+        }
+
+        @Override
+        public void binderDied() {
+            mService.unregisterMediaButtonIntent(mMediaIntent);
+        }
+
         @Override
         protected void finalize() throws Throwable {
-            unlinkToRcClientDeath();// unlink exception handled inside method
+            destroy(); // unlink exception handled inside method
             super.finalize();
         }
     }
@@ -4971,20 +5008,30 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
      * Remove any entry in the remote control stack that has the same package name as packageName
      * Pre-condition: packageName != null
      */
-    private void removeMediaButtonReceiverForPackage(String packageName) {
+    private void cleanupMediaButtonReceiverForPackage(String packageName, boolean removeAll) {
         synchronized(mRCStack) {
             if (mRCStack.empty()) {
                 return;
             } else {
+                final PackageManager pm = mContext.getPackageManager();
                 RemoteControlStackEntry oldTop = mRCStack.peek();
                 Iterator<RemoteControlStackEntry> stackIterator = mRCStack.iterator();
                 // iterate over the stack entries
                 while(stackIterator.hasNext()) {
                     RemoteControlStackEntry rcse = (RemoteControlStackEntry)stackIterator.next();
-                    if (packageName.equalsIgnoreCase(rcse.mReceiverComponent.getPackageName())) {
+                    if (removeAll && packageName.equals(rcse.mMediaIntent.getCreatorPackage())) {
                         // a stack entry is from the package being removed, remove it from the stack
                         stackIterator.remove();
-                        rcse.unlinkToRcClientDeath();
+                        rcse.destroy();
+                    } else if (rcse.mReceiverComponent != null) {
+                        try {
+                            // Check to see if this receiver still exists.
+                            pm.getReceiverInfo(rcse.mReceiverComponent, 0);
+                        } catch (PackageManager.NameNotFoundException e) {
+                            // Not found -- remove it!
+                            stackIterator.remove();
+                            rcse.destroy();
+                        }
                     }
                 }
                 if (mRCStack.empty()) {
@@ -5019,7 +5066,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             mediaButtonIntent.setComponent(eventReceiver);
             PendingIntent pi = PendingIntent.getBroadcast(mContext,
                     0/*requestCode, ignored*/, mediaButtonIntent, 0/*flags*/);
-            registerMediaButtonIntent(pi, eventReceiver);
+            registerMediaButtonIntent(pi, eventReceiver, null);
         }
     }
 
@@ -5028,7 +5075,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
      * Set the new remote control receiver at the top of the RC focus stack.
      * precondition: mediaIntent != null, target != null
      */
-    private void pushMediaButtonReceiver(PendingIntent mediaIntent, ComponentName target) {
+    private void pushMediaButtonReceiver_syncAfRcs(PendingIntent mediaIntent, ComponentName target,
+            IBinder token) {
         // already at top of stack?
         if (!mRCStack.empty() && mRCStack.peek().mMediaIntent.equals(mediaIntent)) {
             return;
@@ -5045,13 +5093,15 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             }
         }
         if (!wasInsideStack) {
-            rcse = new RemoteControlStackEntry(mediaIntent, target);
+            rcse = new RemoteControlStackEntry(this, mediaIntent, target, token);
         }
         mRCStack.push(rcse);
 
         // post message to persist the default media button receiver
-        mAudioHandler.sendMessage( mAudioHandler.obtainMessage(
-                MSG_PERSIST_MEDIABUTTONRECEIVER, 0, 0, target/*obj*/) );
+        if (target != null) {
+            mAudioHandler.sendMessage( mAudioHandler.obtainMessage(
+                    MSG_PERSIST_MEDIABUTTONRECEIVER, 0, 0, target/*obj*/) );
+        }
     }
 
     /**
@@ -5059,14 +5109,16 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
      * Remove the remote control receiver from the RC focus stack.
      * precondition: pi != null
      */
-    private void removeMediaButtonReceiver(PendingIntent pi) {
-        Iterator<RemoteControlStackEntry> stackIterator = mRCStack.iterator();
-        while(stackIterator.hasNext()) {
-            RemoteControlStackEntry rcse = (RemoteControlStackEntry)stackIterator.next();
-            if(rcse.mMediaIntent.equals(pi)) {
-                stackIterator.remove();
-                rcse.unlinkToRcClientDeath();
-                break;
+    private void removeMediaButtonReceiver_syncAfRcs(PendingIntent pi) {
+        try {
+            for (int index = mRCStack.size()-1; index >= 0; index--) {
+                final RemoteControlStackEntry rcse = mRCStack.elementAt(index);
+                if (rcse.mMediaIntent.equals(pi)) {
+                    rcse.destroy();
+                    // ok to remove element while traversing the stack since we're leaving the loop
+                    mRCStack.removeElementAt(index);
+                    break;
+                }
             }
         }
     }
@@ -5298,12 +5350,13 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
      * see AudioManager.registerMediaButtonIntent(PendingIntent pi, ComponentName c)
      * precondition: mediaIntent != null, target != null
      */
-    public void registerMediaButtonIntent(PendingIntent mediaIntent, ComponentName eventReceiver) {
+    public void registerMediaButtonIntent(PendingIntent mediaIntent, ComponentName eventReceiver,
+            IBinder token) {
         Log.i(TAG, "  Remote Control   registerMediaButtonIntent() for " + mediaIntent);
 
         synchronized(mAudioFocusLock) {
             synchronized(mRCStack) {
-                pushMediaButtonReceiver(mediaIntent, eventReceiver);
+                pushMediaButtonReceiver_syncAfRcs(mediaIntent, eventReceiver, token);
                 // new RC client, assume every type of information shall be queried
                 checkUpdateRemoteControlDisplay_syncAfRcs(RC_INFO_ALL);
             }
