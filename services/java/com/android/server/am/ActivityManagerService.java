@@ -196,7 +196,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     static final boolean DEBUG_POWER_QUICK = DEBUG_POWER || false;
     static final boolean DEBUG_MU = localLOGV || false;
     static final boolean VALIDATE_TOKENS = false;
-    static final boolean SHOW_ACTIVITY_START_TIME = true;
+    static final boolean SHOW_ACTIVITY_START_TIME = false;
     
     // Control over CPU and battery monitoring.
     static final long BATTERY_STATS_TIME = 30*60*1000;      // write battery stats every 30 minutes.
@@ -235,20 +235,20 @@ public final class ActivityManagerService extends ActivityManagerNative
     // The minimum amount of time between successive GC requests for a process.
     static final int GC_MIN_INTERVAL = 60*1000;
 
-    // The rate at which we check for apps using excessive power -- 15 mins.
-    static final int POWER_CHECK_DELAY = (DEBUG_POWER_QUICK ? 2 : 15) * 60*1000;
+    // The rate at which we check for apps using excessive power -- 12 mins.
+    static final int POWER_CHECK_DELAY = (DEBUG_POWER_QUICK ? 2 : 12) * 60*1000;
 
     // The minimum sample duration we will allow before deciding we have
     // enough data on wake locks to start killing things.
-    static final int WAKE_LOCK_MIN_CHECK_DURATION = (DEBUG_POWER_QUICK ? 1 : 5) * 60*1000;
+    static final int WAKE_LOCK_MIN_CHECK_DURATION = (DEBUG_POWER_QUICK ? 1 : 4) * 60*1000;
 
     // The minimum sample duration we will allow before deciding we have
     // enough data on CPU usage to start killing things.
-    static final int CPU_MIN_CHECK_DURATION = (DEBUG_POWER_QUICK ? 1 : 5) * 60*1000;
+    static final int CPU_MIN_CHECK_DURATION = (DEBUG_POWER_QUICK ? 1 : 4) * 60*1000;
 
     // How long we allow a receiver to run before giving up on it.
-    static final int BROADCAST_FG_TIMEOUT = 10*1000;
-    static final int BROADCAST_BG_TIMEOUT = 60*1000;
+    static final int BROADCAST_FG_TIMEOUT = 8*1000;
+    static final int BROADCAST_BG_TIMEOUT = 45*1000;
 
     // How long we wait until we timeout on key dispatching.
     static final int KEY_DISPATCHING_TIMEOUT = 5*1000;
@@ -261,7 +261,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     static final int USER_SWITCH_TIMEOUT = 2*1000;
 
     // Maximum number of users we allow to be running at a time.
-    static final int MAX_RUNNING_USERS = 3;
+    static final int MAX_RUNNING_USERS = 2;
 
     static final int MY_PID = Process.myPid();
     
