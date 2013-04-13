@@ -87,7 +87,9 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
+
 import com.android.systemui.vanir.VanirAwesome;
+import static com.android.internal.util.vanir.VanirConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,7 +179,7 @@ public class SearchPanelView extends FrameLayout implements
                     Log.d(TAG,"LongPress!");
                     mBar.hideSearchPanel();
                     maybeSkipKeyguard();
-                    VanirAwesome.getInstance(mContext).launchAction(longList.get(mTarget));
+                    VanirAwesome.launchAction(mContext, longList.get(mTarget));
                     mSearchPanelLock = true;
                  }
             }
@@ -215,11 +217,11 @@ public class SearchPanelView extends FrameLayout implements
         public void onTrigger(View v, final int target) {
             mTarget = target;
             if (!mLongPress) {
-                if (VanirAwesome.ACTION_ASSIST.equals(intentList.get(target))) {
+                if (VanirConstant.ACTION_ASSIST.equals(intentList.get(target))) {
                     startAssistActivity();
                 } else {
                     maybeSkipKeyguard();
-                    VanirAwesome.getInstance(mContext).launchAction(intentList.get(target));
+                    VanirAwesome.launchAction(mContext, intentList.get(target));
                 }
                 mHandler.removeCallbacks(SetLongPress);
             }
@@ -402,8 +404,8 @@ public class SearchPanelView extends FrameLayout implements
 
         if (action == null || action.equals("") || action.equals("**null**"))
             return cDrawable;
-        if (action.equals("**screenshot**"))
-            return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_screenshot));
+  //      if (action.equals("**screenshot**"))
+  //          return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_screenshot));
         if (action.equals("**ime**"))
             return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_ime_switcher));
         if (action.equals("**ring_vib**"))
@@ -414,6 +416,8 @@ public class SearchPanelView extends FrameLayout implements
             return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_ring_vib_silent));
         if (action.equals("**kill**"))
             return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_killtask));
+        if (action.equals("**lastapp**"))
+            return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_lastapp));
         if (action.equals("**power**"))
             return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_power));
         if (action.equals("**screenoff**"))

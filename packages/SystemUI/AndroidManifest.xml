@@ -79,7 +79,15 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
-    
+
+    <!-- Secure Screenshot -->
+    <protected-broadcast android:name="android.permission.SCREENSHOT" />
+    <protected-broadcast android:name="android.intent.action.SCREENSHOT" />
+
+    <permission android:name="android.permission.SCREENSHOT"
+                android:protectionLevel="signatureOrSystem"
+                android:description="@string/permdesc_screenshot"
+                android:label="@string/permlab_screenshot" />
 
     <!-- FOR TORCH -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -100,11 +108,14 @@
             android:exported="true"
             />
 
-        <!-- started from PhoneWindowManager
-             TODO: Should have an android:permission attribute -->
         <service android:name=".screenshot.TakeScreenshotService"
             android:process=":screenshot"
-            android:exported="false" />
+            android:permission="android.permission.SCREENSHOT"
+            android:exported="false">
+            <intent-filter>
+               <android name="android.intent.action.SCREENSHOT"/>
+            </intent-filter>
+        </service>
 
         <service android:name=".LoadAverageService"
                 android:exported="true" />
@@ -118,6 +129,17 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="com.android.systemui.CreateShortcut"
+            android:label="@string/shortcut_label"
+            android:icon="@drawable/vanir_actions">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".usb.UsbStorageActivity"
                   android:label="@*android:string/usb_storage_activity_title"
@@ -176,6 +198,13 @@
             android:excludeFromRecents="true">
         </activity>
 
+        <receiver
+            android:name=".vanir.VanirReceiver">
+            <intent-filter>
+                <action android:name="com.android.systemui.vanir.LAUNCH_ACTION" />
+            </intent-filter>
+        </receiver>
+
         <!-- started from UsbDeviceSettingsManager -->
         <activity android:name=".usb.UsbAccessoryUriActivity"
             android:exported="true"
@@ -219,6 +248,19 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="com.android.internal.category.PLATLOGO" />
 <!--            <category android:name="android.intent.category.LAUNCHER" />-->
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.android.systemui.vanir.ScreenShotAction"
+            android:label="@string/action_screenshot"
+            android:icon="@drawable/ic_sysbar_screenshot"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="com.android.systemui.ACTION_SCREENSHOT" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
             </intent-filter>
         </activity>
         <activity
@@ -271,16 +313,6 @@
                 <action android:name="com.android.systemui.INTENT_RING_VIB_SILENT_TOGGLE" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.android.systemui.SHORTCUT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.android.systemui.CreateShortcut"
-            android:label="@string/shortcut_label"
-            android:icon="@drawable/vanir_actions">
-            <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT" />
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name="com.android.systemui.WidgetSelectActivity"

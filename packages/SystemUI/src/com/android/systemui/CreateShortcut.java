@@ -56,6 +56,8 @@ public class CreateShortcut extends LauncherActivity {
 
     if (c.equals("Torch")) {
         return R.drawable.toggle_torch;
+      } else if (c.equals ("ScreenShotAction")) {
+		  return R.drawable.ic_sysbar_screenshot;
       } else if (c.equals ("WidgetToggle")) {
           return R.drawable.ic_sysbar_widget;
       } else if (c.equals ("RingVibToggle")) {

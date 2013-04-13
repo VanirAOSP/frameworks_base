@@ -95,7 +95,7 @@ import android.widget.Toast;
 
 import com.android.internal.telephony.PhoneConstants;
 import com.vanir.util.CMDProcessor;
-import com.android.systemui.vanir.VanirAwesome;
+import com.android.systemui.vanir.QuickAwesome;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -926,7 +926,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VanirAwesome.getInstance(mContext).launchAction(VanirAwesome.ACTION_VIB);
+                        QuickAwesome.getInstance(mContext).launchAction(QuickAwesome.QUICK_VIB);
                         mModel.refreshVibrateTile();
                     }
                 });
@@ -954,7 +954,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VanirAwesome.getInstance(mContext).launchAction(VanirAwesome.ACTION_SILENT);
+                        QuickAwesome.getInstance(mContext).launchAction(QuickAwesome.QUICK_SILENT);
                         mModel.refreshSilentTile();
                     }
                 });
@@ -982,7 +982,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VanirAwesome.getInstance(mContext).launchAction(VanirAwesome.ACTION_SILENT_VIB);
+                        QuickAwesome.getInstance(mContext).launchAction(QuickAwesome.QUICK_SILENT_VIB);
                         mModel.refreshSoundStateTile();
                     }
                 });
@@ -1010,7 +1010,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VanirAwesome.getInstance(mContext).launchAction(VanirAwesome.ACTION_TORCH);
+                        QuickAwesome.getInstance(mContext).launchAction(QuickAwesome.QUICK_TORCH);
                         dothingsthewrongway();
                     }
                 });

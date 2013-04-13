@@ -221,13 +221,6 @@ public class TabletStatusBar extends BaseStatusBar implements
 
     private int mNavigationIconHints = 0;
 
-    private int shortClick = 0;
-    private int longClick = 1;
-    private int doubleClick = 2;
-    private int doubleClickCounter = 0;
-    public String[] mClockActions = new String[3];
-    private boolean mClockDoubleClicked;
-    private VanirAwesome mVanirAwesome;
     private View mDateTimeView;
 
     public Context getContext() { return mContext; }
@@ -397,8 +390,6 @@ public class TabletStatusBar extends BaseStatusBar implements
 
         mDateTimeView = mNotificationPanel.findViewById(R.id.datetime);
         if (mDateTimeView != null) {
-            mDateTimeView.setOnClickListener(mClockClickListener);
-            mDateTimeView.setOnLongClickListener(mClockLongClickListener);
             mDateTimeView.setEnabled(true);
         }
     }
@@ -617,7 +608,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         mNavBarView.setDisabledFlags(mDisabled);
         mNavBarView.setBar(this);
         mNavBarView.getSearchLight().setOnTouchListener(mHomeSearchActionListener);
-        mVanirAwesome = new VanirAwesome(mContext);
 
         LayoutTransition lt = new LayoutTransition();
         lt.setDuration(250);
@@ -821,52 +811,6 @@ public class TabletStatusBar extends BaseStatusBar implements
             break;
         }
         return false;
-        }
-    };
-
-    final Runnable DelayShortPress = new Runnable () {
-        public void run() {
-                doubleClickCounter = 0;
-                animateCollapsePanels();
-                mVanirAwesome.launchAction(mClockActions[shortClick]);
-        }
-    };
-
-   final Runnable ResetDoubleClickCounter = new Runnable () {
-        public void run() {
-                doubleClickCounter = 0;
-        }
-    };
-
-    private View.OnClickListener mClockClickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            if (mClockDoubleClicked) {
-                if (doubleClickCounter > 0) {
-                    mHandler.removeCallbacks(DelayShortPress);
-                    v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                    animateCollapsePanels();
-                    mVanirAwesome.launchAction(mClockActions[doubleClick]);
-                    mHandler.postDelayed(ResetDoubleClickCounter, 50);
-                } else {
-                    doubleClickCounter = doubleClickCounter + 1;
-                    v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                    mHandler.postDelayed(DelayShortPress, 400);
-                }
-            } else {
-                v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                animateCollapsePanels();
-                mVanirAwesome.launchAction(mClockActions[shortClick]);
-            }
-        }
-    };
-
-    private View.OnLongClickListener mClockLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            animateCollapsePanels();
-            v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-            mVanirAwesome.launchAction(mClockActions[longClick]);
-            return true;
         }
     };
 
@@ -1822,12 +1766,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[shortClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[longClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[doubleClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.CURRENT_UI_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_HEIGHT), false, this);
@@ -1853,27 +1791,6 @@ public class TabletStatusBar extends BaseStatusBar implements
    protected void updateSettings() {
         ContentResolver cr = mContext.getContentResolver();
 
-        mClockActions[shortClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[shortClick]);
-
-        mClockActions[longClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[longClick]);
-
-        mClockActions[doubleClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[doubleClick]);
-
-        if (mClockActions[shortClick]  == null ||mClockActions[shortClick].equals("")) {
-            mClockActions[shortClick] = "**clockoptions**";
-        }
-        if (mClockActions[longClick]  == null || mClockActions[longClick].equals("")) {
-            mClockActions[longClick] = "**null**";
-        }
-        if (mClockActions[doubleClick] == null || mClockActions[doubleClick].equals("") || mClockActions[doubleClick].equals("**null**")) {
-            mClockActions[doubleClick] = "**null**";
-            mClockDoubleClicked = false;
-        } else {
-            mClockDoubleClicked = true;
-        }
         mUserBarHeight = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_HEIGHT, mNaturalBarHeight);
         mUserBarHeightLand = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE, mNaturalBarHeight);
         final int currentHeight = getStatusBarHeight();
