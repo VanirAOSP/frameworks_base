@@ -2831,6 +2831,11 @@ public final class Settings {
          */
         public static final String PIE_CHEVRON_RIGHT = "pie_chevron_right";
 
+        /**
+         * @hide
+         */
+        public static final String PIE_EXPANDED_DESKTOP_ONLY = "pie_expanded_desktop_only";
+
        // PIE COLORS EVERYWHERE! //
 
        /**
