@@ -58,6 +58,11 @@ public class CMDProcessor {
         public EasyPair<String, String> getOutput() {
             return new EasyPair<String, String>(stdout, stderr);
         }
+
+        @Override
+        public String toString() {
+            return "exit code: "+exit_value+"\nstdout: "+stdout+"\nstderr: "+stderr;
+        }
     }
 
     public class SH {
