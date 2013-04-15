@@ -44,6 +44,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
+import android.widget.Toast;
 
 import com.android.internal.util.MemInfoReader;
 import com.android.internal.view.RotationPolicy;
@@ -64,6 +65,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.android.systemui.vanir.FlushMemory;
 
 class QuickSettingsModel implements BluetoothStateChangeCallback,
         NetworkSignalChangedCallback,
@@ -783,6 +786,13 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 mHandler.postDelayed(this, 20000);
                 
         } }, 20000);
+        mMemoryTile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Flushing!", Toast.LENGTH_SHORT).show();
+                FlushMemory.Flush();
+            }
+        });
     }
     
     void refreshMemoryTile() {
