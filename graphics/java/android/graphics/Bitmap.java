@@ -684,10 +684,7 @@ public final class Bitmap implements Parcelable {
     private static Bitmap createBitmap(DisplayMetrics display, int width, int height,
             Config config, boolean hasAlpha) {
         if (width <= 0 || height <= 0) {
-            //if an app calls this with 0, it may not be its own damn fault (i.e. some other apps thumbnail being 0x0)
-            //  so let's try some kid gloves instead of FCing it
-            width = 1;
-            height = 1;
+            throw new IllegalArgumentException("width and height must be > 0");
         }
         Bitmap bm = nativeCreate(null, 0, width, width, height, config.nativeInt, true);
         if (display != null) {
