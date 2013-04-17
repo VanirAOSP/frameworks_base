@@ -3119,6 +3119,15 @@ public final class Settings {
         public static final String CURRENT_UI_MODE = "current_ui_mode";
 
        /**
+        * MediaScanner behavior on boot.
+        * 0 = enabled
+        * 1 = ask (notification)
+        * 2 = disabled
+        * @hide
+        */
+        public static final String MEDIA_SCANNER_ON_BOOT = "media_scanner_on_boot";
+
+       /**
         * Whether or not to launch default music player when headset is connected
         * @hide
         */
