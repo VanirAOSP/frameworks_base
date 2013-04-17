@@ -58,7 +58,6 @@ import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
@@ -73,21 +72,21 @@ public class QuickAwesome {
     private final static String SysUIPackage = "com.android.systemui";
 
     public final static String QUICK_POWER = "**power**";
-    public final static String QUICK_KILL = "**kill**";
     public final static String QUICK_CUSTOM = "**custom**";
     public final static String QUICK_SILENT = "**ring_silent**";
     public final static String QUICK_VIB = "**ring_vib**";
     public final static String QUICK_SILENT_VIB = "**ring_vib_silent**";
     public final static String QUICK_TORCH = "**torch**";
+    public final static String QUICK_ROBOCOP = "**robocop**";
     public final static String QUICK_NULL = "**null**";
 
     public final static int INT_ACTION_POWER = 1;
-    public final static int INT_ACTION_KILL = 2;
-    public final static int INT_ACTION_CUSTOM = 3;
-    public final static int INT_ACTION_SILENT = 4;
-    public final static int INT_ACTION_VIB = 5;
-    public final static int INT_ACTION_SILENT_VIB = 6;
-    public final static int INT_ACTION_TORCH = 7;
+    public final static int INT_ACTION_CUSTOM = 2;
+    public final static int INT_ACTION_SILENT = 3;
+    public final static int INT_ACTION_VIB = 4;
+    public final static int INT_ACTION_SILENT_VIB = 5;
+    public final static int INT_ACTION_TORCH = 6;
+    public final static int INT_ACTION_ROBOCOP = 7;
     public final static int INT_ACTION_NULL = 8;
 
     private HashMap<String, Integer> actionMap;
@@ -96,12 +95,12 @@ public class QuickAwesome {
         if (actionMap == null) {
             actionMap = new HashMap<String, Integer>();
             actionMap.put(QUICK_POWER, INT_ACTION_POWER);
-            actionMap.put(QUICK_KILL, INT_ACTION_KILL);
             actionMap.put(QUICK_CUSTOM, INT_ACTION_CUSTOM);
             actionMap.put(QUICK_SILENT, INT_ACTION_SILENT);
             actionMap.put(QUICK_VIB, INT_ACTION_VIB);
             actionMap.put(QUICK_SILENT_VIB, INT_ACTION_SILENT_VIB);
             actionMap.put(QUICK_TORCH, INT_ACTION_TORCH);
+            actionMap.put(QUICK_ROBOCOP, INT_ACTION_ROBOCOP);
             actionMap.put(QUICK_NULL, INT_ACTION_NULL);
         }
         return actionMap;
@@ -135,9 +134,6 @@ public class QuickAwesome {
         if (getActionMap().containsKey(action)) {
             switch(getActionMap().get(action)) {
 
-            case INT_ACTION_KILL:
-                mHandler.post(mKillTask);
-                break;
             case INT_ACTION_VIB:
                 if(am != null){
                     if(am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
@@ -167,6 +163,11 @@ public class QuickAwesome {
                         }
                     }
                 }
+                break;
+            case INT_ACTION_ROBOCOP:
+                Intent robocop = new Intent("android.intent.action.REBOOTMENU");
+                robocop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(robocop);
                 break;
             case INT_ACTION_SILENT_VIB:
                 if(am != null){
@@ -217,8 +218,6 @@ public class QuickAwesome {
     public Drawable getIconImage(String uri) {
         if (uri == null)
             return mContext.getResources().getDrawable(R.drawable.ic_sysbar_null);
-        if (uri.equals(QUICK_KILL))
-            return mContext.getResources().getDrawable(R.drawable.ic_sysbar_killtask);
         if (uri.equals(QUICK_POWER))
             return mContext.getResources().getDrawable(R.drawable.ic_sysbar_power);
         try {
@@ -232,8 +231,6 @@ public class QuickAwesome {
     }
 
     public String getProperSummary(String uri) {
-        if (uri.equals(QUICK_KILL))  // yup. we're ffffking metal!! \m/
-            return mContext.getResources().getString(R.string.action_kill);
         if (uri.equals(QUICK_POWER))
             return mContext.getResources().getString(R.string.action_power);
         if (uri.equals(QUICK_NULL))
@@ -305,27 +302,6 @@ public class QuickAwesome {
                     InputDevice.SOURCE_KEYBOARD);
             InputManager.getInstance().injectInputEvent(ev,
                     InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
-        }
-    };
-
-    Runnable mKillTask = new Runnable() {
-        public void run() {
-            final Intent intent = new Intent(Intent.ACTION_MAIN);
-            final ActivityManager am = (ActivityManager) mContext
-                    .getSystemService(Activity.ACTIVITY_SERVICE);
-            String defaultHomePackage = "com.android.launcher";
-            intent.addCategory(Intent.CATEGORY_HOME);
-            final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
-            if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
-                defaultHomePackage = res.activityInfo.packageName;
-            }
-            String packageName = am.getRunningTasks(1).get(0).topActivity.getPackageName();
-            if (SysUIPackage.equals(packageName))
-                return; // don't kill SystemUI
-            if (!defaultHomePackage.equals(packageName)) {
-                am.forceStopPackage(packageName);
-                Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
-            }
         }
     };
 

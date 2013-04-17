@@ -369,7 +369,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             final String action = intent.getAction();
             if (action.equals(Intent.ACTION_SCREENSHOT)) {
                 takeScreenshot();
-            }
+            } else if (action.equals(Intent.ACTION_REBOOTMENU)) {
+				showGlobalActionsDialog();
+			}
         }
 
         private void registerSelf() {
@@ -378,6 +380,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(Intent.ACTION_SCREENSHOT);
+                filter.addAction(Intent.ACTION_REBOOTMENU);
                 mContext.registerReceiver(mPowerMenuReceiver, filter);
             }
         }
@@ -920,7 +923,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
-    void showGlobalActionsDialog() {
+    public void showGlobalActionsDialog() {
         if (mGlobalActions == null) {
             mGlobalActions = new GlobalActions(mContext, mWindowManagerFuncs);
         }

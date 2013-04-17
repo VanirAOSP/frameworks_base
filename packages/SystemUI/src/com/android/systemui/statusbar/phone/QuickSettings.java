@@ -141,6 +141,7 @@ public class QuickSettings {
     private static final int WIFI_TETHER_TILE = 23;
    // private static final int BT_TETHER_TILE = 23;
     private static final int SOUND_STATE_TILE = 24;
+    private static final int REBOOTMENU_TILE = 25;
     private static final int QUICKRECORD_TILE = 26;
     
   //  private static final int WEATHER_TILE = 27;
@@ -177,6 +178,7 @@ public class QuickSettings {
     public static final String LTE_TOGGLE = "LTE";
     public static final String FAV_CONTACT_TOGGLE = "FAVCONTACT";
     public static final String SOUND_STATE_TOGGLE = "SOUNDSTATE";
+    public static final String REBOOTMENU_TOGGLE = "REBOOTMENU";
     public static final String QUICKRECORD_TOGGLE = "QUICKRECORD";
    // public static final String WEATHER_TOGGLE = "WEATHER";
     public static final String MEMORY_TOGGLE = "MEMORY";
@@ -270,6 +272,7 @@ public class QuickSettings {
             toggleMap.put(SOUND_STATE_TOGGLE, SOUND_STATE_TILE);
             toggleMap.put(QUICKRECORD_TOGGLE, QUICKRECORD_TILE);
         //    toggleMap.put(WEATHER_TOGGLE, WEATHER_TILE);
+            toggleMap.put(REBOOTMENU_TOGGLE, REBOOTMENU_TILE);
             toggleMap.put(MEMORY_TOGGLE, MEMORY_TILE);
             //toggleMap.put(BT_TETHER_TOGGLE, BT_TETHER_TILE);
         }
@@ -700,6 +703,26 @@ public class QuickSettings {
                     }
                 });
                 break;
+            case REBOOTMENU_TILE:
+                    quick = (QuickSettingsTileView)
+                            inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                    quick.setContent(R.layout.quick_settings_tile_rebootmenu, inflater);
+                    quick.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							mBar.collapseAllPanels(true);
+							Intent intent = new Intent(Intent.ACTION_REBOOTMENU);
+                            mContext.sendBroadcast(intent);
+						}
+				    });
+					mModel.addRebootMenuTile(quick, new QuickSettingsModel.RefreshCallback() {
+					@Override
+					public void refreshView(QuickSettingsTileView view, State state) {
+						TextView tv = (TextView) view.findViewById(R.id.rebootmenu_tileview);
+						tv.setText("Reboot Menu");
+					}
+				});
+				break;
             case SIGNAL_TILE:
                 if (mModel.deviceHasMobileData()) {
                     // Mobile Network state
