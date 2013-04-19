@@ -219,14 +219,17 @@ public class VanirAwesome {
             case ACTION_BLANK:
                 // FRRRRRT...
                 break;
+            case ACTION_LAST_APP:
+                toggleLastApp(mContext);
+                break; 
             case ACTION_APP:
                 try {
-					Intent intentapp = Intent.parseUri(action, 0);
-					intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					mContext.startActivity(intentapp);
-				} catch (URISyntaxException e) {
-					//log.e(TAG, "URISyntaxException: [" + action + "]");
-			    } catch (ActivityNotFoundException e){
+                    Intent intentapp = Intent.parseUri(action, 0);
+                    intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intentapp);
+                } catch (URISyntaxException e) {
+                    Log.e(TAG, "URISyntaxException: [" + action + "]");
+                } catch (ActivityNotFoundException e){
                     Log.e(TAG, "ActivityNotFound: [" + action + "]");
                 }
                 break;
