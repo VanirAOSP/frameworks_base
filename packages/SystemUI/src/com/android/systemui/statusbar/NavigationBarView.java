@@ -311,6 +311,13 @@ public class NavigationBarView extends LinearLayout {
                 if (v.getId() == R.id.menu){
                     mHasBigMenuButton = true;
                 }
+                if (mNumberOfButtons == 3 && j != (mNumberOfButtons - 1)) {
+                    // add separator view here
+                    View separator = new View(mContext);
+                    separator.setLayoutParams(getSeparatorLayoutParams(landscape));
+                    addButton(navButtonLayout, separator, landscape);
+                    addLightsOutButton(lightsOut, separator, landscape, true);
+                }
             }
             // check to see if we already have a menu button
             if (!mHasBigMenuButton) {  // don't add menu buttons if we already have one
