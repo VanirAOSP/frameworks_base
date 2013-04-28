@@ -56,9 +56,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
     protected void setLongPress() {
         setSupportsLongPress(false);
         if (mLongpress != null) {
-			if (!mLongpress.equals(VanirConstant.ACTION_HOME)) {
-				setSupportsLongPress(false);
-		    } else if ((!mLongpress.equals(VanirConstant.ACTION_NULL)) || (getCode() != 0)) {
+            if ((!mLongpress.equals(VanirConstant.ACTION_NULL) && !mLongpress.equals(VanirConstant.ACTION_BLANK)) || (getCode() != 0)) {
                 // I want to allow long presses for defined actions, or if
                 // primary action is a 'key' and long press isn't defined
                 // otherwise
