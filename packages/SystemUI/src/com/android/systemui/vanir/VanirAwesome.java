@@ -85,7 +85,6 @@ public class VanirAwesome {
         }
 
         VanirConstant VanirEnum = fromString(action);
-        AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         switch(VanirEnum) {
 			case ACTION_RECENTS:
                 try {
@@ -117,50 +116,55 @@ public class VanirAwesome {
                 mHandler.post(mKillTask);
                 break;
             case ACTION_VIB:
-                if(am != null){
-                    if(am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
-                        am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-                        Vibrator vib = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                        if(vib != null){
-                            vib.vibrate(50);
-                        }
-                    }else{
-                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                        ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
-                        if(tg != null){
-                            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-                        }
-                    }
-                }
-                break;
             case ACTION_SILENT:
-                if(am != null){
-                    if(am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
-                        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                    }else{
-                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                        ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
-                        if(tg != null){
-                            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-                        }
-                    }
-                }
-                break;
             case ACTION_SILENT_VIB:
-                if(am != null){
-                    if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
-                        am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-                        Vibrator vib = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                        if(vib != null){
-                            vib.vibrate(50);
-                        }
-                    } else if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
-                        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                    } else {
-                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                        ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
-                        if(tg != null){
-                            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+                {
+                    AudioManager am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                    if(am != null){
+                        switch(VanirEnum) {
+                            case ACTION_VIB:
+                                if(am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
+                                    am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                                    Vibrator vib = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                                    if(vib != null){
+                                        vib.vibrate(50);
+                                    }
+                                }else{
+                                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
+                                    if(tg != null){
+                                        tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+                                    }
+                                }
+                                break;
+                            case ACTION_SILENT:
+                                if(am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
+                                    am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                                }else{
+                                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
+                                    if(tg != null){
+                                        tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+                                    }
+                                }
+                                break;
+                            case ACTION_SILENT_VIB:
+                                if(am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+                                    am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                                    Vibrator vib = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                                    if(vib != null){
+                                        vib.vibrate(50);
+                                    }
+                                } else if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+                                    am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                                } else {
+                                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, (int)(ToneGenerator.MAX_VOLUME * 0.85));
+                                    if(tg != null){
+                                        tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+                                    }
+                                }
+                                break;
                         }
                     }
                 }
@@ -305,7 +309,7 @@ public class VanirAwesome {
     private static void toggleLastApp(Context mContext) {
         int lastAppId = 0;
         int looper = 1;
-        String packageName;
+        String packageName="";
         final Intent intent = new Intent(Intent.ACTION_MAIN);
         final ActivityManager am = (ActivityManager) mContext
                 .getSystemService(Activity.ACTIVITY_SERVICE);
@@ -320,12 +324,14 @@ public class VanirAwesome {
         // Note, we'll only get as many as the system currently has - up to 5
         while ((lastAppId == 0) && (looper < tasks.size())) {
             packageName = tasks.get(looper).topActivity.getPackageName();
+            Log.i(TAG, "Looking at tasks["+looper+"]="+packageName+" for LAST_APP");
             if (!packageName.equals(defaultHomePackage) && !packageName.equals("com.android.systemui")) {
                 lastAppId = tasks.get(looper).id;
             }
             looper++;
         }
         if (lastAppId != 0) {
+            Log.i(TAG, "TRYING TO SWITCH TO LAST APP: tasks["+looper+"]="+packageName);
             am.moveTaskToFront(lastAppId, am.MOVE_TASK_NO_USER_ACTION);
         }
     }
