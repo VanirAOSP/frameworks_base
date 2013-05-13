@@ -79,12 +79,7 @@ public class VanirAwesome {
     private VanirAwesome() {
     }
 
-    public static boolean launchAction(Context mContext, String action) {
-        if (TextUtils.isEmpty(action) || action.equals(VanirConstant.ACTION_NULL)) {
-            return false;
-        }
-
-        VanirConstant VanirEnum = fromString(action);
+    public static boolean launchAction(Context mContext, VanirConstant VanirEnum) {
         switch(VanirEnum) {
 			case ACTION_RECENTS:
                 try {
@@ -225,20 +220,41 @@ public class VanirAwesome {
                 break;
             case ACTION_LAST_APP:
                 toggleLastApp(mContext);
+                break;
+            case ACTION_ROBOCOP:
+                Intent robocop = new Intent("android.intent.action.REBOOTMENU");
+                robocop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(robocop);
                 break; 
             case ACTION_APP:
-                try {
-                    Intent intentapp = Intent.parseUri(action, 0);
-                    intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intentapp);
-                } catch (URISyntaxException e) {
-                    Log.e(TAG, "URISyntaxException: [" + action + "]");
-                } catch (ActivityNotFoundException e){
-                    Log.e(TAG, "ActivityNotFound: [" + action + "]");
-                }
-                break;
+                return false;
+                //this should only happen during the end of days.
             }
-            return true;
+        return true;
+    }
+
+    public static boolean launchAction(Context mContext, String action) {
+        if (TextUtils.isEmpty(action) || action.equals(VanirConstant.ACTION_NULL)) {
+            return false;
+        }
+
+        VanirConstant VanirEnum = fromString(action);
+        if (VanirEnum == VanirConstant.ACTION_APP) {
+            try {
+                Intent intentapp = Intent.parseUri(action, 0);
+                intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intentapp);
+                return true;
+            } catch (URISyntaxException e) {
+                Log.e(TAG, "URISyntaxException: [" + action + "]");
+                return false;
+            } catch (ActivityNotFoundException e){
+                Log.e(TAG, "ActivityNotFound: [" + action + "]");
+                return false;
+            }
+        }
+
+        return launchAction(mContext, VanirEnum);
     }
 
    private static void injectKeyDelayed(int keycode) {

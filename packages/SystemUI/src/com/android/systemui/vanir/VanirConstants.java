@@ -16,6 +16,9 @@
 
 package com.android.internal.util.vanir;
 
+import java.util.HashMap;
+import java.util.List;
+
 public class VanirConstants {
 
     public static final String ASSIST_ICON_METADATA_NAME = "com.android.systemui.action_assist_icon";
@@ -45,17 +48,23 @@ public class VanirConstants {
         ACTION_ALARM         { @Override public String value() { return "**alarm**";}},
         ACTION_NULL          { @Override public String value() { return "**null**";}},
         ACTION_BLANK         { @Override public String value() { return "**blank**";}},
-        ACTION_APP           { @Override public String value() { return "**app**";}};
+        ACTION_APP           { @Override public String value() { return "**app**";}},
+        ACTION_CUSTOM        { @Override public String value() { return "**custom";}},
+        ACTION_ROBOCOP       { @Override public String value() { return "**robocop**";}};
         public String value() { return this.value(); }
     }
 
+    private static HashMap<String, VanirConstant> notTheWorstWayYouCouldPossiblyImplementThis;
+
     public static VanirConstant fromString(String string) {
-        VanirConstant[] allTargs = VanirConstant.values();
-        for (int i=0; i < allTargs.length; i++) {
-            if (string.equals(allTargs[i].value())) {
-                return allTargs[i];
-            }
+        if (notTheWorstWayYouCouldPossiblyImplementThis == null) {
+            VanirConstant[] allTargs = VanirConstant.values();
+            notTheWorstWayYouCouldPossiblyImplementThis = new HashMap<String, VanirConstant>();
+            for (int i=0; i < allTargs.length; i++)
+                notTheWorstWayYouCouldPossiblyImplementThis.put(allTargs[i].value(), allTargs[i]);
         }
+        if (notTheWorstWayYouCouldPossiblyImplementThis.containsKey(string))
+            return notTheWorstWayYouCouldPossiblyImplementThis.get(string);
         // not in ENUM must be custom
         return VanirConstant.ACTION_APP;
     }
