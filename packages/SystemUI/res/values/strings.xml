@@ -526,6 +526,10 @@
     <string name="quick_settings_brightness_dialog_title">Brightness</string>
     <!-- QuickSettings: Brightness dialog auto brightness button [CHAR LIMIT=NONE] -->
     <string name="quick_settings_brightness_dialog_auto_brightness_label">AUTO</string>
+    <!-- QuickSettings: Pie enable title [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_pie_label">PIE</string>
+    <!-- QuickSettings: Desktop Mode [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_expanded_desktop_label">Expanded Desktop</string>
 
     <string name="quick_settings_fbgt">FBGT</string>
     <string name="quick_settings_recording">Recording...</string>
@@ -577,6 +581,10 @@
     <string name="quick_settings_fcharge_off_label">F-Charge Off</string>
     <string name="quick_settings_torch_on_label">Torch On</string>
     <string name="quick_settings_torch_off_label">Torch Off</string>
+    <string name="quick_settings_pie_off_label">PIE Off</string>
+    <string name="quick_settings_pie_on_label">PIE On</string>
+    <string name="quick_settings_expanded_desktop_off_label">Expanded Off</string>
+    <string name="quick_settings_expanded_desktop_on_label">Expanded On</string>
     <string name="quick_settings_nfc_on_label">NFC On</string>
     <string name="quick_settings_nfc_off_label">NFC Off</string>
     <string name="quick_settings_wifi_tether_on_label">Wifi Tether On</string>
