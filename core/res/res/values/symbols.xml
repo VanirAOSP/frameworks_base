@@ -1976,5 +1976,7 @@
 
   <java-symbol type="bool" name="config_disableHomeUnlockSetting" />
 
+  <!-- Electron Beam -->
+  <java-symbol type="bool" name="config_screenOffAnimation" />
 
 </resources>

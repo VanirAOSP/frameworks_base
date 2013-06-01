@@ -1843,7 +1843,7 @@ public final class Settings {
          * Whether to enable the electron beam animation when turning screen off
          *
          * @hide */
-        public static final String ELECTRON_BEAM_ANIMATION_OFF = "electron_beam_animation_off";
+        public static final String SCREEN_OFF_ANIMATION = "screen_off_animation";
 
         /**
          * Control whether the process CPU usage meter should be shown.
