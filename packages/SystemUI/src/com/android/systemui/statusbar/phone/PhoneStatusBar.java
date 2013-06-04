@@ -26,7 +26,6 @@ import android.app.ActivityManagerNative;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.StatusBarManager;
-import android.content.ContentResolver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContentResolver;
@@ -2553,30 +2552,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         @Override
         public void setBounds(Rect bounds) {
         }
-    }
-
-   class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-		void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.CURRENT_UI_MODE), false, this);
-        }
-
-         @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-    }
-
-   protected void updateSettings() {
-        ContentResolver cr = mContext.getContentResolver();
-
-        mCurrentUIMode = Settings.System.getInt(cr,
-                Settings.System.CURRENT_UI_MODE, 0);
     }
 
     public boolean skipToSettingsPanel() {
