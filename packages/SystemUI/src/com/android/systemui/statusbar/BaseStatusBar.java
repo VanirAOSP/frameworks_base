@@ -249,6 +249,10 @@ public abstract class BaseStatusBar extends SystemUI implements
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PIE_EXPANDED_DESKTOP_ONLY), false, this);
         }
+        
+        void unobserve() {
+			    mContext.getContentResolver().unregisterContentObserver(this);
+        }	
 
         @Override
         public void onChange(boolean selfChange) {
@@ -434,31 +438,39 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_USER_SWITCHED);
-        mContext.registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (Intent.ACTION_USER_SWITCHED.equals(action)) {
-                    mCurrentUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
-                    if (true) Slog.v(TAG, "userId " + mCurrentUserId + " is in the house");
-                    userSwitched(mCurrentUserId);
-                }
-            }}, filter);
-
-            // Listen for PIE gravity
-            mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.PIE_GRAVITY), false, new ContentObserver(new Handler()) {
-                @Override
-                public void onChange(boolean selfChange) {
-                if (Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.PIE_STICK, 1) == 0) {
-                updatePieControls();
-            }}});
 
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-        settingsObserver.observe();
-        updateSettings();
+        if (!showPie()) {
+			// if statusbar is recreated.. make sure pie is disabled and 
+	        // don't register its content observers
+	        settingsObserver.unobserve();
+            if (mPieControlsTrigger != null) mWindowManager.removeView(mPieControlsTrigger);
+            if (mPieControlPanel != null)  mWindowManager.removeView(mPieControlPanel);
+            if (mPieDummytrigger != null)  mWindowManager.removeView(mPieDummytrigger);
+        } else {
+            settingsObserver.observe();
+            mContext.registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    if (Intent.ACTION_USER_SWITCHED.equals(action)) {
+                        mCurrentUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
+                    if (true) Slog.v(TAG, "userId " + mCurrentUserId + " is in the house");
+                        userSwitched(mCurrentUserId);
+                    }
+                }}, filter);
 
+                // Listen for PIE gravity
+                mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.PIE_GRAVITY), false, new ContentObserver(new Handler()) {
+                        @Override
+                        public void onChange(boolean selfChange) {
+                            if (Settings.System.getInt(mContext.getContentResolver(),
+                                Settings.System.PIE_STICK, 1) == 0) {
+                                updatePieControls();
+                }}});
+	    }
+	    updateSettings();
         attachPie();
     }
 
@@ -466,7 +478,11 @@ public abstract class BaseStatusBar extends SystemUI implements
         boolean pie = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.PIE_CONTROLS, 0) == 1;
 
-        return (pie && (!mPieExpandedOnly || mExpandedDesktop));
+        if (pie) {
+            return (pie && (!mPieExpandedOnly || mExpandedDesktop));
+	    } else {
+	        return false;
+	    }
     }
 
     private void updateSettings()
