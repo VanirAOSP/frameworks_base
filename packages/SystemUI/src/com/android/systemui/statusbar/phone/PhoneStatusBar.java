@@ -458,7 +458,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mDateTimeView = mNotificationPanelHeader.findViewById(R.id.datetime);
         if (mHasFlipSettings) {
-            mDateTimeView.setOnClickListener(mClockClickListener);
             mDateTimeView.setEnabled(true);
         }
 
@@ -2289,12 +2288,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 startActivityDismissingKeyguard(
                         new Intent(android.provider.Settings.ACTION_SETTINGS), true);
             }
-        }
-    };
-
-    private View.OnClickListener mClockClickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            //fixme
         }
     };
 
