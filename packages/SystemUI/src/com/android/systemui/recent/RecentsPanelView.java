@@ -805,21 +805,22 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 		final ProgressBar memBar = (ProgressBar) findViewById(R.id.recents_memory_bar);
 
 		if (!enableMemDisplay) {
+			memBar.setVisibility(View.GONE);
 			removeView(memText);
 			removeView(memBar);
 			return false;
-		}
+		} else {
+		    memText.setVisibility(View.VISIBLE);
+		    memBar.setVisibility(View.VISIBLE);
 
-		memText.setVisibility(View.VISIBLE);
-		memBar.setVisibility(View.VISIBLE);
+            int totalMem = getTotalMemory();
+		    memBar.setMax(totalMem);
 
-		int totalMem = getTotalMemory();
-		memBar.setMax(totalMem);
-
-		int availMem = Integer.parseInt(getAvailMemory());
-		memText.setText("Free RAM: " + String.valueOf(availMem) + "MB");
-		memBar.setProgress(totalMem - availMem);
-		return true;
+	        int availMem = Integer.parseInt(getAvailMemory());
+		    memText.setText("Free RAM: " + String.valueOf(availMem) + "MB");
+		    memBar.setProgress(totalMem - availMem);
+		    return true;
+	    }
 	}
 
 	private String getAvailMemory() {
