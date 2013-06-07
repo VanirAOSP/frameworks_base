@@ -553,7 +553,7 @@
     <string name="quicksettings_ringer_normal">Sound</string>
 
     <string name="toggle_torch">Torch</string>
-    <string name="shortcut_label">Vanir Actions</string>
+    <string name="shortcut_label">Actions &amp; Utilities</string>
     <string name="action_home">Home</string>
     <string name="action_back">Back</string>
     <string name="action_recents">Recents</string>
