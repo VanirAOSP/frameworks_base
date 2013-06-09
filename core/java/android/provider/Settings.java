@@ -2617,19 +2617,93 @@ public final class Settings {
         public static final String STATUS_BAR_CLOCK = "status_bar_show_clock";
 
         /**
+         * hmm
+         * 
+         */
+        public static final String PREF_ENABLE = "clock_style";
+
+        /**
          * comments are for noobs
          * @hide
          */
         public static final String STATUS_BAR_AM_PM = "status_bar_am_pm"; 
 
         /**
-         * comments are for noobs
+         * Whether or not to use the app sidebar
+         *
          * @hide
          */
-        public static final String PREF_ENABLE = "clock_style";
+        public static final String APP_SIDEBAR_ENABLED = "app_sidebar_enabled";
 
         /**
-         * Setting for clock color
+         * User defined transparency level for sidebar
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_TRANSPARENCY = "app_sidebar_transparency";
+
+        /**
+         * Disable text labels for app sidebar items
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_DISABLE_LABELS = "app_sidebar_disable_labels";
+
+        /**
+         * Position of app sidebar
+         * List of apps to exclude from sidebar
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_EXCLUDE_LIST = "app_sidebar_exclude_list";
+
+        /**
+         * Quick Settings Panel Tiles to Use
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_POSITION = "app_sidebar_position";
+
+        /**
+         * Width of the appbar trigger
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_TRIGGER_WIDTH = "app_sidebar_trigger_width";
+
+        /**
+         * Position of appbar trigger
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_TRIGGER_TOP = "app_sidebar_trigger_top";
+
+        /**
+         * Height of the appbar trigger
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_TRIGGER_HEIGHT = "app_sidebar_trigger_height";
+
+        /**
+         * Whether to display the trigger region or not
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_SHOW_TRIGGER = "app_sidebar_show_trigger";
+
+        /**
+         * choose the gravity
+         *  0 - left
+         *  1 - right
+         *  2 - both
+         * @hide
+         */
+        public static final String SIDEBAR_GRAVITY = "sidebar_gravity";
+
+        /**
+         * Quick Settings Panel Tiles to Use
+         *
          * @hide
          */
         public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";

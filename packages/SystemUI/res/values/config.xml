@@ -103,5 +103,8 @@
 
     <!-- default Navigation Bar transparency. 0-255 -->
     <integer name="navigation_bar_transparency">255</integer>
+
+    <!-- configurable width dimension for the app sidebar trigger area -->
+    <dimen name="config_app_sidebar_trigger_width">8dip</dimen>
 </resources>
 
