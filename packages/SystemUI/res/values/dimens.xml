@@ -278,4 +278,6 @@
     <dimen name="folder_width">290dp</dimen>
     <dimen name="folder_height">480dp</dimen>
     <dimen name="setup_sidebar_width">90dp</dimen>
+    <dimen name="halo_content_max_width">250dp</dimen>
+
 </resources>
