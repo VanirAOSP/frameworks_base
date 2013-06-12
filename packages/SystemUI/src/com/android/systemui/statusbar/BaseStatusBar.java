@@ -266,6 +266,8 @@ public abstract class BaseStatusBar extends SystemUI implements
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PIE_EXPANDED_DESKTOP_ONLY), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PIE_GRAVITY), false, this);
         }
         
         void unobserve() {
@@ -457,43 +459,27 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
 
         mCurrentUserId = ActivityManager.getCurrentUser();
+	SettingsObserver settingsObserver = new SettingsObserver(new Handler());
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_USER_SWITCHED);
-
-        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         if (!showPie()) {
 			// if statusbar is recreated.. make sure pie is disabled and 
 	        // don't register its content observers
+	        mContext.unregisterReceiver(mBroadcastReceiver);
 	        settingsObserver.unobserve();
             if (mPieControlsTrigger != null) mWindowManager.removeView(mPieControlsTrigger);
             if (mPieControlPanel != null)  mWindowManager.removeView(mPieControlPanel);
             if (mPieDummytrigger != null)  mWindowManager.removeView(mPieDummytrigger);
         } else {
             settingsObserver.observe();
-            mContext.registerReceiver(new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    String action = intent.getAction();
-                    if (Intent.ACTION_USER_SWITCHED.equals(action)) {
-                        mCurrentUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
-                    if (true) Slog.v(TAG, "userId " + mCurrentUserId + " is in the house");
-                        userSwitched(mCurrentUserId);
-                    }
-                }}, filter);
+            
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_USER_SWITCHED);
+            filter.addAction(Intent.EXTRA_USER_HANDLE);
+            mContext.registerReceiver(mBroadcastReceiver, filter);
 
-                // Listen for PIE gravity
-                mContext.getContentResolver().registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.PIE_GRAVITY), false, new ContentObserver(new Handler()) {
-                        @Override
-                        public void onChange(boolean selfChange) {
-                            if (Settings.System.getInt(mContext.getContentResolver(),
-                                Settings.System.PIE_STICK, 1) == 0) {
-                                updatePieControls();
-                }}});
-	    }
-	    updateSettings();
-        attachPie();
+            updateSettings();
+            attachPie();
+	} 
 
         // Listen for HALO state
         mContext.getContentResolver().registerContentObserver(
@@ -506,6 +492,18 @@ public abstract class BaseStatusBar extends SystemUI implements
         updateHalo();
 
     }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (Intent.ACTION_USER_SWITCHED.equals(action)) {
+                mCurrentUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
+            if (true) Slog.v(TAG, "userId " + mCurrentUserId + " is in the house");
+                userSwitched(mCurrentUserId);
+            }
+        }
+    };
 
     public void setHaloTaskerActive(boolean haloTaskerActive, boolean updateNotificationIcons) {
         mHaloTaskerActive = haloTaskerActive;
