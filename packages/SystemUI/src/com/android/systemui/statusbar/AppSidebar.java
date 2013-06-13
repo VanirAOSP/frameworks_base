@@ -82,13 +82,12 @@ public class AppSidebar extends FrameLayout {
     private static final LinearLayout.LayoutParams SCROLLVIEW_LAYOUT_PARAMS = new LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.MATCH_PARENT,
-            1.0f    );
+            1.0f );
 
     private static LinearLayout.LayoutParams ITEM_LAYOUT_PARAMS = new LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            1.0f
-    );
+            1.0f );
 
     private int mTriggerWidth;
     private int mTriggerTop;
@@ -145,12 +144,12 @@ public class AppSidebar extends FrameLayout {
         if (DEBUG_LAYOUT)
             setBackgroundColor(0xffff0000);
         setupAppContainer();
-        mSettingsObserver = new SettingsObserver(new Handler());
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mSettingsObserver = new SettingsObserver(new Handler());
         mSettingsObserver.observe();
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_HIDE_APP_CONTAINER);
@@ -162,6 +161,7 @@ public class AppSidebar extends FrameLayout {
         filter.addDataScheme("package");
         getContext().registerReceiver(mAppChangeReceiver, filter);
         createSidebarAnimations(mPosition);
+        mSettingsObserver.update();
     }
 
     @Override
@@ -624,7 +624,7 @@ public class AppSidebar extends FrameLayout {
             ContentResolver resolver = mContext.getContentResolver();
             boolean enabled = Settings.System.getInt(
                     resolver, Settings.System.APP_SIDEBAR_ENABLED, 0) == 1;
-            setVisibility(enabled ? View.VISIBLE : View.GONE);
+                setVisibility(enabled ? View.VISIBLE : View.GONE);
 
             float barAlpha = (float)(100 - Settings.System.getInt(
                     resolver, Settings.System.APP_SIDEBAR_TRANSPARENCY, 0)) / 100f;
@@ -658,10 +658,11 @@ public class AppSidebar extends FrameLayout {
             setBottomPercentage(Settings.System.getInt(
                     resolver, Settings.System.APP_SIDEBAR_TRIGGER_HEIGHT, 100) / 100f);
             if (Settings.System.getInt(
-                    resolver, Settings.System.APP_SIDEBAR_SHOW_TRIGGER, 0) == 1)
+                    resolver, Settings.System.APP_SIDEBAR_SHOW_TRIGGER, 0) == 1) {
                 showTriggerRegion();
-            else
+            } else {
                 hideTriggerRegion();
+            }
         }
     }
 
