@@ -104,6 +104,7 @@ import com.android.systemui.recent.RecentTasksLoader;
 import com.android.systemui.recent.RecentsActivity;
 import com.android.systemui.recent.TaskDescription;
 import com.android.systemui.statusbar.halo.Halo;
+import com.android.systemui.statusbar.AppSidebar;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.phone.Ticker;
 import com.android.systemui.statusbar.policy.BatteryController;
@@ -198,6 +199,13 @@ public abstract class BaseStatusBar extends SystemUI implements
     private Canvas mNewCanvas;
     private TransitionDrawable mTransition;
 
+    protected AppSidebar mAppSidebar;
+    protected int mSidebarPosition;
+    private boolean mRecreating = false;
+
+    private PieObserver mSettingsObserver;
+    private SidebarObserver mSidebarObserver;
+
     // UI-specific methods
 
     /**
@@ -254,8 +262,39 @@ public abstract class BaseStatusBar extends SystemUI implements
         return mDeviceProvisioned;
     }
 
-    private final class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
+    private final class SidebarObserver extends ContentObserver {
+        SidebarObserver(Handler handler) {
+        super(handler);
+        }
+
+        void observe() {
+            ContentResolver cr = mContext.getContentResolver();
+            cr.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.APP_SIDEBAR_POSITION), false, this);
+            sidebar();
+        }
+
+        void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            sidebar();
+        }
+
+        public void sidebar() {
+            int sidebarPosition = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.APP_SIDEBAR_POSITION, AppSidebar.SIDEBAR_POSITION_LEFT);
+            if (sidebarPosition != mSidebarPosition) {
+		        mSidebarPosition = sidebarPosition;
+                mWindowManager.updateViewLayout(mAppSidebar, getAppSidebarLayoutParams(sidebarPosition));
+            }
+        }
+    }
+
+    private final class PieObserver extends ContentObserver {
+        PieObserver(Handler handler) {
             super(handler);
         }
 
@@ -267,11 +306,15 @@ public abstract class BaseStatusBar extends SystemUI implements
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PIE_EXPANDED_DESKTOP_ONLY), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PIE_GRAVITY), false, this);
+            updateSettings();
+            updatePieControls();
         }
-        
+
         void unobserve() {
-			    mContext.getContentResolver().unregisterContentObserver(this);
-        }	
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
 
         @Override
         public void onChange(boolean selfChange) {
@@ -336,7 +379,6 @@ public abstract class BaseStatusBar extends SystemUI implements
             orient = mPieControlPanel.getOrientation();
         }
 
-
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             final int action = event.getAction();
@@ -381,6 +423,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
         mDisplay = mWindowManager.getDefaultDisplay();
+        Context context = mContext;
 
         mProvisioningObserver.onChange(false); // set up
         mContext.getContentResolver().registerContentObserver(
@@ -460,44 +503,68 @@ public abstract class BaseStatusBar extends SystemUI implements
                    ));
         }
 
-        mCurrentUserId = ActivityManager.getCurrentUser();
+        mSettingsObserver = new PieObserver(new Handler());
+        mSidebarObserver = new SidebarObserver(new Handler());
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_USER_SWITCHED);
-
-        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-        if (!showPie()) {
-			// if statusbar is recreated.. make sure pie is disabled and 
-	        // don't register its content observers
-	        settingsObserver.unobserve();
+        if (showPie()) {
+            mSettingsObserver.observe();
+            mCurrentUserId = ActivityManager.getCurrentUser();
+            IntentFilter filter1 = new IntentFilter();
+            filter1.addAction(Intent.ACTION_USER_SWITCHED);
+            filter1.addAction(Intent.EXTRA_USER_HANDLE);
+            mContext.registerReceiver(mBroadcastReceiver, filter1);
+            updateSettings();
+        } else {
+            // if statusbar is recreated.. make sure pie is disabled and
+            // don't register its content observers
+            mSettingsObserver.unobserve();
             if (mPieControlsTrigger != null) mWindowManager.removeView(mPieControlsTrigger);
             if (mPieControlPanel != null)  mWindowManager.removeView(mPieControlPanel);
             if (mPieDummytrigger != null)  mWindowManager.removeView(mPieDummytrigger);
-        } else {
-            settingsObserver.observe();
+        }
+        attachPie();
+
+        if (showAppSidebar()) {
+	//      this eventually needs to be redone to observe UI changes. the original code does
+    //      not offer provisions for automatically moving the trigger area etc to the left side when
+    //      in phone UI mode using AOKP's ui selector.
+
+    //      final Configuration config = mContext.getResources().getConfiguration();
+            mSidebarObserver.observe();
+    /*      IntentFilter filter2 = new IntentFilter();
+            filter2.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
             mContext.registerReceiver(new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    String action = intent.getAction();
-                    if (Intent.ACTION_USER_SWITCHED.equals(action)) {
-                        mCurrentUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
-                    if (true) Slog.v(TAG, "userId " + mCurrentUserId + " is in the house");
-                        userSwitched(mCurrentUserId);
+                    String action2 = intent.getAction();
+                    if (Intent.ACTION_CONFIGURATION_CHANGED.equals(action2)) {
+                        try {
+                        // position app sidebar on left if in landscape orientation and device has a navbar
+                            if (mWindowManagerService.hasNavigationBar() &&
+                                    config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                                mWindowManager.updateViewLayout(mAppSidebar,
+                                    getAppSidebarLayoutParams(AppSidebar.SIDEBAR_POSITION_LEFT));
+                                mHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mAppSidebar.setPosition(AppSidebar.SIDEBAR_POSITION_LEFT);
+                                    }
+                                }, 500);
+                            }
+                        } catch (RemoteException e) {
+                        }
                     }
-                }}, filter);
-
-                // Listen for PIE gravity
-                mContext.getContentResolver().registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.PIE_GRAVITY), false, new ContentObserver(new Handler()) {
-                        @Override
-                        public void onChange(boolean selfChange) {
-                            if (Settings.System.getInt(mContext.getContentResolver(),
-                                Settings.System.PIE_STICK, 1) == 0) {
-                                updatePieControls();
-                }}});
-	    }
-	    updateSettings();
-        attachPie();
+                }
+            }, filter2); */
+        } else {
+            // if statusbar is recreated.. make sure sidebar is disabled and
+            // unregister any previous broadcast receivers
+            mSidebarObserver.unobserve();
+            if (mAppSidebar != null) {
+                removeSidebarView();
+                mAppSidebar = null;
+            }
+        }
 
         // Listen for HALO enabled switch
         mContext.getContentResolver().registerContentObserver(
@@ -518,6 +585,18 @@ public abstract class BaseStatusBar extends SystemUI implements
         updateHalo();
 
     }
+
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (Intent.ACTION_USER_SWITCHED.equals(action)) {
+                mCurrentUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
+            if (true) Slog.v(TAG, "userId " + mCurrentUserId + " is in the house");
+                userSwitched(mCurrentUserId);
+            }
+        }
+    };
 
     public void setHaloTaskerActive(boolean haloTaskerActive, boolean updateNotificationIcons) {
         mHaloTaskerActive = haloTaskerActive;
@@ -568,19 +647,27 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     }
 
+    private boolean showAppSidebar() {
+        boolean bar = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.APP_SIDEBAR_ENABLED, 0) == 1;
+        if (bar) {
+            return (bar);
+        } else {
+            return false;
+        }
+    }
+
     private boolean showPie() {
         boolean pie = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.PIE_CONTROLS, 0) == 1;
-
         if (pie) {
             return (pie && (!mPieExpandedOnly || mExpandedDesktop));
-	    } else {
-	        return false;
-	    }
+        } else {
+            return false;
+        }
     }
 
-    private void updateSettings()
-    {
+    private void updateSettings() {
         mExpandedDesktop = Settings.System.getInt(mContext.getContentResolver(), Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
         mPieExpandedOnly = Settings.System.getInt(mContext.getContentResolver(), Settings.System.PIE_EXPANDED_DESKTOP_ONLY, 0) == 1;
         Slog.e("NUKE", "PIE EXPANDED ONLY == "+mPieExpandedOnly);
@@ -629,7 +716,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     }
 
-    private void addPieInLocation(int gravity) {        
+    private void addPieInLocation(int gravity) {
         // Create a dummy view to force the screen to redraw
         mPieDummytrigger = new View(mContext);
 
@@ -680,6 +767,35 @@ public abstract class BaseStatusBar extends SystemUI implements
         lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;
         lp.gravity = gravity;
+        return lp;
+    }
+
+    protected void addSidebarView() {
+        mAppSidebar = (AppSidebar)View.inflate(mContext, R.layout.app_sidebar, null);
+        mWindowManager.addView(mAppSidebar, getAppSidebarLayoutParams(mSidebarPosition));
+    }
+
+    protected void removeSidebarView() {
+        if (mAppSidebar != null)
+            mWindowManager.removeView(mAppSidebar);
+    }
+
+    protected WindowManager.LayoutParams getAppSidebarLayoutParams(int position) {
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_STATUS_BAR_SUB_PANEL,
+                0
+                | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT);
+        lp.gravity = Gravity.TOP; // | Gravity.FILL_VERTICAL;
+        lp.gravity |= position == AppSidebar.SIDEBAR_POSITION_LEFT ? Gravity.LEFT : Gravity.RIGHT;
+        lp.setTitle("AppSidebar");
+
         return lp;
     }
 
@@ -882,7 +998,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             case 2 : // Phablet Mode
                 mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
                     R.layout.status_bar_search_panel_phablet, tmpRoot, false);
-                break;    
+                break;
         }
         mSearchPanelView.setOnTouchListener(
                  new TouchOutsideListener(MSG_CLOSE_SEARCH_PANEL, mSearchPanelView));
@@ -1361,12 +1477,12 @@ public abstract class BaseStatusBar extends SystemUI implements
         // Construct the round icon
         BitmapDrawable bd = (BitmapDrawable) mContext.getResources().getDrawable(R.drawable.halo_bg);
         int iconSize = bd.getBitmap().getWidth();
-        int smallIconSize = mContext.getResources().getDimensionPixelSize(R.dimen.status_bar_icon_size);        
+        int smallIconSize = mContext.getResources().getDimensionPixelSize(R.dimen.status_bar_icon_size);
         Bitmap roundIcon = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(roundIcon);
         canvas.drawARGB(0, 0, 0, 0);
 
-        if (notification.notification.largeIcon != null) {           
+        if (notification.notification.largeIcon != null) {
             Paint smoothingPaint = new Paint();
             smoothingPaint.setAntiAlias(true);
             smoothingPaint.setFilterBitmap(true);
@@ -1380,7 +1496,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             try {
                 Drawable icon = StatusBarIconView.getIcon(mContext,
                     new StatusBarIcon(notification.pkg, notification.user, notification.notification.icon,
-                    notification.notification.iconLevel, 0, notification.notification.tickerText)); 
+                    notification.notification.iconLevel, 0, notification.notification.tickerText));
                 if (icon == null) icon = mContext.getPackageManager().getApplicationIcon(notification.pkg);
                 int margin = (iconSize - smallIconSize) / 2;
                 icon.setBounds(margin, margin, iconSize - margin, iconSize - margin);
@@ -1544,7 +1660,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         boolean orderUnchanged = notification.notification.when==oldNotification.notification.when
                 && notification.score == oldNotification.score;
                 // score now encompasses/supersedes isOngoing()
-        
+
         boolean updateTicker = (notification.notification.tickerText != null
                 && !TextUtils.equals(notification.notification.tickerText,
                         oldEntry.notification.notification.tickerText)) || mHaloActive;

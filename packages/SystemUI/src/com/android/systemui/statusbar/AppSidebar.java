@@ -136,6 +136,7 @@ public class AppSidebar extends FrameLayout {
         mPm = context.getPackageManager();
         mWm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         mBarHeight = getWindowHeight();
+        mSettingsObserver = new SettingsObserver(new Handler());
     }
 
     @Override
@@ -149,7 +150,6 @@ public class AppSidebar extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mSettingsObserver = new SettingsObserver(new Handler());
         mSettingsObserver.observe();
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_HIDE_APP_CONTAINER);
@@ -651,14 +651,18 @@ public class AppSidebar extends FrameLayout {
 
             int width = Settings.System.getInt(
                     resolver, Settings.System.APP_SIDEBAR_TRIGGER_WIDTH, 10);
-            if (mTriggerWidth != width)
-                setTriggerWidth(width);
+            setTriggerWidth(width);
+
+
             setTopPercentage(Settings.System.getInt(
                     resolver, Settings.System.APP_SIDEBAR_TRIGGER_TOP, 0) / 100f);
             setBottomPercentage(Settings.System.getInt(
                     resolver, Settings.System.APP_SIDEBAR_TRIGGER_HEIGHT, 100) / 100f);
-            if (Settings.System.getInt(
-                    resolver, Settings.System.APP_SIDEBAR_SHOW_TRIGGER, 0) == 1) {
+
+            boolean pantelones = Settings.System.getInt(
+                    resolver, Settings.System.APP_SIDEBAR_SHOW_TRIGGER, 0) == 1;
+
+            if (pantelones) {
                 showTriggerRegion();
             } else {
                 hideTriggerRegion();
