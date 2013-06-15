@@ -473,6 +473,7 @@
 
     <string name="widgets">Widgets</string>
     <string name="toggle_navbar">NavBar - Toggle</string>
+    <string name="toggle_flushmemory">Flush Memory</string>
     <string name="toggle_widgets">Widgets - Toggle</string>
     <string name="recents_kill_all_button_text">Kill all</string>
 

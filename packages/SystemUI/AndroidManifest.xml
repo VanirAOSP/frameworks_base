@@ -252,6 +252,19 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="com.android.systemui.vanir.FlushMemory"
+            android:label="@string/toggle_flushmemory"
+            android:icon="@drawable/vanir_flush_memory"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="com.android.systemui.INTENT_FLUSHMEMORY_TOGGLE" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="com.android.systemui.vanir.ScreenShotAction"
             android:label="@string/action_screenshot"
             android:icon="@drawable/ic_sysbar_screenshot"
