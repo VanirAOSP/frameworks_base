@@ -13454,6 +13454,7 @@ package android.net.wifi {
     method public android.net.wifi.WifiInfo getConnectionInfo();
     method public android.net.DhcpInfo getDhcpInfo();
     method public java.util.List<android.net.wifi.ScanResult> getScanResults();
+    method public java.util.List<android.net.wifi.WifiChannel> getSupportedChannels();
     method public int getWifiState();
     method public boolean isWifiEnabled();
     method public boolean pingSupplicant();
@@ -13520,6 +13521,17 @@ package android.net.wifi {
     field public static final int PBC = 0; // 0x0
     field public java.lang.String pin;
     field public int setup;
+  }
+
+  public class WifiChannel implements android.os.Parcelable {
+    ctor public WifiChannel();
+    ctor public WifiChannel(int, int, boolean);
+    ctor public WifiChannel(android.net.wifi.WifiChannel);
+    method public int describeContents();
+    method public void writeToParcel(android.os.Parcel, int);
+    field public int channel;
+    field public int frequency;
+    field public boolean ibssAllowed;
   }
 
 }

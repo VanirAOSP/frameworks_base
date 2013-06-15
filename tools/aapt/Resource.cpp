@@ -289,7 +289,7 @@ static status_t makeFileResources(Bundle* bundle, const sp<AaptAssets>& assets,
                     || *str == '_' || *str == '.')) {
                 fprintf(stderr, "%s: Invalid file name: must contain only [a-z0-9_.]\n",
                         it.getPath().string());
-                hasErrors = true;
+               /* hasErrors = true; */
             }
             str++;
         }

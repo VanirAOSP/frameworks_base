@@ -1892,5 +1892,8 @@
   <java-symbol type="drawable" name="ic_lockscreen_rss" />
   <java-symbol type="drawable" name="ic_lockscreen_sms" />
   <java-symbol type="drawable" name="ic_lockscreen_twitter" />
+  <java-symbol type="bool" name="config_forceDisableHardwareKeyboard" />
+  <java-symbol type="dimen" name="tablet_thumbnail_width" />
+  <java-symbol type="dimen" name="tablet_thumbnail_height" />
 
 </resources>

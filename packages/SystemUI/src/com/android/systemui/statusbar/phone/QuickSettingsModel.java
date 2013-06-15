@@ -357,6 +357,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mSettingsCallback;
     private State mSettingsState = new State();
 
+    private QuickSettingsTileView mRebootMenuTile;
+    private RefreshCallback mRebootMenuCallback;
+    private State mRebootMenuState = new State();
+
     public QuickSettingsModel(Context context) {
         mContext = context;
         mHandler = new Handler();
@@ -508,6 +512,13 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             mFavContactCallback.refreshView(mFavContactTile, mFavContactState);
         }
     }
+
+    // Reboot
+	    void addRebootMenuTile(QuickSettingsTileView view, RefreshCallback cb) {
+	        mRebootMenuTile = view;
+	        mRebootMenuCallback = cb;
+	        mRebootMenuCallback.refreshView(mRebootMenuTile, mRebootMenuState);
+	    }
 
     // Time
     void addTimeTile(QuickSettingsTileView view, RefreshCallback cb) {

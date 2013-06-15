@@ -87,7 +87,9 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
+
 import com.android.systemui.vanir.VanirAwesome;
+import static com.android.internal.util.vanir.VanirConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -112,8 +114,8 @@ public class SearchPanelView extends FrameLayout implements
 
     private PackageManager mPackageManager;
     private Resources mResources;
-    private SettingsObserver mSettingsObserver;
-    private TargetObserver mTargetObserver;
+    private SettingsObserver mObserver;
+
     private ContentResolver mContentResolver;
     private String[] targetActivities = new String[5];
     private String[] longActivities = new String[5];
@@ -121,7 +123,6 @@ public class SearchPanelView extends FrameLayout implements
 
     private int mNavRingAmount;
     private int mCurrentUIMode;
-    private boolean mLefty;
     private boolean mLongPress;
     private boolean mSearchPanelLock;
     private int mTarget;
@@ -144,18 +145,7 @@ public class SearchPanelView extends FrameLayout implements
         mResources = mContext.getResources();
         
         mContentResolver = mContext.getContentResolver();
-        mSettingsObserver = new SettingsObserver(new Handler());
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        mSettingsObserver.observe();
-        updateSettings();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        mContentResolver.unregisterContentObserver(mSettingsObserver);
+        mObserver = new SettingsObserver(new Handler());
     }
 
     private class H extends Handler {
@@ -178,7 +168,7 @@ public class SearchPanelView extends FrameLayout implements
                     Log.d(TAG,"LongPress!");
                     mBar.hideSearchPanel();
                     maybeSkipKeyguard();
-                    VanirAwesome.getInstance(mContext).launchAction(longList.get(mTarget));
+                    VanirAwesome.launchAction(mContext, longList.get(mTarget));
                     mSearchPanelLock = true;
                  }
             }
@@ -216,11 +206,11 @@ public class SearchPanelView extends FrameLayout implements
         public void onTrigger(View v, final int target) {
             mTarget = target;
             if (!mLongPress) {
-                if (VanirAwesome.ACTION_ASSIST.equals(intentList.get(target))) {
+                if (VanirConstant.ACTION_ASSIST.equals(intentList.get(target))) {
                     startAssistActivity();
                 } else {
                     maybeSkipKeyguard();
-                    VanirAwesome.getInstance(mContext).launchAction(intentList.get(target));
+                    VanirAwesome.launchAction(mContext, intentList.get(target));
                 }
                 mHandler.removeCallbacks(SetLongPress);
             }
@@ -284,10 +274,6 @@ public class SearchPanelView extends FrameLayout implements
                 if (isScreenPortrait()) { // NavRing on Bottom
                     startPosOffset =  1;
                     endPosOffset =  (mNavRingAmount) + 1;
-                } else if (mLefty) { // either lefty or... (Ring is actually on right side of screen)
-                        startPosOffset =  1 - (mNavRingAmount % 2);
-                        middleBlanks = mNavRingAmount + 2;
-                        endPosOffset = 0;
 
                 } else { // righty... (Ring actually on left side of tablet)
                     startPosOffset =  (Math.min(1,mNavRingAmount / 2)) + 2;
@@ -295,17 +281,12 @@ public class SearchPanelView extends FrameLayout implements
                 }
                 break;
             case 1 : // Tablet Mode
-                if (mLefty) { // either lefty or... (Ring is actually on right side of screen)
-                    startPosOffset =  (mNavRingAmount) + 1;
-                    endPosOffset =  (mNavRingAmount *2) + 1;
-                } else { // righty... (Ring actually on left side of tablet)
                     startPosOffset =  1;
                     endPosOffset = (mNavRingAmount * 3) + 1;
-                }
                 break;
             case 2 : // Phablet Mode - Search Ring stays at bottom
-                startPosOffset =  1;
-                endPosOffset =  (mNavRingAmount) + 1;
+                    startPosOffset =  1;
+                    endPosOffset =  (mNavRingAmount) + 1;
                 break;
          } 
 
@@ -412,8 +393,8 @@ public class SearchPanelView extends FrameLayout implements
 
         if (action == null || action.equals("") || action.equals("**null**"))
             return cDrawable;
-        if (action.equals("**screenshot**"))
-            return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_screenshot));
+  //      if (action.equals("**screenshot**"))
+  //          return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_screenshot));
         if (action.equals("**ime**"))
             return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_ime_switcher));
         if (action.equals("**ring_vib**"))
@@ -424,6 +405,8 @@ public class SearchPanelView extends FrameLayout implements
             return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_ring_vib_silent));
         if (action.equals("**kill**"))
             return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_killtask));
+        if (action.equals("**lastapp**"))
+            return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_lastapp));
         if (action.equals("**power**"))
             return new TargetDrawable(mResources, mResources.getDrawable(R.drawable.ic_action_power));
         if (action.equals("**screenoff**"))
@@ -558,6 +541,20 @@ public class SearchPanelView extends FrameLayout implements
         return true;
     }
 
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        mObserver.observe();
+        updateSettings();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mObserver.unobserve();
+    }
+
     /**
      * Whether the panel is showing, or, if it's animating, whether it will be
      * when the animation is done.
@@ -603,43 +600,41 @@ public class SearchPanelView extends FrameLayout implements
         return mResources.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
-    public class TargetObserver extends ContentObserver {
-        public TargetObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public boolean deliverSelfNotifications() {
-            return super.deliverSelfNotifications();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-            setDrawables();
-            updateSettings();
-        }
-    }
-
     class SettingsObserver extends ContentObserver {
+        private ContentResolver _persistentResolver; //null if unobserved, not if observed
+
         SettingsObserver(Handler handler) {
             super(handler);
         }
 
         void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_LEFTY_MODE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.SYSTEMUI_NAVRING_AMOUNT), false, this);
+            if (_persistentResolver == null)
+            {
+                _persistentResolver = mContext.getContentResolver();
+                _persistentResolver.registerContentObserver(Settings.System.getUriFor(
+                        Settings.System.SYSTEMUI_NAVRING_AMOUNT), false, this);
 
-            for (int i = 0; i < 5; i++) {
-	            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.SYSTEMUI_NAVRING[i]), false, this);
-	            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.SYSTEMUI_NAVRING_LONG[i]), false, this);
+                for (int i = 0; i < 5; i++) {
+	                _persistentResolver.registerContentObserver(
+                        Settings.System.getUriFor(Settings.System.SYSTEMUI_NAVRING[i]), false, this);
+	                _persistentResolver.registerContentObserver(
+                        Settings.System.getUriFor(Settings.System.SYSTEMUI_NAVRING_LONG[i]), false, this);
+                }
             }
+            //else BEEN THERE. DONE THAT.
+        }
 
+        void unobserve() {
+            if (_persistentResolver != null) {
+                _persistentResolver.unregisterContentObserver(this);
+                _persistentResolver = null;
+            }
+            //else BEEN THERE. DONE THAT.
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return super.deliverSelfNotifications();
         }
 
         @Override
@@ -657,9 +652,6 @@ public class SearchPanelView extends FrameLayout implements
             longActivities[i] = Settings.System.getString(
                     mContext.getContentResolver(), Settings.System.SYSTEMUI_NAVRING_LONG[i]);
         }
-
-        mLefty = (Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.NAVIGATION_BAR_LEFTY_MODE, false));
 
         mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
                          Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);

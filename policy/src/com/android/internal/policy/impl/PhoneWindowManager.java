@@ -21,6 +21,7 @@ import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
 import android.app.AppGlobals;
+import android.app.KeyguardManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.IUiModeManager;
@@ -341,6 +342,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mOrientationSensorEnabled = false;
     int mCurrentAppOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     boolean mHasSoftInput = false;
+    boolean mKillAppLongPressBack;
     int mBackKillTimeout;
     int mPointerLocationMode = 0; // guarded by mLock
 
@@ -354,6 +356,44 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Behavior of volbtn music controls
     boolean mVolBtnMusicControls;
     boolean mIsLongPress;
+
+    private PowerMenuReceiver mPowerMenuReceiver;
+
+    // PowerMenu Tile
+    class PowerMenuReceiver extends BroadcastReceiver {
+        private boolean mIsRegistered = false;
+
+        public PowerMenuReceiver(Context context) {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (action.equals(Intent.ACTION_SCREENSHOT)) {
+                takeScreenshot();
+            } else if (action.equals(Intent.ACTION_REBOOTMENU)) {
+				showGlobalActionsDialog();
+			}
+        }
+
+        private void registerSelf() {
+            if (!mIsRegistered) {
+                mIsRegistered = true;
+
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(Intent.ACTION_SCREENSHOT);
+                filter.addAction(Intent.ACTION_REBOOTMENU);
+                mContext.registerReceiver(mPowerMenuReceiver, filter);
+            }
+        }
+
+        private void unregisterSelf() {
+            if (mIsRegistered) {
+                mIsRegistered = false;
+                mContext.unregisterReceiver(this);
+            }
+        }
+    }
 
     private static final class PointerLocationInputEventReceiver extends InputEventReceiver {
         private final PointerLocationView mView;
@@ -502,6 +542,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private boolean mVolumeUpKeyTriggered;
     private boolean mPowerKeyTriggered;
     private long mPowerKeyTime;
+    private KeyguardManager mKeyguardManager;
 
     SettingsObserver mSettingsObserver;
     ShortcutManager mShortcutManager;
@@ -614,7 +655,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this);
-            updateSettings();
         }
 
         @Override public void onChange(boolean selfChange) {
@@ -885,13 +925,21 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
+    private KeyguardManager getKeyguardManager() {
+        if (mKeyguardManager == null) {
+            mKeyguardManager = (KeyguardManager) mContext.getSystemService(
+                    Context.KEYGUARD_SERVICE);
+        }
+        return mKeyguardManager;
+    }
+
     void showGlobalActionsDialog() {
         if (mGlobalActions == null) {
             mGlobalActions = new GlobalActions(mContext, mWindowManagerFuncs);
         }
-        final boolean keyguardShowing = keyguardIsShowingTq();
-        mGlobalActions.showDialog(keyguardShowing, isDeviceProvisioned());
-        if (keyguardShowing) {
+        final boolean keyguardLocked = getKeyguardManager().isKeyguardLocked();
+        mGlobalActions.showDialog(keyguardLocked, isDeviceProvisioned());
+        if (keyguardLocked) {
             // since it took two seconds of long press to bring this up,
             // poke the wake lock so they have some time to see the dialog.
             mKeyguardMediator.userActivity();
@@ -1125,44 +1173,25 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else {
             screenTurnedOff(WindowManagerPolicy.OFF_BECAUSE_OF_USER);
         }
+        mPowerMenuReceiver = new PowerMenuReceiver(context);
+        mPowerMenuReceiver.registerSelf();
     }
 
-    public void setInitialDisplaySize(Display display, int width, int height, int density) {
-        mDisplay = display;
-
-        int shortSize, longSize;
-        if (width > height) {
-            shortSize = height;
-            longSize = width;
-            mLandscapeRotation = Surface.ROTATION_0;
-            mSeascapeRotation = Surface.ROTATION_180;
-            if (mContext.getResources().getBoolean(
-                    com.android.internal.R.bool.config_reverseDefaultRotation)) {
-                mPortraitRotation = Surface.ROTATION_90;
-                mUpsideDownRotation = Surface.ROTATION_270;
-            } else {
-                mPortraitRotation = Surface.ROTATION_270;
-                mUpsideDownRotation = Surface.ROTATION_90;
-            }
-        } else {
-            shortSize = width;
-            longSize = height;
-            mPortraitRotation = Surface.ROTATION_0;
-            mUpsideDownRotation = Surface.ROTATION_180;
-            if (mContext.getResources().getBoolean(
-                    com.android.internal.R.bool.config_reverseDefaultRotation)) {
-                mLandscapeRotation = Surface.ROTATION_270;
-                mSeascapeRotation = Surface.ROTATION_90;
-            } else {
-                mLandscapeRotation = Surface.ROTATION_90;
-                mSeascapeRotation = Surface.ROTATION_270;
-            }
-        }
-
-        mStatusBarHeight = mContext.getResources().getDimensionPixelSize(
-                com.android.internal.R.dimen.status_bar_height);
-
-        // Height of the navigation bar when presented horizontally at bottom
+    public void elNegotiator() {
+		boolean donkeyshow = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
+        if (donkeyshow) {
+			mNavigationBarHeightForRotation[mPortraitRotation] = 0;
+			mNavigationBarHeightForRotation[mUpsideDownRotation] = 0;
+			mNavigationBarHeightForRotation[mLandscapeRotation] = 0;
+            mNavigationBarHeightForRotation[mSeascapeRotation] = 0;
+            mNavigationBarHeightForRotation[mLandscapeRotation] = 0;
+            mNavigationBarHeightForRotation[mSeascapeRotation] = 0;
+            mNavigationBarWidthForRotation[mPortraitRotation] = 0;
+            mNavigationBarWidthForRotation[mUpsideDownRotation] = 0;
+            mNavigationBarWidthForRotation[mLandscapeRotation] = 0;
+            mNavigationBarWidthForRotation[mSeascapeRotation] = 0;
+	    } else {
         mNavigationBarHeightForRotation[mPortraitRotation] =
         mNavigationBarHeightForRotation[mUpsideDownRotation] =
                 Settings.System.getInt(
@@ -1191,6 +1220,54 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         mContext.getResources()
                                 .getDimensionPixelSize(
                                         com.android.internal.R.dimen.navigation_bar_width));
+        }
+    }
+
+    public void setInitialDisplaySize(Display display, int width, int height, int density) {
+        mDisplay = display;
+
+        boolean reverseConfig = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_reverseDefaultRotation);
+        int shortSize, longSize;
+        if (width > height) {
+            shortSize = height;
+            longSize = width;
+            if (mNavBarFirstBootFlag) {
+                // This should only be run once at boot time.  Since we poke this
+                // routine often, it has the potential to screw with rotation settings.
+                mLandscapeRotation = Surface.ROTATION_0;
+                mSeascapeRotation = Surface.ROTATION_180;
+                if (reverseConfig) {
+                    mPortraitRotation = Surface.ROTATION_90;
+                    mUpsideDownRotation = Surface.ROTATION_270;
+                } else {
+                    mPortraitRotation = Surface.ROTATION_270;
+                    mUpsideDownRotation = Surface.ROTATION_90;
+                }
+            }
+        } else {
+            shortSize = width;
+            longSize = height;
+            if (mNavBarFirstBootFlag) {
+                // This should only be run once at boot time.  Since we poke this
+                // routine often, it has the potential to screw with rotation settings.
+                mPortraitRotation = Surface.ROTATION_0;
+                mUpsideDownRotation = Surface.ROTATION_180;
+                if (reverseConfig) {
+                    mLandscapeRotation = Surface.ROTATION_270;
+                    mSeascapeRotation = Surface.ROTATION_90;
+                } else {
+                    mLandscapeRotation = Surface.ROTATION_90;
+                    mSeascapeRotation = Surface.ROTATION_270;
+                }
+            }
+        }
+
+        mStatusBarHeight = mContext.getResources().getDimensionPixelSize(
+                com.android.internal.R.dimen.status_bar_height);
+
+        // Height of the navigation bar when presented horizontally at bottom
+        elNegotiator();
 
         // SystemUI (status bar) layout policy
         int shortSizeDp = shortSize * DisplayMetrics.DENSITY_DEFAULT / density;
@@ -1253,7 +1330,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
 
-         if (!mHasNavigationBar) {
+         if (!mHasNavigationBar && !mHasSystemNavBar) {
              mNavigationBarWidthForRotation[mPortraitRotation] =
                      mNavigationBarWidthForRotation[mUpsideDownRotation] =
                      mNavigationBarWidthForRotation[mLandscapeRotation] =
@@ -1322,6 +1399,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
             mVolBtnMusicControls = (Settings.System.getInt(resolver,
                     Settings.System.VOLBTN_MUSIC_CONTROLS, 1) == 1);
+            mKillAppLongPressBack = (Settings.Secure.getInt(resolver,
+                    Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
 
             // Configure rotation lock.
             int userRotation = Settings.System.getIntForUser(resolver,
@@ -1370,6 +1449,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else if (updateDisplayMetrics) {
             updateDisplayMetrics();
         }
+
         boolean showByDefault = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_showNavigationBar);
         showByDefault = showByDefault || Settings.System.getBoolean(resolver,
@@ -2314,8 +2394,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             return -1;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
+            if (mKillAppLongPressBack) {
                 if (down && repeatCount == 0) {
                     mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
                 }
@@ -2778,6 +2857,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             navVisible &= (Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.EXPANDED_DESKTOP_STATE, 0) == 0);
 
+            elNegotiator();
             if (mNavigationBar != null) {
                 // Force the navigation bar to its appropriate place and
                 // size.  We need to do this directly, instead of relying on
@@ -3389,7 +3469,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if ((mForceStatusBar || mForceStatusBarFromKeyguard) &&
                     Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.EXPANDED_DESKTOP_STATE, 0) == 0) {
-						updateDisplayMetrics();
                 if (DEBUG_LAYOUT) Log.v(TAG, "Showing status bar: forced");
                 if (mStatusBar.showLw(true)) changes |= FINISH_LAYOUT_REDO_LAYOUT;
             } else if (mTopFullscreenOpaqueWindowState != null) {
@@ -3647,7 +3726,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     };
 
     // Assume this is called from the Handler thread.
-    private void takeScreenshot() {
+    public void takeScreenshot() {
         synchronized (mScreenshotLock) {
             if (mScreenshotConnection != null) {
                 return;
@@ -4259,7 +4338,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private void waitForKeyguardWindowDrawn(IBinder windowToken,
             final ScreenOnListener screenOnListener) {
-        if (windowToken != null) {
+        if (windowToken != null) { 
             try {
                 if (mWindowManager.waitForWindowDrawn(
                         windowToken, new IRemoteCallback.Stub() {
@@ -4274,6 +4353,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             } catch (RemoteException ex) {
                 // Can't happen in system process.
             }
+            synchronized(mLock) {
+                    mLastSystemUiFlags = 0;
+                    updateSystemUiVisibilityLw();
+           }
         }
 
         Slog.i(TAG, "No lock screen!");

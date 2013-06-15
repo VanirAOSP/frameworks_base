@@ -2027,7 +2027,6 @@
   <public type="style" name="Widget.Holo.Light.CheckedTextView" id="0x010301da" />
   <public type="style" name="Widget.DeviceDefault.CheckedTextView" id="0x010301db" />
   <public type="style" name="Widget.DeviceDefault.Light.CheckedTextView" id="0x010301dc" />
-  <java-symbol type="bool" name="config_forceDisableHardwareKeyboard" />
 
   <!-- Power menu -->
   <public type="array" name="shutdown_reboot_options" />

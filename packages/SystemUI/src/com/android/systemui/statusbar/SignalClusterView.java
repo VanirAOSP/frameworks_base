@@ -57,27 +57,8 @@ public class SignalClusterView
     ViewGroup mWifiGroup, mMobileGroup;
     ImageView mWifi, mMobile, mWifiActivity, mMobileActivity, mMobileType, mAirplane;
     View mSpacer;
-
-    Handler mHandler;
     
     private SettingsObserver mSettingsObserver;
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-    }
 
     public SignalClusterView(Context context) {
         this(context, null);
@@ -89,10 +70,7 @@ public class SignalClusterView
 
     public SignalClusterView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
-        mHandler = new Handler();
-
-        mSettingsObserver = new SettingsObserver(mHandler);
+        mSettingsObserver = new SettingsObserver(new Handler());
     }
 
     public void setNetworkController(NetworkController nc) {
@@ -225,8 +203,6 @@ public class SignalClusterView
 
         mMobileType.setVisibility(
                 !mWifiVisible ? View.VISIBLE : View.GONE);
-
-        updateSettings();
     }
 
     private void updateSignalClusterStyle() {
@@ -235,7 +211,26 @@ public class SignalClusterView
         }
     }
 
-    private void updateSettings() {
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+
+
+    protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         mSignalClusterStyle = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_SIGNAL_TEXT, SIGNAL_CLUSTER_STYLE_NORMAL));
