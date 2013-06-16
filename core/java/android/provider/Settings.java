@@ -2617,19 +2617,93 @@ public final class Settings {
         public static final String STATUS_BAR_CLOCK = "status_bar_show_clock";
 
         /**
+         * hmm
+         * 
+         */
+        public static final String PREF_ENABLE = "clock_style";
+
+        /**
          * comments are for noobs
          * @hide
          */
         public static final String STATUS_BAR_AM_PM = "status_bar_am_pm"; 
 
         /**
-         * comments are for noobs
+         * Whether or not to use the app sidebar
+         *
          * @hide
          */
-        public static final String PREF_ENABLE = "clock_style";
+        public static final String APP_SIDEBAR_ENABLED = "app_sidebar_enabled";
 
         /**
-         * Setting for clock color
+         * User defined transparency level for sidebar
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_TRANSPARENCY = "app_sidebar_transparency";
+
+        /**
+         * Disable text labels for app sidebar items
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_DISABLE_LABELS = "app_sidebar_disable_labels";
+
+        /**
+         * Position of app sidebar
+         * List of apps to exclude from sidebar
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_EXCLUDE_LIST = "app_sidebar_exclude_list";
+
+        /**
+         * Quick Settings Panel Tiles to Use
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_POSITION = "app_sidebar_position";
+
+        /**
+         * Width of the appbar trigger
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_TRIGGER_WIDTH = "app_sidebar_trigger_width";
+
+        /**
+         * Position of appbar trigger
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_TRIGGER_TOP = "app_sidebar_trigger_top";
+
+        /**
+         * Height of the appbar trigger
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_TRIGGER_HEIGHT = "app_sidebar_trigger_height";
+
+        /**
+         * Whether to display the trigger region or not
+         *
+         * @hide
+         */
+        public static final String APP_SIDEBAR_SHOW_TRIGGER = "app_sidebar_show_trigger";
+
+        /**
+         * choose the gravity
+         *  0 - left
+         *  1 - right
+         *  2 - both
+         * @hide
+         */
+        public static final String SIDEBAR_GRAVITY = "sidebar_gravity";
+
+        /**
+         * Quick Settings Panel Tiles to Use
+         *
          * @hide
          */
         public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
@@ -2679,12 +2753,6 @@ public final class Settings {
         */
         public static final String EXPANDED_DESKTOP_STATE = "expanded_desktop_state";
 
-       /**
-         * Restart Launcher
-         * @hide
-         */
-        public static final String EXPANDED_DESKTOP_RESTART_LAUNCHER = "expanded_desktop_restart_launcher";
-
         /**
          * Status bar State
          * @hide
@@ -2703,6 +2771,24 @@ public final class Settings {
          * @hide
          */
         public static final String PIE_CONTROLS = "pie_controls";
+
+        /**
+         * HALO, should default to 0 (no, do not show)
+         * @hide
+         */
+        public static final String HALO_ACTIVE = "halo_active";
+
+        /**
+         * HALO reversed?, should default to 1 (yes, reverse)
+         * @hide
+         */
+        public static final String HALO_REVERSED = "halo_reversed";
+
+        /**
+         * HALO hide?, should default to 0 (no, do not hide)
+         * @hide
+         */
+        public static final String HALO_HIDE = "halo_hide";
 
         /**
          * Pie menu, should default to 1 (yes, show)
@@ -2728,11 +2814,17 @@ public final class Settings {
          */
         public static final String PIE_SEARCH = "pie_search";
 
-        /*
-         * Pie gap angle, should default to 3
+        /**
+         * Pie gap angle, should default to 2
          * @hide
          */
         public static final String PIE_GAP = "pie_gap";
+
+        /**
+         * Pie empty angle, should default to 12
+         * @hide
+         */
+        public static final String PIE_ANGLE = "pie_angle";
 
         /**
          * Pie trigger fraction, should default to 1
@@ -2763,7 +2855,7 @@ public final class Settings {
         public static final String PIE_MODE = "pie_mode";
 
         /**
-         * Pie size fraction
+         * Pie size fraction, default is 1.0f (normal)
          * @hide
          */
         public static final String PIE_SIZE = "pie_size";

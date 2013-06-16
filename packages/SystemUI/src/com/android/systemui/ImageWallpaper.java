@@ -637,20 +637,16 @@ public class ImageWallpaper extends WallpaperService {
     
             mEglConfig = chooseEglConfig();
             if (mEglConfig == null) {
-                throw new RuntimeException("eglConfig not initialized");
+                //chooseEGLConfig fail since no egl render type EGL_OPENGL_ES2_BIT when disable gpu acceleration,
+                //should switch to SW canvas renderer without throwing exception in this case.
+                checkEglError();
+                return false;
             }
             
             mEglContext = createContext(mEgl, mEglDisplay, mEglConfig);
 
-            int[] maxSize = new int[1];
-            Rect frame = surfaceHolder.getSurfaceFrame();
-            glGetIntegerv(GL_MAX_TEXTURE_SIZE, maxSize, 0);
-            if(frame.width() > maxSize[0] || frame.height() > maxSize[0]) {
-                mEgl.eglDestroyContext(mEglDisplay, mEglContext);
-                mEgl.eglTerminate(mEglDisplay);
-                Log.e(GL_LOG_TAG, "requested  texture size " +
-                    frame.width() + "x" + frame.height() + " exceeds the support maximum of " +
-                    maxSize[0] + "x" + maxSize[0]);
+            if(mEglContext == EGL10.EGL_NO_CONTEXT){
+                checkEglError();
                 return false;
             }
     

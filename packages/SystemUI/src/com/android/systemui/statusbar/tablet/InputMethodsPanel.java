@@ -196,7 +196,7 @@ public class InputMethodsPanel extends LinearLayout implements StatusBarPanel,
     public void closePanel(boolean closeKeyboard) {
         setVisibility(View.GONE);
         if (mInputMethodSwitchButton != null) {
-            mInputMethodSwitchButton.setIconImage(R.drawable.ic_sysbar_ime);
+            mInputMethodSwitchButton.setIconImage(R.drawable.ic_sysbar_ime_default);
         }
         if (closeKeyboard) {
             mImm.hideSoftInputFromWindow(getWindowToken(), 0);

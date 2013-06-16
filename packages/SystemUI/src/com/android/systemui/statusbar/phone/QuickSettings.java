@@ -147,6 +147,8 @@ public class QuickSettings {
     
   //  private static final int WEATHER_TILE = 27;
     private static final int MEMORY_TILE = 27;
+    private static final int PIE_TILE = 28;
+    private static final int EXPANDED_DESKTOP_TILE = 29;
 
     public static final int STATE_IDLE = 0;
     public static final int STATE_PLAYING = 1;
@@ -183,6 +185,8 @@ public class QuickSettings {
     public static final String QUICKRECORD_TOGGLE = "QUICKRECORD";
    // public static final String WEATHER_TOGGLE = "WEATHER";
     public static final String MEMORY_TOGGLE = "MEMORY";
+    public static final String PIE_TOGGLE = "PIE";
+    public static final String EXPANDED_DESKTOP_TOGGLE = "EXPANDED_DESKTOP";
     
     private static final String LOG_TAG = "AudioRecord";
     private static String mQuickAudio = null;
@@ -276,6 +280,8 @@ public class QuickSettings {
             toggleMap.put(REBOOTMENU_TOGGLE, REBOOTMENU_TILE);
             toggleMap.put(MEMORY_TOGGLE, MEMORY_TILE);
             //toggleMap.put(BT_TETHER_TOGGLE, BT_TETHER_TILE);
+            toggleMap.put(PIE_TOGGLE, PIE_TILE);
+            toggleMap.put(EXPANDED_DESKTOP_TOGGLE, EXPANDED_DESKTOP_TILE);
         }
         return toggleMap;
     }
@@ -1049,6 +1055,70 @@ public class QuickSettings {
                     @Override
                     public void refreshView(QuickSettingsTileView view, State state) {
                         TextView tv = (TextView) view.findViewById(R.id.torch_textview);
+                        tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
+                        tv.setText(state.label);
+                        tv.setTextSize(1, mTileTextSize);
+                    }
+                });
+                break;
+            case PIE_TILE:
+                quick = (QuickSettingsTileView)
+                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                quick.setContent(R.layout.quick_settings_tile_pie, inflater);
+                quick.setOnClickListener(new View.OnClickListener() {
+                    private boolean getPieControls() {
+                        return Settings.System.getInt(mContext.getContentResolver(),
+                                Settings.System.PIE_CONTROLS, 0) == 1;
+                    }
+                    @Override
+                    public void onClick(View v) {
+                        Settings.System.putInt(mContext.getContentResolver(),
+                                Settings.System.PIE_CONTROLS, !getPieControls() ? 1 : 0);
+                    }
+                });
+                quick.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        //If you wanna put something here, be my guest
+                        return true;
+                    }
+                });
+                mModel.addPieTile(quick, new QuickSettingsModel.RefreshCallback() {
+                    @Override
+                    public void refreshView(QuickSettingsTileView view, State state) {
+                        TextView tv = (TextView) view.findViewById(R.id.pie_textview);
+                        tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
+                        tv.setText(state.label);
+                        tv.setTextSize(1, mTileTextSize);
+                    }
+                });
+                break;
+            case EXPANDED_DESKTOP_TILE:
+                quick = (QuickSettingsTileView)
+                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                quick.setContent(R.layout.quick_settings_tile_expanded_desktop, inflater);
+                quick.setOnClickListener(new View.OnClickListener() {
+                    private boolean getExpandedDesktopState() {
+                        return Settings.System.getInt(mContext.getContentResolver(),
+                                Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
+                    }
+                    @Override
+                    public void onClick(View v) {
+                        Settings.System.putInt(mContext.getContentResolver(),
+                                Settings.System.EXPANDED_DESKTOP_STATE, !getExpandedDesktopState() ? 1 : 0);
+                    }
+                });
+                quick.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        //If you wanna put something here, be my guest
+                        return true;
+                    }
+                });
+                mModel.addExpandedDesktopTile(quick, new QuickSettingsModel.RefreshCallback() {
+                    @Override
+                    public void refreshView(QuickSettingsTileView view, State state) {
+                        TextView tv = (TextView) view.findViewById(R.id.expanded_desktop_textview);
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);

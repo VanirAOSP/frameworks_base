@@ -20,12 +20,16 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.RemoteException;
+import android.os.ServiceManager;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.PieControlPanel;
 
@@ -198,6 +202,8 @@ public class PanelBar extends FrameLayout {
 
     public void collapseAllPanels(boolean animate) {
         boolean waiting = false;
+        boolean mCHammer = Settings.System.getInt(mContext.getContentResolver(),
+                                  Settings.System.CURRENT_UI_MODE, 0) == 1;
         for (PanelView pv : mPanels) {
             if (animate && !pv.isFullyCollapsed()) {
                 pv.collapse();
@@ -214,8 +220,19 @@ public class PanelBar extends FrameLayout {
             go(STATE_CLOSED);
             onAllPanelsCollapsed();
         }
-       if(mStatusBar.mPieControlPanel != null) mStatusBar.mPieControlPanel.animateCollapsePanels();
+        if (mCHammer) {
+            collapse();
+	    }
     }
+
+     protected void collapse() {
+        try {
+            IStatusBarService sb = IStatusBarService.Stub.asInterface(ServiceManager
+                    .getService(Context.STATUS_BAR_SERVICE));
+            sb.collapsePanels();
+        } catch (RemoteException e) {
+        }
+    } 
 
     public void onPanelPeeked() {
         if (DEBUG) LOG("onPanelPeeked");

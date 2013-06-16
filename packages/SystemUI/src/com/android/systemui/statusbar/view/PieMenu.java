@@ -115,9 +115,9 @@ public class PieMenu extends FrameLayout {
     private static final int COLOR_BATTERY_BACKGROUND = 0xffffff;
     private static final int COLOR_STATUS = 0xffffff;
     private static final int BASE_SPEED = 250;
-    private static final int EMPTY_ANGLE_BASE = 0;
+    private static final int EMPTY_ANGLE_BASE = 12;
     private static final int CHEVRON_FRAGMENTS = 16;
-    private static final float SIZE_BASE = 1f;
+    private static final float SIZE_BASE = 1.0f;
 
     // System
     private Context mContext;
@@ -136,6 +136,7 @@ public class PieMenu extends FrameLayout {
     private int mPanelOrientation;
     private int mInnerPieRadius;
     private int mOuterPieRadius;
+    private int mPieAngle;
     private int mPieGap;
     private int mInnerChevronRadius;
     private int mOuterChevronRadius;
@@ -145,7 +146,7 @@ public class PieMenu extends FrameLayout {
     private int mOuterBatteryRadius;
     private int mStatusRadius;
     private int mNotificationsRadius;
-    private int mEmptyAngle = EMPTY_ANGLE_BASE;
+    private int mAngle;
 
     private Point mCenter = new Point(0, 0);
     private float mCenterDistance = 0;
@@ -284,9 +285,11 @@ public class PieMenu extends FrameLayout {
         mStatusMode = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.PIE_MODE, 2);
         mPieSize = Settings.System.getFloat(mContext.getContentResolver(),
-                Settings.System.PIE_SIZE, 0.9f);
+                Settings.System.PIE_SIZE, 1.0f);
+        mPieAngle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.PIE_ANGLE, 12);
         mPieGap = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.PIE_GAP, 3);
+                Settings.System.PIE_GAP, 2);
         mHapticFeedback = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) != 0;
 
@@ -311,7 +314,7 @@ public class PieMenu extends FrameLayout {
             mSnapPoint[snapIndex++] = new SnapPoint(mWidth / 2, mHeight - mSnapThickness / 2, mSnapRadius, 0x22, Gravity.BOTTOM);
 
         // Create Pie
-        mEmptyAngle = (int)(EMPTY_ANGLE_BASE * mPieSize);
+        mAngle = (int)(mPieAngle * mPieSize);
         mInnerPieRadius = (int)(mResources.getDimensionPixelSize(R.dimen.pie_radius_start) * mPieSize);
         mOuterPieRadius = (int)(mInnerPieRadius + mResources.getDimensionPixelSize(R.dimen.pie_radius_increment) * mPieSize);
 
@@ -361,7 +364,7 @@ public class PieMenu extends FrameLayout {
             mBatteryJuice.setColor(getResources().getColor(R.color.battery_juice));
         }
 
-        mStartBattery = mPanel.getDegree() + mEmptyAngle + mPieGap;
+        mStartBattery = mPanel.getDegree() + mAngle + mPieGap;
         mEndBattery = mPanel.getDegree() + (mPieGap <= 2 ? 88 : 90 - mPieGap);
         mBatteryPathBackground = makeSlice(mStartBattery, mEndBattery, mInnerBatteryRadius, mOuterBatteryRadius, mCenter);
         mBatteryPathJuice = makeSlice(mStartBattery, mStartBattery, mInnerBatteryRadius, mOuterBatteryRadius, mCenter);
@@ -647,7 +650,7 @@ public class PieMenu extends FrameLayout {
     }
 
     private void layoutPie() {
-        float emptyangle = mEmptyAngle * (float)Math.PI / 180;
+        float emptyangle = mPieAngle * (float)Math.PI / 180;
         int inner = mInnerPieRadius;
         int outer = mOuterPieRadius;
 
