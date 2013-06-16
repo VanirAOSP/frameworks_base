@@ -797,54 +797,56 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         });
         popup.show();
     }
-  	private boolean showMemDisplay() {
-		boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
-			    Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
 
-		final TextView memText = (TextView) findViewById(R.id.recents_memory_text);
-		final ProgressBar memBar = (ProgressBar) findViewById(R.id.recents_memory_bar);
+        private boolean showMemDisplay() {
+            boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
 
-		if (!enableMemDisplay) {
-			memBar.setVisibility(View.GONE);
-			removeView(memText);
-			removeView(memBar);
-			return false;
-		} else {
-		    memText.setVisibility(View.VISIBLE);
-		    memBar.setVisibility(View.VISIBLE);
+            final TextView memText = (TextView) findViewById(R.id.recents_memory_text);
+            final ProgressBar memBar = (ProgressBar) findViewById(R.id.recents_memory_bar);
+
+            if (!enableMemDisplay) {
+                memBar.setVisibility(View.GONE);
+                removeView(memText);
+                removeView(memBar);
+                return false;
+            } else {
+                memText.setVisibility(View.VISIBLE);
+                memBar.setVisibility(View.VISIBLE);
 
             int totalMem = getTotalMemory();
-		    memBar.setMax(totalMem);
+                memBar.setMax(totalMem);
 
-	        int availMem = Integer.parseInt(getAvailMemory());
-		    memText.setText("Free RAM: " + String.valueOf(availMem) + "MB");
-		    memBar.setProgress(totalMem - availMem);
-		    return true;
-	    }
-	}
+            int availMem = Integer.parseInt(getAvailMemory());
+                memText.setText("Free RAM: " + String.valueOf(availMem) + "MB");
+                memBar.setProgress(totalMem - availMem);
+                return true;
+            }
+        }
 
-	private String getAvailMemory() {
-		MemoryInfo memInfo = new MemoryInfo();
-		ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-		am.getMemoryInfo(memInfo);
-		long availableMem = memInfo.availMem / 1048576L;
-		return String.valueOf(availableMem);
-	}
-			    
-	public int getTotalMemory() {
-		String str1 = "/proc/meminfo";
-		String str2;
-		String[] arrayOfString;
-		int memory = 0;
-		try {
-			FileReader localFileReader = new FileReader(str1);
-			BufferedReader localBufferedReader = new BufferedReader(localFileReader, 8192);
-			str2 = localBufferedReader.readLine(); // meminfo
-			arrayOfString = str2.split("\\s+");
-			memory = Integer.valueOf(arrayOfString[1]).intValue() * 1024;
-			localBufferedReader.close();
-		} catch (IOException e) {
-		}
-		return memory / 1048576;
-	}
+        private String getAvailMemory() {
+            MemoryInfo memInfo = new MemoryInfo();
+            ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+            am.getMemoryInfo(memInfo);
+            long availableMem = memInfo.availMem / 1048576L;
+            return String.valueOf(availableMem);
+        }
+
+        public int getTotalMemory() {
+            String str1 = "/proc/meminfo";
+            String str2;
+            String[] arrayOfString;
+            int memory = 0;
+
+        try {
+            FileReader localFileReader = new FileReader(str1);
+            BufferedReader localBufferedReader = new BufferedReader(localFileReader, 8192);
+            str2 = localBufferedReader.readLine(); // meminfo
+            arrayOfString = str2.split("\\s+");
+            memory = Integer.valueOf(arrayOfString[1]).intValue() * 1024;
+            localBufferedReader.close();
+        } catch (IOException e) {
+        }
+            return memory / 1048576;
+        }
 }
