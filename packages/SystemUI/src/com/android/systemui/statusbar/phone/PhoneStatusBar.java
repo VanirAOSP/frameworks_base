@@ -355,6 +355,9 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext);
+
+        SettingsObserver observer = new SettingsObserver(mHandler);
+        observer.observe();
     }
 
     // ================================================================================
@@ -540,7 +543,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mBluetoothController = new BluetoothController(mContext);
         final SignalClusterView signalCluster =
                 (SignalClusterView)mStatusBarView.findViewById(R.id.signal_cluster);
-
 
         mNetworkController.addSignalCluster(signalCluster);
         signalCluster.setNetworkController(mNetworkController);
@@ -759,7 +761,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private int mShowSearchHoldoff = 0;
     private Runnable mShowSearchPanel = new Runnable() {
-		@Override
+        @Override
         public void run() {
             showSearchPanel();
             awakenDreams();
@@ -892,6 +894,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                 PixelFormat.TRANSLUCENT);
         lp.gravity = Gravity.TOP; // | Gravity.FILL_VERTICAL;
+
         lp.gravity |= position == AppSidebar.SIDEBAR_POSITION_LEFT ? Gravity.LEFT : Gravity.RIGHT;
         lp.setTitle("AppSidebar");
 
@@ -1022,7 +1025,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     private void updateShowSearchHoldoff() {
         mShowSearchHoldoff = mContext.getResources().getInteger(
             R.integer.config_show_search_delay);
-    } 
+    }
 
     private void loadNotificationShade() {
         if (mPile == null) return;
@@ -2644,26 +2647,23 @@ public class PhoneStatusBar extends BaseStatusBar {
             super(handler);
         }
 
-		void observe() {
+        void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.APP_SIDEBAR_POSITION), false, this);
             updateSettings();
         }
 
-         @Override
+        @Override
         public void onChange(boolean selfChange) {
             updateSettings();
         }
-    }
 
-   public void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
+        public void updateSettings() {
+            ContentResolver resolver = mContext.getContentResolver();
 
-        int sidebarPosition = Settings.System.getInt(
-                    resolver, Settings.System.APP_SIDEBAR_POSITION, AppSidebar.SIDEBAR_POSITION_LEFT);
-        if (sidebarPosition != mSidebarPosition) {
-            mSidebarPosition = sidebarPosition;
+            int sidebarPosition = Settings.System.getInt(
+                        resolver, Settings.System.APP_SIDEBAR_POSITION, AppSidebar.SIDEBAR_POSITION_LEFT);
             mWindowManager.updateViewLayout(mAppSidebar, getAppSidebarLayoutParams(sidebarPosition));
         }
     }
