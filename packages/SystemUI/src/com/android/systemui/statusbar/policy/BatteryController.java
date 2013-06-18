@@ -125,7 +125,7 @@ import com.android.systemui.R;
     public static void addStateChangedCallback(BatteryStateChangeCallback cb) {
         mChangeCallbacks.add(cb);
         // trigger initial update
-        cb.onBatteryLevelChanged(mBatteryLevel, mBatteryPlugged);
+        cb.onBatteryLevelChanged(getBatteryLevel(), isBatteryStatusCharging());
     }
 
     public void onReceive(Context context, Intent intent) {
@@ -157,7 +157,7 @@ import com.android.systemui.R;
         }
 
         for (BatteryStateChangeCallback cb : mChangeCallbacks) {
-            cb.onBatteryLevelChanged(level, getBatteryStatus());
+            cb.onBatteryLevelChanged(level, isBatteryStatusCharging());
         }
     }
 
