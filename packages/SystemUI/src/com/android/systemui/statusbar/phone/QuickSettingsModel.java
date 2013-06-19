@@ -1437,7 +1437,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     void onExpandedDesktopChanged() {
-        boolean enabled = Settings.System.getInt(mContext.getContentResolver(), Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
+        boolean enabled = Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.EXPANDED_DESKTOP_STATE, false);
         mExpandedDesktopState.enabled = enabled;
         mExpandedDesktopState.iconId = enabled
             ? R.drawable.ic_qs_expanded_desktop_on
