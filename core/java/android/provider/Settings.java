@@ -2765,18 +2765,17 @@ public final class Settings {
         */
         public static final String POWER_MENU_EXPANDED_DESKTOP_ENABLED = "power_menu_expanded_desktop_enabled";
 
-        /**
-         * On or off the Pie.
-         *
-         * @hide
-         */
-        public static final String PIE_CONTROLS = "pie_controls";
-
        /**
          * HALO enabled, should default to 0 (HALO is disabled)
          * @hide
          */
         public static final String HALO_ENABLED = "halo_enabled";
+
+        /**
+         * HALO only with Pie
+         * @hide
+         */
+        public static final String HALO_PIE_ONLY = "halo_pie_only";
 
         /**
          * HALO, should default to 0 (no, do not show)
@@ -2838,6 +2837,13 @@ public final class Settings {
          * @hide
          */
         public static final String HALO_CIRCLE_COLOR = "halo_circle_color";
+
+        /**
+         * On or off the Pie.
+         *
+         * @hide
+         */
+        public static final String PIE_CONTROLS = "pie_controls";
 
         /**
          * Pie menu, should default to 1 (yes, show)
