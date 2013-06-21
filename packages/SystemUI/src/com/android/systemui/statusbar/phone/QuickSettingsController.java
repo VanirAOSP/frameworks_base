@@ -401,9 +401,19 @@ public class QuickSettingsController {
         loadTiles();
         setupBroadcastReceiver();
         setupContentObserver();
+        final ContentResolver resolver = mContext.getContentResolver();
         if (mRibbonMode) {
             for (QuickSettingsTile t : mQuickSettingsTiles) {
                 t.switchToRibbonMode();
+            }
+        } else if (Settings.System.getInt(resolver, //ribbon custom colors aren't supported ATM
+                Settings.System.QUICK_TILES_CUSTOM_COLOR, 0) == 1) {
+            int bgColor = Settings.System.getInt(resolver,
+                    Settings.System.QUICK_TILES_BG_COLOR, -2);
+            int presColor = Settings.System.getInt(resolver,
+                    Settings.System.QUICK_TILES_BG_PRESSED_COLOR, -2);
+            for (QuickSettingsTile t : mQuickSettingsTiles) {
+                t.setColors(bgColor, presColor);
             }
         }
     }

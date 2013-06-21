@@ -17,6 +17,9 @@
 package com.android.systemui.statusbar.phone;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +37,17 @@ public class QuickSettingsTileView extends FrameLayout {
     private int mColSpan;
     private boolean mPrepared;
     private OnPrepareListener mOnPrepareListener;
+
+    public void setColors(int bgColor, int presColor) {
+        if (bgColor != -2 || presColor != -2) {
+            ColorDrawable bgDrawable = new ColorDrawable(bgColor);
+            ColorDrawable presDrawable = new ColorDrawable(presColor);
+            StateListDrawable states = new StateListDrawable();
+            states.addState(new int[] {android.R.attr.state_pressed}, presDrawable);
+            states.addState(new int[] {}, bgDrawable);
+            this.setBackground(states);
+        }
+    }
 
     public QuickSettingsTileView(Context context, AttributeSet attrs) {
         super(context, attrs);

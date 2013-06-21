@@ -246,6 +246,12 @@ public class QuickSettingsTile implements OnClickListener {
         mStatusbarService.animateCollapsePanels();
     }
 
+    public void setColors(int bgColor, int presColor) {
+        if (mTile != null) {
+            mTile.setColors(bgColor, presColor);
+        }
+    }
+
     @Override
     public void onClick(View v) {
         if (mOnClick != null) {
