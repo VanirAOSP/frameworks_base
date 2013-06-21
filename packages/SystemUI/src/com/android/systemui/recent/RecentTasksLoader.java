@@ -73,7 +73,6 @@ public class RecentTasksLoader implements View.OnTouchListener {
     private enum State { LOADING, LOADED, CANCELLED };
     private State mState = State.CANCELLED;
 
-
     private static RecentTasksLoader sInstance;
     public static RecentTasksLoader getInstance(Context context) {
         if (sInstance == null) {
@@ -115,17 +114,17 @@ public class RecentTasksLoader implements View.OnTouchListener {
 
                 mDefaultThumbnailBackground =
                 Bitmap.createBitmap(thumbnailWidth, thumbnailHeight, Bitmap.Config.ARGB_8888);
-	    } else {
-	            int thumbnailWidth =
+            } else {
+                    int thumbnailWidth =
                         (int) res.getDimensionPixelSize(com.android.internal.R.dimen.thumbnail_width);
                 int thumbnailHeight =
                         (int) res.getDimensionPixelSize(com.android.internal.R.dimen.thumbnail_height);
 
                 mDefaultThumbnailBackground =
                 Bitmap.createBitmap(thumbnailWidth, thumbnailHeight, Bitmap.Config.ARGB_8888);
-	    }
+            }
 
-	    int color = res.getColor(R.drawable.status_bar_recents_app_thumbnail_background);
+            int color = res.getColor(R.drawable.status_bar_recents_app_thumbnail_background);
 
         Canvas c = new Canvas(mDefaultThumbnailBackground);
         c.drawColor(color);

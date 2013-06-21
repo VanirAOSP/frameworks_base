@@ -95,6 +95,7 @@ import android.widget.Toast;
 
 import com.android.internal.telephony.PhoneConstants;
 import com.vanir.util.CMDProcessor;
+import com.vanir.util.Helpers;
 import com.android.systemui.vanir.VanirAwesome;
 import static com.android.internal.util.vanir.VanirConstants.*;
 
@@ -1074,6 +1075,7 @@ public class QuickSettings {
                     public void onClick(View v) {
                         Settings.System.putInt(mContext.getContentResolver(),
                                 Settings.System.PIE_CONTROLS, !getPieControls() ? 1 : 0);
+                        Helpers.restartSystemUI();
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
