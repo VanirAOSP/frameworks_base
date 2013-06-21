@@ -76,6 +76,9 @@ public class VanirAwesome {
 
     private final static String SysUIPackage = "com.android.systemui";
 
+    private static boolean wtf = true;
+    private static boolean ftw;
+
     private VanirAwesome() {
     }
 
@@ -207,13 +210,35 @@ public class VanirAwesome {
                 mContext.startActivity(intentAlarm);
                 break;
             case ACTION_NOTIFICATIONS:
-                try {
-                    IStatusBarService.Stub.asInterface(
-                            ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandNotificationsPanel();
-                } catch (RemoteException e) {
-                    // A RemoteException is like a cold
-                    // Let's hope we don't catch one!
-                }
+                if (wtf) {
+					if (!ftw) {
+                        try {
+                            IStatusBarService.Stub.asInterface(
+                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandNotificationsPanel();
+                            ftw = true;
+                        } catch (RemoteException e) {
+                            // A RemoteException is like a cold
+                            // Let's hope we don't catch one!
+                        }
+                    } else {
+						try {
+							IStatusBarService.Stub.asInterface(
+                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandSettingsPanel();
+                            ftw = false;
+                        } catch (RemoteException e) {
+							// NO!!!
+					    }
+					    wtf = false;
+                    }
+			    } else {
+					try {
+					    IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).collapsePanels();
+                    wtf = true;
+                    } catch (RemoteException e) {
+						// EL CHUPACABRA!!
+					}
+				}
                 break;
             case ACTION_BLANK:
                 // FRRRRRT...
@@ -351,6 +376,11 @@ public class VanirAwesome {
             am.moveTaskToFront(lastAppId, am.MOVE_TASK_NO_USER_ACTION);
         }
     }
+
+    public static void wtfHelper() {
+		wtf = true;
+		ftw = false;
+	}
 
     private static Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {

@@ -179,6 +179,7 @@ public class TabletStatusBar extends BaseStatusBar implements
     CompatModeButton mCompatModeButton;
 
     NotificationPanel mNotificationPanel;
+
     WindowManager.LayoutParams mNotificationPanelParams;
     NotificationPeekPanel mNotificationPeekWindow;
     ViewGroup mNotificationPeekRow;
@@ -566,7 +567,7 @@ public class TabletStatusBar extends BaseStatusBar implements
         // the whole right-hand side of the bar
         mNotificationArea = sb.findViewById(R.id.notificationArea);
         mNotificationArea.setOnTouchListener(new NotificationTriggerTouchListener());
-        mNotificationHolder = (ViewGroup) sb.findViewById(R.id.notificationHolder);
+        mNotificationHolder = (ViewGroup) sb.findViewById(R.id.notificationHolder);      
 
         // the button to open the notification area
         mNotificationTrigger = sb.findViewById(R.id.notificationTrigger);
