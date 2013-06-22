@@ -1939,6 +1939,9 @@
 
     <bool name="config_sms_force_7bit_encoding">false</bool>
 
+    <!-- Boolean to enable adb by default on a per-device basis -->
+    <bool name="config_enableAdbByDefault">true</bool>
+
     <!-- Configuartion to support 7bit Ascii encoding and decoding
          for long messages. -->
     <bool name="config_ascii_7bit_support_for_long_message">false</bool>
