@@ -58,7 +58,7 @@ public class KeyButtonView extends ImageView {
     long mDownTime;
     int mCode;
     int mTouchSlop;
-    static Drawable mGlowBG;
+    Drawable mGlowBG;
     static int mGlowBGColor = Integer.MIN_VALUE;
     int mGlowWidth, mGlowHeight;
     static int mDurationSpeedOn = 500;
@@ -469,7 +469,7 @@ public class KeyButtonView extends ImageView {
 
                 kbv.setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
 
-                if (mGlowBG != null) {
+                if (kbv.mGlowBG != null) {
                     kbv.mGlowBG.setColorFilter(null);
                     if (mGlowBGColor != -1) {
                         kbv.mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
