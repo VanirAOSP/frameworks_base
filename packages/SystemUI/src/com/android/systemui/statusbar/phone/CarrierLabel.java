@@ -36,10 +36,6 @@ import java.util.TimeZone;
 
 import com.android.internal.R;
 
-/**
- * This widget display an analogic clock with two hands for hours and
- * minutes.
- */
 public class CarrierLabel extends TextView {
     private boolean mAttached;
 
@@ -124,7 +120,4 @@ public class CarrierLabel extends TextView {
         setText(str);
     }
 
-
 }
-
-
