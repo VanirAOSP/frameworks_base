@@ -284,8 +284,8 @@ final class ActivityStack {
     boolean mDismissKeyguardOnNextActivity = false;
 
     /**
-    * Is the privacy guard currently enabled?
-    */
+     * Is the privacy guard currently enabled?
+     */
     String mPrivacyGuardPackageName = null;
 
     int mThumbnailWidth = -1;
@@ -1807,8 +1807,6 @@ final class ActivityStack {
             }
             startSpecificActivityLocked(next, true, true);
         }
-
-        handlePrivacyGuardNotification(prev, next);
 
         return true;
     }
