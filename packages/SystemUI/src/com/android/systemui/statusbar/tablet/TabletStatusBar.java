@@ -440,7 +440,7 @@ public class TabletStatusBar extends BaseStatusBar implements
         }
 
         setAreThereNotifications();
-
+        unobserve();
         mRecreating = false;
     }
 
@@ -703,8 +703,7 @@ public class TabletStatusBar extends BaseStatusBar implements
 		}
         addSidebarView();
 
-        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-        settingsObserver.observe();
+        observer().observe();
         updateSettings();
         return sb;
     }
@@ -1710,7 +1709,7 @@ public class TabletStatusBar extends BaseStatusBar implements
         visibilityChanged(false);
     }
 
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
@@ -1759,6 +1758,16 @@ public class TabletStatusBar extends BaseStatusBar implements
         return (config.orientation == Configuration.ORIENTATION_LANDSCAPE);
     }
 
+    private SettingsObserver _observer;
+    SettingsObserver observer() {
+        if (_observer == null)
+            _observer = new SettingsObserver(new Handler());
+        return _observer;
+    }
+    private void unobserve() {
+       if (_observer != null)
+            _observer._unobserve();
+    }
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -1783,7 +1792,12 @@ public class TabletStatusBar extends BaseStatusBar implements
                     this);
         }
 
-         @Override
+        private void _unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(_observer);
+            _observer = null;
+        }
+
+        @Override
         public void onChange(boolean selfChange) {
             updateSettings();
         }

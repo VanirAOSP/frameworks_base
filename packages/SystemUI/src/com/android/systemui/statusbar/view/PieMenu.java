@@ -593,12 +593,25 @@ public class PieMenu extends FrameLayout {
             }
         });
 
-        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
-        settingsObserver.observe();
-
         // Get all dimensions
         getDimensions();
     }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        observer().observe();
+        observer().onChange(true);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        unobserve();
+    }
+				    
 
     public void init() {
         mStatusPanel = new PieStatusPanel(mContext, mPanel);
@@ -1134,7 +1147,16 @@ public class PieMenu extends FrameLayout {
         && (item.getStartAngle() + item.getSweep() > polar);
     }
 
-    //setup observer to do stuff!
+    private SettingsObserver _observer;
+    SettingsObserver observer() {
+        if (_observer == null)
+            _observer = new SettingsObserver(new Handler());
+        return _observer;
+    }
+    private void unobserve() {
+       if (_observer != null)
+            _observer._unobserve();
+    }
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -1160,6 +1182,11 @@ public class PieMenu extends FrameLayout {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PIE_JUICE), false, this);
             getDimensions();
+        }
+
+        private void _unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(_observer);
+            _observer = null;
         }
 
         @Override
