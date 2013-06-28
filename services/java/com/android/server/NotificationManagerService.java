@@ -154,6 +154,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
     // for enabling and disabling notification pulse behavior
     private boolean mScreenOn = true;
+    private boolean mDreaming = false;
     private boolean mWasScreenOn = false;
     private boolean mInCall = false;
     private boolean mNotificationPulseEnabled;
@@ -168,7 +169,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
     private ArrayList<NotificationRecord> mLights = new ArrayList<NotificationRecord>();
     private NotificationRecord mLedNotification;
-    
+
     private boolean mQuietHoursEnabled = false;
     // Minutes from midnight when quiet hours begin.
     private int mQuietHoursStart = 0;
@@ -318,7 +319,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                             } out.endTag(null, TAG_PACKAGE);
                         }
                     } out.endTag(null, TAG_BLOCKED_PKGS);
-                    
+
                     out.startTag(null, TAG_ALLOWED_PKGS); {
                         for (String allowedPkg : mHaloWhitelist) {
                             out.startTag(null, TAG_PACKAGE); {
@@ -354,7 +355,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
     public void setHaloBlacklistStatus(String pkg, boolean status) {
         if (status) {
-            mHaloBlacklist.add(pkg);            
+            mHaloBlacklist.add(pkg);
         } else {
             mHaloBlacklist.remove(pkg);
         }
@@ -363,7 +364,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
     public void setHaloWhitelistStatus(String pkg, boolean status) {
         if (status) {
-            mHaloWhitelist.add(pkg);            
+            mHaloWhitelist.add(pkg);
         } else {
             mHaloWhitelist.remove(pkg);
         }
@@ -501,7 +502,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                 + Integer.toHexString(System.identityHashCode(this))
                 + " pkg=" + pkg
                 + " id=" + Integer.toHexString(id)
-                + " tag=" + tag 
+                + " tag=" + tag
                 + " score=" + score
                 + "}";
         }
@@ -540,7 +541,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                 + " duration=" + duration;
         }
     }
-    
+
     class NotificationLedValues {
         public int color;
         public int onMS;
@@ -662,7 +663,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
             boolean queryRestart = false;
             boolean packageChanged = false;
-            
+
             if (action.equals(Intent.ACTION_PACKAGE_REMOVED)
                     || action.equals(Intent.ACTION_PACKAGE_RESTARTED)
                     || (packageChanged=action.equals(Intent.ACTION_PACKAGE_CHANGED))
@@ -711,6 +712,14 @@ public class NotificationManagerService extends INotificationManager.Stub
                 mInCall = (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(
                         TelephonyManager.EXTRA_STATE_OFFHOOK));
                 updateNotificationPulse();
+            } else if (action.equals(Intent.ACTION_DREAMING_STARTED)) {
+                mDreaming = true;
+                updateNotificationPulse();
+                } else if (action.equals(Intent.ACTION_DREAMING_STOPPED)) {
+                mDreaming = false;
+                    if (mScreenOn) {
+                        mNotificationLight.turnOff();
+                    }
             } else if (action.equals(Intent.ACTION_USER_STOPPED)) {
                 int userHandle = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
                 if (userHandle >= 0) {
@@ -718,7 +727,9 @@ public class NotificationManagerService extends INotificationManager.Stub
                 }
             } else if (action.equals(Intent.ACTION_USER_PRESENT)) {
                 // turn off LED when user passes through lock screen
-                mNotificationLight.turnOff();
+                if (!mDreaming) {
+                    mNotificationLight.turnOff();
+                }
             }
         }
     };
@@ -744,7 +755,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                     Settings.System.NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES), false, this);
             update();
         }
-        
+
         @Override public void onChange(boolean selfChange) {
             update();
             updateNotificationPulse();
@@ -778,7 +789,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
         }
     }
-    
+
       class QuietHoursSettingsObserver extends ContentObserver {
             QuietHoursSettingsObserver(Handler handler) {
                 super(handler);
@@ -869,7 +880,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                 com.android.internal.R.array.notification_light_package_mapping)) {
             String[] map = mapping.split("\\|");
             mPackageNameMappings.put(map[0], map[1]);
-        }        
+        }
 
         mDefaultVibrationPattern = getLongArray(resources,
                 com.android.internal.R.array.config_defaultNotificationVibePattern,
@@ -897,6 +908,8 @@ public class NotificationManagerService extends INotificationManager.Stub
         filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
         filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.addAction(Intent.ACTION_USER_STOPPED);
+        filter.addAction(Intent.ACTION_DREAMING_STARTED);
+        filter.addAction(Intent.ACTION_DREAMING_STOPPED);
         mContext.registerReceiver(mIntentReceiver, filter);
         IntentFilter pkgFilter = new IntentFilter();
         pkgFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
@@ -1125,7 +1138,6 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
     }
 
-
     // Notifications
     // ============================================================================
     public void enqueueNotificationWithTag(String pkg, String tag, int id, Notification notification,
@@ -1134,7 +1146,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         enqueueNotificationInternal(pkg, Binder.getCallingUid(), Binder.getCallingPid(),
                 tag, id, notification, idOut, userId);
     }
-    
+
     private final static int clamp(int x, int low, int high) {
         return (x < low) ? low : ((x > high) ? high : x);
     }
@@ -1204,7 +1216,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             if (notification.priority < Notification.PRIORITY_HIGH) notification.priority = Notification.PRIORITY_HIGH;
         }
 
-        // 1. initial score: buckets of 10, around the app 
+        // 1. initial score: buckets of 10, around the app
         int score = notification.priority * NOTIFICATION_PRIORITY_MULTIPLIER; //[-20..20]
 
         // 2. Consult external heuristics (TBD)
@@ -1230,9 +1242,9 @@ public class NotificationManagerService extends INotificationManager.Stub
         final boolean canInterrupt = (score >= SCORE_INTERRUPTION_THRESHOLD);
 
         synchronized (mNotificationList) {
-			final boolean inQuietHours = inQuietHours();
-			
-            NotificationRecord r = new NotificationRecord(pkg, tag, id, 
+        final boolean inQuietHours = inQuietHours();
+
+            NotificationRecord r = new NotificationRecord(pkg, tag, id,
                     callingUid, callingPid, userId,
                     score,
                     notification);
@@ -1691,7 +1703,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         boolean wasScreenOn = mWasScreenOn;
         mWasScreenOn = false;
-	
+
         if (mLedNotification == null) {
             mNotificationLight.turnOff();
             return;
@@ -1706,7 +1718,13 @@ public class NotificationManagerService extends INotificationManager.Stub
         boolean forceWithScreenOff = (mLedNotification.notification.flags &
                 Notification.FLAG_FORCE_LED_SCREEN_OFF) != 0;
 
-        if (mInCall || mScreenOn  || (inQuietHours() && mQuietHoursDim) || (wasScreenOn && !forceWithScreenOff)) {
+        if (mLedNotification == null ||
+            mInCall ||
+            mScreenOn ||
+            (mScreenOn && !mDreaming) ||
+            (inQuietHours() && mQuietHoursDim) ||
+            (wasScreenOn && !forceWithScreenOff)) {
+
             mNotificationLight.turnOff();
         } else {
             int ledARGB;
@@ -1735,7 +1753,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
         }
     }
-    
+
     private void parseNotificationPulseCustomValuesString(String customLedValuesString) {
         if (TextUtils.isEmpty(customLedValuesString)) {
             return;
