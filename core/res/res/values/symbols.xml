@@ -1186,6 +1186,9 @@
 
   <java-symbol type="string" name="config_fastChargePath" />
 
+  <!-- Screenshot Trash -->
+  <java-symbol type="string" name="trash" />
+
   <!-- From android.policy -->
   <java-symbol type="anim" name="app_starting_exit" />
   <java-symbol type="anim" name="lock_screen_behind_enter" />
