@@ -384,6 +384,8 @@ public final class PowerManagerService extends IPowerManager.Stub
     private static native void nativeSetInteractive(boolean enable);
     private static native void nativeSetAutoSuspend(boolean enable);
 
+    private BootCompletedReceiver mBootCompletedReceiver;
+
     public PowerManagerService() {
         synchronized (mLock) {
             mWakeLockSuspendBlocker = createSuspendBlockerLocked("PowerManagerService");
@@ -466,9 +468,12 @@ public final class PowerManagerService extends IPowerManager.Stub
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
             mContext.registerReceiver(new BatteryReceiver(), filter, null, mHandler);
 
-            filter = new IntentFilter();
-            filter.addAction(Intent.ACTION_BOOT_COMPLETED);
-            mContext.registerReceiver(new BootCompletedReceiver(), filter, null, mHandler);
+            if (mBootCompletedReceiver == null) {
+                filter = new IntentFilter();
+                filter.addAction(Intent.ACTION_BOOT_COMPLETED);
+                mBootCompletedReceiver = new BootCompletedReceiver();
+                mContext.registerReceiver(mBootCompletedReceiver, filter, null, mHandler);
+            }
 
             filter = new IntentFilter();
             filter.addAction(Intent.ACTION_DREAMING_STARTED);
@@ -1845,6 +1850,10 @@ public final class PowerManagerService extends IPowerManager.Stub
         userActivityNoUpdateLocked(
                 now, PowerManager.USER_ACTIVITY_EVENT_OTHER, 0, Process.SYSTEM_UID);
         updatePowerStateLocked();
+        if (mBootCompletedReceiver != null) { //prevent re-unregistering
+            mContext.unregisterReceiver(mBootCompletedReceiver);
+            mBootCompletedReceiver = null;
+        }
     }
 
     /**
