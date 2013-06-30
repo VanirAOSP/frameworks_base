@@ -207,6 +207,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     private PieObserver mSettingsObserver;
     private SidebarObserver mSidebarObserver;
+    private HaloObserver mHaloObserver;
 
     // UI-specific methods
 
@@ -264,9 +265,31 @@ public abstract class BaseStatusBar extends SystemUI implements
         return mDeviceProvisioned;
     }
 
+    private final class HaloObserver extends ContentObserver {
+        HaloObserver(Handler handler) {
+            super(handler);
+        }
+        void observe() {
+            ContentResolver r = mContext.getContentResolver();
+            r.registerContentObserver(Settings.System.getUriFor(
+                   Settings.System.HALO_PIE_ONLY), false, this);
+            r.registerContentObserver(Settings.System.getUriFor(
+                   Settings.System.HALO_ACTIVE), false, this);
+        }
+
+        void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateHalo();
+        }
+    }
+
     private final class SidebarObserver extends ContentObserver {
         SidebarObserver(Handler handler) {
-        super(handler);
+            super(handler);
         }
 
         void observe() {
@@ -289,7 +312,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             int sidebarPosition = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.APP_SIDEBAR_POSITION, AppSidebar.SIDEBAR_POSITION_LEFT);
             if (sidebarPosition != mSidebarPosition) {
-		        mSidebarPosition = sidebarPosition;
+                mSidebarPosition = sidebarPosition;
                 mWindowManager.updateViewLayout(mAppSidebar, getAppSidebarLayoutParams(sidebarPosition));
             }
         }
@@ -456,15 +479,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
         mTransparencyManager = new TransparencyManager(mContext);
 
-        mHaloEnabled = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.HALO_ENABLED, 0) == 1;
-        mHaloEnabled = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.HALO_PIE_ONLY, 0) == 1;
-        mPieControls = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.PIE_CONTROLS, 0) == 1;
-        mHaloActive = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.HALO_ACTIVE, 0) == 1;
-
         createAndAddWindows();
         // create WidgetView
         mWidgetView = new WidgetView(mContext,null);
@@ -510,6 +524,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         mSettingsObserver = new PieObserver(new Handler());
         mSidebarObserver = new SidebarObserver(new Handler());
+        mHaloObserver = new HaloObserver(new Handler());
 
         if (showPie()) {
             mSettingsObserver.observe();
@@ -530,7 +545,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         attachPie();
 
         if (showAppSidebar()) {
-	//      this eventually needs to be redone to observe UI changes. the original code does
+    //      this eventually needs to be redone to observe UI changes. the original code does
     //      not offer provisions for automatically moving the trigger area etc to the left side when
     //      in phone UI mode using AOKP's ui selector.
 
@@ -571,32 +586,17 @@ public abstract class BaseStatusBar extends SystemUI implements
             }
         }
 
-        // Listen for HALO enabled switch
-        mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.HALO_ENABLED), false, new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {
-                updateHalo();
-            }});
-
-        // Listen for HALO PIE state
-        mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.HALO_PIE_ONLY), false, new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {
-                updateHalo();
-            }});
-
-        // Listen for HALO state
-        mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.HALO_ACTIVE), false, new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {
-                updateHalo();
-            }});
-
+        if (showHalo()) {
+            mHaloObserver.observe();
+        } else {
+            if (mHalo != null) {
+                mHalo.cleanUp();
+                mHaloObserver.unobserve();
+                mWindowManager.removeView(mHalo);
+                mHalo = null;
+            }
+        }
         updateHalo();
-
     }
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -661,6 +661,16 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mWindowManager.removeView(mHalo);
                 mHalo = null;
             }
+        }
+    }
+
+    private boolean showHalo() {
+        boolean halo = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HALO_ENABLED, 0) == 1;
+        if (halo) {
+            return (halo);
+        } else {
+            return false;
         }
     }
 
