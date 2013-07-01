@@ -522,22 +522,26 @@ public abstract class BaseStatusBar extends SystemUI implements
                    ));
         }
 
-        mSettingsObserver = new PieObserver(new Handler());
-        mSidebarObserver = new SidebarObserver(new Handler());
-        mHaloObserver = new HaloObserver(new Handler());
-
         if (showPie()) {
-            mSettingsObserver.observe();
-            mCurrentUserId = ActivityManager.getCurrentUser();
-            IntentFilter filter1 = new IntentFilter();
-            filter1.addAction(Intent.ACTION_USER_SWITCHED);
-            filter1.addAction(Intent.EXTRA_USER_HANDLE);
-            mContext.registerReceiver(mBroadcastReceiver, filter1);
+			if (mSettingsObserver == null) {
+			    mSettingsObserver = new PieObserver(new Handler());
+                mSettingsObserver.observe();
+            }
+            if (mBroadcastReceiver == null) {
+                mCurrentUserId = ActivityManager.getCurrentUser();
+                IntentFilter filter1 = new IntentFilter();
+                filter1.addAction(Intent.ACTION_USER_SWITCHED);
+                filter1.addAction(Intent.EXTRA_USER_HANDLE);
+                mContext.registerReceiver(mBroadcastReceiver, filter1);
+            }
             updateSettings();
         } else {
             // if statusbar is recreated.. make sure pie is disabled and
             // don't register its content observers
-            mSettingsObserver.unobserve();
+            if (mSettingsObserver != null) {
+                mSettingsObserver.unobserve();
+                mSettingsObserver = null;
+            }
             if (mPieControlsTrigger != null) mWindowManager.removeView(mPieControlsTrigger);
             if (mPieControlPanel != null)  mWindowManager.removeView(mPieControlPanel);
             if (mPieDummytrigger != null)  mWindowManager.removeView(mPieDummytrigger);
@@ -550,7 +554,10 @@ public abstract class BaseStatusBar extends SystemUI implements
     //      in phone UI mode using AOKP's ui selector.
 
     //      final Configuration config = mContext.getResources().getConfiguration();
-            mSidebarObserver.observe();
+            if (mSidebarObserver == null) {
+                mSidebarObserver = new SidebarObserver(new Handler());
+                mSidebarObserver.observe();
+            }
     /*      IntentFilter filter2 = new IntentFilter();
             filter2.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
             mContext.registerReceiver(new BroadcastReceiver() {
@@ -579,7 +586,10 @@ public abstract class BaseStatusBar extends SystemUI implements
         } else {
             // if statusbar is recreated.. make sure sidebar is disabled and
             // unregister any previous broadcast receivers
-            mSidebarObserver.unobserve();
+            if (mSidebarObserver != null) {
+                mSidebarObserver.unobserve();
+                mSidebarObserver = null;
+            }
             if (mAppSidebar != null) {
                 removeSidebarView();
                 mAppSidebar = null;
@@ -587,11 +597,17 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
 
         if (showHalo()) {
-            mHaloObserver.observe();
+			if (mHaloObserver == null) {
+                mHaloObserver = new HaloObserver(new Handler());
+                mHaloObserver.observe();
+            }
         } else {
             if (mHalo != null) {
                 mHalo.cleanUp();
-                mHaloObserver.unobserve();
+                if (mHaloObserver != null) {
+                    mHaloObserver.unobserve();
+                    mHaloObserver = null;
+			    }
                 mWindowManager.removeView(mHalo);
                 mHalo = null;
             }
