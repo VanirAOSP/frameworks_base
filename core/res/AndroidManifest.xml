@@ -166,9 +166,6 @@
     <protected-broadcast android:name="android.net.conn.TETHER_STATE_CHANGED" />
     <protected-broadcast android:name="android.net.conn.INET_CONDITION_ACTION" />
 
-
-
-
     <protected-broadcast android:name="android.intent.action.ANY_DATA_STATE" />
 
     <protected-broadcast android:name="com.android.server.WifiManager.action.START_SCAN" />
@@ -190,9 +187,6 @@
     <protected-broadcast android:name="android.net.wifi.p2p.PERSISTENT_GROUPS_CHANGED" />
     <protected-broadcast android:name="android.net.conn.TETHER_STATE_CHANGED" />
     <protected-broadcast android:name="android.net.conn.INET_CONDITION_ACTION" />
-
-
-
 
     <!-- ====================================== -->
     <!-- Permissions for things that cost money -->
@@ -449,7 +443,7 @@
         android:description="@string/permdesc_writeCalendar" />
 
     <!-- =============================================================== -->
-    <!-- Permissions for accessing the user dictionary-->
+    <!-- Permissions for accessing the user dictionary                   -->
     <!-- =============================================================== -->
     <eat-comment />
 
@@ -608,7 +602,7 @@
         android:description="@string/permdesc_installLocationProvider" />
 
     <!-- ======================================= -->
-    <!-- Permissions for accessing networks -->
+    <!-- Permissions for accessing networks      -->
     <!-- ======================================= -->
     <eat-comment />
 
@@ -642,7 +636,7 @@
         android:protectionLevel="normal"
         android:description="@string/permdesc_accessWifiState"
         android:label="@string/permlab_accessWifiState" />
-        
+
     <!-- Allows applications to change Wi-Fi connectivity state -->
     <permission android:name="android.permission.CHANGE_WIFI_STATE"
         android:permissionGroup="android.permission-group.NETWORK"
@@ -664,9 +658,9 @@
         android:description="@string/permdesc_changeWimaxState"
         android:label="@string/permlab_changeWimaxState" />
 
-    <!-- ======================================= -->
+    <!-- ================================================ -->
     <!-- Permissions for short range, peripheral networks -->
-    <!-- ======================================= -->
+    <!-- ================================================ -->
     <eat-comment />
 
     <!-- Used for permissions that provide access to other devices through Bluetooth.-->
@@ -682,14 +676,14 @@
         android:protectionLevel="dangerous"
         android:description="@string/permdesc_bluetooth"
         android:label="@string/permlab_bluetooth" />
-        
+
     <!-- Allows applications to discover and pair bluetooth devices -->
     <permission android:name="android.permission.BLUETOOTH_ADMIN"
         android:permissionGroup="android.permission-group.BLUETOOTH_NETWORK"
         android:protectionLevel="dangerous"
         android:description="@string/permdesc_bluetoothAdmin"
         android:label="@string/permlab_bluetoothAdmin" />
-   
+
     <!-- Allows bluetooth stack to access files
          @hide This should only be used by Bluetooth apk.
     -->
@@ -766,9 +760,9 @@
         android:description="@string/permdesc_accountManagerService"
         android:label="@string/permlab_accountManagerService" />
 
-    <!-- ================================== -->
-    <!-- Permissions for accessing hardware that may effect battery life-->
-    <!-- ================================== -->
+    <!-- =============================================================== -->
+    <!-- Permissions for accessing hardware that may effect battery life -->
+    <!-- =============================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that provide direct access to the hardware on
@@ -819,7 +813,7 @@
         android:description="@string/permdesc_wakeLock" />
 
     <!-- ==================================================== -->
-    <!-- Permissions related to changing audio settings   -->
+    <!-- Permissions related to changing audio settings       -->
     <!-- ==================================================== -->
 
     <!-- Used for permissions that provide direct access to speaker settings
@@ -885,7 +879,7 @@
         android:protectionLevel="signature" />
 
     <!-- =========================================== -->
-    <!-- Permissions associated with audio capture -->
+    <!-- Permissions associated with audio capture   -->
     <!-- =========================================== -->
     <eat-comment />
 
@@ -905,10 +899,9 @@
         android:protectionLevel="dangerous"
         android:label="@string/permlab_recordAudio" />
 
-
-    <!-- =========================================== -->
+    <!-- ==================================================== -->
     <!-- Permissions associated with camera and image capture -->
-    <!-- =========================================== -->
+    <!-- ==================================================== -->
     <eat-comment />
 
     <!-- Used for permissions that are associated with accessing
@@ -1180,9 +1173,9 @@
         android:label="@string/permlab_killBackgroundProcesses"
         android:description="@string/permdesc_killBackgroundProcesses" />
 
-    <!-- ================================== -->
-    <!-- Permissions affecting the display of other applications  -->
-    <!-- ================================== -->
+    <!-- ======================================================= -->
+    <!-- Permissions affecting the display of other applications -->
+    <!-- ======================================================= -->
     <eat-comment />
 
     <!-- Group of permissions that allow manipulation of how
@@ -1204,9 +1197,9 @@
         android:label="@string/permlab_systemAlertWindow"
         android:description="@string/permdesc_systemAlertWindow" />
 
-    <!-- ================================== -->
+    <!-- ========================================== -->
     <!-- Permissions affecting the system wallpaper -->
-    <!-- ================================== -->
+    <!-- ========================================== -->
     <eat-comment />
 
     <!-- Group of permissions that allow manipulation of how
@@ -1231,9 +1224,9 @@
         android:label="@string/permlab_setWallpaperHints"
         android:description="@string/permdesc_setWallpaperHints" />
 
-    <!-- ============================================ -->
+    <!-- ========================================= -->
     <!-- Permissions for changing the system clock -->
-    <!-- ============================================ -->
+    <!-- ========================================= -->
     <eat-comment />
 
     <!-- Group of permissions that are related to system clock. -->
@@ -1256,9 +1249,9 @@
         android:label="@string/permlab_setTimeZone"
         android:description="@string/permdesc_setTimeZone" />
 
-    <!-- ==================================================== -->
-    <!-- Permissions related to changing status bar   -->
-    <!-- ==================================================== -->
+    <!-- ========================================== -->
+    <!-- Permissions related to changing status bar -->
+    <!-- ========================================== -->
 
     <!-- Used for permissions that change the status bar -->
     <permission-group android:name="android.permission-group.STATUS_BAR"
@@ -1274,9 +1267,9 @@
         android:label="@string/permlab_expandStatusBar"
         android:description="@string/permdesc_expandStatusBar" />
 
-    <!-- ==================================================== -->
-    <!-- Permissions related to accessing sync settings   -->
-    <!-- ==================================================== -->
+    <!-- ============================================== -->
+    <!-- Permissions related to accessing sync settings -->
+    <!-- ============================================== -->
 
     <!-- Used for permissions that access the sync settings or sync
          related information. -->
@@ -1306,7 +1299,6 @@
         android:protectionLevel="normal"
         android:description="@string/permdesc_readSyncStats"
         android:label="@string/permlab_readSyncStats" />
-
 
     <!-- ============================================ -->
     <!-- Permissions for low-level system interaction -->
@@ -1675,7 +1667,7 @@
         android:label="@string/permlab_freezeScreen"
         android:description="@string/permdesc_freezeScreen"
         android:protectionLevel="signature" />
-    
+
     <!-- Allows an application to inject user events (keys, touch, trackball)
          into the event stream and deliver them to ANY window.  Without this
          permission, you can only deliver events to windows in your own process.
@@ -1839,6 +1831,12 @@
         android:description="@string/permdesc_movePackage"
         android:protectionLevel="signature|system" />
 
+    <!-- Allows an application to change privacy guard state -->
+    <permission android:name="android.permission.CHANGE_PRIVACY_GUARD_STATE"
+        android:label="@string/permlab_changePrivacyGuardState"
+        android:description="@string/permdesc_changePrivacyGuardState"
+        android:protectionLevel="signature" />
+
     <!-- Allows an application to change whether an application component (other than its own) is
          enabled or not. -->
     <permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"
@@ -1893,13 +1891,13 @@
         android:description="@string/permdesc_reboot"
         android:protectionLevel="signature|system" />
 
-   <!-- Allows low-level access to power management -->
+    <!-- Allows low-level access to power management -->
     <permission android:name="android.permission.DEVICE_POWER"
         android:label="@string/permlab_devicePower"
         android:description="@string/permdesc_devicePower"
         android:protectionLevel="signature" />
 
-   <!-- @hide Allows low-level access to tun tap driver -->
+    <!-- @hide Allows low-level access to tun tap driver -->
     <permission android:name="android.permission.NET_TUNNELING"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="signature" />
@@ -2125,7 +2123,7 @@
 
     <!-- C2DM permission.
          @hide Used internally.
-     -->
+    -->
     <permission android:name="android.intent.category.MASTER_CLEAR.permission.C2D_MESSAGE"
           android:protectionLevel="signature" />
     <uses-permission android:name="android.intent.category.MASTER_CLEAR.permission.C2D_MESSAGE"/>
@@ -2185,6 +2183,7 @@
                  android:killAfterRestore="false"
                  android:icon="@drawable/ic_launcher_android"
                  android:supportsRtl="true">
+
         <activity android:name="com.android.internal.app.ChooserActivity"
                 android:theme="@style/Theme.Holo.Dialog.Alert"
                 android:finishOnCloseSystemDialogs="true"
@@ -2195,6 +2194,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity android:name="com.android.internal.app.HeavyWeightSwitcherActivity"
                 android:theme="@style/Theme.Holo.Dialog"
                 android:label="@string/heavy_weight_switcher_title"
@@ -2202,10 +2202,12 @@
                 android:excludeFromRecents="true"
                 android:process=":ui">
         </activity>
+
         <activity android:name="com.android.internal.app.PlatLogoActivity"
                 android:theme="@style/Theme.Wallpaper.NoTitleBar.Fullscreen"
                 android:process=":ui">
         </activity>
+
         <activity android:name="com.android.internal.app.DisableCarModeActivity"
                 android:theme="@style/Theme.NoDisplay"
                 android:excludeFromRecents="true"
@@ -2316,5 +2318,4 @@
             android:exported="true" />
 
     </application>
-
 </manifest>

@@ -57,18 +57,18 @@ interface IPackageManager {
     PackageInfo getPackageInfo(String packageName, int flags, int userId);
     int getPackageUid(String packageName, int userId);
     int[] getPackageGids(String packageName);
-    
+
     String[] currentToCanonicalPackageNames(in String[] names);
     String[] canonicalToCurrentPackageNames(in String[] names);
 
     PermissionInfo getPermissionInfo(String name, int flags);
-    
+
     List<PermissionInfo> queryPermissionsByGroup(String group, int flags);
-    
+
     PermissionGroupInfo getPermissionGroupInfo(String name, int flags);
-    
+
     List<PermissionGroupInfo> getAllPermissionGroups(int flags);
-    
+
     ApplicationInfo getApplicationInfo(String packageName, int flags ,int userId);
 
     ActivityInfo getActivityInfo(in ComponentName className, int flags, int userId);
@@ -80,11 +80,11 @@ interface IPackageManager {
     ProviderInfo getProviderInfo(in ComponentName className, int flags, int userId);
 
     int checkPermission(String permName, String pkgName);
-    
+
     int checkUidPermission(String permName, int uid);
-    
+
     boolean addPermission(in PermissionInfo info);
-    
+
     void removePermission(String name);
 
     void grantPermission(String packageName, String permissionName);
@@ -92,20 +92,20 @@ interface IPackageManager {
     void revokePermission(String packageName, String permissionName);
 
     boolean isProtectedBroadcast(String actionName);
-    
+
     int checkSignatures(String pkg1, String pkg2);
-    
+
     int checkUidSignatures(int uid1, int uid2);
-    
+
     String[] getPackagesForUid(int uid);
-    
+
     String getNameForUid(int uid);
-    
+
     int getUidForSharedUser(String sharedUserName);
-    
+
     ResolveInfo resolveIntent(in Intent intent, String resolvedType, int flags, int userId);
 
-    List<ResolveInfo> queryIntentActivities(in Intent intent, 
+    List<ResolveInfo> queryIntentActivities(in Intent intent,
             String resolvedType, int flags, int userId);
 
     List<ResolveInfo> queryIntentActivityOptions(
@@ -142,7 +142,7 @@ interface IPackageManager {
 
     /**
      * Retrieve all applications that are marked as persistent.
-     * 
+     *
      * @return A List&lt;applicationInfo> containing one entry for each persistent
      *         application.
      */
@@ -152,7 +152,7 @@ interface IPackageManager {
 
     /**
      * Retrieve sync information for all content providers.
-     * 
+     *
      * @param outNames Filled in with a list of the root names of the content
      *                 providers that can sync.
      * @param outInfo Filled in with a list of the ProviderInfo for each
@@ -199,9 +199,9 @@ interface IPackageManager {
     String getInstallerPackageName(in String packageName);
 
     void addPackageToPreferred(String packageName);
-    
+
     void removePackageFromPreferred(String packageName);
-    
+
     List<PackageInfo> getPreferredPackages(int flags);
 
     void addPreferredActivity(in IntentFilter filter, int match,
@@ -214,7 +214,11 @@ interface IPackageManager {
 
     int getPreferredActivities(out List<IntentFilter> outFilters,
             out List<ComponentName> outActivities, String packageName);
-    
+
+    boolean getPrivacyGuardSetting(in String packageName, int userId);
+
+    void setPrivacyGuardSetting(in String packageName, boolean enabled, int userId);
+
     /**
      * As per {@link android.content.pm.PackageManager#setComponentEnabledSetting}.
      */
@@ -225,17 +229,17 @@ interface IPackageManager {
      * As per {@link android.content.pm.PackageManager#getComponentEnabledSetting}.
      */
     int getComponentEnabledSetting(in ComponentName componentName, int userId);
-    
+
     /**
      * As per {@link android.content.pm.PackageManager#setApplicationEnabledSetting}.
      */
     void setApplicationEnabledSetting(in String packageName, in int newState, int flags, int userId);
-    
+
     /**
      * As per {@link android.content.pm.PackageManager#getApplicationEnabledSetting}.
      */
     int getApplicationEnabledSetting(in String packageName, int userId);
-    
+
     /**
      * Set whether the given package should be considered stopped, making
      * it not visible to implicit intents that filter out stopped packages.
@@ -288,7 +292,7 @@ interface IPackageManager {
      */
      void freeStorage(in long freeStorageSize,
              in IntentSender pi);
-     
+
     /**
      * Delete all the cache files in an applications cache directory
      * @param packageName The package name of the application whose cache
@@ -296,7 +300,7 @@ interface IPackageManager {
      * @param observer a callback used to notify when the deletion is finished.
      */
     void deleteApplicationCacheFiles(in String packageName, IPackageDataObserver observer);
-    
+
     /**
      * Clear the user data directory of an application.
      * @param packageName The package name of the application whose cache
@@ -304,7 +308,7 @@ interface IPackageManager {
      * @param observer a callback used to notify when the operation is completed.
      */
     void clearApplicationUserData(in String packageName, IPackageDataObserver observer, int userId);
-    
+
    /**
      * Get package statistics including the code, data and cache size for
      * an already installed package
@@ -314,7 +318,7 @@ interface IPackageManager {
      * retrieval of information is complete.
      */
     void getPackageSizeInfo(in String packageName, int userHandle, IPackageStatsObserver observer);
-    
+
     /**
      * Get a list of shared libraries that are available on the
      * system.
@@ -328,7 +332,7 @@ interface IPackageManager {
     FeatureInfo[] getSystemAvailableFeatures();
 
     boolean hasSystemFeature(String name);
-    
+
     void enterSafeMode();
     boolean isSafeMode();
     void systemReady();
@@ -358,7 +362,7 @@ interface IPackageManager {
     PackageCleanItem nextPackageToClean(in PackageCleanItem lastPackage);
 
     void movePackage(String packageName, IPackageMoveObserver observer, int flags);
-    
+
     boolean addPermissionAsync(in PermissionInfo info);
 
     boolean setInstallLocation(int loc);

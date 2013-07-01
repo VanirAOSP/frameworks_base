@@ -664,7 +664,6 @@ public class LocationManagerService extends ILocationManager.Stub implements Run
         mProvidersByName.remove(provider.getName());
     }
 
-
     private boolean isAllowedBySettingsLocked(String provider, int userId) {
         if (userId != mCurrentUserId) {
             return false;
@@ -1238,6 +1237,7 @@ public class LocationManagerService extends ILocationManager.Stub implements Run
         checkPackageName(packageName);
 
         final int pid = Binder.getCallingPid();
+
         final int uid = Binder.getCallingUid();
         Receiver receiver = checkListenerOrIntent(listener, intent, pid, uid, packageName);
 
@@ -1439,6 +1439,7 @@ public class LocationManagerService extends ILocationManager.Stub implements Run
             throw new SecurityException(
                     "calling sendNiResponse from outside of the system is not allowed");
         }
+
         try {
             return mNetInitiatedListener.sendNiResponse(notifId, userResponse);
         } catch (RemoteException e) {
