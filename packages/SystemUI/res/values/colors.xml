@@ -62,4 +62,9 @@
 
     <!-- app sidebar trigger region color -->
     <color name="trigger_region_color">#8015a0e5</color>
+
+    <!-- Halo colors -->
+    <color name="halo_ping_color">#ff33b5e5</color>
+    <color name="halo_text_color">#ffffffff</color>
+
 </resources>
