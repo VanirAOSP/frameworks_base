@@ -538,6 +538,8 @@ public class TelephonyManager {
      * @hide
      */
     public void toggle2G(boolean twoGees) {
+        if (getCurrentPhoneType() != PHONE_TYPE_GSM)
+            return;
         try {
             getITelephony().toggle2G(twoGees);
         } catch (RemoteException e) {
