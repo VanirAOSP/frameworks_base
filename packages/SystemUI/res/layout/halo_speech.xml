@@ -22,7 +22,6 @@
                 android:singleLine="false"
                 android:visibility="gone"
                 android:textColor="#fff"
-                android:textStyle="bold"
                 android:textSize="15sp"/>
 
             <TextView
@@ -33,7 +32,6 @@
                 android:singleLine="false"
                 android:visibility="gone"
                 android:textColor="#fff"
-                android:textStyle="bold"
                 android:textSize="15sp"/>
 
         </RelativeLayout>
