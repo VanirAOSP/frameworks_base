@@ -479,6 +479,9 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
         mTransparencyManager = new TransparencyManager(mContext);
 
+        mHaloActive = Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.HALO_ACTIVE, 0) == 1;
+
         createAndAddWindows();
         // create WidgetView
         mWidgetView = new WidgetView(mContext,null);
