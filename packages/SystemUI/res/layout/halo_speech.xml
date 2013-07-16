@@ -6,6 +6,7 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
+        android:id="@+id/container"
         android:layout_width="@dimen/halo_content_max_width"
         android:layout_height="wrap_content">
 
@@ -22,7 +23,7 @@
                 android:singleLine="false"
                 android:visibility="gone"
                 android:textColor="#fff"
-                android:textSize="15sp"/>
+                android:textSize="@dimen/halo_speech_text_size"/>
 
             <TextView
                 android:id="@+id/bubble_l"
@@ -32,7 +33,7 @@
                 android:singleLine="false"
                 android:visibility="gone"
                 android:textColor="#fff"
-                android:textSize="15sp"/>
+                android:textSize="@dimen/halo_speech_text_size"/>
 
         </RelativeLayout>
 
