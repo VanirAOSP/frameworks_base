@@ -1055,9 +1055,9 @@ public final class ActivityManagerService extends ActivityManagerNative
             case SERVICE_TIMEOUT_MSG: {
                 if (mDidDexOpt) {
                     mDidDexOpt = false;
-                    Message nmsg = obtainMessage(SERVICE_TIMEOUT_MSG);
+                    Message nmsg = mHandler.obtainMessage(SERVICE_TIMEOUT_MSG);
                     nmsg.obj = msg.obj;
-                    sendMessageDelayed(nmsg, ActiveServices.SERVICE_TIMEOUT);
+                    mHandler.sendMessageDelayed(nmsg, ActiveServices.SERVICE_TIMEOUT);
                     return;
                 }
                 mServices.serviceTimeout((ProcessRecord)msg.obj);
@@ -1127,7 +1127,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                     d.setTitle(title);
                     d.setMessage(text);
                     d.setButton(DialogInterface.BUTTON_POSITIVE, "I'm Feeling Lucky",
-                            obtainMessage(IM_FEELING_LUCKY_MSG));
+                            mHandler.obtainMessage(IM_FEELING_LUCKY_MSG));
                     mUidAlert = d;
                     d.show();
                 }
@@ -1141,9 +1141,9 @@ public final class ActivityManagerService extends ActivityManagerNative
             case PROC_START_TIMEOUT_MSG: {
                 if (mDidDexOpt) {
                     mDidDexOpt = false;
-                    Message nmsg = obtainMessage(PROC_START_TIMEOUT_MSG);
+                    Message nmsg = mHandler.obtainMessage(PROC_START_TIMEOUT_MSG);
                     nmsg.obj = msg.obj;
-                    sendMessageDelayed(nmsg, PROC_START_TIMEOUT);
+                    mHandler.sendMessageDelayed(nmsg, PROC_START_TIMEOUT);
                     return;
                 }
                 ProcessRecord app = (ProcessRecord)msg.obj;
@@ -2165,7 +2165,6 @@ public final class ActivityManagerService extends ActivityManagerNative
                     }
                 } catch (PackageManager.NameNotFoundException e) {
                     Slog.w(TAG, "Unable to retrieve gids", e);
-                    return;
                 }
 
                 /*
@@ -4502,8 +4501,8 @@ public final class ActivityManagerService extends ActivityManagerNative
             
             if (mFactoryTest != SystemServer.FACTORY_TEST_LOW_LEVEL) {
                 // Start looking for apps that are abusing wake locks.
-                mHandler.sendEmptyMessageDelayed(CHECK_EXCESSIVE_WAKE_LOCKS_MSG,
-                        POWER_CHECK_DELAY);
+                Message nmsg = mHandler.obtainMessage(CHECK_EXCESSIVE_WAKE_LOCKS_MSG);
+                mHandler.sendMessageDelayed(nmsg, POWER_CHECK_DELAY);
                 // Tell anyone interested that we are done booting!
                 SystemProperties.set("sys.boot_completed", "1");
                 SystemProperties.set("dev.bootcomplete", "1");
@@ -7197,8 +7196,8 @@ public final class ActivityManagerService extends ActivityManagerNative
                 // Initialize the wake times of all processes.
                 checkExcessivePowerUsageLocked(false);
                 mHandler.removeMessages(CHECK_EXCESSIVE_WAKE_LOCKS_MSG);
-                mHandler.sendEmptyMessageDelayed(CHECK_EXCESSIVE_WAKE_LOCKS_MSG,
-                        POWER_CHECK_DELAY);
+                Message nmsg = mHandler.obtainMessage(CHECK_EXCESSIVE_WAKE_LOCKS_MSG);
+                mHandler.sendMessageDelayed(nmsg, POWER_CHECK_DELAY);
             }
         }
     }
@@ -7312,8 +7311,8 @@ public final class ActivityManagerService extends ActivityManagerNative
                     + APP_SWITCH_DELAY_TIME;
             mDidAppSwitch = false;
             mHandler.removeMessages(DO_PENDING_ACTIVITY_LAUNCHES_MSG);
-            mHandler.sendEmptyMessageDelayed(DO_PENDING_ACTIVITY_LAUNCHES_MSG,
-                    APP_SWITCH_DELAY_TIME);
+            Message msg = mHandler.obtainMessage(DO_PENDING_ACTIVITY_LAUNCHES_MSG);
+            mHandler.sendMessageDelayed(msg, APP_SWITCH_DELAY_TIME);
         }
     }
     
@@ -7751,7 +7750,7 @@ public final class ActivityManagerService extends ActivityManagerNative
 
     public boolean testIsSystemReady() {
         // no need to synchronize(this) just to read & return the value
-        return mSystemReady && mProcessesReady;
+        return mSystemReady;
     }
     
     private static File getCalledPreBootReceiversFile() {
@@ -8027,7 +8026,9 @@ public final class ActivityManagerService extends ActivityManagerNative
             
             try {
                 if (AppGlobals.getPackageManager().hasSystemUidErrors()) {
-                    mHandler.sendEmptyMessage(SHOW_UID_ERROR_MSG);
+                    Message msg = Message.obtain();
+                    msg.what = SHOW_UID_ERROR_MSG;
+                    mHandler.sendMessage(msg);
                 }
             } catch (RemoteException e) {
             }
@@ -13343,7 +13344,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 if (mPendingProcessChanges.size() == 0) {
                     if (DEBUG_PROCESS_OBSERVERS) Slog.i(TAG,
                             "*** Enqueueing dispatch processes changed!");
-                    mHandler.sendEmptyMessage(DISPATCH_PROCESSES_CHANGED);
+                    mHandler.obtainMessage(DISPATCH_PROCESSES_CHANGED).sendToTarget();
                 }
                 mPendingProcessChanges.add(item);
             }
@@ -13450,13 +13451,14 @@ public final class ActivityManagerService extends ActivityManagerNative
         if (mProcessesToGc.size() > 0) {
             // Schedule a GC for the time to the next process.
             ProcessRecord proc = mProcessesToGc.get(0);
+            Message msg = mHandler.obtainMessage(GC_BACKGROUND_PROCESSES_MSG);
 
             long when = proc.lastRequestedGc + GC_MIN_INTERVAL;
             long now = SystemClock.uptimeMillis();
             if (when < (now+GC_TIMEOUT)) {
                 when = now + GC_TIMEOUT;
             }
-            mHandler.sendEmptyMessageAtTime(GC_BACKGROUND_PROCESSES_MSG, when);
+            mHandler.sendMessageAtTime(msg, when);
         }
     }
     
