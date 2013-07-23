@@ -873,11 +873,6 @@ public class QuickSettings {
                 break;
 
             case TWOG_TILE:
-                //this would only happen if somebody on a CDMA phone had
-                //    the 2G QS enabled before the overlay change in vendor/vanir
-                if (tm != null && tm.getCurrentPhoneType() != TelephonyManager.PHONE_TYPE_GSM)
-                    break;
-
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
                 quick.setContent(R.layout.quick_settings_tile_twog, inflater);
