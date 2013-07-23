@@ -48,6 +48,7 @@ import android.widget.Toast;
 
 import com.android.internal.util.MemInfoReader;
 import com.android.internal.view.RotationPolicy;
+import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneConstants;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.BatteryController.BatteryStateChangeCallback;
@@ -1209,12 +1210,19 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     void onLTEChanged() {
-        try {
-            dataState = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.PREFERRED_NETWORK_MODE);
-        } catch (SettingNotFoundException e) {
-            e.printStackTrace();
+        boolean enabled = false;
+        dataState = Settings.Global.getInt(mContext.getContentResolver(),
+                    Settings.Global.PREFERRED_NETWORK_MODE, -1);
+        switch(dataState) {
+            case Phone.NT_MODE_GLOBAL:
+            case Phone.NT_MODE_LTE_CDMA_AND_EVDO:
+            case Phone.NT_MODE_LTE_GSM_WCDMA:
+            case Phone.NT_MODE_LTE_CMDA_EVDO_GSM_WCDMA:
+            case Phone.NT_MODE_LTE_ONLY:
+            case Phone.NT_MODE_LTE_WCDMA:
+                enabled = true;
+                break;
         }
-        boolean enabled = (dataState == PhoneConstants.NT_MODE_LTE_CDMA_EVDO) || (dataState == PhoneConstants.NT_MODE_GLOBAL);
         mLTEState.enabled = enabled;
         mLTEState.iconId = enabled
                 ? R.drawable.ic_qs_lte_on
@@ -1247,7 +1255,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         } catch (SettingNotFoundException e) {
             e.printStackTrace();
         }
-        boolean enabled = dataState == PhoneConstants.NT_MODE_GSM_ONLY;
+        boolean enabled = dataState == Phone.NT_MODE_GSM_ONLY;
         m2gState.enabled = enabled;
         m2gState.iconId = enabled
                 ? R.drawable.ic_qs_2g_on

@@ -75,7 +75,7 @@ import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Profile;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
@@ -94,6 +94,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.internal.telephony.PhoneConstants;
+import com.android.internal.telephony.Phone;
 import com.vanir.util.CMDProcessor;
 import com.vanir.util.Helpers;
 import com.android.systemui.vanir.VanirAwesome;
@@ -419,13 +420,13 @@ public class QuickSettings {
                     // Try and read the display name from the local profile
                     final Cursor cursor = context.getContentResolver().query(
                             Profile.CONTENT_URI, new String[] {
-                                    Phone._ID, Phone.DISPLAY_NAME
+                                    android.provider.ContactsContract.CommonDataKinds.Phone._ID, android.provider.ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
                             },
                             null, null, null);
                     if (cursor != null) {
                         try {
                             if (cursor.moveToFirst()) {
-                                name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));
+                                name = cursor.getString(cursor.getColumnIndex(android.provider.ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                             }
                         } finally {
                             cursor.close();
@@ -885,7 +886,7 @@ public class QuickSettings {
                         } catch (SettingNotFoundException e) {
                             e.printStackTrace();
                         }
-                        if (mDataState == PhoneConstants.NT_MODE_GSM_ONLY) {
+                        if (mDataState == Phone.NT_MODE_GSM_ONLY) {
                             tm.toggle2G(false);
                         } else {
                             tm.toggle2G(true);
@@ -918,17 +919,20 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try {
-                            mDataState = Settings.Global.getInt(mContext.getContentResolver(),
-                                    Settings.Global.PREFERRED_NETWORK_MODE);
-                        } catch (SettingNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        if (mDataState == PhoneConstants.NT_MODE_LTE_CDMA_EVDO
-                                || mDataState == PhoneConstants.NT_MODE_GLOBAL) {
-                            tm.toggleLTE(false);
-                        } else {
-                            tm.toggleLTE(true);
+                        mDataState = Settings.Global.getInt(mContext.getContentResolver(),
+                                    Settings.Global.PREFERRED_NETWORK_MODE, -1);
+                        switch(mDataState) {
+                            case Phone.NT_MODE_GLOBAL:
+                            case Phone.NT_MODE_LTE_CDMA_AND_EVDO:
+                            case Phone.NT_MODE_LTE_GSM_WCDMA:
+                            case Phone.NT_MODE_LTE_CMDA_EVDO_GSM_WCDMA:
+                            case Phone.NT_MODE_LTE_ONLY:
+                            case Phone.NT_MODE_LTE_WCDMA:
+                                tm.toggleLTE(false);
+                                break;
+                            default:
+                                tm.toggleLTE(true);
+                                break;
                         }
                         mModel.refreshLTETile();
                     }
