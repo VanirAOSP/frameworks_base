@@ -71,6 +71,7 @@ import android.net.Proxy;
 import android.net.ProxyProperties;
 import android.net.RouteInfo;
 import android.net.wifi.WifiStateTracker;
+import android.net.ethernet.EthernetStateTracker;
 import android.net.wimax.WimaxManagerConstants;
 import android.os.AsyncTask;
 import android.os.Binder;
@@ -497,7 +498,7 @@ public class ConnectivityService extends IConnectivityManager.Stub {
                             n.type);
                     continue;
                 }
-                if (mRadioAttributes[n.radio] == null) {
+                if ((n.type != ConnectivityManager.TYPE_ETHERNET) && (mRadioAttributes[n.radio] == null)) {
                     loge("Error in networkAttributes - ignoring attempt to use undefined " +
                             "radio " + n.radio + " in network type " + n.type);
                     continue;
@@ -649,7 +650,7 @@ public class ConnectivityService extends IConnectivityManager.Stub {
                 case TYPE_WIMAX:
                     return makeWimaxStateTracker(mContext, mTrackerHandler);
                 case TYPE_ETHERNET:
-                    return EthernetDataTracker.getInstance();
+                    return new EthernetStateTracker(targetNetworkType, config.name); //EthernetDataTracker.getInstance();
                 default:
                     throw new IllegalArgumentException(
                             "Trying to create a NetworkStateTracker for an unknown radio type: "

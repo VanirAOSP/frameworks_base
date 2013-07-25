@@ -102,6 +102,18 @@ public class NetworkUtils {
      */
     public native static String getDhcpError();
 
+    public static boolean configureInterface(String interfaceName, DhcpInfo ipInfo) {
+        return configureNative(interfaceName,
+            ipInfo.ipAddress,
+            netmaskIntToPrefixLength(ipInfo.netmask),
+            ipInfo.gateway,
+            ipInfo.dns1,
+            ipInfo.dns2);
+    }
+
+    private native static boolean configureNative(
+        String interfaceName, int ipAddress, int prefixLength, int gateway, int dns1, int dns2);
+
     /**
      * Convert a IPv4 address from an integer to an InetAddress.
      * @param hostAddress an int corresponding to the IPv4 address in network byte order

@@ -34,6 +34,7 @@
        <item><xliff:g id="id">mute</xliff:g></item>
        <item><xliff:g id="id">volume</xliff:g></item>
        <item><xliff:g id="id">wifi</xliff:g></item>
+       <item><xliff:g id="id">ethernet</xliff:g></item>
        <item><xliff:g id="id">cdma_eri</xliff:g></item>
        <item><xliff:g id="id">data_connection</xliff:g></item>
        <item><xliff:g id="id">phone_evdo_signal</xliff:g></item>
@@ -145,6 +146,7 @@
         <item>"mobile_mms,2,0,2,60000,true"</item>
         <item>"mobile_supl,3,0,2,60000,true"</item>
         <item>"mobile_hipri,5,0,3,60000,true"</item>
+        <item>"ethernet,9,9,1,-1,ture"</item>
         <item>"mobile_fota,10,0,2,60000,true"</item>
         <item>"mobile_ims,11,0,2,60000,true"</item>
         <item>"mobile_cbs,12,0,2,60000,true"</item>
@@ -167,6 +169,7 @@
     <string-array translatable="false" name="radioAttributes">
         <item>"1,1"</item>
         <item>"0,1"</item>
+        <item>"9,1"</item>
     </string-array>
 
     <!-- Set of NetworkInfo.getType() that reflect data usage. -->

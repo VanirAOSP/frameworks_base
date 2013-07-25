@@ -234,7 +234,8 @@ LOCAL_SRC_FILES += \
 	telephony/java/com/android/internal/telephony/ITelephonyRegistry.aidl \
 	telephony/java/com/android/internal/telephony/IWapPushManager.aidl \
 	wifi/java/android/net/wifi/IWifiManager.aidl \
-	wifi/java/android/net/wifi/p2p/IWifiP2pManager.aidl
+	wifi/java/android/net/wifi/p2p/IWifiP2pManager.aidl \
+	ethernet/java/android/net/ethernet/IEthernetManager.aidl
 #
 
 

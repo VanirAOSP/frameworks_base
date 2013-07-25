@@ -74,6 +74,7 @@ LOCAL_SRC_FILES:= \
 	android_net_NetUtils.cpp \
 	android_net_TrafficStats.cpp \
 	android_net_wifi_Wifi.cpp \
+	android_net_ethernet.cpp \
 	android_nio_utils.cpp \
 	android_text_format_Time.cpp \
 	android_util_AssetManager.cpp \
