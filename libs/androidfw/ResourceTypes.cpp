@@ -564,7 +564,7 @@ decodeLength(const uint8_t** str)
     return len;
 }
 
-const uint16_t* ResStringPool::stringAt(size_t idx, size_t* u16len) const
+const char16_t* ResStringPool::stringAt(size_t idx, size_t* u16len) const
 {
     if (mError == NO_ERROR && idx < mHeader->stringCount) {
         const bool isUTF8 = (mHeader->flags&ResStringPool_header::UTF8_FLAG) != 0;
@@ -886,7 +886,7 @@ int32_t ResXMLParser::getCommentID() const
 const uint16_t* ResXMLParser::getComment(size_t* outLen) const
 {
     int32_t id = getCommentID();
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 uint32_t ResXMLParser::getLineNumber() const
@@ -905,7 +905,7 @@ int32_t ResXMLParser::getTextID() const
 const uint16_t* ResXMLParser::getText(size_t* outLen) const
 {
     int32_t id = getTextID();
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 ssize_t ResXMLParser::getTextValue(Res_value* outValue) const
@@ -929,7 +929,7 @@ const uint16_t* ResXMLParser::getNamespacePrefix(size_t* outLen) const
 {
     int32_t id = getNamespacePrefixID();
     //printf("prefix=%d  event=%p\n", id, mEventCode);
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 int32_t ResXMLParser::getNamespaceUriID() const
@@ -944,7 +944,7 @@ const uint16_t* ResXMLParser::getNamespaceUri(size_t* outLen) const
 {
     int32_t id = getNamespaceUriID();
     //printf("uri=%d  event=%p\n", id, mEventCode);
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 int32_t ResXMLParser::getElementNamespaceID() const
@@ -961,7 +961,7 @@ int32_t ResXMLParser::getElementNamespaceID() const
 const uint16_t* ResXMLParser::getElementNamespace(size_t* outLen) const
 {
     int32_t id = getElementNamespaceID();
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 int32_t ResXMLParser::getElementNameID() const
@@ -978,7 +978,7 @@ int32_t ResXMLParser::getElementNameID() const
 const uint16_t* ResXMLParser::getElementName(size_t* outLen) const
 {
     int32_t id = getElementNameID();
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 size_t ResXMLParser::getAttributeCount() const
@@ -1009,7 +1009,7 @@ const uint16_t* ResXMLParser::getAttributeNamespace(size_t idx, size_t* outLen) 
     int32_t id = getAttributeNamespaceID(idx);
     //printf("attribute namespace=%d  idx=%d  event=%p\n", id, idx, mEventCode);
     //XML_NOISY(printf("getAttributeNamespace 0x%x=0x%x\n", idx, id));
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 const char* ResXMLParser::getAttributeNamespace8(size_t idx, size_t* outLen) const
@@ -1040,7 +1040,7 @@ const uint16_t* ResXMLParser::getAttributeName(size_t idx, size_t* outLen) const
     int32_t id = getAttributeNameID(idx);
     //printf("attribute name=%d  idx=%d  event=%p\n", id, idx, mEventCode);
     //XML_NOISY(printf("getAttributeName 0x%x=0x%x\n", idx, id));
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 const char* ResXMLParser::getAttributeName8(size_t idx, size_t* outLen) const
@@ -1079,7 +1079,7 @@ const uint16_t* ResXMLParser::getAttributeStringValue(size_t idx, size_t* outLen
 {
     int32_t id = getAttributeValueStringID(idx);
     //XML_NOISY(printf("getAttributeValue 0x%x=0x%x\n", idx, id));
-    return id >= 0 ? mTree.mStrings.stringAt(id, outLen) : NULL;
+    return id >= 0 ? (const uint16_t*)mTree.mStrings.stringAt(id, outLen) : NULL;
 }
 
 int32_t ResXMLParser::getAttributeDataType(size_t idx) const
@@ -1144,63 +1144,21 @@ ssize_t ResXMLParser::indexOfAttribute(const char16_t* ns, size_t nsLen,
             return NAME_NOT_FOUND;
         }
         const size_t N = getAttributeCount();
-        if (mTree.mStrings.isUTF8()) {
-            String8 ns8, attr8;
-            if (ns != NULL) {
-                ns8 = String8(ns, nsLen);
-            }
-            attr8 = String8(attr, attrLen);
-            STRING_POOL_NOISY(ALOGI("indexOfAttribute UTF8 %s (%d) / %s (%d)", ns8.string(), nsLen,
-                    attr8.string(), attrLen));
-            for (size_t i=0; i<N; i++) {
-                size_t curNsLen = 0, curAttrLen = 0;
-                const char* curNs = getAttributeNamespace8(i, &curNsLen);
-                const char* curAttr = getAttributeName8(i, &curAttrLen);
-                STRING_POOL_NOISY(ALOGI("  curNs=%s (%d), curAttr=%s (%d)", curNs, curNsLen,
-                        curAttr, curAttrLen));
-                if (curAttr != NULL && curNsLen == nsLen && curAttrLen == attrLen
-                        && memcmp(attr8.string(), curAttr, attrLen) == 0) {
-                    if (ns == NULL) {
-                        if (curNs == NULL) {
-                            STRING_POOL_NOISY(ALOGI("  FOUND!"));
-                            return i;
-                        }
-                    } else if (curNs != NULL) {
-                        //printf(" --> ns=%s, curNs=%s\n",
-                        //       String8(ns).string(), String8(curNs).string());
-                        if (memcmp(ns8.string(), curNs, nsLen) == 0) {
-                            STRING_POOL_NOISY(ALOGI("  FOUND!"));
-                            return i;
-                        }
-                    }
-                }
-            }
-        } else {
-            STRING_POOL_NOISY(ALOGI("indexOfAttribute UTF16 %s (%d) / %s (%d)",
-                    String8(ns, nsLen).string(), nsLen,
-                    String8(attr, attrLen).string(), attrLen));
-            for (size_t i=0; i<N; i++) {
-                size_t curNsLen = 0, curAttrLen = 0;
-                const char16_t* curNs = getAttributeNamespace(i, &curNsLen);
-                const char16_t* curAttr = getAttributeName(i, &curAttrLen);
-                STRING_POOL_NOISY(ALOGI("  curNs=%s (%d), curAttr=%s (%d)",
-                        String8(curNs, curNsLen).string(), curNsLen,
-                        String8(curAttr, curAttrLen).string(), curAttrLen));
-                if (curAttr != NULL && curNsLen == nsLen && curAttrLen == attrLen
-                        && (memcmp(attr, curAttr, attrLen*sizeof(char16_t)) == 0)) {
-                    if (ns == NULL) {
-                        if (curNs == NULL) {
-                            STRING_POOL_NOISY(ALOGI("  FOUND!"));
-                            return i;
-                        }
-                    } else if (curNs != NULL) {
-                        //printf(" --> ns=%s, curNs=%s\n",
-                        //       String8(ns).string(), String8(curNs).string());
-                        if (memcmp(ns, curNs, nsLen*sizeof(char16_t)) == 0) {
-                            STRING_POOL_NOISY(ALOGI("  FOUND!"));
-                            return i;
-                        }
-                    }
+        for (size_t i=0; i<N; i++) {
+            size_t curNsLen, curAttrLen;
+            const char16_t* curNs = (const char16_t*)getAttributeNamespace(i, &curNsLen);
+            const char16_t* curAttr = (const char16_t*)getAttributeName(i, &curAttrLen);
+            //printf("%d: ns=%p attr=%p curNs=%p curAttr=%p\n",
+            //       i, ns, attr, curNs, curAttr);
+            //printf(" --> attr=%s, curAttr=%s\n",
+            //       String8(attr).string(), String8(curAttr).string());
+            if (attr && curAttr && (strzcmp16(attr, attrLen, curAttr, curAttrLen) == 0)) {
+                if (ns == NULL) {
+                    if (curNs == NULL) return i;
+                } else if (curNs != NULL) {
+                    //printf(" --> ns=%s, curNs=%s\n",
+                    //       String8(ns).string(), String8(curNs).string());
+                    if (strzcmp16(ns, nsLen, curNs, curNsLen) == 0) return i;
                 }
             }
         }
@@ -3915,7 +3873,7 @@ bool ResTable::expandResourceRef(const uint16_t* refStr, size_t refLen,
 {
     const char16_t* packageEnd = NULL;
     const char16_t* typeEnd = NULL;
-    const char16_t* p = refStr;
+    const char16_t* p = (const char16_t*)refStr;
     const char16_t* const end = p + refLen;
     while (p < end) {
         if (*p == ':') packageEnd = p;
@@ -3925,7 +3883,7 @@ bool ResTable::expandResourceRef(const uint16_t* refStr, size_t refLen,
         }
         p++;
     }
-    p = refStr;
+    p = (char16_t*)refStr;
     if (*p == '@') p++;
 
     if (outPublicOnly != NULL) {
@@ -4324,7 +4282,7 @@ bool ResTable::stringToValue(Res_value* outValue, String16* outString,
                 resourceNameLen = len - 1;
             }
             String16 package, type, name;
-            if (!expandResourceRef(resourceRefName,resourceNameLen, &package, &type, &name,
+            if (!expandResourceRef((const uint16_t*)resourceRefName,resourceNameLen, &package, &type, &name,
                                    defType, defPackage, &errorMsg)) {
                 if (accessor != NULL) {
                     accessor->reportError(accessorCookie, errorMsg);
@@ -4474,7 +4432,7 @@ bool ResTable::stringToValue(Res_value* outValue, String16* outString,
 
         static const String16 attr16("attr");
         String16 package, type, name;
-        if (!expandResourceRef(s+1, len-1, &package, &type, &name,
+        if (!expandResourceRef((const uint16_t*)s+1, len-1, &package, &type, &name,
                                &attr16, defPackage, &errorMsg)) {
             if (accessor != NULL) {
                 accessor->reportError(accessorCookie, errorMsg);
@@ -5156,7 +5114,7 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
             idx = mPackageGroups.size()+1;
 
             char16_t tmpName[sizeof(pkg->name)/sizeof(char16_t)];
-            strcpy16_dtoh(tmpName, pkg->name, sizeof(pkg->name)/sizeof(char16_t));
+            strcpy16_dtoh((uint16_t*)tmpName, (const uint16_t*)pkg->name, sizeof(pkg->name)/sizeof(char16_t));
             group = new PackageGroup(this, String16(tmpName), id);
             if (group == NULL) {
                 delete package;
