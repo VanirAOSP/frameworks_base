@@ -59,7 +59,7 @@ public class ImageWallpaper extends WallpaperService {
     private static final String PROPERTY_KERNEL_QEMU = "ro.kernel.qemu";
 
     static final boolean FIXED_SIZED_SURFACE = true;
-    static final boolean USE_OPENGL = true;
+    static final boolean USE_OPENGL = "false".equals(SystemProperties.get("ro.nohardwaregfx", "false"));
 
     WallpaperManager mWallpaperManager;
 
