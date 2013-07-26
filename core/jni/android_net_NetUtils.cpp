@@ -26,9 +26,7 @@
 extern "C" {
 int ifc_enable(const char *ifname);
 int ifc_disable(const char *ifname);
-int ifc_remove_default_route(const char *ifname);
 int ifc_reset_connections(const char *ifname, int reset_mask);
-int ifc_configure(const char *ifname, in_addr_t ipaddr, uint32_t prefixLength, in_addr_t gateway, in_addr_t dns1, in_addr_t dns2);
 
 int dhcp_do_request(const char * const ifname,
                     const char *ipaddr,
@@ -92,16 +90,6 @@ static jint android_net_utils_disableInterface(JNIEnv* env, jobject clazz, jstri
 
     const char *nameStr = env->GetStringUTFChars(ifname, NULL);
     result = ::ifc_disable(nameStr);
-    env->ReleaseStringUTFChars(ifname, nameStr);
-    return (jint)result;
-}
-
-static jint android_net_utils_removeDefaultRoute(JNIEnv* env, jobject clazz, jstring ifname)
-{
-    int result;
-
-    const char *nameStr = env->GetStringUTFChars(ifname, NULL);
-    result = ::ifc_remove_default_route(nameStr);
     env->ReleaseStringUTFChars(ifname, nameStr);
     return (jint)result;
 }
@@ -215,24 +203,6 @@ static jboolean android_net_utils_runDhcpCommon(JNIEnv* env, jobject clazz, jstr
 }
 
 
-static jboolean android_net_utils_configureInterface(JNIEnv* env,
-        jobject clazz,
-        jstring ifname,
-        jint ipaddr,
-        jint prefixLength,
-        jint gateway,
-        jint dns1,
-        jint dns2)
-{
-    int result;
-    uint32_t lease;
-
-    const char *nameStr = env->GetStringUTFChars(ifname, NULL);
-    result = ::ifc_configure(nameStr, ipaddr, prefixLength, gateway, dns1, dns2);
-    env->ReleaseStringUTFChars(ifname, nameStr);
-    return (jboolean)(result == 0);
-}
-
 static jboolean android_net_utils_runDhcp(JNIEnv* env, jobject clazz, jstring ifname, jobject info)
 {
     return android_net_utils_runDhcpCommon(env, clazz, ifname, info, false);
@@ -285,7 +255,6 @@ static JNINativeMethod gNetworkUtilMethods[] = {
     { "stopDhcp", "(Ljava/lang/String;)Z",  (void *)android_net_utils_stopDhcp },
     { "releaseDhcpLease", "(Ljava/lang/String;)Z",  (void *)android_net_utils_releaseDhcpLease },
     { "getDhcpError", "()Ljava/lang/String;", (void*) android_net_utils_getDhcpError },
-    { "configureNative", "(Ljava/lang/String;IIIII)Z",  (void *)android_net_utils_configureInterface },
 };
 
 int register_android_net_NetworkUtils(JNIEnv* env)

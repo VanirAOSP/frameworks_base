@@ -27,8 +27,6 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wimax.WimaxManagerConstants;
-import android.net.ethernet.EthernetManager;
-import android.net.ethernet.EthernetStateTracker;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.Message;
@@ -95,7 +93,6 @@ public class NetworkController extends BroadcastReceiver {
 
     String mContentDescriptionPhoneSignal;
     String mContentDescriptionWifi;
-    String mContentDescriptionEthernet;
     String mContentDescriptionWimax;
     String mContentDescriptionCombinedSignal;
     String mContentDescriptionDataType;
@@ -125,16 +122,6 @@ public class NetworkController extends BroadcastReceiver {
     private int mWimaxSignal = 0;
     private int mWimaxState = 0;
     private int mWimaxExtraState = 0;
-
-    // Ethernet
-    boolean mEthernetEnabled, mEthernetConnected;
-    int mEthernetIconId = 0; // overlay arrows for wifi direction
-    int mEthernetActivity = EthernetManager.DATA_ACTIVITY_NONE;
-    private static final int[] sEthImages = {
-            R.drawable.connect_established,
-            R.drawable.connect_no,
-            R.drawable.connect_creating
-        };
 
     // data connectivity (regardless of state, can we access the internet?)
     // state of inet connection - 0 not connected, 100 connected
@@ -248,7 +235,6 @@ public class NetworkController extends BroadcastReceiver {
         filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        filter.addAction(EthernetManager.ETHERNET_STATE_CHANGED_ACTION);
         filter.addAction(TelephonyIntents.ACTION_SIM_STATE_CHANGED);
         filter.addAction(TelephonyIntents.SPN_STRINGS_UPDATED_ACTION);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -432,9 +418,6 @@ public class NetworkController extends BroadcastReceiver {
                 action.equals(WimaxManagerConstants.SIGNAL_LEVEL_CHANGED_ACTION) ||
                 action.equals(WimaxManagerConstants.WIMAX_NETWORK_STATE_CHANGED_ACTION)) {
             updateWimaxState(intent);
-            refreshViews();
-        } else if (action.equals(EthernetManager.ETHERNET_STATE_CHANGED_ACTION)) {
-            updateEth(intent);
             refreshViews();
         }
     }
@@ -927,14 +910,6 @@ public class NetworkController extends BroadcastReceiver {
         }
     }
 
-    private void updateEthernetIcons() {
-        if (mEthernetConnected) {
-            mEthernetIconId = sEthImages[0];
-        } else {
-            mEthernetIconId = sEthImages[1];
-        }
-    }
-
     private String huntForSsid(WifiInfo info) {
         String ssid = info.getSSID();
         if (ssid != null) {
@@ -1141,21 +1116,6 @@ public class NetworkController extends BroadcastReceiver {
                 wifiLabel = "";
             } else {
                 wifiLabel = context.getString(R.string.status_bar_settings_signal_meter_disconnected);
-            }
-        }
-
-        if (mEthernetConnected) {
-            switch (mEthernetActivity) {
-                case EthernetStateTracker.EVENT_HW_CONNECTED:
-                case EthernetStateTracker.EVENT_INTERFACE_CONFIGURATION_SUCCEEDED:
-                    mEthernetIconId = sEthImages[0];
-                    break;
-                case EthernetStateTracker.EVENT_HW_DISCONNECTED:
-                case EthernetStateTracker.EVENT_INTERFACE_CONFIGURATION_FAILED:
-                    mEthernetIconId = sEthImages[1];
-                    return;
-                    default:
-                mEthernetIconId = sEthImages[2];
             }
         }
 
@@ -1421,22 +1381,6 @@ public class NetworkController extends BroadcastReceiver {
                 v.setText(mobileLabel); // comes from the telephony stack
                 v.setVisibility(View.VISIBLE);
             }
-        }
-    }
-
-    private final void updateEth(Intent intent) {
-        final int event = intent.getIntExtra(EthernetManager.EXTRA_ETHERNET_STATE, EthernetManager.ETHERNET_STATE_UNKNOWN);
-        switch (event) {
-            case EthernetStateTracker.EVENT_HW_CONNECTED:
-            case EthernetStateTracker.EVENT_INTERFACE_CONFIGURATION_SUCCEEDED:
-                mEthernetIconId = sEthImages[0];
-                break;
-            case EthernetStateTracker.EVENT_HW_DISCONNECTED:
-            case EthernetStateTracker.EVENT_INTERFACE_CONFIGURATION_FAILED:
-                mEthernetIconId = sEthImages[1];
-                return;
-            default:
-                mEthernetIconId = sEthImages[2];
         }
     }
 

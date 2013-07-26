@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import android.os.SystemProperties;
 package android.graphics;
+import android.os.SystemProperties;
 
 import android.text.GraphicsOperations;
 import android.text.SpannableString;
