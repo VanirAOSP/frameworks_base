@@ -218,7 +218,6 @@ public class PackageInfo implements Parcelable {
      * @hide
      */
     public int installLocation = INSTALL_LOCATION_INTERNAL_ONLY;
-    
     // Is Theme Apk
     /**
      * {@hide}
@@ -230,6 +229,16 @@ public class PackageInfo implements Parcelable {
      * {@hide}
      */
     public ThemeInfo [] themeInfos;
+
+
+    /** @hide */
+    public boolean requiredForAllUsers;
+
+    /** @hide */
+    public String restrictedAccountType;
+
+    /** @hide */
+    public String requiredAccountType;
 
     public PackageInfo() {
     }
@@ -325,6 +334,9 @@ public class PackageInfo implements Parcelable {
         dest.writeInt((drmProtectedThemeApk)? 1 : 0);
         dest.writeTypedArray(themeInfos, parcelableFlags);
         dest.writeString(lockedZipFilePath);
+        dest.writeInt(requiredForAllUsers ? 1 : 0);
+        dest.writeString(restrictedAccountType);
+        dest.writeString(requiredAccountType);
     }
 
     public static final Parcelable.Creator<PackageInfo> CREATOR
@@ -369,5 +381,8 @@ public class PackageInfo implements Parcelable {
         drmProtectedThemeApk = (source.readInt() != 0);
         themeInfos = source.createTypedArray(ThemeInfo.CREATOR);
         lockedZipFilePath = source.readString();
+        requiredForAllUsers = source.readInt() != 0;
+        restrictedAccountType = source.readString();
+        requiredAccountType = source.readString();
     }
 }

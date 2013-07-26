@@ -22,6 +22,7 @@ import android.media.MediaCrypto;
 import android.media.MediaFormat;
 import android.view.Surface;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -263,6 +264,15 @@ final public class MediaCodec {
             Surface surface, MediaCrypto crypto, int flags);
 
     /**
+     * Requests a Surface to use as the input to an encoder, in place of input buffers.  This
+     * may only be called after {@link #configure} and before {@link #start}.
+     * <p>
+     * The application is responsible for calling release() on the Surface when
+     * done.
+     */
+    public native final Surface createInputSurface();
+
+    /**
      * After successfully configuring the component, call start. On return
      * you can query the component for its input/output buffers.
      */
@@ -386,6 +396,27 @@ final public class MediaCodec {
          * see {@link #CRYPTO_MODE_UNENCRYPTED} and {@link #CRYPTO_MODE_AES_CTR}.
          */
         public int mode;
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(numSubSamples + " subsamples, key [");
+            String hexdigits = "0123456789abcdef";
+            for (int i = 0; i < key.length; i++) {
+                builder.append(hexdigits.charAt((key[i] & 0xf0) >> 4));
+                builder.append(hexdigits.charAt(key[i] & 0x0f));
+            }
+            builder.append("], iv [");
+            for (int i = 0; i < key.length; i++) {
+                builder.append(hexdigits.charAt((iv[i] & 0xf0) >> 4));
+                builder.append(hexdigits.charAt(iv[i] & 0x0f));
+            }
+            builder.append("], clear ");
+            builder.append(Arrays.toString(numBytesOfClearData));
+            builder.append(", encrypted ");
+            builder.append(Arrays.toString(numBytesOfEncryptedData));
+            return builder.toString();
+        }
     };
 
     /**
@@ -456,6 +487,13 @@ final public class MediaCodec {
      *               passing true renders this output buffer to the surface.
      */
     public native final void releaseOutputBuffer(int index, boolean render);
+
+    /**
+     * Signals end-of-stream on input.  Equivalent to submitting an empty buffer with
+     * {@link #BUFFER_FLAG_END_OF_STREAM} set.  This may only be used with
+     * encoders receiving input from a Surface created by {@link #createInputSurface}.
+     */
+    public native final void signalEndOfInputStream();
 
     /**
      * Call this after dequeueOutputBuffer signals a format change by returning

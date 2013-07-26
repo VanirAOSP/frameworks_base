@@ -17,7 +17,6 @@
 package com.android.systemui.statusbar.phone;
 
 import com.android.internal.view.RotationPolicy;
-import com.android.internal.widget.LockPatternUtils;
 import com.android.systemui.R;
 
 import com.android.systemui.statusbar.BaseStatusBar;
@@ -28,7 +27,6 @@ import com.android.systemui.statusbar.phone.QuickSettingsModel.UserState;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.WifiState;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BluetoothController;
-import com.android.systemui.statusbar.policy.BrightnessController;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.Prefs;
@@ -86,7 +84,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
 import android.widget.ImageView;
@@ -114,6 +111,7 @@ import java.util.HashMap;
  *
  */
 public class QuickSettings {
+    static final boolean DEBUG_GONE_TILES = false;
     private static final String TAG = "QuickSettings";
     public static final boolean SHOW_IME_TILE = false;
 
@@ -220,12 +218,7 @@ public class QuickSettings {
     private BluetoothAdapter mBluetoothAdapter;
     private TelephonyManager tm;
 
-    private BrightnessController mBrightnessController;
     private BluetoothController mBluetoothController;
-
-    private Dialog mBrightnessDialog;
-    private int mBrightnessDialogShortTimeout;
-    private int mBrightnessDialogLongTimeout;
 
     private AsyncTask<Void, Void, Pair<String, Drawable>> mUserInfoTask;
     private AsyncTask<Void, Void, Pair<String, Drawable>> mFavContactInfoTask;
@@ -234,6 +227,7 @@ public class QuickSettings {
     private LevelListDrawable mChargingBatteryLevels;
 
     boolean mTilesSetUp = false;
+    boolean mUseDefaultAvatar = false;
 
     private Handler mHandler;
 
@@ -315,10 +309,6 @@ public class QuickSettings {
         mBatteryLevels = (LevelListDrawable) r.getDrawable(R.drawable.qs_sys_battery);
         mChargingBatteryLevels =
                 (LevelListDrawable) r.getDrawable(R.drawable.qs_sys_battery_charging);
-        mBrightnessDialogLongTimeout =
-                r.getInteger(R.integer.quick_settings_brightness_dialog_long_timeout);
-        mBrightnessDialogShortTimeout =
-                r.getInteger(R.integer.quick_settings_brightness_dialog_short_timeout);
         mFastChargePath = r.getString(com.android.internal.R.string.config_fastChargePath);
         mQuickAudio = Environment.getExternalStorageDirectory().getAbsolutePath();
         mQuickAudio += "/quickrecord.3gp";
@@ -328,6 +318,7 @@ public class QuickSettings {
         filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         filter.addAction(Intent.ACTION_USER_SWITCHED);
+        filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         mContext.registerReceiver(mReceiver, filter);
 
         IntentFilter profileFilter = new IntentFilter();
@@ -398,8 +389,7 @@ public class QuickSettings {
         mUserInfoTask = new AsyncTask<Void, Void, Pair<String, Drawable>>() {
             @Override
             protected Pair<String, Drawable> doInBackground(Void... params) {
-                final UserManager um =
-                        (UserManager) mContext.getSystemService(Context.USER_SERVICE);
+                final UserManager um = UserManager.get(mContext);
 
                 // Fall back to the UserManager nickname if we can't read the
                 // name from the local
@@ -411,6 +401,7 @@ public class QuickSettings {
                     avatar = new BitmapDrawable(mContext.getResources(), rawAvatar);
                 } else {
                     avatar = mContext.getResources().getDrawable(R.drawable.ic_qs_default_user);
+                    mUseDefaultAvatar = true;
                 }
 
                 // If it's a single-user device, get the profile name, since the
@@ -629,6 +620,10 @@ public class QuickSettings {
         startSettingsActivity(intent, true);
     }
 
+    private void collapsePanels() {
+        getService().animateCollapsePanels();
+    }
+
     private void startSettingsActivity(Intent intent, boolean onlyProvisioned) {
         if (onlyProvisioned && !getService().isDeviceProvisioned())
             return;
@@ -639,7 +634,7 @@ public class QuickSettings {
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
-        getService().animateCollapsePanels();
+        collapsePanels();
     }
 
     private QuickSettingsTileView getTile(int tile, ViewGroup parent, LayoutInflater inflater) {
@@ -885,6 +880,9 @@ public class QuickSettings {
                                     Settings.Global.PREFERRED_NETWORK_MODE);
                         } catch (SettingNotFoundException e) {
                             e.printStackTrace();
+                collapsePanels();
+        mModel.addBrightnessTile(brightnessTile,
+                new QuickSettingsModel.BasicRefreshCallback(brightnessTile));
                         }
                         if (mDataState == Phone.NT_MODE_GSM_ONLY) {
                             tm.toggle2G(false);
@@ -1521,6 +1519,8 @@ public class QuickSettings {
                                     ContactsContract.QuickContact.MODE_LARGE, null);
                             mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
                         }
+        mModel.addSettingsTile(settingsTile,
+                new QuickSettingsModel.BasicRefreshCallback(settingsTile));
                     }
                 });
                 mModel.addFavContactTile(quick, new QuickSettingsModel.RefreshCallback() {
@@ -1666,6 +1666,10 @@ public class QuickSettings {
         for (String toggle : splitter) {
             tiles.add(toggle);
         }
+            public void refreshView(QuickSettingsTileView unused, State state) {
+                wifiTile.setImageResource(wifiState.iconId);
+                wifiTile.setText(wifiState.label);
+                wifiTile.setContentDescription(mContext.getString(
 
         return tiles;
     }
@@ -1707,9 +1711,9 @@ public class QuickSettings {
 
     private void addTemporaryTiles(final ViewGroup parent, final LayoutInflater inflater) {
         // Alarm tile
-        QuickSettingsTileView alarmTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        alarmTile.setContent(R.layout.quick_settings_tile_alarm, inflater);
+        final QuickSettingsBasicTile alarmTile
+                = new QuickSettingsBasicTile(mContext);
+        alarmTile.setImageResource(R.drawable.ic_qs_alarm_on);
         alarmTile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1735,9 +1739,9 @@ public class QuickSettings {
         parent.addView(alarmTile);
 
         // Wifi Display
-        QuickSettingsTileView wifiDisplayTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        wifiDisplayTile.setContent(R.layout.quick_settings_tile_wifi_display, inflater);
+        QuickSettingsBasicTile wifiDisplayTile
+                = new QuickSettingsBasicTile(mContext);
+        wifiDisplayTile.setImageResource(R.drawable.ic_qs_remote_display);
         wifiDisplayTile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1757,13 +1761,14 @@ public class QuickSettings {
         parent.addView(wifiDisplayTile);
 
         // Bug reports
-        QuickSettingsTileView bugreportTile = (QuickSettingsTileView)
-                inflater.inflate(R.layout.quick_settings_tile, parent, false);
-        bugreportTile.setContent(R.layout.quick_settings_tile_bugreport, inflater);
+        final QuickSettingsBasicTile bugreportTile
+                = new QuickSettingsBasicTile(mContext);
+        bugreportTile.setImageResource(com.android.internal.R.drawable.stat_sys_adb);
+        bugreportTile.setTextResource(com.android.internal.R.string.bugreport_title);
         bugreportTile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mBar.collapseAllPanels(true);
+                collapsePanels();
                 showBugreportDialog();
             }
         });
@@ -1796,72 +1801,12 @@ public class QuickSettings {
 
         ((QuickSettingsContainerView) mContainerView).updateResources();
         mContainerView.requestLayout();
-
-        // Reset the dialog
-        boolean isBrightnessDialogVisible = false;
-        if (mBrightnessDialog != null) {
-            removeAllBrightnessDialogCallbacks();
-
-            isBrightnessDialogVisible = mBrightnessDialog.isShowing();
-            mBrightnessDialog.dismiss();
-        }
-        mBrightnessDialog = null;
-        if (isBrightnessDialogVisible) {
-            showBrightnessDialog();
-        }
     }
 
-    private void removeAllBrightnessDialogCallbacks() {
-        mHandler.removeCallbacks(mDismissBrightnessDialogRunnable);
-    }
-
-    private Runnable mDismissBrightnessDialogRunnable = new Runnable() {
-        public void run() {
-            if (mBrightnessDialog != null && mBrightnessDialog.isShowing()) {
-                mBrightnessDialog.dismiss();
-            }
-            removeAllBrightnessDialogCallbacks();
-        };
-    };
 
     private void showBrightnessDialog() {
-        if (mBrightnessDialog == null) {
-            mBrightnessDialog = new Dialog(mContext);
-            mBrightnessDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            mBrightnessDialog.setContentView(R.layout.quick_settings_brightness_dialog);
-            mBrightnessDialog.setCanceledOnTouchOutside(true);
-
-            mBrightnessController = new BrightnessController(mContext,
-                    (ImageView) mBrightnessDialog.findViewById(R.id.brightness_icon),
-                    (ToggleSlider) mBrightnessDialog.findViewById(R.id.brightness_slider));
-            mBrightnessController.addStateChangedCallback(mModel);
-            mBrightnessDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    mBrightnessController = null;
-                }
-            });
-
-            mBrightnessDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-            mBrightnessDialog.getWindow().getAttributes().privateFlags |=
-                    WindowManager.LayoutParams.PRIVATE_FLAG_SHOW_FOR_ALL_USERS;
-            mBrightnessDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        }
-        if (!mBrightnessDialog.isShowing()) {
-            try {
-                WindowManagerGlobal.getWindowManagerService().dismissKeyguard();
-            } catch (RemoteException e) {
-            }
-            mBrightnessDialog.show();
-            dismissBrightnessDialog(mBrightnessDialogLongTimeout);
-        }
-    }
-
-    private void dismissBrightnessDialog(int timeout) {
-        removeAllBrightnessDialogCallbacks();
-        if (mBrightnessDialog != null) {
-            mHandler.postDelayed(mDismissBrightnessDialogRunnable, timeout);
-        }
+        Intent intent = new Intent(Intent.ACTION_SHOW_BRIGHTNESS_DIALOG);
+        mContext.sendBroadcast(intent);
     }
 
     private void showBugreportDialog() {
@@ -1964,8 +1909,10 @@ public class QuickSettings {
             if (ContactsContract.Intents.ACTION_PROFILE_CHANGED.equals(action) ||
                     Intent.ACTION_USER_INFO_CHANGED.equals(action)) {
                 try {
-                    final int userId = ActivityManagerNative.getDefault().getCurrentUser().id;
-                    if (getSendingUserId() == userId) {
+                    final int currentUser = ActivityManagerNative.getDefault().getCurrentUser().id;
+                    final int changedUser =
+                            intent.getIntExtra(Intent.EXTRA_USER_HANDLE, getSendingUserId());
+                    if (changedUser == currentUser) {
                         reloadUserInfo();
                         reloadFavContactInfo();
                     }

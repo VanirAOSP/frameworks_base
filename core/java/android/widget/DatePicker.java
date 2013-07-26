@@ -423,7 +423,7 @@ public class DatePicker extends FrameLayout {
      * @see #getCalendarView()
      */
     public boolean getCalendarViewShown() {
-        return mCalendarView.isShown();
+        return (mCalendarView.getVisibility() == View.VISIBLE);
     }
 
     /**

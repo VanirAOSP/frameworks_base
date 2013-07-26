@@ -21,7 +21,7 @@
     android:id="@+id/notificationArea"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:layout_alignParentRight="true"
+    android:layout_alignParentEnd="true"
     android:orientation="horizontal"
     android:background="?android:attr/listChoiceBackgroundIndicator"
     android:clickable="true"
@@ -35,12 +35,20 @@
         android:orientation="horizontal"
         >
 
-        <com.android.systemui.statusbar.policy.CompatModeButton
-            android:id="@+id/compatModeButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="8dip"
+            android:layout_marginStart="8dip"
+            android:src="@drawable/ic_sysbar_ime_default"
+            android:visibility="gone"
+            android:contentDescription="@string/accessibility_ime_switch_button"
+            />
+
+        <com.android.systemui.statusbar.policy.CompatModeButton
+            android:id="@+id/compatModeButton"
             android:paddingRight="-4dip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dip"
             android:src="@drawable/ic_sysbar_zoom"
             android:visibility="gone"
             android:contentDescription="@string/accessibility_compatibility_zoom_button"
@@ -48,9 +56,6 @@
    
         <com.android.systemui.statusbar.tablet.InputMethodButton
             android:id="@+id/imeSwitchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="8dip"
             android:src="@drawable/ic_sysbar_ime_default"
             android:visibility="gone"
             android:contentDescription="@string/accessibility_ime_switch_button"
@@ -68,7 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
                 android:alpha="0.4"
                 />
         </com.android.systemui.statusbar.tablet.NotificationIconArea>
@@ -96,8 +101,8 @@
             android:id="@+id/network_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginRight="6dip"
-            android:layout_marginLeft="6dip"
+            android:layout_marginEnd="6dip"
+            android:layout_marginStart="6dip"
             android:gravity="center"
             android:singleLine="true"
             android:visibility="gone"
@@ -109,7 +114,7 @@
             android:id="@+id/signal_battery_cluster"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="horizontal"
             android:gravity="center"
             >
@@ -130,7 +135,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:singleLine="true"
-                android:paddingLeft="4dip"
                 android:paddingRight="4dp"
                 android:gravity="center_vertical|left"
                 />

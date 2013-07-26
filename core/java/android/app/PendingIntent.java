@@ -41,7 +41,7 @@ import android.util.AndroidException;
  * you are granting it the right to perform the operation you have specified
  * as if the other application was yourself (with the same permissions and
  * identity).  As such, you should be careful about how you build the PendingIntent:
- * often, for example, the base Intent you supply will have the component
+ * almost always, for example, the base Intent you supply should have the component
  * name explicitly set to one of your own components, to ensure it is ultimately
  * sent there and nowhere else.
  *
@@ -200,6 +200,11 @@ public final class PendingIntent implements Parcelable {
      * existing activity, so you must use the {@link Intent#FLAG_ACTIVITY_NEW_TASK
      * Intent.FLAG_ACTIVITY_NEW_TASK} launch flag in the Intent.
      *
+     * <p class="note">For security reasons, the {@link android.content.Intent}
+     * you supply here should almost always be an <em>explicit intent</em>,
+     * that is specify an explicit component to be delivered to through
+     * {@link Intent#setClass(android.content.Context, Class)} Intent.setClass</p>
+     *
      * @param context The Context in which this PendingIntent should start
      * the activity.
      * @param requestCode Private request code for the sender
@@ -226,6 +231,11 @@ public final class PendingIntent implements Parcelable {
      * existing activity, so you must use the {@link Intent#FLAG_ACTIVITY_NEW_TASK
      * Intent.FLAG_ACTIVITY_NEW_TASK} launch flag in the Intent.
      *
+     * <p class="note">For security reasons, the {@link android.content.Intent}
+     * you supply here should almost always be an <em>explicit intent</em>,
+     * that is specify an explicit component to be delivered to through
+     * {@link Intent#setClass(android.content.Context, Class)} Intent.setClass</p>
+     *
      * @param context The Context in which this PendingIntent should start
      * the activity.
      * @param requestCode Private request code for the sender
@@ -248,7 +258,8 @@ public final class PendingIntent implements Parcelable {
         String resolvedType = intent != null ? intent.resolveTypeIfNeeded(
                 context.getContentResolver()) : null;
         try {
-            intent.setAllowFds(false);
+            intent.migrateExtraStreamToClipData();
+            intent.prepareToLeaveProcess();
             IIntentSender target =
                 ActivityManagerNative.getDefault().getIntentSender(
                     ActivityManager.INTENT_SENDER_ACTIVITY, packageName,
@@ -272,7 +283,8 @@ public final class PendingIntent implements Parcelable {
         String resolvedType = intent != null ? intent.resolveTypeIfNeeded(
                 context.getContentResolver()) : null;
         try {
-            intent.setAllowFds(false);
+            intent.migrateExtraStreamToClipData();
+            intent.prepareToLeaveProcess();
             IIntentSender target =
                 ActivityManagerNative.getDefault().getIntentSender(
                     ActivityManager.INTENT_SENDER_ACTIVITY, packageName,
@@ -310,6 +322,11 @@ public final class PendingIntent implements Parcelable {
      * This is because it is the most specific of the supplied intents, and the
      * UI the user actually sees when the intents are started.
      * </p>
+     *
+     * <p class="note">For security reasons, the {@link android.content.Intent} objects
+     * you supply here should almost always be <em>explicit intents</em>,
+     * that is specify an explicit component to be delivered to through
+     * {@link Intent#setClass(android.content.Context, Class)} Intent.setClass</p>
      *
      * @param context The Context in which this PendingIntent should start
      * the activity.
@@ -356,6 +373,11 @@ public final class PendingIntent implements Parcelable {
      * UI the user actually sees when the intents are started.
      * </p>
      *
+     * <p class="note">For security reasons, the {@link android.content.Intent} objects
+     * you supply here should almost always be <em>explicit intents</em>,
+     * that is specify an explicit component to be delivered to through
+     * {@link Intent#setClass(android.content.Context, Class)} Intent.setClass</p>
+     *
      * @param context The Context in which this PendingIntent should start
      * the activity.
      * @param requestCode Private request code for the sender
@@ -375,7 +397,8 @@ public final class PendingIntent implements Parcelable {
         String packageName = context.getPackageName();
         String[] resolvedTypes = new String[intents.length];
         for (int i=0; i<intents.length; i++) {
-            intents[i].setAllowFds(false);
+            intents[i].migrateExtraStreamToClipData();
+            intents[i].prepareToLeaveProcess();
             resolvedTypes[i] = intents[i].resolveTypeIfNeeded(context.getContentResolver());
         }
         try {
@@ -400,7 +423,8 @@ public final class PendingIntent implements Parcelable {
         String packageName = context.getPackageName();
         String[] resolvedTypes = new String[intents.length];
         for (int i=0; i<intents.length; i++) {
-            intents[i].setAllowFds(false);
+            intents[i].migrateExtraStreamToClipData();
+            intents[i].prepareToLeaveProcess();
             resolvedTypes[i] = intents[i].resolveTypeIfNeeded(context.getContentResolver());
         }
         try {
@@ -418,6 +442,11 @@ public final class PendingIntent implements Parcelable {
     /**
      * Retrieve a PendingIntent that will perform a broadcast, like calling
      * {@link Context#sendBroadcast(Intent) Context.sendBroadcast()}.
+     *
+     * <p class="note">For security reasons, the {@link android.content.Intent}
+     * you supply here should almost always be an <em>explicit intent</em>,
+     * that is specify an explicit component to be delivered to through
+     * {@link Intent#setClass(android.content.Context, Class)} Intent.setClass</p>
      *
      * @param context The Context in which this PendingIntent should perform
      * the broadcast.
@@ -450,7 +479,7 @@ public final class PendingIntent implements Parcelable {
         String resolvedType = intent != null ? intent.resolveTypeIfNeeded(
                 context.getContentResolver()) : null;
         try {
-            intent.setAllowFds(false);
+            intent.prepareToLeaveProcess();
             IIntentSender target =
                 ActivityManagerNative.getDefault().getIntentSender(
                     ActivityManager.INTENT_SENDER_BROADCAST, packageName,
@@ -467,6 +496,11 @@ public final class PendingIntent implements Parcelable {
      * Retrieve a PendingIntent that will start a service, like calling
      * {@link Context#startService Context.startService()}.  The start
      * arguments given to the service will come from the extras of the Intent.
+     *
+     * <p class="note">For security reasons, the {@link android.content.Intent}
+     * you supply here should almost always be an <em>explicit intent</em>,
+     * that is specify an explicit component to be delivered to through
+     * {@link Intent#setClass(android.content.Context, Class)} Intent.setClass</p>
      *
      * @param context The Context in which this PendingIntent should start
      * the service.
@@ -488,7 +522,7 @@ public final class PendingIntent implements Parcelable {
         String resolvedType = intent != null ? intent.resolveTypeIfNeeded(
                 context.getContentResolver()) : null;
         try {
-            intent.setAllowFds(false);
+            intent.prepareToLeaveProcess();
             IIntentSender target =
                 ActivityManagerNative.getDefault().getIntentSender(
                     ActivityManager.INTENT_SENDER_SERVICE, packageName,
@@ -701,6 +735,15 @@ public final class PendingIntent implements Parcelable {
      * sending the Intent.  The returned string is supplied by the system, so
      * that an application can not spoof its package.
      *
+     * <p class="note">Be careful about how you use this.  All this tells you is
+     * who created the PendingIntent.  It does <strong>not</strong> tell you who
+     * handed the PendingIntent to you: that is, PendingIntent objects are intended to be
+     * passed between applications, so the PendingIntent you receive from an application
+     * could actually be one it received from another application, meaning the result
+     * you get here will identify the original application.  Because of this, you should
+     * only use this information to identify who you expect to be interacting with
+     * through a {@link #send} call, not who gave you the PendingIntent.</p>
+     *
      * @return The package name of the PendingIntent, or null if there is
      * none associated with it.
      */
@@ -719,6 +762,15 @@ public final class PendingIntent implements Parcelable {
      * PendingIntent, that is the identity under which you will actually be
      * sending the Intent.  The returned integer is supplied by the system, so
      * that an application can not spoof its uid.
+     *
+     * <p class="note">Be careful about how you use this.  All this tells you is
+     * who created the PendingIntent.  It does <strong>not</strong> tell you who
+     * handed the PendingIntent to you: that is, PendingIntent objects are intended to be
+     * passed between applications, so the PendingIntent you receive from an application
+     * could actually be one it received from another application, meaning the result
+     * you get here will identify the original application.  Because of this, you should
+     * only use this information to identify who you expect to be interacting with
+     * through a {@link #send} call, not who gave you the PendingIntent.</p>
      *
      * @return The uid of the PendingIntent, or -1 if there is
      * none associated with it.
@@ -740,6 +792,15 @@ public final class PendingIntent implements Parcelable {
      * that an application can not spoof its user.  See
      * {@link android.os.Process#myUserHandle() Process.myUserHandle()} for
      * more explanation of user handles.
+     *
+     * <p class="note">Be careful about how you use this.  All this tells you is
+     * who created the PendingIntent.  It does <strong>not</strong> tell you who
+     * handed the PendingIntent to you: that is, PendingIntent objects are intended to be
+     * passed between applications, so the PendingIntent you receive from an application
+     * could actually be one it received from another application, meaning the result
+     * you get here will identify the original application.  Because of this, you should
+     * only use this information to identify who you expect to be interacting with
+     * through a {@link #send} call, not who gave you the PendingIntent.</p>
      *
      * @return The user handle of the PendingIntent, or null if there is
      * none associated with it.

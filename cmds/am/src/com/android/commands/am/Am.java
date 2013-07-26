@@ -24,12 +24,14 @@ import android.app.IActivityController;
 import android.app.IActivityManager;
 import android.app.IInstrumentationWatcher;
 import android.app.Instrumentation;
+import android.app.UiAutomationConnection;
 import android.content.ComponentName;
 import android.content.IIntentReceiver;
 import android.content.Intent;
 import android.content.pm.IPackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
@@ -60,6 +62,7 @@ public class Am extends BaseCommand {
 
     private int mRepeat = 0;
     private int mUserId;
+    private String mReceiverPermission;
 
     private String mProfileFile;
 
@@ -92,6 +95,7 @@ public class Am extends BaseCommand {
                 "       am set-debug-app [-w] [--persistent] <PACKAGE>\n" +
                 "       am clear-debug-app\n" +
                 "       am monitor [--gdb <port>]\n" +
+                "       am hang [--allow-restart]\n" +
                 "       am screen-compat [on|off] <PACKAGE>\n" +
                 "       am to-uri [INTENT]\n" +
                 "       am to-intent-uri [INTENT]\n" +
@@ -166,6 +170,9 @@ public class Am extends BaseCommand {
                 "\n" +
                 "am monitor: start monitoring for crashes or ANRs.\n" +
                 "    --gdb: start gdbserv on the given port at crash/ANR\n" +
+                "\n" +
+                "am hang: hang the system.\n" +
+                "    --allow-restart: allow watchdog to perform normal system restart\n" +
                 "\n" +
                 "am screen-compat: control screen compatibility mode of <PACKAGE>.\n" +
                 "\n" +
@@ -247,6 +254,8 @@ public class Am extends BaseCommand {
             runBugReport();
         } else if (op.equals("monitor")) {
             runMonitor();
+        } else if (op.equals("hang")) {
+            runHang();
         } else if (op.equals("screen-compat")) {
             runScreenCompat();
         } else if (op.equals("to-uri")) {
@@ -449,6 +458,8 @@ public class Am extends BaseCommand {
                 mStartFlags |= ActivityManager.START_FLAG_OPENGL_TRACES;
             } else if (opt.equals("--user")) {
                 mUserId = parseUserArg(nextArgRequired());
+            } else if (opt.equals("--receiver-permission")) {
+                mReceiverPermission = nextArgRequired();
             } else {
                 System.err.println("Error: Unknown option: " + opt);
                 return null;
@@ -599,11 +610,11 @@ public class Am extends BaseCommand {
             IActivityManager.WaitResult result = null;
             int res;
             if (mWaitOption) {
-                result = mAm.startActivityAndWait(null, intent, mimeType,
+                result = mAm.startActivityAndWait(null, null, intent, mimeType,
                             null, null, 0, mStartFlags, mProfileFile, fd, null, mUserId);
                 res = result.result;
             } else {
-                res = mAm.startActivityAsUser(null, intent, mimeType,
+                res = mAm.startActivityAsUser(null, null, intent, mimeType,
                         null, null, 0, mStartFlags, mProfileFile, fd, null, mUserId);
             }
             PrintStream out = mWaitOption ? System.out : System.err;
@@ -725,8 +736,8 @@ public class Am extends BaseCommand {
         Intent intent = makeIntent(UserHandle.USER_ALL);
         IntentReceiver receiver = new IntentReceiver();
         System.out.println("Broadcasting: " + intent);
-        mAm.broadcastIntent(null, intent, null, receiver, 0, null, null, null, true, false,
-                mUserId);
+        mAm.broadcastIntent(null, intent, null, receiver, 0, null, null, mReceiverPermission,
+                android.app.AppOpsManager.OP_NONE, true, false, mUserId);
         receiver.waitForFinish();
     }
 
@@ -773,10 +784,13 @@ public class Am extends BaseCommand {
         if (cn == null) throw new IllegalArgumentException("Bad component name: " + cnArg);
 
         InstrumentationWatcher watcher = null;
+        UiAutomationConnection connection = null;
         if (wait) {
             watcher = new InstrumentationWatcher();
             watcher.setRawOutput(rawMode);
+            connection = new UiAutomationConnection();
         }
+
         float[] oldAnims = null;
         if (no_window_animation) {
             oldAnims = wm.getAnimationScales();
@@ -784,7 +798,7 @@ public class Am extends BaseCommand {
             wm.setAnimationScale(1, 0.0f);
         }
 
-        if (!mAm.startInstrumentation(cn, profileFile, 0, args, watcher, userId)) {
+        if (!mAm.startInstrumentation(cn, profileFile, 0, args, watcher, connection, userId)) {
             throw new AndroidException("INSTRUMENTATION_FAILED: " + cn.flattenToString());
         }
 
@@ -1086,6 +1100,18 @@ public class Am extends BaseCommand {
             }
         }
 
+        @Override
+        public int systemNotResponding(String message)
+                throws RemoteException {
+            synchronized (this) {
+                System.out.println("** ERROR: PROCESS NOT RESPONDING");
+                System.out.println("message: " + message);
+                System.out.println("#");
+                System.out.println("Allowing system to die.");
+                return -1;
+            }
+        }
+
         void killGdbLocked() {
             mGotGdbPrint = false;
             if (mGdbProcess != null) {
@@ -1283,6 +1309,22 @@ public class Am extends BaseCommand {
 
         MyActivityController controller = new MyActivityController(gdbPort);
         controller.run();
+    }
+
+    private void runHang() throws Exception {
+        String opt;
+        boolean allowRestart = false;
+        while ((opt=nextOption()) != null) {
+            if (opt.equals("--allow-restart")) {
+                allowRestart = true;
+            } else {
+                System.err.println("Error: Unknown option: " + opt);
+                return;
+            }
+        }
+
+        System.out.println("Hanging the system...");
+        mAm.hang(new Binder(), allowRestart);
     }
 
     private void runScreenCompat() throws Exception {

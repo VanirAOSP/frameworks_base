@@ -35,7 +35,11 @@ import android.widget.TextView;
 
 import com.android.systemui.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+
+import libcore.icu.ICU;
 
 public class DateView extends TextView implements OnClickListener {
     private static final String TAG = "DateView";

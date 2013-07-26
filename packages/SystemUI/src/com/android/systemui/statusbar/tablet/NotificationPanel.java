@@ -133,6 +133,11 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
 
         mContentParent = (ViewGroup)findViewById(R.id.content_parent);
         mContentParent.bringToFront();
+        mTitleArea = (NotificationPanelTitle) findViewById(R.id.title_area);
+        mTitleArea.setPanel(this);
+
+        mSettingsButton = (ImageView) findViewById(R.id.settings_button);
+        mNotificationButton = (ImageView) findViewById(R.id.notification_button);
 
         mNotificationScroller = findViewById(R.id.notification_scroller);
         mContentFrame = (ViewGroup)findViewById(R.id.content_frame);
@@ -674,38 +679,14 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         }
     }
 
-    private static class FastColorDrawable extends Drawable {
-        private final int mColor;
+    public void refreshLayout(int layoutDirection) {
+        // Force asset reloading
+        mSettingsButton.setImageDrawable(null);
+        mSettingsButton.setImageResource(R.drawable.ic_notify_settings);
 
-        public FastColorDrawable(int color) {
-            mColor = 0xff000000 | color;
-        }
-
-        @Override
-        public void draw(Canvas canvas) {
-            canvas.drawColor(mColor, PorterDuff.Mode.SRC);
-        }
-
-        @Override
-        public void setAlpha(int alpha) {
-        }
-
-        @Override
-        public void setColorFilter(ColorFilter cf) {
-        }
-
-        @Override
-        public int getOpacity() {
-            return PixelFormat.OPAQUE;
-        }
-
-        @Override
-        public void setBounds(int left, int top, int right, int bottom) {
-        }
-
-        @Override
-        public void setBounds(Rect bounds) {
-        }
+        // Force asset reloading
+        mNotificationButton.setImageDrawable(null);
+        mNotificationButton.setImageResource(R.drawable.ic_notifications);
     }
 }
 

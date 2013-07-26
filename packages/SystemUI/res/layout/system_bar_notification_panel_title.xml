@@ -23,16 +23,16 @@
     android:layout_height="wrap_content"
     android:clickable="false"
     android:orientation="vertical"
-    android:paddingLeft="26dp"
+    android:paddingStart="26dp"
     android:paddingTop="4dp"
-    android:paddingRight="26dp"
+    android:paddingEnd="26dp"
     >
 
     <TableLayout
         android:id="@+id/icons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
@@ -51,7 +51,7 @@
                     android:id="@+id/bluetooth"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:paddingRight="16dp"
+                    android:paddingEnd="16dp"
                     android:visibility="gone"
                     android:contentDescription="@null"
                     android:layout_gravity="center_vertical"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:paddingRight="6dp"
+                android:paddingEnd="6dp"
                 >
 
                 <ImageView
@@ -85,10 +85,10 @@
             <TextView
                 android:id="@+id/mobile_text"
                 style="@style/SystemBarNotificationText"
-                android:layout_gravity="left|center_vertical"
+                android:layout_gravity="start|center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="12dp"
+                android:paddingEnd="12dp"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:text="@string/status_bar_settings_settings_button"
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:paddingRight="6dp"
+                android:paddingEnd="6dp"
                 >
 
                 <ImageView
@@ -121,10 +121,10 @@
             <TextView
                 android:id="@+id/wifi_text"
                 style="@style/SystemBarNotificationText"
-                android:layout_gravity="left|center_vertical"
+                android:layout_gravity="start|center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="12dp"
+                android:paddingEnd="12dp"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:text="@string/status_bar_settings_settings_button"
@@ -137,7 +137,7 @@
                 android:scaleType="centerInside"
                 android:layout_gravity="center_vertical"
                 android:layout_alignBaseline="@id/wifi_signal"
-                android:paddingRight="6dp"
+                android:paddingEnd="6dp"
                 android:contentDescription="@null"
                 />
 
@@ -146,8 +146,8 @@
                 style="@style/SystemBarNotificationText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center_vertical"
-                android:paddingRight="2dp"
+                android:layout_gravity="start|center_vertical"
+                android:paddingEnd="2dp"
                 android:singleLine="true"
                 android:text="@string/status_bar_settings_settings_button"
                 />
@@ -216,8 +216,8 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:textAppearance="@style/TextAppearance.SystemBar.Expanded.Date"
             />
 

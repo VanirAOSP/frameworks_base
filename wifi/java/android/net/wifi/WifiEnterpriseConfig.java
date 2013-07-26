@@ -17,19 +17,14 @@ package android.net.wifi;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Process;
 import android.security.Credentials;
+import android.security.KeyStore;
 import android.text.TextUtils;
-import android.util.Log;
-
-import com.android.org.bouncycastle.asn1.ASN1InputStream;
-import com.android.org.bouncycastle.asn1.ASN1Sequence;
-import com.android.org.bouncycastle.asn1.DEROctetString;
-import com.android.org.bouncycastle.asn1.x509.BasicConstraints;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.KeyFactory;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
@@ -42,7 +37,10 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Enterprise configuration details for Wi-Fi @hide */
+/** 
+ * Enterprise configuration details for Wi-Fi. Stores details about the EAP method
+ * and any associated credentials.
+ */
 public class WifiEnterpriseConfig implements Parcelable {
     private static final String TAG = "WifiEnterpriseConfig";
     /**
@@ -212,26 +210,42 @@ public class WifiEnterpriseConfig implements Parcelable {
                 }
             };
 
+    /** The Extensible Authentication Protocol method used */
     public static final class Eap {
-        /* NONE represents an empty enterprise config */
+        /** No EAP method used. Represents an empty config */
         public static final int NONE    = -1;
+        /** Protected EAP */
         public static final int PEAP    = 0;
+        /** EAP-Transport Layer Security */
         public static final int TLS     = 1;
+        /** EAP-Tunneled Transport Layer Security */
         public static final int TTLS    = 2;
+        /** EAP-Password */
         public static final int PWD     = 3;
         /** @hide */
         public static final String[] strings = { "PEAP", "TLS", "TTLS", "PWD" };
+
+        /** Prevent initialization */
+        private Eap() {}
     }
 
+    /** The inner authentication method used */
     public static final class Phase2 {
         public static final int NONE        = 0;
+        /** Password Authentication Protocol */
         public static final int PAP         = 1;
+        /** Microsoft Challenge Handshake Authentication Protocol */
         public static final int MSCHAP      = 2;
+        /** Microsoft Challenge Handshake Authentication Protocol v2 */
         public static final int MSCHAPV2    = 3;
+        /** Generic Token Card */
         public static final int GTC         = 4;
         private static final String PREFIX = "auth=";
         /** @hide */
         public static final String[] strings = {EMPTY_VALUE, "PAP", "MSCHAP", "MSCHAPV2", "GTC" };
+
+        /** Prevent initialization */
+        private Phase2() {}
     }
 
     /** Internal use only */
@@ -250,6 +264,7 @@ public class WifiEnterpriseConfig implements Parcelable {
      * Set the EAP authentication method.
      * @param  eapMethod is one {@link Eap#PEAP}, {@link Eap#TLS}, {@link Eap#TTLS} or
      *                   {@link Eap#PWD}
+     * @throws IllegalArgumentException on an invalid eap method
      */
     public void setEapMethod(int eapMethod) {
         switch (eapMethod) {
@@ -281,6 +296,7 @@ public class WifiEnterpriseConfig implements Parcelable {
      * @param phase2Method is the inner authentication method and can be one of {@link Phase2#NONE},
      *                     {@link Phase2#PAP}, {@link Phase2#MSCHAP}, {@link Phase2#MSCHAPV2},
      *                     {@link Phase2#GTC}
+     * @throws IllegalArgumentException on an invalid phase2 method
      *
      */
     public void setPhase2Method(int phase2Method) {
@@ -355,6 +371,16 @@ public class WifiEnterpriseConfig implements Parcelable {
     }
 
     /**
+     * Get the password.
+     *
+     * Returns locally set password value. For networks fetched from
+     * framework, returns "*".
+     */
+    public String getPassword() {
+        return getFieldValue(PASSWORD_KEY, "");
+    }
+
+    /**
      * Set CA certificate alias.
      *
      * <p> See the {@link android.security.KeyChain} for details on installing or choosing
@@ -380,16 +406,32 @@ public class WifiEnterpriseConfig implements Parcelable {
      * Specify a X.509 certificate that identifies the server.
      *
      * <p>A default name is automatically assigned to the certificate and used
-     * with this configuration.
+     * with this configuration. The framework takes care of installing the
+     * certificate when the config is saved and removing the certificate when
+     * the config is removed.
+     *
      * @param cert X.509 CA certificate
      * @throws IllegalArgumentException if not a CA certificate
      */
     public void setCaCertificate(X509Certificate cert) {
-        if (cert.getBasicConstraints() >= 0) {
-            mCaCert = cert;
+        if (cert != null) {
+            if (cert.getBasicConstraints() >= 0) {
+                mCaCert = cert;
+            } else {
+                throw new IllegalArgumentException("Not a CA certificate");
+            }
         } else {
-            throw new IllegalArgumentException("Not a CA certificate");
+            mCaCert = null;
         }
+    }
+
+    /**
+     * Get CA certificate
+     *
+     * @return X.509 CA certificate
+     */
+    public X509Certificate getCaCertificate() {
+        return mCaCert;
     }
 
     /**
@@ -427,9 +469,13 @@ public class WifiEnterpriseConfig implements Parcelable {
      * Specify a private key and client certificate for client authorization.
      *
      * <p>A default name is automatically assigned to the key entry and used
-     * with this configuration.
+     * with this configuration.  The framework takes care of installing the
+     * key entry when the config is saved and removing the key entry when
+     * the config is removed.
+
      * @param privateKey
      * @param clientCertificate
+     * @throws IllegalArgumentException for an invalid key or certificate.
      */
     public void setClientKeyEntry(PrivateKey privateKey, X509Certificate clientCertificate) {
         if (clientCertificate != null) {
@@ -448,6 +494,15 @@ public class WifiEnterpriseConfig implements Parcelable {
         mClientCertificate = clientCertificate;
     }
 
+    /**
+     * Get client certificate
+     *
+     * @return X.509 client certificate
+     */
+    public X509Certificate getClientCertificate() {
+        return mClientCertificate;
+    }
+
     boolean needsKeyStore() {
         // Has no keys to be installed
         if (mClientCertificate == null && mCaCert == null) return false;
@@ -461,7 +516,8 @@ public class WifiEnterpriseConfig implements Parcelable {
         String caCertName = Credentials.CA_CERTIFICATE + name;
         if (mClientCertificate != null) {
             byte[] privKeyData = mClientPrivateKey.getEncoded();
-            ret = keyStore.importKey(privKeyName, privKeyData);
+            ret = keyStore.importKey(privKeyName, privKeyData, Process.WIFI_UID,
+                            KeyStore.FLAG_ENCRYPTED);
             if (ret == false) {
                 return ret;
             }
@@ -469,7 +525,7 @@ public class WifiEnterpriseConfig implements Parcelable {
             ret = putCertInKeyStore(keyStore, userCertName, mClientCertificate);
             if (ret == false) {
                 // Remove private key installed
-                keyStore.delKey(privKeyName);
+                keyStore.delKey(privKeyName, Process.WIFI_UID);
                 return ret;
             }
         }
@@ -479,8 +535,8 @@ public class WifiEnterpriseConfig implements Parcelable {
             if (ret == false) {
                 if (mClientCertificate != null) {
                     // Remove client key+cert
-                    keyStore.delKey(privKeyName);
-                    keyStore.delete(userCertName);
+                    keyStore.delKey(privKeyName, Process.WIFI_UID);
+                    keyStore.delete(userCertName, Process.WIFI_UID);
                 }
                 return ret;
             }
@@ -505,7 +561,7 @@ public class WifiEnterpriseConfig implements Parcelable {
             Certificate cert) {
         try {
             byte[] certData = Credentials.convertToPem(cert);
-            return keyStore.put(name, certData);
+            return keyStore.put(name, certData, Process.WIFI_UID, KeyStore.FLAG_ENCRYPTED);
         } catch (IOException e1) {
             return false;
         } catch (CertificateException e2) {
@@ -513,18 +569,18 @@ public class WifiEnterpriseConfig implements Parcelable {
         }
     }
 
-    void removeKeys(android.security.KeyStore keyStore) {
+    void removeKeys(KeyStore keyStore) {
         String client = getFieldValue(CLIENT_CERT_KEY, CLIENT_CERT_PREFIX);
         // a valid client certificate is configured
         if (!TextUtils.isEmpty(client)) {
-            keyStore.delKey(Credentials.USER_PRIVATE_KEY + client);
-            keyStore.delete(Credentials.USER_CERTIFICATE + client);
+            keyStore.delKey(Credentials.USER_PRIVATE_KEY + client, Process.WIFI_UID);
+            keyStore.delete(Credentials.USER_CERTIFICATE + client, Process.WIFI_UID);
         }
 
         String ca = getFieldValue(CA_CERT_KEY, CA_CERT_PREFIX);
         // a valid ca certificate is configured
         if (!TextUtils.isEmpty(ca)) {
-            keyStore.delete(Credentials.CA_CERTIFICATE + ca);
+            keyStore.delete(Credentials.CA_CERTIFICATE + ca, Process.WIFI_UID);
         }
     }
 
@@ -605,7 +661,31 @@ public class WifiEnterpriseConfig implements Parcelable {
         return true;
     }
 
+    /** Migrate certs from global pool to wifi UID if not already done */
+    void migrateCerts(android.security.KeyStore keyStore) {
+        String client = getFieldValue(CLIENT_CERT_KEY, CLIENT_CERT_PREFIX);
+        // a valid client certificate is configured
+        if (!TextUtils.isEmpty(client)) {
+            if (!keyStore.contains(Credentials.USER_PRIVATE_KEY + client, Process.WIFI_UID)) {
+                keyStore.duplicate(Credentials.USER_PRIVATE_KEY + client, -1,
+                        Credentials.USER_PRIVATE_KEY + client, Process.WIFI_UID);
+                keyStore.duplicate(Credentials.USER_CERTIFICATE + client, -1,
+                        Credentials.USER_CERTIFICATE + client, Process.WIFI_UID);
+            }
+        }
+
+        String ca = getFieldValue(CA_CERT_KEY, CA_CERT_PREFIX);
+        // a valid ca certificate is configured
+        if (!TextUtils.isEmpty(ca)) {
+            if (!keyStore.contains(Credentials.CA_CERTIFICATE + ca, Process.WIFI_UID)) {
+                keyStore.duplicate(Credentials.CA_CERTIFICATE + ca, -1,
+                        Credentials.CA_CERTIFICATE + ca, Process.WIFI_UID);
+            }
+        }
+    }
+
     private String removeDoubleQuotes(String string) {
+        if (TextUtils.isEmpty(string)) return "";
         int length = string.length();
         if ((length > 1) && (string.charAt(0) == '"')
                 && (string.charAt(length - 1) == '"')) {

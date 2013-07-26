@@ -18,14 +18,10 @@ package android.net.wifi;
 
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pGroup;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.text.TextUtils;
 import android.net.wifi.p2p.nsd.WifiP2pServiceInfo;
-import android.net.wifi.p2p.nsd.WifiP2pServiceRequest;
 import android.util.Log;
 
-import java.io.InputStream;
-import java.lang.Process;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +38,14 @@ public class WifiNative {
 
     private static final boolean DBG = false;
     private final String mTAG;
-    private static final int DEFAULT_GROUP_OWNER_INTENT = 6;
+    private static final int DEFAULT_GROUP_OWNER_INTENT     = 6;
 
-    static final int BLUETOOTH_COEXISTENCE_MODE_ENABLED = 0;
-    static final int BLUETOOTH_COEXISTENCE_MODE_DISABLED = 1;
-    static final int BLUETOOTH_COEXISTENCE_MODE_SENSE = 2;
+    static final int BLUETOOTH_COEXISTENCE_MODE_ENABLED     = 0;
+    static final int BLUETOOTH_COEXISTENCE_MODE_DISABLED    = 1;
+    static final int BLUETOOTH_COEXISTENCE_MODE_SENSE       = 2;
+
+    static final int SCAN_WITHOUT_CONNECTION_SETUP          = 1;
+    static final int SCAN_WITH_CONNECTION_SETUP             = 2;
 
     String mInterface = "";
     private boolean mSuspendOptEnabled = false;
@@ -116,15 +115,13 @@ public class WifiNative {
         return (pong != null && pong.equals("PONG"));
     }
 
-    public boolean scan() {
-       return doBooleanCommand("SCAN");
-    }
-
-    public boolean setScanMode(boolean setActive) {
-        if (setActive) {
-            return doBooleanCommand("DRIVER SCAN-ACTIVE");
+    public boolean scan(int type) {
+        if (type == SCAN_WITHOUT_CONNECTION_SETUP) {
+            return doBooleanCommand("SCAN TYPE=ONLY");
+        } else if (type == SCAN_WITH_CONNECTION_SETUP) {
+            return doBooleanCommand("SCAN");
         } else {
-            return doBooleanCommand("DRIVER SCAN-PASSIVE");
+            throw new IllegalArgumentException("Invalid scan type");
         }
     }
 
@@ -201,6 +198,7 @@ public class WifiNative {
     /**
      * Format of results:
      * =================
+     * id=1
      * bssid=68:7f:74:d7:1b:6e
      * freq=2412
      * level=-43
@@ -208,12 +206,14 @@ public class WifiNative {
      * age=2623
      * flags=[WPA2-PSK-CCMP][WPS][ESS]
      * ssid=zubyb
+     * ====
      *
      * RANGE=ALL gets all scan results
+     * RANGE=ID- gets results from ID
      * MASK=<N> see wpa_supplicant/src/common/wpa_ctrl.h for details
      */
-    public String scanResults() {
-        return doStringCommand("BSS RANGE=ALL MASK=0x1986");
+    public String scanResults(int sid) {
+        return doStringCommand("BSS RANGE=" + sid + "- MASK=0x21987");
     }
 
     public boolean startDriver() {
@@ -332,12 +332,7 @@ public class WifiNative {
     }
 
     public boolean saveConfig() {
-        // Make sure we never write out a value for AP_SCAN other than 1
-        return doBooleanCommand("AP_SCAN 1") && doBooleanCommand("SAVE_CONFIG");
-    }
-
-    public boolean setScanResultHandling(int mode) {
-        return doBooleanCommand("AP_SCAN " + mode);
+        return doBooleanCommand("SAVE_CONFIG");
     }
 
     public boolean addToBlacklist(String bssid) {
@@ -799,47 +794,13 @@ public class WifiNative {
         return doBooleanCommand("P2P_SERV_DISC_CANCEL_REQ " + id);
     }
 
-    public boolean getModeCapability(String mode) {
-        String ret = doStringCommand("GET_CAPABILITY modes");
-        if (!TextUtils.isEmpty(ret)) {
-            String[] tokens = ret.split(" ");
-            for (String t : tokens) {
-                if (t.compareTo(mode) == 0)
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    public native static boolean setMode(int mode);
-
-    public List<WifiChannel> getSupportedChannels() {
-        boolean ibssAllowed;
-        List<WifiChannel> channels = new ArrayList<WifiChannel>();
-        String ret = doStringCommand("GET_CAPABILITY channels");
-
-        if (!TextUtils.isEmpty(ret)) {
-            String[] lines = ret.split("\n");
-            for (String l : lines) {
-               if (l.startsWith("Mode") || TextUtils.isEmpty(l)) continue;
-
-               String[] tokens = l.split(" ");
-               if (tokens.length < 4) continue;
-
-               if (tokens.length == 6 && tokens[5].contains("NO_IBSS"))
-                   ibssAllowed = false;
-               else
-                   ibssAllowed = true;
-
-               try {
-                   WifiChannel ch = new WifiChannel(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[3]), ibssAllowed);
-                   if (!channels.contains(ch))
-                       channels.add(ch);
-               } catch (java.lang.NumberFormatException e) {
-                   Log.d(mTAG, "Can't parse: " + l);
-               }
-            }
-        }
-        return channels;
+    /* Set the current mode of miracast operation.
+     *  0 = disabled
+     *  1 = operating as source
+     *  2 = operating as sink
+     */
+    public void setMiracastMode(int mode) {
+        // Note: optional feature on the driver. It is ok for this to fail.
+        doBooleanCommand("DRIVER MIRACAST " + mode);
     }
 }

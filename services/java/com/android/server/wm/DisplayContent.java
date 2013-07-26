@@ -25,7 +25,6 @@ import android.util.Slog;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.DisplayInfo;
-import android.view.IDisplayContentChangeListener;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -48,12 +47,6 @@ class DisplayContent {
     /** Z-ordered (bottom-most first) list of all Window objects. Assigned to an element
      * from mDisplayWindows; */
     private WindowList mWindows = new WindowList();
-
-    // Specification for magnifying the display content.
-    MagnificationSpec mMagnificationSpec;
-
-    // Callback for observing content changes on a display.
-    RemoteCallbackList<IDisplayContentChangeListener> mDisplayContentChangeListeners;
 
     // This protects the following display size properties, so that
     // getDisplaySize() doesn't need to acquire the global lock.  This is
