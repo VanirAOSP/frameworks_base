@@ -15,13 +15,11 @@
  */
 
 package android.graphics;
-import android.os.SystemProperties;
 
 import android.text.GraphicsOperations;
 import android.text.SpannableString;
 import android.text.SpannedString;
 import android.text.TextUtils;
-import android.util.Log;
 
 import javax.microedition.khronos.opengles.GL;
 
@@ -39,8 +37,6 @@ import javax.microedition.khronos.opengles.GL;
  * Canvas and Drawables</a> developer guide.</p></div>
  */
 public class Canvas {
-    static final String LOG_TAG = "Canvas";
-
     // assigned in constructors or setBitmap, freed in finalizer
     int mNativeCanvas;
     
@@ -1360,9 +1356,6 @@ public class Canvas {
      * @param paint The paint used for the text (e.g. color, size, style)
      */
     public void drawText(char[] text, int index, int count, float x, float y, Paint paint) {
-        if (SystemProperties.getBoolean("ro.debug.drawtext", false)) {
-            Log.d(LOG_TAG, text);
-        }
         if ((index | count | (index + count) |
             (text.length - index - count)) < 0) {
             throw new IndexOutOfBoundsException();
