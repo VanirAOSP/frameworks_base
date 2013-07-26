@@ -29,7 +29,6 @@ extern int doAdd(Bundle* bundle);
 extern int doRemove(Bundle* bundle);
 extern int doPackage(Bundle* bundle);
 extern int doCrunch(Bundle* bundle);
-extern int doSingleCrunch(Bundle* bundle);
 
 extern int calcPercent(long uncompressedLen, long compressedLen);
 

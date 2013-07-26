@@ -53,6 +53,8 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import libcore.icu.LocaleData;
+
 import com.android.internal.R;
 
 /**
@@ -211,18 +213,50 @@ public class Clock extends TextView implements OnClickListener {
 
     private final CharSequence getSmallTime() {
         Context context = getContext();
-        boolean b24 = DateFormat.is24HourFormat(context);
-        int res;
+        boolean is24 = DateFormat.is24HourFormat(context);
+        LocaleData d = LocaleData.get(context.getResources().getConfiguration().locale);
 
-        if (b24) {
-            res = R.string.twenty_four_hour_time_format;
+        final char MAGIC1 = '\uEF00';
+        final char MAGIC2 = '\uEF01';
+
+        SimpleDateFormat sdf;
+        String format = is24 ? d.timeFormat24 : d.timeFormat12;
+        if (!format.equals(mClockFormatString)) {
+            /*
+             * Search for an unquoted "a" in the format string, so we can
+             * add dummy characters around it to let us find it again after
+             * formatting and change its size.
+             */
+            if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
+                int a = -1;
+                boolean quoted = false;
+                for (int i = 0; i < format.length(); i++) {
+                    char c = format.charAt(i);
+
+                    if (c == '\'') {
+                        quoted = !quoted;
+                    }
+                    if (!quoted && c == 'a') {
+                        a = i;
+                        break;
+                    }
+                }
+
+                if (a >= 0) {
+                    // Move a back so any whitespace before AM/PM is also in the alternate size.
+                    final int b = a;
+                    while (a > 0 && Character.isWhitespace(format.charAt(a-1))) {
+                        a--;
+                    }
+                    format = format.substring(0, a) + MAGIC1 + format.substring(a, b)
+                        + "a" + MAGIC2 + format.substring(b + 1);
+                }
+            }
+            mClockFormat = sdf = new SimpleDateFormat(format);
+            mClockFormatString = format;
         } else {
-            res = R.string.twelve_hour_time_format;
+            sdf = mClockFormat;
         }
-        
-        String format = context.getString(res);
-        SimpleDateFormat sdf = updateFormatString(IsShade(), format);
-
         String result = sdf.format(mCalendar.getTime());
 
         if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {

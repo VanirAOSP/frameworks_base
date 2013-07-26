@@ -16,6 +16,8 @@
 
 package android.media;
 
+import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
 import android.media.MediaCrypto;
 import android.media.MediaFormat;
 import android.view.Surface;
@@ -168,7 +170,7 @@ final public class MediaCodec {
      * <li>"audio/3gpp" - AMR narrowband audio
      * <li>"audio/amr-wb" - AMR wideband audio
      * <li>"audio/mpeg" - MPEG1/2 audio layer III
-     * <li>"audio/mp4a-latm" - AAC audio
+     * <li>"audio/mp4a-latm" - AAC audio (note, this is raw AAC packets, not packaged in LATM!)
      * <li>"audio/vorbis" - vorbis audio
      * <li>"audio/g711-alaw" - G.711 alaw audio
      * <li>"audio/g711-mlaw" - G.711 ulaw audio
@@ -497,6 +499,22 @@ final public class MediaCodec {
      * specifies the scaling mode to use. The default is "scale to fit".
      */
     public native final void setVideoScalingMode(int mode);
+
+    /**
+     * Get the component name. If the codec was created by createDecoderByType
+     * or createEncoderByType, what component is chosen is not known beforehand.
+     */
+    public native final String getName();
+
+    /**
+     * Get the codec info. If the codec was created by createDecoderByType
+     * or createEncoderByType, what component is chosen is not known beforehand,
+     * and thus the caller does not have the MediaCodecInfo.
+     */
+    public MediaCodecInfo getCodecInfo() {
+        return MediaCodecList.getCodecInfoAt(
+                   MediaCodecList.findCodecByName(getName()));
+    }
 
     private native final ByteBuffer[] getBuffers(boolean input);
 

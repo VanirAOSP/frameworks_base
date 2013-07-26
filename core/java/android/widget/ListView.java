@@ -2993,11 +2993,9 @@ public class ListView extends AbsListView {
             while (first.getBottom() < listTop) {
                 AbsListView.LayoutParams layoutParams = (LayoutParams) first.getLayoutParams();
                 if (recycleBin.shouldRecycleViewType(layoutParams.viewType)) {
-                    detachViewFromParent(first);
                     recycleBin.addScrapView(first, mFirstPosition);
-                } else {
-                    removeViewInLayout(first);
                 }
+                detachViewFromParent(first);
                 first = getChildAt(0);
                 mFirstPosition++;
             }
@@ -3024,11 +3022,9 @@ public class ListView extends AbsListView {
             while (last.getTop() > listBottom) {
                 AbsListView.LayoutParams layoutParams = (LayoutParams) last.getLayoutParams();
                 if (recycleBin.shouldRecycleViewType(layoutParams.viewType)) {
-                    detachViewFromParent(last);
                     recycleBin.addScrapView(last, mFirstPosition+lastIndex);
-                } else {
-                    removeViewInLayout(last);
                 }
+                detachViewFromParent(last);
                 last = getChildAt(--lastIndex);
             }
         }

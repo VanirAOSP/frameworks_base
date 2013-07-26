@@ -32,6 +32,7 @@ static struct {
     { AID_MEDIA, "media.camera" },
     { AID_MEDIA, "media.audio_policy" },
     { AID_MEDIA, "media.nvidia.audio_alsa" },
+    { AID_MEDIA, "android.media.IAAHMetaDataService" },
     { AID_DRM,   "drm.drmManager" },
     { AID_NFC,   "nfc" },
     { AID_BLUETOOTH, "bluetooth" },
@@ -47,6 +48,7 @@ static struct {
     { AID_RADIO, "simphonebook" },
     { AID_MEDIA, "common_time.clock" },
     { AID_MEDIA, "common_time.config" },
+    { AID_KEYSTORE, "android.security.keystore" },
 };
 
 void *svcmgr_handle;

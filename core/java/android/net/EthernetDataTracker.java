@@ -74,7 +74,7 @@ public class EthernetDataTracker implements NetworkStateTracker {
         }
 
         public void interfaceLinkStateChanged(String iface, boolean up) {
-            if (mIface.equals(iface) && mLinkUp != up) {
+            if (mIface.equals(iface)) {
                 Log.d(TAG, "Interface " + iface + " link " + (up ? "up" : "down"));
                 mLinkUp = up;
                 mTracker.mNetworkInfo.setIsAvailable(up);
@@ -178,6 +178,7 @@ public class EthernetDataTracker implements NetworkStateTracker {
                 mLinkProperties = dhcpInfoInternal.makeLinkProperties();
                 mLinkProperties.setInterfaceName(mIface);
 
+                mNetworkInfo.setIsAvailable(true);
                 mNetworkInfo.setDetailedState(DetailedState.CONNECTED, null, mHwAddr);
                 Message msg = mCsHandler.obtainMessage(EVENT_STATE_CHANGED, mNetworkInfo);
                 msg.sendToTarget();

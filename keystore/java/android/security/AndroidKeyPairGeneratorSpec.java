@@ -28,13 +28,30 @@ import java.util.Date;
 import javax.security.auth.x500.X500Principal;
 
 /**
- * This provides the required parameters needed for initializing the KeyPair
- * generator that works with
- * <a href="{@docRoot}guide/topics/security/keystore.html">Android KeyStore
- * facility</a>.
+ * This provides the required parameters needed for initializing the
+ * {@code KeyPairGenerator} that works with <a href="{@docRoot}
+ * guide/topics/security/keystore.html">Android KeyStore facility</a>. The
+ * Android KeyStore facility is accessed through a
+ * {@link java.security.KeyPairGenerator} API using the {@code AndroidKeyStore}
+ * provider. The {@code context} passed in may be used to pop up some UI to ask
+ * the user to unlock or initialize the Android KeyStore facility.
+ * <p>
+ * After generation, the {@code keyStoreAlias} is used with the
+ * {@link java.security.KeyStore#getEntry(String, java.security.KeyStore.ProtectionParameter)}
+ * interface to retrieve the {@link PrivateKey} and its associated
+ * {@link Certificate} chain.
+ * <p>
+ * The KeyPair generator will create a self-signed certificate with the subject
+ * as its X.509v3 Subject Distinguished Name and as its X.509v3 Issuer
+ * Distinguished Name along with the other parameters specified with the
+ * {@link Builder}.
+ * <p>
+ * The self-signed X.509 certificate may be replaced at a later time by a
+ * certificate signed by a real Certificate Authority.
+ *
  * @hide
  */
-public class AndroidKeyPairGeneratorSpec implements AlgorithmParameterSpec {
+public final class AndroidKeyPairGeneratorSpec implements AlgorithmParameterSpec {
     private final String mKeystoreAlias;
 
     private final Context mContext;
@@ -46,6 +63,8 @@ public class AndroidKeyPairGeneratorSpec implements AlgorithmParameterSpec {
     private final Date mStartDate;
 
     private final Date mEndDate;
+
+    private final int mFlags;
 
     /**
      * Parameter specification for the "{@code AndroidKeyPairGenerator}"
@@ -74,9 +93,11 @@ public class AndroidKeyPairGeneratorSpec implements AlgorithmParameterSpec {
      *            period
      * @throws IllegalArgumentException when any argument is {@code null} or
      *             {@code endDate} is before {@code startDate}.
+     * @hide should be built with AndroidKeyPairGeneratorSpecBuilder
      */
     public AndroidKeyPairGeneratorSpec(Context context, String keyStoreAlias,
-            X500Principal subjectDN, BigInteger serialNumber, Date startDate, Date endDate) {
+            X500Principal subjectDN, BigInteger serialNumber, Date startDate, Date endDate,
+            int flags) {
         if (context == null) {
             throw new IllegalArgumentException("context == null");
         } else if (TextUtils.isEmpty(keyStoreAlias)) {
@@ -99,47 +120,205 @@ public class AndroidKeyPairGeneratorSpec implements AlgorithmParameterSpec {
         mSerialNumber = serialNumber;
         mStartDate = startDate;
         mEndDate = endDate;
+        mFlags = flags;
     }
 
     /**
-     * @hide
+     * Returns the alias that will be used in the {@code java.security.KeyStore}
+     * in conjunction with the {@code AndroidKeyStore}.
      */
-    String getKeystoreAlias() {
+    public String getKeystoreAlias() {
         return mKeystoreAlias;
     }
 
     /**
-     * @hide
+     * Gets the Android context used for operations with this instance.
      */
-    Context getContext() {
+    public Context getContext() {
         return mContext;
     }
 
     /**
-     * @hide
+     * Gets the subject distinguished name to be used on the X.509 certificate
+     * that will be put in the {@link java.security.KeyStore}.
      */
-    X500Principal getSubjectDN() {
+    public X500Principal getSubjectDN() {
         return mSubjectDN;
     }
 
     /**
-     * @hide
+     * Gets the serial number to be used on the X.509 certificate that will be
+     * put in the {@link java.security.KeyStore}.
      */
-    BigInteger getSerialNumber() {
+    public BigInteger getSerialNumber() {
         return mSerialNumber;
     }
 
     /**
-     * @hide
+     * Gets the start date to be used on the X.509 certificate that will be put
+     * in the {@link java.security.KeyStore}.
      */
-    Date getStartDate() {
+    public Date getStartDate() {
         return mStartDate;
+    }
+
+    /**
+     * Gets the end date to be used on the X.509 certificate that will be put in
+     * the {@link java.security.KeyStore}.
+     */
+    public Date getEndDate() {
+        return mEndDate;
     }
 
     /**
      * @hide
      */
-    Date getEndDate() {
-        return mEndDate;
+    int getFlags() {
+        return mFlags;
+    }
+
+    /**
+     * Returns {@code true} if this parameter will require generated keys to be
+     * encrypted in the {@link java.security.KeyStore}.
+     */
+    public boolean isEncryptionRequired() {
+        return (mFlags & KeyStore.FLAG_ENCRYPTED) != 0;
+    }
+
+    /**
+     * Builder class for {@link AndroidKeyPairGeneratorSpec} objects.
+     * <p>
+     * This will build a parameter spec for use with the <a href="{@docRoot}
+     * guide/topics/security/keystore.html">Android KeyStore facility</a>.
+     * <p>
+     * The required fields must be filled in with the builder.
+     * <p>
+     * Example:
+     *
+     * <pre class="prettyprint">
+     * Calendar start = new Calendar();
+     * Calendar end = new Calendar();
+     * end.add(1, Calendar.YEAR);
+     *
+     * AndroidKeyPairGeneratorSpec spec =
+     *         new AndroidKeyPairGeneratorSpec.Builder(mContext)
+     *                 .setAlias(&quot;myKey&quot;)
+     *                 .setSubject(new X500Principal(&quot;CN=myKey&quot;))
+     *                 .setSerial(BigInteger.valueOf(1337))
+     *                 .setStartDate(start.getTime())
+     *                 .setEndDate(end.getTime())
+     *                 .build();
+     * </pre>
+     */
+    public final static class Builder {
+        private final Context mContext;
+
+        private String mKeystoreAlias;
+
+        private X500Principal mSubjectDN;
+
+        private BigInteger mSerialNumber;
+
+        private Date mStartDate;
+
+        private Date mEndDate;
+
+        private int mFlags;
+
+        /**
+         * Creates a new instance of the {@code Builder} with the given
+         * {@code context}. The {@code context} passed in may be used to pop up
+         * some UI to ask the user to unlock or initialize the Android KeyStore
+         * facility.
+         */
+        public Builder(Context context) {
+            if (context == null) {
+                throw new NullPointerException("context == null");
+            }
+            mContext = context;
+        }
+
+        /**
+         * Sets the alias to be used to retrieve the key later from a
+         * {@link java.security.KeyStore} instance using the
+         * {@code AndroidKeyStore} provider.
+         */
+        public Builder setAlias(String alias) {
+            if (alias == null) {
+                throw new NullPointerException("alias == null");
+            }
+            mKeystoreAlias = alias;
+            return this;
+        }
+
+        /**
+         * Sets the subject used for the self-signed certificate of the
+         * generated key pair.
+         */
+        public Builder setSubject(X500Principal subject) {
+            if (subject == null) {
+                throw new NullPointerException("subject == null");
+            }
+            mSubjectDN = subject;
+            return this;
+        }
+
+        /**
+         * Sets the serial number used for the self-signed certificate of the
+         * generated key pair.
+         */
+        public Builder setSerialNumber(BigInteger serialNumber) {
+            if (serialNumber == null) {
+                throw new NullPointerException("serialNumber == null");
+            }
+            mSerialNumber = serialNumber;
+            return this;
+        }
+
+        /**
+         * Sets the start of the validity period for the self-signed certificate
+         * of the generated key pair.
+         */
+        public Builder setStartDate(Date startDate) {
+            if (startDate == null) {
+                throw new NullPointerException("startDate == null");
+            }
+            mStartDate = startDate;
+            return this;
+        }
+
+        /**
+         * Sets the end of the validity period for the self-signed certificate
+         * of the generated key pair.
+         */
+        public Builder setEndDate(Date endDate) {
+            if (endDate == null) {
+                throw new NullPointerException("endDate == null");
+            }
+            mEndDate = endDate;
+            return this;
+        }
+
+        /**
+         * Indicates that this key must be encrypted at rest on storage. Note
+         * that enabling this will require that the user enable a strong lock
+         * screen (e.g., PIN, password) before creating or using the generated
+         * key is successful.
+         */
+        public Builder setEncryptionRequired() {
+            mFlags |= KeyStore.FLAG_ENCRYPTED;
+            return this;
+        }
+
+        /**
+         * Builds the instance of the {@code AndroidKeyPairGeneratorSpec}.
+         *
+         * @throws IllegalArgumentException if a required field is missing
+         * @return built instance of {@code AndroidKeyPairGeneratorSpec}
+         */
+        public AndroidKeyPairGeneratorSpec build() {
+            return new AndroidKeyPairGeneratorSpec(mContext, mKeystoreAlias, mSubjectDN,
+                    mSerialNumber, mStartDate, mEndDate, mFlags);
+        }
     }
 }

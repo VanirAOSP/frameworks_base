@@ -813,8 +813,6 @@
   <java-symbol type="string" name="time_picker_separator" />
   <java-symbol type="string" name="time_wday" />
   <java-symbol type="string" name="time_wday_date" />
-  <java-symbol type="string" name="twelve_hour_time_format" />
-  <java-symbol type="string" name="twenty_four_hour_time_format" />
   <java-symbol type="string" name="upload_file" />
   <java-symbol type="string" name="user_switched" />
   <java-symbol type="string" name="volume_alarm" />
@@ -1369,7 +1367,6 @@
   <java-symbol type="id" name="sliding_layout" />
   <java-symbol type="id" name="keyguard_add_widget" />
   <java-symbol type="id" name="keyguard_add_widget_view" />
-  <java-symbol type="id" name="sliding_layout" />
   <java-symbol type="id" name="multi_pane_challenge" />
   <java-symbol type="id" name="keyguard_user_selector" />
   <java-symbol type="id" name="key_enter" />

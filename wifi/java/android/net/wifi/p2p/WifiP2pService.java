@@ -30,6 +30,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.IConnectivityManager;
 import android.net.ConnectivityManager;
@@ -68,6 +69,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Slog;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,11 +165,11 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
     /* Commands to the WifiStateMachine */
     public static final int P2P_CONNECTION_CHANGED          =   BASE + 11;
 
-    /* These commands are used to tempoarily disconnect wifi when we detect
+    /* These commands are used to temporarily disconnect wifi when we detect
      * a frequency conflict which would make it impossible to have with p2p
      * and wifi active at the same time.
      *
-     * If the user chooses to disable wifi tempoarily, we keep wifi disconnected
+     * If the user chooses to disable wifi temporarily, we keep wifi disconnected
      * until the p2p connection is done and terminated at which point we will
      * bring back wifi up
      *
@@ -387,7 +389,7 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
          * not get latest updates about the device without being in discovery state.
          *
          * From the framework perspective, the device is still there since we are connecting or
-         * connected to it. so we keep these devices in a seperate list, so that they are removed
+         * connected to it. so we keep these devices in a separate list, so that they are removed
          * when connection is cancelled or lost
          */
         private final WifiP2pDeviceList mPeersLostDuringConnection = new WifiP2pDeviceList();
@@ -1053,48 +1055,48 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
                     //and wait instead for the GO_NEGOTIATION_REQUEST_EVENT.
                     //Handling provision discovery and issuing a p2p_connect before
                     //group negotiation comes through causes issues
-                   break;
+                    break;
                 case WifiP2pManager.CREATE_GROUP:
-                   mAutonomousGroup = true;
-                   int netId = message.arg1;
-                   boolean ret = false;
-                   if (netId == WifiP2pGroup.PERSISTENT_NET_ID) {
-                       // check if the go persistent group is present.
-                       netId = mGroups.getNetworkId(mThisDevice.deviceAddress);
-                       if (netId != -1) {
-                           ret = mWifiNative.p2pGroupAdd(netId);
-                       } else {
-                           ret = mWifiNative.p2pGroupAdd(true);
-                       }
-                   } else {
-                       ret = mWifiNative.p2pGroupAdd(false);
-                   }
+                    mAutonomousGroup = true;
+                    int netId = message.arg1;
+                    boolean ret = false;
+                    if (netId == WifiP2pGroup.PERSISTENT_NET_ID) {
+                        // check if the go persistent group is present.
+                        netId = mGroups.getNetworkId(mThisDevice.deviceAddress);
+                        if (netId != -1) {
+                            ret = mWifiNative.p2pGroupAdd(netId);
+                        } else {
+                            ret = mWifiNative.p2pGroupAdd(true);
+                        }
+                    } else {
+                        ret = mWifiNative.p2pGroupAdd(false);
+                    }
 
-                   if (ret) {
-                       replyToMessage(message, WifiP2pManager.CREATE_GROUP_SUCCEEDED);
-                       transitionTo(mGroupNegotiationState);
-                   } else {
-                       replyToMessage(message, WifiP2pManager.CREATE_GROUP_FAILED,
-                               WifiP2pManager.ERROR);
-                       // remain at this state.
-                   }
-                   break;
+                    if (ret) {
+                        replyToMessage(message, WifiP2pManager.CREATE_GROUP_SUCCEEDED);
+                        transitionTo(mGroupNegotiationState);
+                    } else {
+                        replyToMessage(message, WifiP2pManager.CREATE_GROUP_FAILED,
+                                WifiP2pManager.ERROR);
+                        // remain at this state.
+                    }
+                    break;
                 case WifiMonitor.P2P_GROUP_STARTED_EVENT:
-                   mGroup = (WifiP2pGroup) message.obj;
-                   if (DBG) logd(getName() + " group started");
+                    mGroup = (WifiP2pGroup) message.obj;
+                    if (DBG) logd(getName() + " group started");
 
                     // We hit this scenario when a persistent group is reinvoked
-                   if (mGroup.getNetworkId() == WifiP2pGroup.PERSISTENT_NET_ID) {
-                       mAutonomousGroup = false;
-                       deferMessage(message);
-                       transitionTo(mGroupNegotiationState);
-                   } else {
-                       loge("Unexpected group creation, remove " + mGroup);
-                       mWifiNative.p2pGroupRemove(mGroup.getInterface());
-                   }
-                   break;
+                    if (mGroup.getNetworkId() == WifiP2pGroup.PERSISTENT_NET_ID) {
+                        mAutonomousGroup = false;
+                        deferMessage(message);
+                        transitionTo(mGroupNegotiationState);
+                    } else {
+                        loge("Unexpected group creation, remove " + mGroup);
+                        mWifiNative.p2pGroupRemove(mGroup.getInterface());
+                    }
+                    break;
                 default:
-                   return NOT_HANDLED;
+                    return NOT_HANDLED;
             }
             return HANDLED;
         }
@@ -1310,6 +1312,11 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
                          * TODO: Verify multi-channel scenarios and supplicant behavior are
                          * better before adding a time out in future
                          */
+                        //Set group idle timeout of 10 sec, to avoid GO beaconing incase of any
+                        //failure during 4-way Handshake.
+                        if (!mAutonomousGroup) {
+                            mWifiNative.setP2pGroupIdle(mGroup.getInterface(), GROUP_IDLE_TIME_S);
+                        }
                         startDhcpServer(mGroup.getInterface());
                     } else {
                         mWifiNative.setP2pGroupIdle(mGroup.getInterface(), GROUP_IDLE_TIME_S);
@@ -1505,6 +1512,8 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
                 case WifiMonitor.AP_STA_CONNECTED_EVENT:
                     WifiP2pDevice device = (WifiP2pDevice) message.obj;
                     String deviceAddress = device.deviceAddress;
+                    // Clear timeout that was set when group was started.
+                    mWifiNative.setP2pGroupIdle(mGroup.getInterface(), 0);
                     if (deviceAddress != null) {
                         if (mSavedProvDiscDevice != null &&
                                 deviceAddress.equals(mSavedProvDiscDevice.deviceAddress)) {
@@ -1960,6 +1969,26 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
                 break;
             default:
                 break;
+        }
+
+        if ((r.getConfiguration().uiMode & Configuration.UI_MODE_TYPE_APPLIANCE) ==
+                Configuration.UI_MODE_TYPE_APPLIANCE) {
+            // For appliance devices, add a key listener which accepts.
+            dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    // TODO: make the actual key come from a config value.
+                    if (keyCode == KeyEvent.KEYCODE_VOLUME_MUTE) {
+                        sendMessage(PEER_CONNECTION_USER_ACCEPT);
+                        dialog.dismiss();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            // TODO: add timeout for this dialog.
+            // TODO: update UI in appliance mode to tell user what to do.
         }
 
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
