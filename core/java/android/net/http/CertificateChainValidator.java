@@ -16,8 +16,8 @@
 
 package android.net.http;
 
-import com.android.org.conscrypt.SSLParametersImpl;
-import com.android.org.conscrypt.TrustManagerImpl;
+import org.apache.harmony.xnet.provider.jsse.SSLParametersImpl;
+import org.apache.harmony.xnet.provider.jsse.TrustManagerImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

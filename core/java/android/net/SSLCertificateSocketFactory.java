@@ -18,9 +18,9 @@ package android.net;
 
 import android.os.SystemProperties;
 import android.util.Log;
-import com.android.org.conscrypt.OpenSSLContextImpl;
-import com.android.org.conscrypt.OpenSSLSocketImpl;
-import com.android.org.conscrypt.SSLClientSessionCache;
+import org.apache.harmony.xnet.provider.jsse.OpenSSLContextImpl;
+import org.apache.harmony.xnet.provider.jsse.OpenSSLSocketImpl;
+import org.apache.harmony.xnet.provider.jsse.SSLClientSessionCache;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;

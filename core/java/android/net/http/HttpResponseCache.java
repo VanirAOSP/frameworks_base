@@ -17,9 +17,6 @@
 package android.net.http;
 
 import android.content.Context;
-import com.android.okhttp.ResponseSource;
-import com.android.okhttp.internal.DiskLruCache;
-import com.android.okhttp.internal.http.OkResponseCache;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
