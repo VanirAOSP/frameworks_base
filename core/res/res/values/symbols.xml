@@ -1910,7 +1910,6 @@
   <java-symbol type="drawable" name="ic_lockscreen_calendar" />
   <java-symbol type="drawable" name="ic_lockscreen_camera" />
   <java-symbol type="drawable" name="ic_lockscreen_email" />
-  <java-symbol type="drawable" name="ic_lockscreen_email2" />
   <java-symbol type="drawable" name="ic_lockscreen_facebook" />
   <java-symbol type="drawable" name="ic_lockscreen_gallery" />
   <java-symbol type="drawable" name="ic_lockscreen_google_small" />
