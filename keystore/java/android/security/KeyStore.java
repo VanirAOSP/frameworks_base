@@ -197,11 +197,6 @@ public class KeyStore {
         }
     }
 
-    public boolean generate(String key, int uid) {
-        return generate(key, uid, FLAG_ENCRYPTED);
-    }
-
-        return generate(key, UID_SELF);
     public boolean importKey(String keyName, byte[] key, int uid, int flags) {
         try {
             return mBinder.import_key(keyName, key, uid, flags) == NO_ERROR;
