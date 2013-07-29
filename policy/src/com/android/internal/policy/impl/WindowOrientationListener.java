@@ -43,10 +43,8 @@ import android.util.Slog;
  */
 public abstract class WindowOrientationListener {
     private static final String TAG = "WindowOrientationListener";
-    private static final boolean LOG = SystemProperties.getBoolean( "debug.orientation.log", false);
-    private static final float MAGNITUDE_THRESHOLD = ((float)SystemProperties.getLong( "orientation.magnitude.threshold", 0))/1000.0f;
-
-
+    private static final boolean LOG = SystemProperties.getBoolean(
+            "debug.orientation.log", false);
 
     private static final boolean USE_GRAVITY_SENSOR = false;
 
@@ -66,12 +64,8 @@ public abstract class WindowOrientationListener {
      * @param context for the WindowOrientationListener.
      * @param handler Provides the Looper for receiving sensor updates.
      */
-    public WindowOrientationListener(Context context) {
-        this(context, SensorManager.SENSOR_DELAY_UI);
-        boolean nonPolling = context.getResources().getBoolean(
-                com.android.internal.R.bool.config_nonPollingWindowOrientation);
-        if (nonPolling)
-            mRate = SensorManager.SENSOR_DELAY_NOPOLL;
+    public WindowOrientationListener(Context context, Handler handler) {
+        this(context, handler, SensorManager.SENSOR_DELAY_UI);
     }
     
     /**
@@ -410,39 +404,46 @@ public abstract class WindowOrientationListener {
                             + ", magnitude=" + FloatMath.sqrt(x * x + y * y + z * z));
                 }
 
-            boolean isFlat = false;
-            boolean isSwinging = false;
-            if (!skipSample) {
-                // Calculate the magnitude of the acceleration vector.
-                final float magnitude = FloatMath.sqrt(x * x + y * y + z * z);
-                if (isMagnitudeOutOfRange(magnitude) || Math.abs(magnitude - SensorManager.STANDARD_GRAVITY) < MAGNITUDE_THRESHOLD) {
-                    if (LOG) { Slog.v(TAG, "Ignoring sensor data"); }
+                // Apply a low-pass filter to the acceleration up vector in cartesian space.
+                // Reset the orientation listener state if the samples are too far apart in time
+                // or when we see values of (0, 0, 0) which indicates that we polled the
+                // accelerometer too soon after turning it on and we don't have any data yet.
+                final long now = event.timestamp;
+                final long then = mLastFilteredTimestampNanos;
+                final float timeDeltaMS = (now - then) * 0.000001f;
+                final boolean skipSample;
+                if (now < then
+                        || now > then + MAX_FILTER_DELTA_TIME_NANOS
+                        || (x == 0 && y == 0 && z == 0)) {
+                    if (LOG) {
+                        Slog.v(TAG, "Resetting orientation listener.");
+                    }
                     resetLocked();
                     skipSample = true;
                 } else {
-
-                    // Calculate the tilt angle.
-                    // This is the angle between the up vector and the x-y plane (the plane of
-                    // the screen) in a range of [-90, 90] degrees.
-                    //   -90 degrees: screen horizontal and facing the ground (overhead)
-                    //     0 degrees: screen vertical
-                    //    90 degrees: screen horizontal and facing the sky (on table)
-                    final int tiltAngle = (int) Math.round( Math.asin(z / magnitude) * RADIANS_TO_DEGREES);
-                    addTiltHistoryEntry(now, tiltAngle);
-
-                    // Determine whether the device appears to be flat or swinging.
-                    if (isFlat(now)) {
-                        isFlat = true;
-                        mFlatTimestampNanos = now;
+                    final float alpha = timeDeltaMS / (FILTER_TIME_CONSTANT_MS + timeDeltaMS);
+                    x = alpha * (x - mLastFilteredX) + mLastFilteredX;
+                    y = alpha * (y - mLastFilteredY) + mLastFilteredY;
+                    z = alpha * (z - mLastFilteredZ) + mLastFilteredZ;
+                    if (LOG) {
+                        Slog.v(TAG, "Filtered acceleration vector: "
+                                + "x=" + x + ", y=" + y + ", z=" + z
+                                + ", magnitude=" + FloatMath.sqrt(x * x + y * y + z * z));
                     }
-                    if (isSwinging(now, tiltAngle)) {
-                        isSwinging = true;
-                        mSwingTimestampNanos = now;
-                    }
+                    skipSample = false;
+                }
+                mLastFilteredTimestampNanos = now;
+                mLastFilteredX = x;
+                mLastFilteredY = y;
+                mLastFilteredZ = z;
 
-                    // If the tilt angle is too close to horizontal then we cannot determine
-                    // the orientation angle of the screen.
-                    if (Math.abs(tiltAngle) > MAX_TILT) {
+                boolean isAccelerating = false;
+                boolean isFlat = false;
+                boolean isSwinging = false;
+                if (!skipSample) {
+                    // Calculate the magnitude of the acceleration vector.
+                    final float magnitude = FloatMath.sqrt(x * x + y * y + z * z);
+                    if (magnitude < NEAR_ZERO_MAGNITUDE) {
                         if (LOG) {
                             Slog.v(TAG, "Ignoring sensor data, magnitude too close to zero.");
                         }
@@ -533,22 +534,24 @@ public abstract class WindowOrientationListener {
                 }
                 proposedRotation = mProposedRotation;
 
-            // Write final statistics about where we are in the orientation detection process.
-            if (LOG) {
-                Slog.v(TAG, "Result: currentRotation=" + mOrientationListener.mCurrentRotation
-                        + ", proposedRotation=" + mProposedRotation
-                        + ", predictedRotation=" + mPredictedRotation
-                        + ", timeDeltaMS=" + timeDeltaMS
-                        + ", isFlat=" + isFlat
-                        + ", isSwinging=" + isSwinging
-                        + ", timeUntilSettledMS=" + remainingMS(now,
-                                mPredictedRotationTimestampNanos + PROPOSAL_SETTLE_TIME_NANOS)
-                        + ", timeUntilAccelerationDelayExpiredMS=" + remainingMS(now,
-                                mAccelerationTimestampNanos + PROPOSAL_MIN_TIME_SINCE_ACCELERATION_ENDED_NANOS)
-                        + ", timeUntilFlatDelayExpiredMS=" + remainingMS(now,
-                                mFlatTimestampNanos + PROPOSAL_MIN_TIME_SINCE_FLAT_ENDED_NANOS)
-                        + ", timeUntilSwingDelayExpiredMS=" + remainingMS(now,
-                                mSwingTimestampNanos + PROPOSAL_MIN_TIME_SINCE_SWING_ENDED_NANOS));
+                // Write final statistics about where we are in the orientation detection process.
+                if (LOG) {
+                    Slog.v(TAG, "Result: currentRotation=" + mCurrentRotation
+                            + ", proposedRotation=" + proposedRotation
+                            + ", predictedRotation=" + mPredictedRotation
+                            + ", timeDeltaMS=" + timeDeltaMS
+                            + ", isAccelerating=" + isAccelerating
+                            + ", isFlat=" + isFlat
+                            + ", isSwinging=" + isSwinging
+                            + ", timeUntilSettledMS=" + remainingMS(now,
+                                    mPredictedRotationTimestampNanos + PROPOSAL_SETTLE_TIME_NANOS)
+                            + ", timeUntilAccelerationDelayExpiredMS=" + remainingMS(now,
+                                    mAccelerationTimestampNanos + PROPOSAL_MIN_TIME_SINCE_ACCELERATION_ENDED_NANOS)
+                            + ", timeUntilFlatDelayExpiredMS=" + remainingMS(now,
+                                    mFlatTimestampNanos + PROPOSAL_MIN_TIME_SINCE_FLAT_ENDED_NANOS)
+                            + ", timeUntilSwingDelayExpiredMS=" + remainingMS(now,
+                                    mSwingTimestampNanos + PROPOSAL_MIN_TIME_SINCE_SWING_ENDED_NANOS));
+                }
             }
 
             // Tell the listener.
@@ -557,8 +560,7 @@ public abstract class WindowOrientationListener {
                     Slog.v(TAG, "Proposed rotation changed!  proposedRotation=" + proposedRotation
                             + ", oldProposedRotation=" + oldProposedRotation);
                 }
-		mAccelerationTimestampNanos = now;
-                mOrientationListener.onProposedRotationChanged(mProposedRotation);
+                onProposedRotationChanged(proposedRotation);
             }
         }
 
@@ -676,7 +678,7 @@ public abstract class WindowOrientationListener {
             }
         }
 
-        private boolean isMagnitudeOutOfRange(float magnitude) {
+        private boolean isAcceleratingLocked(float magnitude) {
             return magnitude < MIN_ACCELERATION_MAGNITUDE
                     || magnitude > MAX_ACCELERATION_MAGNITUDE;
         }
