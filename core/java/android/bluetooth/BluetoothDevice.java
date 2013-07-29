@@ -259,6 +259,8 @@ public final class BluetoothDevice implements Parcelable {
     public static final String EXTRA_PAIRING_VARIANT =
             "android.bluetooth.device.extra.PAIRING_VARIANT";
     /** @hide */
+    public static final String EXTRA_SECURE_PAIRING = "codeaurora.bluetooth.device.extra.SECURE";
+    /** @hide */
     public static final String EXTRA_PAIRING_KEY = "android.bluetooth.device.extra.PAIRING_KEY";
 
     /**
@@ -342,6 +344,9 @@ public final class BluetoothDevice implements Parcelable {
 
     /**@hide*/
     public static final int REQUEST_TYPE_PHONEBOOK_ACCESS = 2;
+
+    /**@hide*/
+    public static final int REQUEST_TYPE_MESSAGE_ACCESS = 3;
 
     /**
      * Used as an extra field in {@link #ACTION_CONNECTION_ACCESS_REQUEST} intents,
