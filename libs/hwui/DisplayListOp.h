@@ -877,8 +877,8 @@ public:
                 getPaint(renderer));
     }
 
-    virtual void output(int level, uint32_t logFlags) const {
-        OP_LOG("Draw bitmap %p src="RECT_STRING", dst="RECT_STRING,
+    virtual void output(int level, uint32_t logFlags) {
+        OP_LOG("Draw bitmap %p src=" RECT_STRING ", dst=" RECT_STRING,
                 mBitmap, RECT_ARGS(mSrc), RECT_ARGS(mLocalBounds));
     }
 
@@ -1067,8 +1067,8 @@ public:
                 getPaint(renderer));
     }
 
-    virtual void output(int level, uint32_t logFlags) const {
-        OP_LOG("Draw patch "RECT_STRING, RECT_ARGS(mLocalBounds));
+    virtual void output(int level, uint32_t logFlags) {
+        OP_LOG("Draw patch " RECT_STRING, RECT_ARGS(mLocalBounds));
     }
 
     virtual const char* name() { return "DrawPatch"; }
@@ -1149,8 +1149,8 @@ public:
                 mLocalBounds.right, mLocalBounds.bottom, getPaint(renderer));
     }
 
-    virtual void output(int level, uint32_t logFlags) const {
-        OP_LOG("Draw Rect "RECT_STRING, RECT_ARGS(mLocalBounds));
+    virtual void output(int level, uint32_t logFlags) {
+        OP_LOG("Draw Rect " RECT_STRING, RECT_ARGS(mLocalBounds));
     }
 
     virtual void onDefer(OpenGLRenderer& renderer, DeferInfo& deferInfo,
@@ -1200,8 +1200,8 @@ public:
                 mLocalBounds.right, mLocalBounds.bottom, mRx, mRy, getPaint(renderer));
     }
 
-    virtual void output(int level, uint32_t logFlags) const {
-        OP_LOG("Draw RoundRect "RECT_STRING", rx %f, ry %f", RECT_ARGS(mLocalBounds), mRx, mRy);
+    virtual void output(int level, uint32_t logFlags) {
+        OP_LOG("Draw RoundRect " RECT_STRING ", rx %f, ry %f", RECT_ARGS(mLocalBounds), mRx, mRy);
     }
 
     virtual const char* name() { return "DrawRoundRect"; }
@@ -1243,8 +1243,8 @@ public:
                 mLocalBounds.right, mLocalBounds.bottom, getPaint(renderer));
     }
 
-    virtual void output(int level, uint32_t logFlags) const {
-        OP_LOG("Draw Oval "RECT_STRING, RECT_ARGS(mLocalBounds));
+    virtual void output(int level, uint32_t logFlags) {
+        OP_LOG("Draw Oval " RECT_STRING, RECT_ARGS(mLocalBounds));
     }
 
     virtual const char* name() { return "DrawOval"; }
@@ -1263,8 +1263,8 @@ public:
                 mStartAngle, mSweepAngle, mUseCenter, getPaint(renderer));
     }
 
-    virtual void output(int level, uint32_t logFlags) const {
-        OP_LOG("Draw Arc "RECT_STRING", start %f, sweep %f, useCenter %d",
+    virtual void output(int level, uint32_t logFlags) {
+        OP_LOG("Draw Arc " RECT_STRING ", start %f, sweep %f, useCenter %d",
                 RECT_ARGS(mLocalBounds), mStartAngle, mSweepAngle, mUseCenter);
     }
 
@@ -1300,8 +1300,8 @@ public:
         deferInfo.batchId = DeferredDisplayList::kOpBatch_AlphaMaskTexture;
     }
 
-    virtual void output(int level, uint32_t logFlags) const {
-        OP_LOG("Draw Path %p in "RECT_STRING, mPath, RECT_ARGS(mLocalBounds));
+    virtual void output(int level, uint32_t logFlags) {
+        OP_LOG("Draw Path %p in " RECT_STRING, mPath, RECT_ARGS(mLocalBounds));
     }
 
     virtual const char* name() { return "DrawPath"; }
