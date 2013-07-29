@@ -476,8 +476,6 @@ public class NotificationManagerService extends INotificationManager.Stub
         return (mAppOps.checkOpNoThrow(AppOpsManager.OP_POST_NOTIFICATION, uid, pkg)
                 == AppOpsManager.MODE_ALLOWED);
     }
-        }
-    }
 
 
     /** Use this when you actually want to post a notification or toast.
