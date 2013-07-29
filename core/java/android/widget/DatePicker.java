@@ -518,37 +518,35 @@ public class DatePicker extends FrameLayout {
         }
     }
 
-    /**
+     /**
      * Reorders the spinners according to the date format that is
      * explicitly set by the user and if no such is set fall back
      * to the current locale's default format.
      */
     private void reorderSpinners() {
         mSpinners.removeAllViews();
-        // We use numeric spinners for year and day, but textual months. Ask icu4c what
-        // order the user's locale uses for that combination. http://b/7207103.
-        String pattern = ICU.getBestDateTimePattern("yyyyMMMdd", Locale.getDefault().toString());
-        char[] order = ICU.getDateFormatOrder(pattern);
+        char[] order = DateFormat.getDateFormatOrder(getContext());
         final int spinnerCount = order.length;
         for (int i = 0; i < spinnerCount; i++) {
             switch (order[i]) {
-                case 'd':
+                case DateFormat.DATE:
                     mSpinners.addView(mDaySpinner);
                     setImeOptions(mDaySpinner, spinnerCount, i);
                     break;
-                case 'M':
+                case DateFormat.MONTH:
                     mSpinners.addView(mMonthSpinner);
                     setImeOptions(mMonthSpinner, spinnerCount, i);
                     break;
-                case 'y':
+                case DateFormat.YEAR:
                     mSpinners.addView(mYearSpinner);
                     setImeOptions(mYearSpinner, spinnerCount, i);
                     break;
                 default:
-                    throw new IllegalArgumentException(Arrays.toString(order));
+                    throw new IllegalArgumentException();
             }
         }
     }
+
 
     /**
      * Updates the current date.
