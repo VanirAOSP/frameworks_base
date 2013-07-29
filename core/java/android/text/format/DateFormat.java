@@ -319,7 +319,33 @@ public class DateFormat {
      * order returned here.
      */
     public static char[] getDateFormatOrder(Context context) {
-        return ICU.getDateFormatOrder(getDateFormatString(context));
+        char[] order = new char[] {DATE, MONTH, YEAR};
+        String value = getDateFormatString(context);
+        int index = 0;
+        boolean foundDate = false;
+        boolean foundMonth = false;
+        boolean foundYear = false;
+
+        for (char c : value.toCharArray()) {
+            if (!foundDate && (c == DATE)) {
+                foundDate = true;
+                order[index] = DATE;
+                index++;
+            }
+
+            if (!foundMonth && (c == MONTH || c == STANDALONE_MONTH)) {
+                foundMonth = true;
+                order[index] = MONTH;
+                index++;
+            }
+
+            if (!foundYear && (c == YEAR)) {
+                foundYear = true;
+                order[index] = YEAR;
+                index++;
+            }
+        }
+        return order;
     }
 
     private static String getDateFormatString(Context context) {
