@@ -202,6 +202,7 @@ public class VibratorService extends IVibratorService.Stub
             } else {
                 return (minutes > quietHoursStart) && (minutes < quietHoursEnd);
             }
+        }
         return false;
     }
     private void verifyIncomingUid(int uid) {
