@@ -258,7 +258,7 @@ public class KeyguardViewManager {
             if (ActivityManager.isHighEndGfx()) {
                 flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
             }
-
+            final boolean isActivity = (mContext instanceof Activity);
             final int stretch = ViewGroup.LayoutParams.MATCH_PARENT;
             final int type = isActivity ? WindowManager.LayoutParams.TYPE_APPLICATION
                     : WindowManager.LayoutParams.TYPE_KEYGUARD;

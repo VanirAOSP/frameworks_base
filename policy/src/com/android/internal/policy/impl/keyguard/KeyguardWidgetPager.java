@@ -144,12 +144,12 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
 
     @Override
     public void onPageSwitched(View newPage, int newPageIndex) {
-        boolean showingClock = false;
+        boolean showingStatusWidget = false;
         if (newPage instanceof ViewGroup) {
             ViewGroup vg = (ViewGroup) newPage;
             if (vg.getChildAt(0) instanceof KeyguardStatusView) {
                 showingStatusWidget = true;
-          } else if (vg.getChildAt(0) instanceof AppWidgetHostView) {
+            } else if (vg.getChildAt(0) instanceof AppWidgetHostView) {
                 AppWidgetProviderInfo info =
                         ((AppWidgetHostView) vg.getChildAt(0)).getAppWidgetInfo();
                 String widgetPackage = info.provider.getPackageName();
@@ -164,11 +164,11 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
 
         if (newPage != null &&
                 findClockInHierarchy(newPage) == (FLAG_HAS_LOCAL_HOUR | FLAG_HAS_LOCAL_MINUTE)) {
-            showingClock = true;
+            showingStatusWidget = true;
         }
 
         // Disable the status bar clock if we're showing the default status widget
-        if (showingClock) {
+        if (showingStatusWidget) {
             setSystemUiVisibility(getSystemUiVisibility() | View.STATUS_BAR_DISABLE_CLOCK);
         } else {
             setSystemUiVisibility(getSystemUiVisibility() & ~View.STATUS_BAR_DISABLE_CLOCK);
