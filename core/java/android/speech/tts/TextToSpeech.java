@@ -1360,7 +1360,6 @@ public class TextToSpeech {
     @Deprecated
     public int setOnUtteranceCompletedListener(final OnUtteranceCompletedListener listener) {
         mUtteranceProgressListener = UtteranceProgressListener.from(listener);
-        mCallback.setUtteranceProgressListener(mUtteranceProgressListener);
         return TextToSpeech.SUCCESS;
     }
 
@@ -1376,7 +1375,6 @@ public class TextToSpeech {
      */
     public int setOnUtteranceProgressListener(UtteranceProgressListener listener) {
         mUtteranceProgressListener = listener;
-        mCallback.setUtteranceProgressListener(mUtteranceProgressListener);
         return TextToSpeech.SUCCESS;
     }
 
@@ -1434,6 +1432,31 @@ public class TextToSpeech {
 
         private boolean mEstablished;
 
+        private final ITextToSpeechCallback.Stub mCallback = new ITextToSpeechCallback.Stub() {
+            @Override
+            public void onDone(String utteranceId) {
+                UtteranceProgressListener listener = mUtteranceProgressListener;
+                if (listener != null) {
+                    listener.onDone(utteranceId);
+                }
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+                UtteranceProgressListener listener = mUtteranceProgressListener;
+                if (listener != null) {
+                    listener.onError(utteranceId);
+                }
+            }
+
+            @Override
+            public void onStart(String utteranceId) {
+                UtteranceProgressListener listener = mUtteranceProgressListener;
+                if (listener != null) {
+                    listener.onStart(utteranceId);
+                }
+            }
+        };
 
         private class SetupConnectionAsyncTask extends AsyncTask<Void, Void, Integer> {
             private final ComponentName mName;

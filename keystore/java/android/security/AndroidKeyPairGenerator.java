@@ -83,13 +83,6 @@ public class AndroidKeyPairGenerator extends KeyPairGeneratorSpi {
                             + "if encryption is required");
         }
 
-        if (((mSpec.getFlags() & KeyStore.FLAG_ENCRYPTED) != 0)
-                && (mKeyStore.state() != KeyStore.State.UNLOCKED)) {
-            throw new IllegalStateException(
-                    "Android keystore must be in initialized and unlocked state "
-                            + "if encryption is required");
-        }
-
         final String alias = mSpec.getKeystoreAlias();
 
         Credentials.deleteAllTypesForAlias(mKeyStore, alias);

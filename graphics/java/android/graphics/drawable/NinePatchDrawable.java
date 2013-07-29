@@ -301,18 +301,16 @@ public class NinePatchDrawable extends Drawable {
         final Rect padding = new Rect();
         final Rect opticalInsets = new Rect();
         Bitmap bitmap = null;
-        InputStream is = null;
+
         try {
             final TypedValue value = new TypedValue();
-            is = r.openRawResource(id, value);
+            final InputStream is = r.openRawResource(id, value);
+
             bitmap = BitmapFactory.decodeResourceStream(r, value, is, padding, options);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ignored) {
-                }
-            }
+
+            is.close();
+        } catch (IOException e) {
+            // Ignore
         }
 
         if (bitmap == null) {

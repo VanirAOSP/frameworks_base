@@ -25,7 +25,6 @@ import android.net.LocalServerSocket;
 import android.os.Debug;
 import android.os.Process;
 import android.os.SystemClock;
-import android.os.SystemProperties;
 import android.os.Trace;
 import android.util.EventLog;
 import android.util.Log;
@@ -35,7 +34,6 @@ import dalvik.system.Zygote;
 
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
-import libcore.io.OsConstants;
 
 import java.io.BufferedReader;
 import java.io.FileDescriptor;
@@ -69,10 +67,7 @@ public class ZygoteInit {
     private static final int LOG_BOOT_PROGRESS_PRELOAD_END = 3030;
 
     /** when preloading, GC after allocating this many bytes */
-    private static final String heapgrowthlimit =
-                    SystemProperties.get("dalvik.vm.heapgrowthlimit", "16m");
-    private static final int PRELOAD_GC_THRESHOLD = Integer.parseInt(
-                    heapgrowthlimit.substring(0, heapgrowthlimit.length()-1))*1024*1024/2;
+    private static final int PRELOAD_GC_THRESHOLD = 50000;
 
     public static final String USAGE_STRING =
             " <\"start-system-server\"|\"\" for startSystemServer>";
@@ -479,25 +474,12 @@ public class ZygoteInit {
      */
     private static boolean startSystemServer()
             throws MethodAndArgsCaller, RuntimeException {
-        long capabilities = posixCapabilitiesAsBits(
-            OsConstants.CAP_KILL,
-            OsConstants.CAP_NET_ADMIN,
-            OsConstants.CAP_NET_BIND_SERVICE,
-            OsConstants.CAP_NET_BROADCAST,
-            OsConstants.CAP_NET_RAW,
-            OsConstants.CAP_SYS_BOOT,
-            OsConstants.CAP_SYS_MODULE,
-            OsConstants.CAP_SYS_NICE,
-            OsConstants.CAP_SYS_RESOURCE,
-            OsConstants.CAP_SYS_TIME,
-            OsConstants.CAP_SYS_TTY_CONFIG
-        );
         /* Hardcoded command line to start the system server */
         String args[] = {
             "--setuid=1000",
             "--setgid=1000",
-            "--setgroups=1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1018,3001,3002,3003,3006,3007",
-            "--capabilities=" + capabilities + "," + capabilities,
+            "--setgroups=1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1018,1021,3001,3002,3003,3004,3006,3007,3009",
+            "--capabilities=130104352,130104352",
             "--runtime-init",
             "--nice-name=system_server",
             "com.android.server.SystemServer",
@@ -529,20 +511,6 @@ public class ZygoteInit {
         }
 
         return true;
-    }
-
-    /**
-     * Gets the bit array representation of the provided list of POSIX capabilities.
-     */
-    private static long posixCapabilitiesAsBits(int... capabilities) {
-        long result = 0;
-        for (int capability : capabilities) {
-            if ((capability < 0) || (capability > OsConstants.CAP_LAST_CAP)) {
-                throw new IllegalArgumentException(String.valueOf(capability));
-            }
-            result |= (1L << capability);
-        }
-        return result;
     }
 
     public static void main(String argv[]) {
