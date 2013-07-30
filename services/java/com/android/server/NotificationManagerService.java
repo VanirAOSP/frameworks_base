@@ -1901,18 +1901,6 @@ public class NotificationManagerService extends INotificationManager.Stub
                 Slog.e(TAG, "WARNING: In a future release this will crash the app: " + n.getPackageName());
             }
 
-            try {
-                final ProfileManager profileManager =
-                        (ProfileManager) mContext.getSystemService(Context.PROFILE_SERVICE);
-
-                ProfileGroup group = profileManager.getActiveProfileGroup(pkg);
-                if (group != null) {
-                    notification = group.processNotification(notification);
-                }
-            } catch(Throwable th) {
-                Log.e(TAG, "An error occurred profiling the notification.", th);
-            }
-
             final boolean alertsDisabled =
                     (mDisabledNotifications & StatusBarManager.DISABLE_NOTIFICATION_ALERTS) != 0;
             boolean readyForAlerts = canInterrupt && mSystemReady &&
