@@ -15,28 +15,27 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="top"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
     android:orientation="vertical">
     <FrameLayout
-        android:layout_marginTop="@dimen/qs_tile_margin_above_icon"
-        android:layout_marginBottom="@dimen/qs_tile_margin_below_icon"
-        android:layout_width="@dimen/qs_tile_icon_size"
-        android:layout_height="@dimen/qs_tile_icon_size"
-        android:layout_gravity="top|center_horizontal"
-        >
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
         <ImageView
             android:id="@+id/rssi_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:paddingBottom="10dp"
             />
         <ImageView
             android:id="@+id/rssi_overlay_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:paddingBottom="10dp"
             />
     </FrameLayout>
     <TextView
@@ -44,8 +43,8 @@
         android:id="@+id/rssi_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:gravity="top|center_horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="@string/quick_settings_rssi_label"
         />
 </LinearLayout>
