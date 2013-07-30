@@ -1362,18 +1362,7 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
                             removeClientFromList(netId, mSavedPeerConfig.deviceAddress, true);
                         }
 
-                        // invocation is failed. Try another way to connect.
-                        mSavedPeerConfig.netId = WifiP2pGroup.PERSISTENT_NET_ID;
-                        if (connect(mSavedPeerConfig, NO_REINVOCATION) == CONNECT_FAILURE) {
-                            handleGroupCreationFailure();
-                            transitionTo(mInactiveState);
-                        }
-                    } else if (status == P2pStatus.INFORMATION_IS_CURRENTLY_UNAVAILABLE) {
-
-                        // Devices setting persistent_reconnect to 0 in wpa_supplicant
-                        // always defer the invocation request and return
-                        // "information is currently unable" error.
-                        // So, try another way to connect for interoperability.
+                        // invocation is failed or deferred. Try another way to connect.
                         mSavedPeerConfig.netId = WifiP2pGroup.PERSISTENT_NET_ID;
                         if (connect(mSavedPeerConfig, NO_REINVOCATION) == CONNECT_FAILURE) {
                             handleGroupCreationFailure();
@@ -1729,8 +1718,6 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
                     //Ignore more client requests
                     break;
                 case PEER_CONNECTION_USER_ACCEPT:
-                    //Stop discovery to avoid failure due to channel switch
-                    mWifiNative.p2pStopFind();
                     if (mSavedPeerConfig.wps.setup == WpsInfo.PBC) {
                         mWifiNative.startWpsPbc(mGroup.getInterface(), null);
                     } else {

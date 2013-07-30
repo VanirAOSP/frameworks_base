@@ -77,8 +77,6 @@ public class WifiConfiguration implements Parcelable {
     /** {@hide} */
     public static final String hiddenSSIDVarName = "scan_ssid";
     /** {@hide} */
-    public static final String autoConnectVarName = "autoConnect";
-    /** {@hide} */
     public static final String modeVarName = "mode";
     /** {@hide} */
     public static final String frequencyVarName = "frequency";
@@ -417,18 +415,12 @@ public class WifiConfiguration implements Parcelable {
      */
     public LinkProperties linkProperties;
 
-    /**
-     * @hide
-     */
-    public boolean autoConnect;
-
     public WifiConfiguration() {
         networkId = INVALID_NETWORK_ID;
         SSID = null;
         BSSID = null;
         priority = 0;
         hiddenSSID = false;
-        status = WifiConfiguration.Status.DISABLED;
         isIBSS = false;
         frequency = 0;
         disableReason = DISABLED_UNKNOWN_REASON;
@@ -445,7 +437,6 @@ public class WifiConfiguration implements Parcelable {
         }
         ipAssignment = IpAssignment.UNASSIGNED;
         proxySettings = ProxySettings.UNASSIGNED;
-        autoConnect = false;
         linkProperties = new LinkProperties();
     }
 
@@ -532,8 +523,6 @@ public class WifiConfiguration implements Parcelable {
         sbuf.append("IP assignment: " + ipAssignment.toString());
         sbuf.append("\n");
         sbuf.append("Proxy settings: " + proxySettings.toString());
-        sbuf.append("\n");
-        sbuf.append("Auto Connect: " + (autoConnect ? "True" : "False"));
         sbuf.append("\n");
         sbuf.append(linkProperties.toString());
         sbuf.append("\n");
@@ -629,7 +618,6 @@ public class WifiConfiguration implements Parcelable {
             wepTxKeyIndex = source.wepTxKeyIndex;
             priority = source.priority;
             hiddenSSID = source.hiddenSSID;
-            status = source.status;
             isIBSS = source.isIBSS;
             frequency = source.frequency;
             allowedKeyManagement   = (BitSet) source.allowedKeyManagement.clone();
@@ -643,7 +631,6 @@ public class WifiConfiguration implements Parcelable {
             }
             ipAssignment = source.ipAssignment;
             proxySettings = source.proxySettings;
-            autoConnect = source.autoConnect;
             linkProperties = new LinkProperties(source.linkProperties);
         }
     }
@@ -675,7 +662,6 @@ public class WifiConfiguration implements Parcelable {
         }
         dest.writeString(ipAssignment.name());
         dest.writeString(proxySettings.name());
-        dest.writeString(autoConnect ? "True" : "False");
         dest.writeParcelable(linkProperties, flags);
     }
 
@@ -709,7 +695,6 @@ public class WifiConfiguration implements Parcelable {
 
                 config.ipAssignment = IpAssignment.valueOf(in.readString());
                 config.proxySettings = ProxySettings.valueOf(in.readString());
-                config.autoConnect = !in.readString().equals("False");
                 config.linkProperties = in.readParcelable(null);
                 return config;
             }

@@ -811,12 +811,10 @@ public class WifiNative {
         return false;
     }
 
-    public native static boolean setMode(int mode);
-
     public List<WifiChannel> getSupportedChannels() {
         boolean ibssAllowed;
         List<WifiChannel> channels = new ArrayList<WifiChannel>();
-        String ret = doStringCommand("GET_CAPABILITY channels");
+        String ret = doStringCommand("GET_CAPABILITY freq");
 
         if (!TextUtils.isEmpty(ret)) {
             String[] lines = ret.split("\n");
@@ -842,4 +840,6 @@ public class WifiNative {
         }
         return channels;
     }
+
+    public native static boolean setMode(int mode);
 }
