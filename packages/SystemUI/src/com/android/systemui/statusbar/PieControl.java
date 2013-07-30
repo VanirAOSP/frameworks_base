@@ -80,8 +80,8 @@ public class PieControl implements OnClickListener {
         mPie.init();
     }
 
-    public void onConfigurationChanged() {
-        if (mPie != null) mPie.onConfigurationChanged();
+    public void onPieConfigurationChanged() {
+        if (mPie != null) mPie.onPieConfigurationChanged();
     }
 
     public void attachToContainer(FrameLayout container) {

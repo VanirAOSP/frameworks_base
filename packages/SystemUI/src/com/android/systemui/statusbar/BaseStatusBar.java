@@ -228,7 +228,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
+    protected void onPieConfigurationChanged(Configuration newConfig) {
         if (mPieControlPanel != null) mPieControlPanel.bumpConfiguration();
     }
 

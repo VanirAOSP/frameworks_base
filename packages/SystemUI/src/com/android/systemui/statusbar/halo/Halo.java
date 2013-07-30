@@ -95,7 +95,7 @@ import android.widget.ScrollView;
 
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar.NotificationClicker;
-import com.android.internal.statusbar.StatusBarNotification;
+import android.service.notification.StatusBarNotification;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.NotificationData;

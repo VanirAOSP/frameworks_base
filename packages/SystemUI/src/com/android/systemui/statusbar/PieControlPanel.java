@@ -165,7 +165,7 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
             }
         }
         show(false);
-        if (mPieControl != null) mPieControl.onConfigurationChanged();
+        if (mPieControl != null) mPieControl.onPieConfigurationChanged();
     }
 
     public void init(Handler h, BaseStatusBar statusbar, View trigger, int orientation) {

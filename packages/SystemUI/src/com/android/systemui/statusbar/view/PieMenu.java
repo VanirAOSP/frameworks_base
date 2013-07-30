@@ -69,7 +69,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 
-import com.android.internal.statusbar.StatusBarNotification;
+import android.service.notification.StatusBarNotification;
 import com.android.internal.statusbar.StatusBarIcon;
 
 import com.android.systemui.R;
@@ -618,7 +618,7 @@ public class PieMenu extends FrameLayout {
         getNotifications();
     }
 
-    public void onConfigurationChanged() {
+    public void onPieConfigurationChanged() {
         if (mStatusPanel != null) mStatusPanel.updatePanelConfiguration();
     }
 
