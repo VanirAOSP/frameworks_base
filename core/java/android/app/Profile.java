@@ -758,4 +758,5 @@ public final class Profile implements Parcelable, Comparable {
     public Collection<ConnectionSettings> getConnectionSettings(){
         return connections.values();
     }
+
 }

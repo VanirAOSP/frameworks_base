@@ -381,8 +381,6 @@ public class ActivityManager {
      * @hide
      */
     static public boolean isHighEndGfx() {
-        if (SystemProperties.getBoolean("ro.nohardwaregfx", false))
-            return false;
         MemInfoReader reader = new MemInfoReader();
         reader.readMemInfo();
         if (reader.getTotalSize() >= (512*1024*1024)) {
@@ -2024,7 +2022,7 @@ public class ActivityManager {
         }
     }
 
-    /*
+    /**
      * @throws SecurityException Throws SecurityException if the caller does
      * not hold the {@link android.Manifest.permission#CHANGE_CONFIGURATION} permission.
      *

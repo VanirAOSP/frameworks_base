@@ -84,8 +84,6 @@ LOCAL_SRC_FILES += \
 	core/java/android/app/IUserSwitchObserver.aidl \
 	core/java/android/app/IWallpaperManager.aidl \
 	core/java/android/app/IWallpaperManagerCallback.aidl \
-	core/java/android/app/Profile.aidl \
-	core/java/android/app/NotificationGroup.aidl \
 	core/java/android/app/admin/IDevicePolicyManager.aidl \
 	core/java/android/app/backup/IBackupManager.aidl \
 	core/java/android/app/backup/IFullBackupRestoreObserver.aidl \
