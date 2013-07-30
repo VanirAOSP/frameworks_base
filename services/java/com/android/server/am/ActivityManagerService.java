@@ -1256,7 +1256,7 @@ public final class ActivityManagerService  extends ActivityManagerNative
                     return;
                 }
                 try {
-                    inm.cancelNotificationWithTag("android", null,
+                    inm.cancelNotificationWithTag("android", "android", null,
                             R.string.heavy_weight_notification,  msg.arg1);
                 } catch (RuntimeException e) {
                     Slog.w(ActivityManagerService.TAG,

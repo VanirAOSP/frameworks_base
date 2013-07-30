@@ -6422,6 +6422,8 @@ public class WindowManagerService extends IWindowManager.Stub
         boolean rotated;
         int dh;
         int dw;
+        int appWidth;
+        int appHeight;
     }
 
         private ApplicationDisplayMetrics calculateDisplayMetrics(DisplayContent displayContent) {
@@ -6463,16 +6465,16 @@ public class WindowManagerService extends IWindowManager.Stub
         }
 
         final ApplicationDisplayMetrics m = calculateDisplayMetrics(displayContent);
-        final int appWidth = mPolicy.getNonDecorDisplayWidth(m.dw, m.dh, mRotation);
-        final int appHeight = mPolicy.getNonDecorDisplayHeight(m.dw, m.dh, mRotation);
+        m.appWidth = mPolicy.getNonDecorDisplayWidth(m.dw, m.dh, mRotation);
+        m.appHeight = mPolicy.getNonDecorDisplayHeight(m.dw, m.dh, mRotation);
         final DisplayInfo displayInfo = displayContent.getDisplayInfo();
         synchronized(displayContent.mDisplaySizeLock) {
             displayInfo.rotation = mRotation;
             displayInfo.logicalWidth = m.dw;
             displayInfo.logicalHeight = m.dh;
             displayInfo.logicalDensityDpi = displayContent.mBaseDisplayDensity;
-            displayInfo.appWidth = appWidth;
-            displayInfo.appHeight = appHeight;
+            displayInfo.appWidth = m.appWidth;
+            displayInfo.appHeight = m.appHeight;
             displayInfo.getLogicalMetrics(mRealDisplayMetrics, null);
             displayInfo.getAppMetrics(mDisplayMetrics, null);
             mDisplayManagerService.setDisplayInfoOverrideFromWindowManager(
@@ -6480,7 +6482,7 @@ public class WindowManagerService extends IWindowManager.Stub
         }
 
         if (false) {
-            Slog.i(TAG, "Set app display size: " + appWidth + " x " + appHeight);
+            Slog.i(TAG, "Set app display size: " + m.appWidth + " x " + m.appHeight);
         }
 
         return m;
@@ -9033,13 +9035,14 @@ public class WindowManagerService extends IWindowManager.Stub
                     // Simulate one-way call if win.mClient is a local object.
                     final IWindow client = win.mClient;
                     final Rect frame = win.mFrame;
+                    final Rect overscanInsets = win.mLastOverscanInsets;
                     final Rect contentInsets = win.mLastContentInsets;
                     final Rect visibleInsets = win.mLastVisibleInsets;
                     mH.post(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                client.resized(frame, contentInsets, visibleInsets,
+                                client.resized(frame, overscanInsets, contentInsets, visibleInsets,
                                                reportDraw, newConfig);
                             } catch (RemoteException e) {
                                 // Actually, it's not a remote call.
@@ -9048,9 +9051,10 @@ public class WindowManagerService extends IWindowManager.Stub
                         }
                     });
                 } else {
-                    win.mClient.resized(win.mFrame, win.mLastContentInsets, win.mLastVisibleInsets,
+                    win.mClient.resized(win.mFrame, win.mLastOverscanInsets, win.mLastContentInsets, win.mLastVisibleInsets,
                                         reportDraw, newConfig);
                 }
+                win.mOverscanInsetsChanged = false;
                 win.mContentInsetsChanged = false;
                 win.mVisibleInsetsChanged = false;
                 winAnimator.mSurfaceResized = false;
@@ -9949,13 +9953,27 @@ public class WindowManagerService extends IWindowManager.Stub
 
     public void updateDisplayMetrics() {
         long origId = Binder.clearCallingIdentity();
+        boolean changed = false;
 
         synchronized (mWindowMap) {
             final DisplayContent displayContent = getDefaultDisplayContentLocked();
-            updateApplicationDisplayMetricsLocked(displayContent);
+            final DisplayInfo displayInfo =
+                    displayContent != null ? displayContent.getDisplayInfo() : null;
+            final int oldWidth = displayInfo != null ? displayInfo.appWidth : -1;
+            final int oldHeight = displayInfo != null ? displayInfo.appHeight : -1;
+            final ApplicationDisplayMetrics metrics =
+                    updateApplicationDisplayMetricsLocked(displayContent);
+
+            if (metrics != null && oldWidth >= 0 && oldHeight >= 0) {
+                changed = oldWidth != metrics.appWidth || oldHeight != metrics.appHeight;
+            }
         }
 
-    Binder.restoreCallingIdentity(origId);
+        if (changed) {
+            mH.sendEmptyMessage(H.SEND_NEW_CONFIGURATION);
+       }
+
+       Binder.restoreCallingIdentity(origId);
     }
 
     void dumpPolicyLocked(PrintWriter pw, String[] args, boolean dumpAll) {

@@ -90,6 +90,8 @@ final class ElectronBeam {
     private EGLSurface mEglSurface;
     private boolean mSurfaceVisible;
     private float mSurfaceAlpha;
+    private int mElectronBeamMode;
+    private boolean mIsLandscape;
 
     // Texture names.  We only use one texture, which contains the screenshot.
     private final int[] mTexNames = new int[1];
@@ -117,8 +119,9 @@ final class ElectronBeam {
     public static final int MODE_FADE = 2;
 
 
-    public ElectronBeam(DisplayManagerService displayManager) {
+    public ElectronBeam(DisplayManagerService displayManager, int mode) {
         mDisplayManager = displayManager;
+        mElectronBeamMode = mode;
     }
 
     /**
@@ -225,10 +228,20 @@ final class ElectronBeam {
             GLES10.glClear(GLES10.GL_COLOR_BUFFER_BIT);
 
             // Draw the frame.
-            if (level < HSTRETCH_DURATION) {
-                drawHStretch(1.0f - (level / HSTRETCH_DURATION));
+            if (mElectronBeamMode == 1 || (mElectronBeamMode == 2 && mIsLandscape)) {
+                // Draw the frame vertical
+                if (level < VSTRETCH_DURATION) {
+                    drawHStretch(1.0f - (level / VSTRETCH_DURATION));
+                } else {
+                    drawVStretch(1.0f - ((level - VSTRETCH_DURATION) / HSTRETCH_DURATION));
+                }
             } else {
-                drawVStretch(1.0f - ((level - HSTRETCH_DURATION) / VSTRETCH_DURATION));
+                // Draw the frame horizontal
+                if (level < HSTRETCH_DURATION) {
+                    drawHStretch(1.0f - (level / HSTRETCH_DURATION));
+                } else {
+                    drawVStretch(1.0f - ((level - HSTRETCH_DURATION) / VSTRETCH_DURATION));
+                }
             }
             if (checkGlErrors("drawFrame")) {
                 return false;
