@@ -156,6 +156,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import libcore.io.ErrnoException;
 import libcore.io.IoUtils;
@@ -180,6 +181,8 @@ public class PackageManagerService extends IPackageManager.Stub {
     static final boolean DEBUG_PREFERRED = false;
     static final boolean DEBUG_UPGRADE = false;
     private static final boolean DEBUG_INSTALL = false;
+    private static final boolean DEBUG_POLICY = true;
+    private static final boolean DEBUG_POLICY_INSTALL = DEBUG_POLICY || false;
     private static final boolean DEBUG_REMOVE = false;
     private static final boolean DEBUG_BROADCASTS = false;
     private static final boolean DEBUG_SHOW_INFO = false;
@@ -207,7 +210,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     // package apks to install directory.
     private static final String INSTALL_PACKAGE_SUFFIX = "-";
 
-    private static final int THEME_MANAGER_GUID = 1300;
+    private static final int THEME_MAMANER_GUID = 1300;
 
     static final int SCAN_MONITOR = 1<<0;
     static final int SCAN_NO_DEX = 1<<1;
@@ -624,7 +627,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                         // Already bound to the service. Just make
                         // sure we trigger off processing the first request.
                         if (idx == 0) {
-                            sendEmptyMessage(MCS_BOUND);
+                            mHandler.sendEmptyMessage(MCS_BOUND);
                         }
                     }
                     break;
@@ -659,9 +662,10 @@ public class PackageManagerService extends IPackageManager.Stub {
                                         if (DEBUG_SD_INSTALL) Log.i(TAG,
                                                 "Posting delayed MCS_UNBIND");
                                         removeMessages(MCS_UNBIND);
+                                        Message ubmsg = obtainMessage(MCS_UNBIND);
                                         // Unbind after a little delay, to avoid
                                         // continual thrashing.
-                                        sendEmptyMessageDelayed(MCS_UNBIND, 10000);
+                                        sendMessageDelayed(ubmsg, 10000);
                                     }
                                 } else {
                                     // There are more pending requests in queue.
@@ -669,7 +673,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                                     // of next pending install.
                                     if (DEBUG_SD_INSTALL) Log.i(TAG,
                                             "Posting MCS_BOUND for next woek");
-                                    sendEmptyMessage(MCS_BOUND);
+                                    mHandler.sendEmptyMessage(MCS_BOUND);
                                 }
                             }
                         }
@@ -710,7 +714,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                         // There are more pending requests in queue.
                         // Just post MCS_BOUND message to trigger processing
                         // of next pending install.
-                        sendEmptyMessage(MCS_BOUND);
+                        mHandler.sendEmptyMessage(MCS_BOUND);
                     }
 
                     break;
@@ -960,7 +964,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                         }
 
                         processPendingInstall(args, ret);
-                        sendEmptyMessage(MCS_UNBIND);
+                        mHandler.sendEmptyMessage(MCS_UNBIND);
                     }
                     break;
                 }
@@ -998,7 +1002,7 @@ public class PackageManagerService extends IPackageManager.Stub {
 
                         processPendingInstall(args, ret);
 
-                        sendEmptyMessage(MCS_UNBIND);
+                        mHandler.sendEmptyMessage(MCS_UNBIND);
                     }
 
                     break;
@@ -1070,7 +1074,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 Process.SYSTEM_UID, ApplicationInfo.FLAG_SYSTEM);
         mSettings.addSharedUserLPw("android.uid.phone", RADIO_UID, ApplicationInfo.FLAG_SYSTEM);
         mSettings.addSharedUserLPw("android.uid.log", LOG_UID, ApplicationInfo.FLAG_SYSTEM);
-        mSettings.addSharedUserLPw("com.tmobile.thememanager", THEME_MANAGER_GUID, ApplicationInfo.FLAG_SYSTEM);
+        mSettings.addSharedUserLPw("com.tmobile.thememanager", THEME_MAMANER_GUID, ApplicationInfo.FLAG_SYSTEM);
         mSettings.addSharedUserLPw("android.uid.nfc", NFC_UID, ApplicationInfo.FLAG_SYSTEM);
         mSettings.addSharedUserLPw("android.uid.bluetooth", BLUETOOTH_UID, ApplicationInfo.FLAG_SYSTEM);
         mSettings.addSharedUserLPw("android.uid.shell", SHELL_UID, ApplicationInfo.FLAG_SYSTEM);
@@ -3103,20 +3107,6 @@ public class PackageManagerService extends IPackageManager.Stub {
         list.add(pi);
     }
 
-    public List<PackageInfo> getInstalledThemePackages() {
-        // Returns a list of theme APKs.	
-        ArrayList<PackageInfo> finalList = new ArrayList<PackageInfo>();
-        List<PackageInfo> installedPackagesList = mContext.getPackageManager().getInstalledPackages(0);	
-        Iterator<PackageInfo> i = installedPackagesList.iterator();
-        while (i.hasNext()) {	
-            final PackageInfo pi = i.next();	
-            if (pi != null && pi.isThemeApk) {	
-                finalList.add(pi);	
-            }
-        }
-        return finalList;
-    }
-
     @Override
     public ParceledListSlice<PackageInfo> getPackagesHoldingPermissions(
             String[] permissions, int flags, int userId) {
@@ -3840,7 +3830,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         for (int user : users) {
             if (user != 0) {
                 res = mInstaller.createUserData(packageName,
-                        UserHandle.getUid(user, uid), user);
+                        UserHandle.getUid(user, uid), user, seinfo);
                 if (res < 0) {
                     return res;
                 }
@@ -4038,6 +4028,20 @@ public class PackageManagerService extends IPackageManager.Stub {
             return null;
         }
 
+        if (!pkg.applicationInfo.sourceDir.startsWith(Environment.getRootDirectory().getPath()) &&
+                !pkg.applicationInfo.sourceDir.startsWith("/vendor")) {
+            Object obj = mSettings.getUserIdLPr(1000);
+            Signature[] s1 = null;
+            if (obj instanceof SharedUserSetting) {
+                s1 = ((SharedUserSetting)obj).signatures.mSignatures;
+            }
+            if ((compareSignatures(pkg.mSignatures, s1) == PackageManager.SIGNATURE_MATCH)) {
+                Slog.w(TAG, "Cannot install platform packages to user storage");
+                mLastScanError = PackageManager.INSTALL_FAILED_INVALID_INSTALL_LOCATION;
+                return null;
+            }
+        }
+
         // Initialize package source and resource directories
         File destCodeFile = new File(pkg.applicationInfo.sourceDir);
         File destResourceFile = new File(pkg.applicationInfo.publicSourceDir);
@@ -4175,8 +4179,12 @@ public class PackageManagerService extends IPackageManager.Stub {
                 pkg.applicationInfo.flags |= ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
             }
 
-            if (mFoundPolicyFile) {
-                SELinuxMMAC.assignSeinfoValue(pkg);
+            if (mFoundPolicyFile && !SELinuxMMAC.passInstallPolicyChecks(pkg) &&
+                SELinuxMMAC.getEnforcingMode()) {
+                Slog.w(TAG, "Installing application package " + pkg.packageName
+                       + " failed due to policy.");
+                mLastScanError = PackageManager.INSTALL_FAILED_POLICY_REJECTED_PERMISSION;
+                return null;
             }
 
             pkg.applicationInfo.uid = pkgSetting.appId;
@@ -4929,19 +4937,19 @@ public class PackageManagerService extends IPackageManager.Stub {
         IBinder b = ServiceManager.getService("assetredirection");
         mAssetRedirectionManager = IAssetRedirectionManager.Stub.asInterface(b);
         return mAssetRedirectionManager;
-    }	
+    }
 
     private void cleanAssetRedirections(PackageParser.Package pkg) {
         IAssetRedirectionManager rm = getAssetRedirectionManager();
-        if (rm == null) {	
-            return;	
-        }	
+        if (rm == null) {
+            return;
+        }
         try {
             if (pkg.mIsThemeApk) {
                 rm.clearRedirectionMapsByTheme(pkg.packageName, null);
-            } else {	
-                rm.clearPackageRedirectionMap(pkg.packageName);	
-            }	
+            } else {
+                rm.clearPackageRedirectionMap(pkg.packageName);
+            }
         } catch (RemoteException e) {
         }
     }
@@ -4961,7 +4969,6 @@ public class PackageManagerService extends IPackageManager.Stub {
 
             final PackageParser.Package pkg = ps.pkg;
             if (pkg != null) {
-                cleanAssetRedirections(pkg);
                 cleanPackageDataStructuresLILPw(pkg, chatty);
             }
         }
@@ -4975,6 +4982,8 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         // writer
         synchronized (mPackages) {
+            cleanAssetRedirections(pkg);
+
             mPackages.remove(pkg.applicationInfo.packageName);
             if (pkg.mPath != null) {
                 mAppDirs.remove(pkg.mPath);
@@ -5905,15 +5914,15 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                     intent.putExtra(Intent.EXTRA_USER_HANDLE, id);
                     intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-                    if (intentCategory != null) {
-                        intent.addCategory(intentCategory);
-                    }
                     if (DEBUG_BROADCASTS) {
                         RuntimeException here = new RuntimeException("here");
                         here.fillInStackTrace();
                         Slog.d(TAG, "Sending to user " + id + ": "
                                 + intent.toShortString(false, true, false, false)
                                 + " " + intent.getExtras(), here);
+                    }
+                    if (intentCategory != null) {
+                        intent.addCategory(intentCategory);
                     }
                     am.broadcastIntent(null, intent, null, finishedReceiver,
                             0, null, null, null, android.app.AppOpsManager.OP_NONE,
@@ -6030,6 +6039,9 @@ public class PackageManagerService extends IPackageManager.Stub {
                 synchronized (mPackages) {
                     p = mAppDirs.get(fullPathStr);
                     if (p != null) {
+                        if (p.mIsThemeApk) {
+                            category = Intent.CATEGORY_THEME_PACKAGE_INSTALLED_STATE_CHANGE;
+                        }
                         ps = mSettings.mPackages.get(p.applicationInfo.packageName);
                         if (ps != null) {
                             removedUsers = ps.queryInstalledUsers(sUserManager.getUserIds(), true);
@@ -6041,9 +6053,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
                 if ((event&REMOVE_EVENTS) != 0) {
                     if (ps != null) {
-                        if (p.mIsThemeApk) {
-                            category = Intent.CATEGORY_THEME_PACKAGE_INSTALLED_STATE_CHANGE;
-                        }
                         if (DEBUG_REMOVE) Slog.d(TAG, "Package disappeared: " + ps);
                         removePackageLI(ps, true);
                         removedPackage = ps.name;
@@ -6075,9 +6084,9 @@ public class PackageManagerService extends IPackageManager.Stub {
                             addedPackage = p.applicationInfo.packageName;
                             addedAppId = UserHandle.getAppId(p.applicationInfo.uid);
                         }
-                        if (p != null && p.mIsThemeApk) {
-                            category = Intent.CATEGORY_THEME_PACKAGE_INSTALLED_STATE_CHANGE;
-                        }
+                    }
+                    if (p != null && p.mIsThemeApk) {
+                        category = Intent.CATEGORY_THEME_PACKAGE_INSTALLED_STATE_CHANGE;
                     }
                 }
 
@@ -8430,7 +8439,8 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
             if (isThemePackageDrmProtected) {
                 splitThemePackage(newPackage.mPath);
-            } */
+            }
+            */
         }
 
         synchronized (mPackages) {
@@ -8478,61 +8488,59 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
     }
 
-
     private void deleteLockedZipFileIfExists(String originalPackagePath) {
         String lockedZipFilePath = PackageParser.getLockedZipFilePath(originalPackagePath);
         File zipFile = new File(lockedZipFilePath);
         if (zipFile.exists() && zipFile.isFile()) {
-            if (!zipFile.delete()) {	
-                Log.w(TAG, "Couldn't delete locked zip file: " + originalPackagePath);	
+            if (!zipFile.delete()) {
+                Log.w(TAG, "Couldn't delete locked zip file: " + originalPackagePath);
             }
-        }	
+        }
     }
-
     private void splitThemePackage(File originalFile) {
-        final String originalPackagePath = originalFile.getPath();	
+        final String originalPackagePath = originalFile.getPath();
         final String lockedZipFilePath = PackageParser.getLockedZipFilePath(originalPackagePath);
 
         try {
             final List<String> drmProtectedEntries = new ArrayList<String>();
             final ZipFile privateZip = new ZipFile(originalFile.getPath());
 
-            final Enumeration<? extends ZipEntry> privateZipEntries = privateZip.entries();	
+            final Enumeration<? extends ZipEntry> privateZipEntries = privateZip.entries();
             while (privateZipEntries.hasMoreElements()) {
                 final ZipEntry zipEntry = privateZipEntries.nextElement();
                 final String zipEntryName = zipEntry.getName();
                 if (zipEntryName.startsWith("assets/") && zipEntryName.contains("/locked/")) {
                     drmProtectedEntries.add(zipEntryName);
                 }
-            }	
+            }
             privateZip.close();
 
             String [] args = new String[0];
-            args = drmProtectedEntries.toArray(args);	
-            int code = mContext.getAssets().splitDrmProtectedThemePackage(	
-                    originalPackagePath,	
+            args = drmProtectedEntries.toArray(args);
+            int code = mContext.getAssets().splitDrmProtectedThemePackage(
+                    originalPackagePath,
                     lockedZipFilePath,
-                    args);	
-            if (code != 0) {	
-                Log.e("PackageManagerService",	
-                        "splitDrmProtectedThemePackage returned = " + code);	
-            }	
-            code = FileUtils.setPermissions(	
-                    lockedZipFilePath,	
-                    0640,	
-                    -1,	
-                    THEME_MANAGER_GUID);	
-            if (code != 0) {	
-                Log.e("PackageManagerService",	
+                    args);
+            if (code != 0) {
+                Log.e("PackageManagerService",
+                        "splitDrmProtectedThemePackage returned = " + code);
+            }
+            code = FileUtils.setPermissions(
+                    lockedZipFilePath,
+                    0640,
+                    -1,
+                    THEME_MAMANER_GUID);
+            if (code != 0) {
+                Log.e("PackageManagerService",
                         "Set permissions for " + lockedZipFilePath + " returned = " + code);
             }
-            code = FileUtils.setPermissions(	
+            code = FileUtils.setPermissions(
                     originalPackagePath,
-                    0644,	
-                    -1, -1);	
-            if (code != 0) {	
+                    0644,
+                    -1, -1);
+            if (code != 0) {
                 Log.e("PackageManagerService",
-                        "Set permissions for " + originalPackagePath + " returned = " + code);	
+                        "Set permissions for " + originalPackagePath + " returned = " + code);
             }
         } catch (IOException e) {
             Log.e(TAG, "Failure to generate new zip files for theme");
@@ -8822,18 +8830,20 @@ public class PackageManagerService extends IPackageManager.Stub {
         } catch (RemoteException e) {
         }
 
-        synchronized (mPackages) {
-            PackageParser.Package p = mPackages.get(packageName);
-            if (p != null) {	
-                info.isThemeApk = p.mIsThemeApk;
-                if (info.isThemeApk && !info.isRemovedPackageSystemUpdate) {
-                    deleteLockedZipFileIfExists(p.mPath);
-                }	
-            }	
-        }
-
         boolean removedForAllUsers = false;
         boolean systemUpdate = false;
+
+        synchronized (mPackages) {
+            PackageParser.Package p = mPackages.get(packageName);
+            if (p != null) {
+                info.isThemeApk = p.mIsThemeApk;
+                if (info.isThemeApk &&
+                    !info.isRemovedPackageSystemUpdate) {
+                    deleteLockedZipFileIfExists(p.mPath);
+                }
+            }
+        }
+
 
         // for the uninstall-updates case and restricted profiles, remember the per-
         // userhandle installed state
@@ -8910,7 +8920,8 @@ public class PackageManagerService extends IPackageManager.Stub {
         InstallArgs args = null;
         boolean isThemeApk = false;
 
-        void sendBroadcast(boolean fullRemove, boolean replacing, boolean removedForAllUsers, boolean deleteLockedZipFileIfExists) {
+        void sendBroadcast(boolean fullRemove, boolean replacing, boolean removedForAllUsers,
+                 boolean deleteLockedZipFileIfExists) {
             Bundle extras = new Bundle(1);
             extras.putInt(Intent.EXTRA_UID, removedAppId >= 0 ? removedAppId : uid);
             extras.putBoolean(Intent.EXTRA_DATA_REMOVED, fullRemove);
@@ -9146,20 +9157,20 @@ public class PackageManagerService extends IPackageManager.Stub {
                     && user.getIdentifier() != UserHandle.USER_ALL) {
                 // The caller is asking that the package only be deleted for a single
                 // user.  To do this, we just mark its uninstalled state and delete
-                // its data.
+                // its data.  If this is a system app, we only allow this to happen if
+                // they have set the special DELETE_SYSTEM_APP which requests different
+                // semantics than normal for uninstalling system apps.
                 boolean privacyGuard = android.provider.Settings.Secure.getIntForUser(
                         mContext.getContentResolver(),
                         android.provider.Settings.Secure.PRIVACY_GUARD_DEFAULT,
                         0, user.getIdentifier()) == 1;
-                // its data.  If this is a system app, we only allow this to happen if
-                // they have set the special DELETE_SYSTEM_APP which requests different
-                // semantics than normal for uninstalling system apps.
                 if (DEBUG_REMOVE) Slog.d(TAG, "Only deleting for single user");
                 ps.setUserState(user.getIdentifier(),
                         COMPONENT_ENABLED_STATE_DEFAULT,
                         false, //installed
                         true,  //stopped
                         true,  //notLaunched
+                        privacyGuard,
                         null, null, null);
                 if (!isSystemApp(ps)) {
                     if (ps.isAnyInstalled(sUserManager.getUserIds())) {
@@ -9542,6 +9553,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         return true;
     }
 
+
     public void addPackageToPreferred(String packageName) {
         Slog.w(TAG, "addPackageToPreferred: this is now a no-op");
     }
@@ -9622,6 +9634,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     "replacePreferredActivity expects filter to have no data authorities, " +
                     "paths, schemes or types.");
         }
+
         synchronized (mPackages) {
             if (mContext.checkCallingOrSelfPermission(
                     android.Manifest.permission.SET_PREFERRED_APPLICATIONS)

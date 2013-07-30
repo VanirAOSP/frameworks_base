@@ -157,13 +157,13 @@ final class Settings {
     // Packages that have been uninstalled and still need their external
     // storage data deleted.
     final ArrayList<PackageCleanItem> mPackagesToBeCleaned = new ArrayList<PackageCleanItem>();
-
+    
     // Packages that have been renamed since they were first installed.
     // Keys are the new names of the packages, values are the original
     // names.  The packages appear everwhere else under their original
     // names.
     final HashMap<String, String> mRenamedPackages = new HashMap<String, String>();
-
+    
     final StringBuilder mReadMessages = new StringBuilder();
 
     /**
@@ -452,7 +452,6 @@ final class Settings {
                                     || installUser.getIdentifier() == UserHandle.USER_ALL
                                     || installUser.getIdentifier() == user.id;
                             boolean privacyGuard = false;
-
                             if (installUser != null) {
                                 privacyGuard = android.provider.Settings.Secure.getIntForUser(
                                     mContext.getContentResolver(),
@@ -1338,7 +1337,7 @@ final class Settings {
                     serializer.endTag(null, "cleaning-package");
                 }
             }
-
+            
             if (mRenamedPackages.size() > 0) {
                 for (Map.Entry<String, String> e : mRenamedPackages.entrySet()) {
                     serializer.startTag(null, "renamed-package");
@@ -1347,7 +1346,7 @@ final class Settings {
                     serializer.endTag(null, "renamed-package");
                 }
             }
-
+            
             serializer.endTag(null, "packages");
 
             serializer.endDocument();
@@ -2300,7 +2299,7 @@ final class Settings {
                 }
 
                 String tagName = parser.getName();
-                // Legacy
+                // Legacy 
                 if (tagName.equals(TAG_DISABLED_COMPONENTS)) {
                     readDisabledComponentsLPw(packageSetting, parser, 0);
                 } else if (tagName.equals(TAG_ENABLED_COMPONENTS)) {
@@ -2476,7 +2475,8 @@ final class Settings {
             ps.setInstalled((ps.pkgFlags&ApplicationInfo.FLAG_SYSTEM) != 0, userHandle);
             // Need to create a data directory for all apps under this user.
             installer.createUserData(ps.name,
-                    UserHandle.getUid(userHandle, ps.appId), userHandle);
+                    UserHandle.getUid(userHandle, ps.appId), userHandle,
+                    ps.pkg.applicationInfo.seinfo);
         }
         readDefaultPreferredAppsLPw(service, userHandle);
         writePackageRestrictionsLPr(userHandle);
@@ -2532,7 +2532,7 @@ final class Settings {
     private String compToString(HashSet<String> cmp) {
         return cmp != null ? Arrays.toString(cmp.toArray()) : "[]";
     }
-
+ 
     boolean isEnabledLPr(ComponentInfo componentInfo, int flags, int userId) {
         if ((flags&PackageManager.GET_DISABLED_COMPONENTS) != 0) {
             return true;

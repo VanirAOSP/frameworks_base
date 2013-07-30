@@ -1256,7 +1256,7 @@ public final class ActivityManagerService  extends ActivityManagerNative
                     return;
                 }
                 try {
-                    inm.cancelNotificationWithTag("android", "android", null,
+                    inm.cancelNotificationWithTag("android", null,
                             R.string.heavy_weight_notification,  msg.arg1);
                 } catch (RuntimeException e) {
                     Slog.w(ActivityManagerService.TAG,
@@ -1440,7 +1440,7 @@ public final class ActivityManagerService  extends ActivityManagerNative
 
                     try {
                         int[] outId = new int[1];
-                        inm.enqueueNotificationWithTag("android", null,
+                        inm.enqueueNotificationWithTag("android", "android", null,
                                 R.string.privacy_guard_notification,
                                 notification, outId, root.userId);
                     } catch (RuntimeException e) {
@@ -2015,12 +2015,14 @@ public final class ActivityManagerService  extends ActivityManagerNative
             ProcessRecord p = mLruProcesses.get(i);
             // If this app shouldn't be in front of the first N background
             // apps, then skip over that many that are currently hidden.
-            if (skipTop > 0 && p.setAdj >= ProcessList.HIDDEN_APP_MIN_ADJ) {
-                skipTop--;
-            }
-            if (p.lruWeight <= app.lruWeight || i < bestPos) {
-                mLruProcesses.add(i+1, app);
-                break;
+            if (p != null && p.thread != null) {
+                if (skipTop > 0 && p.setAdj >= ProcessList.HIDDEN_APP_MIN_ADJ) {
+                    skipTop--;
+                }
+                if (p.lruWeight <= app.lruWeight || i < bestPos) {
+                    mLruProcesses.add(i+1, app);
+                    break;
+                }
             }
             i--;
         }
