@@ -124,6 +124,7 @@ public class NotificationPanelView extends PanelView {
                        event.getActionMasked(), (int) event.getX(), (int) event.getY());
             }
         }
+        boolean shouldRecycleEvent = false;
         if (PhoneStatusBar.SETTINGS_DRAG_SHORTCUT && mStatusBar.mHasFlipSettings) {
             boolean flip = false;
             boolean swipeFlipJustFinished = false;

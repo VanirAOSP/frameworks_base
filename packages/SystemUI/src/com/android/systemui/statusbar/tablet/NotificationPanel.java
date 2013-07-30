@@ -133,8 +133,6 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
 
         mContentParent = (ViewGroup)findViewById(R.id.content_parent);
         mContentParent.bringToFront();
-        mTitleArea = (NotificationPanelTitle) findViewById(R.id.title_area);
-        mTitleArea.setPanel(this);
 
         mSettingsButton = (ImageView) findViewById(R.id.settings_button);
         mNotificationButton = (ImageView) findViewById(R.id.notification_button);
