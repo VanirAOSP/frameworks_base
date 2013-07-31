@@ -227,7 +227,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     public void collapse() {
     }
 
-    @Override
     protected void onPieConfigurationChanged(Configuration newConfig) {
         if (mPieControlPanel != null) mPieControlPanel.bumpConfiguration();
     }

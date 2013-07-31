@@ -686,5 +686,39 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         mNotificationButton.setImageDrawable(null);
         mNotificationButton.setImageResource(R.drawable.ic_notifications);
     }
+
+    private static class FastColorDrawable extends Drawable {
+        private final int mColor;
+
+        public FastColorDrawable(int color) {
+            mColor = 0xff000000 | color;
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            canvas.drawColor(mColor, PorterDuff.Mode.SRC);
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter cf) {
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.OPAQUE;
+        }
+
+        @Override
+        public void setBounds(int left, int top, int right, int bottom) {
+        }
+
+        @Override
+        public void setBounds(Rect bounds) {
+        }
+    }
 }
 
