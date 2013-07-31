@@ -415,6 +415,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
             // If the current notification is dismissable we might want to skip it if so desired
             if (!includeCurrentDismissable) {
                 if (mNotificationData.size() > 1 && mLastNotificationEntry != null &&
+                        mCurrentNotficationEntry != null &&
                         mLastNotificationEntry.notification == mCurrentNotficationEntry.notification) {
                     boolean cancel = (mLastNotificationEntry.notification.notification.flags &
                             Notification.FLAG_AUTO_CANCEL) == Notification.FLAG_AUTO_CANCEL;
@@ -1258,7 +1259,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         mEffect.invalidate();
 
         // Set Number
-        mEffect.setHaloMessageNumber(n.number, alwaysFlip);
+        mEffect.setHaloMessageNumber(n.number, alwaysFlip, delay);
     }
 
     // This is the android ticker callback
@@ -1291,18 +1292,19 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                     mLastNotificationEntry = entry;
 
                     if (allowed && mState != State.FIRST_RUN) {
-                        tick(entry, text, HaloEffect.WAKE_TIME, 1000, true);
+                        if (mState == State.IDLE || mState == State.HIDDEN) {
+                            mEffect.wake();
+                            mEffect.nap(HaloEffect.NAP_DELAY + HaloEffect.WAKE_TIME * 2);
+                            if (mHideTicker) mEffect.sleep(HaloEffect.SLEEP_DELAY + HaloEffect.WAKE_TIME * 2, HaloEffect.SLEEP_TIME, false);
+                        }
+
+                        tick(entry, text, HaloEffect.WAKE_TIME * 3, 1000, true);
 
                         // Pop while not tasking, only if notification is certified fresh
                         if (mEnableColor) {
-                            if (mGesture != Gesture.TASK && mState != State.SILENT) mEffect.ping(mPaintHoloCustom, HaloEffect.WAKE_TIME);
+                        if (mGesture != Gesture.TASK && mState != State.SILENT) mEffect.ping(mPaintHoloCustom, HaloEffect.WAKE_TIME * 2);
                         } else {
-                            if (mGesture != Gesture.TASK && mState != State.SILENT) mEffect.ping(mPaintHolo, HaloEffect.WAKE_TIME);
-                        }
-                        if (mState == State.IDLE || mState == State.HIDDEN) {
-                            mEffect.wake();
-                            mEffect.nap(HaloEffect.NAP_DELAY);
-                            if (mHideTicker) mEffect.sleep(HaloEffect.SLEEP_DELAY, HaloEffect.SLEEP_TIME, false);
+                            if (mGesture != Gesture.TASK && mState != State.SILENT) mEffect.ping(mPaintHolo, HaloEffect.WAKE_TIME * 2);
                         }
                     }
                 }
