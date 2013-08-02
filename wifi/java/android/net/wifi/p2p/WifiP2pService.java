@@ -303,7 +303,7 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
         mContext = context;
 
         //STOPSHIP: get this from native side
-        mInterface = "p2p0";
+        mInterface = SystemProperties.get("wifi.p2pinterface", "p2p0");
         mNetworkInfo = new NetworkInfo(ConnectivityManager.TYPE_WIFI_P2P, 0, NETWORKTYPE, "");
 
         mP2pSupported = mContext.getPackageManager().hasSystemFeature(
@@ -1808,7 +1808,11 @@ public class WifiP2pService extends IWifiP2pManager.Stub {
                     } else {
                         mSavedPeerConfig.wps.setup = WpsInfo.PBC;
                     }
-                    transitionTo(mUserAuthorizingJoinState);
+                    if (DBG) logd("mGroup.isGroupOwner()" + mGroup.isGroupOwner());
+                    if (mGroup.isGroupOwner()) {
+                        if (DBG) logd("Local device is Group Owner, transiting to mUserAuthorizingJoinState");
+                        transitionTo(mUserAuthorizingJoinState);
+                    }
                     break;
                 case WifiMonitor.P2P_GROUP_STARTED_EVENT:
                     loge("Duplicate group creation event notice, ignore");

@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 /**
  * A class representing one wifi channel or frequency
+ * @hide
  */
 public class WifiChannel implements Parcelable {
     public int channel;

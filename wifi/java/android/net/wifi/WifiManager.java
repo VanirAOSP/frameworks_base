@@ -908,6 +908,7 @@ public class WifiManager {
     /**
      * Get a list of supported channels / frequencies
      * @return a List of WifiChannels
+     * @hide
      */
     public List<WifiChannel> getSupportedChannels() {
         try {
@@ -1128,14 +1129,6 @@ public class WifiManager {
      */
     public boolean stopWifi() {
         try {
-            for (WifiConfiguration config : getConfiguredNetworks()) {
-                if (config != null) {
-                    if (!config.autoConnect) {
-                        disableNetwork(config.networkId);
-                    }
-                }
-            }
-            saveConfiguration();
             mService.stopWifi();
             return true;
         } catch (RemoteException e) {

@@ -355,14 +355,13 @@ public class WifiStateMachine extends StateMachine {
     public static final int CMD_DISABLE_P2P_REQ           = BASE + 132;
     public static final int CMD_DISABLE_P2P_RSP           = BASE + 133;
 
-    public static final int CMD_BOOT_COMPLETED            = BASE + 134;
+    /* Is IBSS mode supported by the driver? */
+    public static final int CMD_GET_IBSS_SUPPORTED        = BASE + 134;
 
     /* Get supported channels */
     public static final int CMD_GET_SUPPORTED_CHANNELS    = BASE + 135;
 
-    /* Is IBSS mode supported by the driver? */
-    public static final int CMD_GET_IBSS_SUPPORTED        = BASE + 136;
-
+    public static final int CMD_BOOT_COMPLETED            = BASE + 136;
 
     public static final int CONNECT_MODE                   = 1;
     public static final int SCAN_ONLY_MODE                 = 2;
@@ -773,9 +772,9 @@ public class WifiStateMachine extends StateMachine {
      */
     public void setSupplicantRunning(boolean enable) {
         if (enable) {
+            WifiNative.setMode(0);
             sendMessage(CMD_START_SUPPLICANT);
         } else {
-            mWifiConfigStore.setStateFromAutoConnectAllNetworks();
             sendMessage(CMD_STOP_SUPPLICANT);
         }
     }
@@ -785,6 +784,7 @@ public class WifiStateMachine extends StateMachine {
      */
     public void setHostApRunning(WifiConfiguration wifiConfig, boolean enable) {
         if (enable) {
+            WifiNative.setMode(1);
             sendMessage(CMD_START_AP, wifiConfig);
         } else {
             sendMessage(CMD_STOP_AP);
@@ -1062,12 +1062,6 @@ public class WifiStateMachine extends StateMachine {
      * @param persist {@code true} if the setting should be remembered.
      */
     public void setCountryCode(String countryCode, boolean persist) {
-		String countryCodeUser = Settings.Global.getString(mContext.getContentResolver(),
-                Settings.Global.WIFI_COUNTRY_CODE_USER);
-        if (countryCodeUser != null && countryCodeUser != countryCode) {
-            persist = true;
-            countryCode = countryCodeUser;
-        }
         if (persist) {
             mPersistedCountryCode = countryCode;
             Settings.Global.putString(mContext.getContentResolver(),
