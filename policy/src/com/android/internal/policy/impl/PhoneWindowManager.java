@@ -2422,7 +2422,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     return -1;
                 }
             }
-            return 0;
         } else if (keyCode == KeyEvent.KEYCODE_APP_SWITCH) {
             if (!keyguardOn) {
                 if (down && repeatCount == 0) {
@@ -2456,9 +2455,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (mKillAppLongPressBack) {
                 if (down && repeatCount == 0) {
                     mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
+                    return 0;
                 }
             }
-            return -1;
         } else if (keyCode == KeyEvent.KEYCODE_SYSRQ) {
             if (down && repeatCount == 0) {
                 mHandler.post(mScreenshotRunnable);
