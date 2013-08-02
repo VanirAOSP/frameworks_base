@@ -163,6 +163,7 @@ class ServerThread extends Thread {
         WindowManagerService wm = null;
         BluetoothManagerService bluetooth = null;
         DockObserver dock = null;
+        RegulatoryObserver regulatory = null;
         UsbService usb = null;
         SerialService serial = null;
         TwilightService twilight = null;
@@ -498,6 +499,14 @@ class ServerThread extends Thread {
                 ServiceManager.addService(Context.NETWORK_POLICY_SERVICE, networkPolicy);
             } catch (Throwable e) {
                 reportWtf("starting NetworkPolicy Service", e);
+            }
+
+            try {
+                Slog.i(TAG, "Regulatory Observer");
+                // Listen for country code changes
+                regulatory = new RegulatoryObserver(context);
+            } catch (Throwable e) {
+                reportWtf("starting RegulatoryObserver", e);
             }
 
            try {
