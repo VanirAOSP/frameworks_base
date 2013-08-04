@@ -334,6 +334,7 @@ public class Vpn extends BaseNetworkStateTracker {
         @Override
         public void interfaceStatusChanged(String interfaze, boolean up) {
             synchronized (Vpn.this) {
+                Log.e("VPNNUKE", ""+interfaze+" IS NOW "+(up?"UP!":"DOWN!"));
                 if (!up && mLegacyVpnRunner != null) {
                     mLegacyVpnRunner.check(interfaze);
                 }
@@ -344,6 +345,7 @@ public class Vpn extends BaseNetworkStateTracker {
         public void interfaceRemoved(String interfaze) {
             synchronized (Vpn.this) {
                 if (interfaze.equals(mInterface) && jniCheck(interfaze) == 0) {
+                    Log.e("VPNNUKE", "SHOULD CHECK IF VPN IS REQUIRED AND TRY TO RECONNECT?!");
                     final long token = Binder.clearCallingIdentity();
                     try {
                         mCallback.restore();
