@@ -1707,15 +1707,20 @@ public class GpsLocationProvider implements LocationProviderInterface {
         Uri uri = Uri.parse("content://telephony/carriers/preferapn");
         String apn = null;
 
-        Cursor cursor = mContext.getContentResolver().query(uri, new String[] {"apn"},
-                null, null, Carriers.DEFAULT_SORT_ORDER);
+		Cursor cursor = null; 
+		
+		try {
+		    cursor = mContext.getContentResolver().query(uri, new String[] {"apn"},
+                    null, null, Carriers.DEFAULT_SORT_ORDER);
 
-        if (null != cursor) {
-            try {
+            if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     apn = cursor.getString(0);
                 }
-            } finally {
+            }
+
+        } finally {
+			if (cursor !=null) {
                 cursor.close();
             }
         }
