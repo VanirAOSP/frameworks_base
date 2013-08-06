@@ -505,6 +505,8 @@ public class CallerInfo {
         int columnIndex = (columnName != null) ? cursor.getColumnIndex(columnName) : -1;
         if (VDBG) Rlog.v(TAG, "==> Using column '" + columnName
                         + "' (columnIndex = " + columnIndex + ") for person_id lookup...");
+        if (cursor != null)
+            cursor.close();
         return columnIndex;
     }
 
