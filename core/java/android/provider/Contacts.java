@@ -203,16 +203,13 @@ public class Contacts {
                 selectString = "key=?";
                 selectArgs = new String[] {key};
             }
-            Cursor cursor = null;
-            try {
-				cursor = cr.query(Settings.CONTENT_URI, new String[]{VALUE},
+            Cursor cursor = cr.query(Settings.CONTENT_URI, new String[]{VALUE},
                     selectString, selectArgs, null);
+            try {
                 if (!cursor.moveToNext()) return null;
                 return cursor.getString(0);
             } finally {
-				if (cursor != null) {
-                    cursor.close();
-				}
+                cursor.close();
             }
         }
 
