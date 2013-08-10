@@ -35,6 +35,8 @@
         android:orientation="horizontal"
         >
 
+        <com.android.systemui.statusbar.tablet.InputMethodButton
+            android:id="@+id/imeSwitchButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="8dip"
@@ -52,13 +54,6 @@
             android:src="@drawable/ic_sysbar_zoom"
             android:visibility="gone"
             android:contentDescription="@string/accessibility_compatibility_zoom_button"
-            />
-   
-        <com.android.systemui.statusbar.tablet.InputMethodButton
-            android:id="@+id/imeSwitchButton"
-            android:src="@drawable/ic_sysbar_ime_default"
-            android:visibility="gone"
-            android:contentDescription="@string/accessibility_ime_switch_button"
             />
 
         <com.android.systemui.statusbar.tablet.NotificationIconArea
