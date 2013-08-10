@@ -910,18 +910,12 @@ public class MediaScanner
 
             Uri tableUri = mFilesUri;
             MediaInserter inserter = mMediaInserter;
-            boolean clearThumbMagic = false;
             if (!mNoMedia) {
                 if (MediaFile.isVideoFileType(mFileType)) {
-                    values.put(Video.Media.MINI_THUMB_MAGIC, 0);
-                    clearThumbMagic = true;
                     tableUri = mVideoUri;
                 } else if (MediaFile.isImageFileType(mFileType)) {
-                    values.put(Images.Media.MINI_THUMB_MAGIC, 0);
-                    clearThumbMagic = true;
                     tableUri = mImagesUri;
                 } else if (MediaFile.isAudioFileType(mFileType)) {
-                    clearThumbMagic = true;
                     tableUri = mAudioUri;
                 }
             }
@@ -985,9 +979,7 @@ public class MediaScanner
                 result = ContentUris.withAppendedId(tableUri, rowId);
                 // path should never change, and we want to avoid replacing mixed cased paths
                 // with squashed lower case paths
-                if (!clearThumbMagic) {
-                    values.remove(MediaStore.MediaColumns.DATA);
-                }
+                values.remove(MediaStore.MediaColumns.DATA);
 
                 int mediaType = 0;
                 if (!MediaScanner.isNoMediaPath(entry.mPath)) {
@@ -1130,16 +1122,6 @@ public class MediaScanner
                         int format = c.getInt(FILES_PRESCAN_FORMAT_COLUMN_INDEX);
                         long lastModified = c.getLong(FILES_PRESCAN_DATE_MODIFIED_COLUMN_INDEX);
                         lastId = rowId;
-
-                        // In some condition, there is a race when MediaProvider's
-                        // mUnmountReceiver processing external storage's database
-                        // cleanup at shutdown procedure: if the database is too big,
-                        // system power down after db.update, but didn't do db.delete,
-                        // there will be many elements with null filename in the datebase.
-                        // We'd better delete thus elements here, otherwise,
-                        // duplicated files and folders would be shown in MTP.
-                        if (path != null && path.length() == 0)
-                            deleter.delete(rowId);
 
                         // Only consider entries with absolute path names.
                         // This allows storing URIs in the database without the
