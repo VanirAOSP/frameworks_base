@@ -644,10 +644,11 @@ public class RingtoneManager {
      */
     private static Ringtone getRingtone(final Context context, Uri ringtoneUri, int streamType) {
         try {
-            final Ringtone r = new Ringtone(context, true);
+            Ringtone r = new Ringtone(context, true);
             if (streamType >= 0) {
                 r.setStreamType(streamType);
             }
+
             r.setUri(ringtoneUri);
             return r;
         } catch (Exception ex) {
