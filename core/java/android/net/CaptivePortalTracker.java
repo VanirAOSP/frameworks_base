@@ -281,6 +281,7 @@ public class CaptivePortalTracker extends StateMachine {
                                     ConnectivityManager.ACTION_CAPTIVE_PORTAL_TEST_COMPLETED);
                             intent.putExtra(ConnectivityManager.EXTRA_IS_CAPTIVE_PORTAL, captive);
                             intent.setPackage(SETUP_WIZARD_PACKAGE);
+                            intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
                             mContext.sendBroadcast(intent);
                         }
 
