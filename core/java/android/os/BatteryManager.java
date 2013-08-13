@@ -26,7 +26,7 @@ public class BatteryManager {
      * integer containing the current status constant.
      */
     public static final String EXTRA_STATUS = "status";
-    
+
     /**
      * Extra for {@link android.content.Intent#ACTION_BATTERY_CHANGED}:
      * integer containing the current health constant.
@@ -38,14 +38,14 @@ public class BatteryManager {
      * boolean indicating whether a battery is present.
      */
     public static final String EXTRA_PRESENT = "present";
-    
+
     /**
      * Extra for {@link android.content.Intent#ACTION_BATTERY_CHANGED}:
      * integer field containing the current battery level, from 0 to
      * {@link #EXTRA_SCALE}.
      */
     public static final String EXTRA_LEVEL = "level";
-    
+
     /**
      * Extra for {@link android.content.Intent#ACTION_BATTERY_CHANGED}:
      * integer containing the maximum battery level.
@@ -92,6 +92,28 @@ public class BatteryManager {
      * {@hide}
      */
     public static final String EXTRA_INVALID_CHARGER = "invalid_charger";
+
+    // Dock intents
+    /** @hide **/
+    public static final String EXTRA_DOCK_STATUS = "dock_status";
+    /** @hide **/
+    public static final String EXTRA_DOCK_HEALTH = "dock_health";
+    /** @hide **/
+    public static final String EXTRA_DOCK_PRESENT = "dock_present";
+    /** @hide **/
+    public static final String EXTRA_DOCK_LEVEL = "dock_level";
+    /** @hide **/
+    public static final String EXTRA_DOCK_SCALE = "dock_scale";
+    /** @hide **/
+    public static final String EXTRA_DOCK_ICON_SMALL = "dock_icon-small";
+    /** @hide **/
+    public static final String EXTRA_DOCK_PLUGGED = "dock_plugged";
+    /** @hide **/
+    public static final String EXTRA_DOCK_VOLTAGE = "dock_voltage";
+    /** @hide **/
+    public static final String EXTRA_DOCK_TEMPERATURE = "dock_temperature";
+    /** @hide **/
+    public static final String EXTRA_DOCK_TECHNOLOGY = "dock_technology";
 
     // values for "status" field in the ACTION_BATTERY_CHANGED Intent
     public static final int BATTERY_STATUS_UNKNOWN = 1;

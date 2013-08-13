@@ -49,10 +49,10 @@ interface IPowerManager
     void setTemporaryScreenBrightnessSettingOverride(int brightness);
     void setTemporaryScreenAutoBrightnessAdjustmentSettingOverride(float adj);
 
-    void cpuBoost(int duration);
-    
     // sets the attention light (used by phone app only)
     void setAttentionLight(boolean on, int color);
+
+    void cpuBoost(int duration);
 
     void setKeyboardVisibility(boolean visible);
 

@@ -374,7 +374,7 @@ public class Process {
      * @param gids Additional group-ids associated with the process.
      * @param debugFlags Additional flags.
      * @param targetSdkVersion The target SDK version for the app.
-     * @param seInfo null-ok SE Android information for the new process.
+     * @param seInfo null-ok SELinux information for the new process.
      * @param zygoteArgs Additional arguments to supply to the zygote process.
      * 
      * @return An object that describes the result of the attempt to start the process.
@@ -554,7 +554,7 @@ public class Process {
      * new process should setgroup() to.
      * @param debugFlags Additional flags.
      * @param targetSdkVersion The target SDK version for the app.
-     * @param seInfo null-ok SE Android information for the new process.
+     * @param seInfo null-ok SELinux information for the new process.
      * @param extraArgs Additional arguments to supply to the zygote process.
      * @return An object that describes the result of the attempt to start the process.
      * @throws ZygoteStartFailedEx if process start failed for any reason
@@ -1013,29 +1013,4 @@ public class Process {
          */
         public boolean usingWrapper;
     }
-    
-    private static final int[] PROCESS_STATE_FORMAT = new int[] {
-        PROC_SPACE_TERM,
-        PROC_SPACE_TERM|PROC_PARENS, // 1: name
-        PROC_SPACE_TERM|PROC_OUT_STRING, // 2: state
-    };
-    /**
-     * Returns true if the process can be found and is not a zombie
-     * @param pid the process id
-     * @hide
-     */
-    public static final boolean isAlive(int pid) {
-        boolean ret = false;
-        String[] processStateString = new String[1];
-        if (Process.readProcFile("/proc/" + pid + "/stat",
-                PROCESS_STATE_FORMAT, processStateString, null, null)) {
-            ret = true;
-            // Log.i(LOG_TAG,"State of process " + pid + " is " + processStateString[0]);
-            if (processStateString[0].equals("Z")) {
-                ret = false;
-            }
-        }
-        return ret;
-    }
-    
 }
