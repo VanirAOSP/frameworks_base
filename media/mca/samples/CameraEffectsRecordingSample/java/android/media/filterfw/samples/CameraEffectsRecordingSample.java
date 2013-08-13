@@ -87,6 +87,13 @@ public class CameraEffectsRecordingSample extends Activity {
     }
 
     protected void onDestroy() {
+		super.onDestroy();
+		if (mRunner.isRunning()) {
+			mRunner.close();
+		}
+	}
+
+    protected void onDestroy() {
         super.onDestroy();
         if (mRunner.isRunning()) {
             mRunner.close();
