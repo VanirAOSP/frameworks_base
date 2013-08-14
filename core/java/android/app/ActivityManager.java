@@ -65,6 +65,9 @@ public class ActivityManager {
 
     private final Context mContext;
     private final Handler mHandler;
+    private static long memSize;
+    private static long totalSize;
+    private static int pixels;
 
     /**
      * Result for IActivityManager.startActivity: an error where the
@@ -380,20 +383,27 @@ public class ActivityManager {
      * (which tends to consume a lot more RAM).
      * @hide
      */
+
     static public boolean isHighEndGfx() {
-        MemInfoReader reader = new MemInfoReader();
-        reader.readMemInfo();
-        if (reader.getTotalSize() >= (512*1024*1024)) {
-            // If the device has at least 512MB RAM available to the kernel,
-            // we can afford the overhead of graphics acceleration.
+
+        if (totalSize == 0) {
+            MemInfoReader reader = new MemInfoReader();
+			reader.readMemInfo();
+			totalSize = reader.getTotalSize();
+            reader = null;
+		}
+
+        if (totalSize >= (512*1024*1024)) {
             return true;
         }
 
-        Display display = DisplayManagerGlobal.getInstance().getRealDisplay(
+        if (pixels == 0) {
+			Display display = DisplayManagerGlobal.getInstance().getRealDisplay(
                 Display.DEFAULT_DISPLAY);
-        Point p = new Point();
-        display.getRealSize(p);
-        int pixels = p.x * p.y;
+			Point p = new Point();
+            display.getRealSize(p);
+            pixels = p.x * p.y;
+        }
         if (pixels >= (1024*600)) {
             // If this is a sufficiently large screen, then there are enough
             // pixels on it that we'd really like to use hw drawing.
@@ -410,9 +420,16 @@ public class ActivityManager {
      * @hide
      */
     static public boolean isLargeRAM() {
-        MemInfoReader reader = new MemInfoReader();
-        reader.readMemInfo();
-        if (reader.getTotalSize() >= (640*1024*1024)) {
+
+        if (memSize == 0) {
+            MemInfoReader reader = new MemInfoReader();
+            reader.readMemInfo();
+            memSize = reader.getTotalSize();
+            reader = null;
+		}
+
+
+        if (memSize >= (640*1024*1024)) {
             // Currently 640MB RAM available to the kernel is the point at
             // which we have plenty of RAM to spare.
             return true;
