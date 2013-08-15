@@ -356,8 +356,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         private void unregisterSelf() {
             if (mIsRegistered) {
-                mIsRegistered = false;
                 mContext.unregisterReceiver(this);
+                mIsRegistered = false;
             }
         }
     }
@@ -528,7 +528,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private long mPowerKeyTime;
     private KeyguardManager mKeyguardManager;
 
-    SettingsObserver mSettingsObserver;
+    private SettingsObserver mSettingsObserver;
     ShortcutManager mShortcutManager;
     PowerManager.WakeLock mBroadcastWakeLock;
     boolean mHavePendingMediaKeyRepeatWithWakeLock;
@@ -641,8 +641,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this);
-
             updateSettings();
+        }
+        
+        private void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
         }
 
         @Override public void onChange(boolean selfChange) {
@@ -1033,8 +1036,19 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mOrientationListener.setCurrentRotation(windowManager.getRotation());
         } catch (RemoteException ex) { }
 
-        mSettingsObserver = new SettingsObserver(mHandler);
-        mSettingsObserver.observe();
+        try {
+            if (mPowerMenuReceiver != null)
+                mPowerMenuReceiver.unregisterSelf();
+                mPowerMenuReceiver = null;
+            if (mSettingsObserver != null)
+		        mSettingsObserver.unobserve();
+		        mSettingsObserver = null;
+            } finally {
+				mPowerMenuReceiver = new PowerMenuReceiver(context);
+                mPowerMenuReceiver.registerSelf();
+                mSettingsObserver = new SettingsObserver(mHandler);
+                mSettingsObserver.observe();
+	    }
 
         mShortcutManager = new ShortcutManager(context, mHandler);
         mShortcutManager.observe();
@@ -1137,8 +1151,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else {
             screenTurnedOff(WindowManagerPolicy.OFF_BECAUSE_OF_USER);
         }
-        mPowerMenuReceiver = new PowerMenuReceiver(context);
-        mPowerMenuReceiver.registerSelf();
     }
 
     public void elNegotiator() {
@@ -4460,7 +4472,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    BroadcastReceiver mDockReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mDockReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Intent.ACTION_DOCK_EVENT.equals(intent.getAction())) {
@@ -4481,7 +4493,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
-    BroadcastReceiver mDreamReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mDreamReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Intent.ACTION_DREAMING_STARTED.equals(intent.getAction())) {
@@ -4496,7 +4508,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
-    BroadcastReceiver mMultiuserReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mMultiuserReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Intent.ACTION_USER_SWITCHED.equals(intent.getAction())) {
@@ -4516,7 +4528,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     };
-    BroadcastReceiver mWifiDisplayReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mWifiDisplayReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
             if (action.equals(Intent.ACTION_WIFI_DISPLAY_VIDEO)) {
@@ -4531,7 +4543,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
-    BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             mUiContext = null;
         }
