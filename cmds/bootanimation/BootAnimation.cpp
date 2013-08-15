@@ -162,9 +162,9 @@ status_t BootAnimation::initTexture(void* buffer, size_t len)
     codec->setDitherImage(false);
     if (codec) {
         codec->decode(&stream, &bitmap,
-        		#ifdef USE_565
-        		SkBitmap::kRGB_565_Config,
-        		#else
+                #ifdef USE_565
+                SkBitmap::kRGB_565_Config,
+                #else
                 SkBitmap::kARGB_8888_Config,
                 #endif
                 SkImageDecoder::kDecodePixels_Mode);
@@ -598,7 +598,7 @@ bool BootAnimation::movie()
                 }
 
                 checkExit();
- 
+
                 if (noTextureCache)
                     glDeleteTextures(1, &frame.tid);
             }

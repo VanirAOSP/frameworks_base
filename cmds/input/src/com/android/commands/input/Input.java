@@ -251,7 +251,7 @@ public class Input {
     private void showUsage() {
         System.err.println("usage: input ...");
         System.err.println("       input text <string>");
-        System.err.println("       input keyevent <key code number or name> ...");
+        System.err.println("       input keyevent <key code number or name>");
         System.err.println("       input [touchscreen|touchpad|touchnavigation] tap <x> <y>");
         System.err.println("       input [touchscreen|touchpad|touchnavigation] swipe "
                 + "<x1> <y1> <x2> <y2> [duration(ms)]");
