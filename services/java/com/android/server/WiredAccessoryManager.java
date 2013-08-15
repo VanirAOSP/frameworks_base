@@ -79,6 +79,8 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
 
     private int mSwitchValues;
 
+    private boolean dockAudioEnabled = false;
+
     private final WiredAccessoryObserver mObserver;
     private final InputManagerService mInputManager;
 
@@ -96,6 +98,12 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
 
         mObserver = new WiredAccessoryObserver();
 
+        File f = new File("/sys/class/switch/dock/state");
+        if (f!=null && f.exists()) {
+            // Listen out for changes to the Dock Audio Settings
+            context.registerReceiver(new SettingsChangedReceiver(),
+            new IntentFilter("com.cyanogenmod.settings.SamsungDock"), null, null);
+        }
         context.registerReceiver(new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context ctx, Intent intent) {
@@ -103,6 +111,23 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
                     }
                 },
                 new IntentFilter(Intent.ACTION_BOOT_COMPLETED), null, null);
+    }
+
+    private final class SettingsChangedReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Slog.e(TAG, "Recieved a Settings Changed Action " + action);
+            if (action.equals("com.cyanogenmod.settings.SamsungDock")) {
+                String data = intent.getStringExtra("data");
+                Slog.e(TAG, "Recieved a Dock Audio change " + data);
+                if (data != null && data.equals("1")) {
+                    dockAudioEnabled = true;
+                } else {
+                    dockAudioEnabled = false;
+                }
+            }
+        }
     }
 
     private void bootCompleted() {
@@ -300,7 +325,8 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
                         FileReader file = new FileReader(uei.getSwitchStatePath());
                         int len = file.read(buffer, 0, 1024);
                         file.close();
-                        curState = Integer.valueOf((new String(buffer, 0, len)).trim());
+                        curState = validateSwitchState(
+                                Integer.valueOf((new String(buffer, 0, len)).trim()));
 
                         if (curState > 0) {
                             updateStateLocked(uei.getDevPath(), uei.getDevName(), curState);
@@ -315,12 +341,21 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
             }
 
             // At any given time accessories could be inserted
-            // one on the board, one on the dock and one on HDMI:
-            // observe three UEVENTs
+            // one on the board, one on the dock, one on the
+            // samsung dock and one on HDMI:
+            // observe all UEVENTs that have valid switch supported
+            // by the Kernel
             for (int i = 0; i < mUEventInfo.size(); ++i) {
                 UEventInfo uei = mUEventInfo.get(i);
                 startObserving("DEVPATH="+uei.getDevPath());
             }
+        }
+
+        private int validateSwitchState(int state) {
+            // Some drivers, namely HTC headset ones, add additional bits to
+            // the switch state. As we only are able to deal with the states
+            // 0, 1 and 2, mask out all the other bits
+            return state & 0x3;
         }
 
         private List<UEventInfo> makeObservedUEventList() {
@@ -343,6 +378,14 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
                 retVal.add(uei);
             } else {
                 Slog.w(TAG, "This kernel does not have usb audio support");
+            }
+
+            // Monitor Samsung USB audio
+            uei = new UEventInfo("dock", BIT_USB_HEADSET_DGTL, BIT_USB_HEADSET_ANLG);
+            if (uei.checkSwitchExists()) {
+                retVal.add(uei);
+            } else {
+                Slog.w(TAG, "This kernel does not have samsung usb dock audio support");
             }
 
             // Monitor HDMI
@@ -372,10 +415,20 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
         public void onUEvent(UEventObserver.UEvent event) {
             if (LOG) Slog.v(TAG, "Headset UEVENT: " + event.toString());
 
+            int state = validateSwitchState(Integer.parseInt(event.get("SWITCH_STATE")));
             try {
                 String devPath = event.get("DEVPATH");
                 String name = event.get("SWITCH_NAME");
-                int state = Integer.parseInt(event.get("SWITCH_STATE"));
+                if (name.equals("dock")) {
+                    // Samsung USB Audio Jack is non-sensing - so must be enabled manually
+                    // The choice is made in the GalaxyS2Settings.apk
+                    // device/samsung/i9100/DeviceSettings/src/com/cyanogenmod/settings/device/DockFragmentActivity.java
+                    // This sends an Intent to this class
+                    if ((!dockAudioEnabled) && (state > 0)) {
+                        Slog.e(TAG, "Ignoring dock event as Audio routing disabled " + event);
+                        return;
+                    }
+                }
                 synchronized (mLock) {
                     updateStateLocked(devPath, name, state);
                 }
@@ -388,7 +441,7 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
             for (int i = 0; i < mUEventInfo.size(); ++i) {
                 UEventInfo uei = mUEventInfo.get(i);
                 if (devPath.equals(uei.getDevPath())) {
-                    updateLocked(name, uei.computeNewHeadsetState(name, state));
+                    updateLocked(name, uei.computeNewHeadsetState(mHeadsetState, state));
                     return;
                 }
             }
@@ -398,7 +451,6 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
             private final String mDevName;
             private final int mState1Bits;
             private final int mState2Bits;
-            private int switchState;
 
             public UEventInfo(String devName, int state1Bits, int state2Bits) {
                 mDevName = devName;
@@ -421,37 +473,12 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
                 return f.exists();
             }
 
-            public int computeNewHeadsetState(String name, int state) {
-                if (LOG) Slog.v(TAG, "updateState name: " + name + " state " + state);
-                if (name.equals("usb_audio")) {
-                    switchState = ((mHeadsetState & (BIT_HEADSET | BIT_HEADSET_NO_MIC | BIT_HDMI_AUDIO))
-                            | ((state == 1) ? BIT_USB_HEADSET_ANLG 
-                            : ((state == 2) ? BIT_USB_HEADSET_DGTL : 0)));
-                } else if (name.equals("dock")) {
-                    switchState = ((mHeadsetState & (BIT_HEADSET | BIT_HEADSET_NO_MIC | BIT_HDMI_AUDIO))
-                            | ((state == 2 || state == 1) ? BIT_USB_HEADSET_ANLG : 0));
-                    // This sets the switchsate to 4 (for USB HEADSET - BIT_USB_HEADSET_ANLG)
-                    // Looking at the other types, maybe the state that emitted should be a 1 and at
-                    //       /devices/virtual/switch/usb_audio
-                    //
-                    // However the we need to deal with changes at
-                    //       /devices/virtual/switch/dock
-                    // for the state of 2 - means that we have a USB ANLG headset Car Dock
-                    // for the state of 1 - means that we have a USB ANLG headset Desk Dock
-                } else if (name.equals("hdmi")) {
-                    switchState = ((mHeadsetState & (BIT_HEADSET | BIT_HEADSET_NO_MIC
-                            | BIT_USB_HEADSET_DGTL | BIT_USB_HEADSET_ANLG))
-                            | ((state == 1) ? BIT_HDMI_AUDIO : 0));
-                } else if (name.equals("Headset")) {
-                    switchState = ((mHeadsetState & (BIT_HDMI_AUDIO | BIT_USB_HEADSET_ANLG
-                            | BIT_USB_HEADSET_DGTL)) | (state & (BIT_HEADSET | BIT_HEADSET_NO_MIC)));
-                } else {
-                    switchState = ((mHeadsetState & (BIT_HDMI_AUDIO | BIT_USB_HEADSET_ANLG
-                            | BIT_USB_HEADSET_DGTL)) | ((state == 1) ? BIT_HEADSET :
-                            ((state == 2) ? BIT_HEADSET_NO_MIC : 0)));
-                }
-                if (LOG) Slog.v(TAG, "updateState switchState: " + switchState);
-                return switchState;
+            public int computeNewHeadsetState(int headsetState, int switchState) {
+                int preserveMask = ~(mState1Bits | mState2Bits);
+                int setBits = ((switchState == 1) ? mState1Bits :
+                              ((switchState == 2) ? mState2Bits : 0));
+
+                return ((headsetState & preserveMask) | setBits);
             }
         }
     }
