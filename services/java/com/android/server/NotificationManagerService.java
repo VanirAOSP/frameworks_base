@@ -229,6 +229,8 @@ public class NotificationManagerService extends INotificationManager.Stub
     private static final String TAG_PACKAGE = "package";
     private static final String ATTR_NAME = "name";
 
+    private static final HashSet<String> mNoIconWarned = new HashSet<String>();
+
     private int readPolicy(AtomicFile file, String lookUpTag, HashSet<String> db) {
         return readPolicy(file, lookUpTag, db, null, 0);
     }
@@ -2026,7 +2028,18 @@ public class NotificationManagerService extends INotificationManager.Stub
 
                 notifyPostedLocked(r);
             } else {
-                Slog.e(TAG, "Not posting notification with icon==0: " + notification);
+                final boolean warnPackage = !mNoIconWarned.contains(n.getPackageName());
+                if (warnPackage) {
+                    // ATTENTION: in a future release we will bail out here
+                    // so that we do not play sounds, show lights, etc. for invalid notifications
+                    Slog.e(TAG, "Not posting notification with icon==0: " + notification+"\nWARNING: In a future release this will crash the app: " + n.getPackageName());
+                    mNoIconWarned.add(n.getPackageName());
+
+                    // Dear Google,
+                    //     Yes, using an iconless notification to keep a background app in memory is gross.
+                    //     However, it's less annoying than an unnecessary notification, or an app that doesn't work as well as it could.
+                    //     Rather than just crashing apps for doing this, why don't you add a permission and a public API for keeping an app in memory?
+                }
                 if (old != null && old.statusBarKey != null) {
                     long identity = Binder.clearCallingIdentity();
                     try {
@@ -2038,9 +2051,6 @@ public class NotificationManagerService extends INotificationManager.Stub
 
                     notifyRemovedLocked(r);
                 }
-                // ATTENTION: in a future release we will bail out here
-                // so that we do not play sounds, show lights, etc. for invalid notifications
-                Slog.e(TAG, "WARNING: In a future release this will crash the app: " + n.getPackageName());
             }
 
             // If we're not supposed to beep, vibrate, etc. then don't.
