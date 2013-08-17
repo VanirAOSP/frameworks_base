@@ -87,10 +87,10 @@ public class HaloProperties extends FrameLayout {
     private Drawable mHaloMessage;
     private Drawable mHaloCurrentOverlay;
 
-    protected Drawable mHaloSpeechL, mHaloSpeechR, mHaloSpeechLD, mHaloSpeechRD, mHaloSpeechLC, mHaloSpeechRC, mHaloSpeechLDC, mHaloSpeechRDC;
+    protected Drawable mHaloSpeechL, mHaloSpeechR, mHaloSpeechLD, mHaloSpeechRD;
 
     protected View mHaloBubble;
-    protected ImageView mHaloBg, mHaloBgCustom, mHaloIcon, mHaloOverlay;
+    protected ImageView mHaloBg, mHaloIcon, mHaloOverlay;
 
     protected View mHaloContentView, mHaloTickerContent, mHaloTickerWrapper;
     protected TextView mHaloTextView;
@@ -99,8 +99,6 @@ public class HaloProperties extends FrameLayout {
     protected TextView mHaloNumber, mHaloCount;
     protected ImageView mHaloNumberIcon, mHaloSystemIcon, mHaloPinned;
     protected RelativeLayout mHaloNumberContainer;
-
-    private boolean mEnableColor;
 
     private boolean mAttached = false;
 
@@ -112,6 +110,11 @@ public class HaloProperties extends FrameLayout {
     private MessageType mHaloMessageType = MessageType.MESSAGE;
 
     private boolean mLastContentStateLeft = true;
+
+    private boolean mEnableColor;
+    private int mCircleColor = 0;
+    private int mSpeechColor = 0;
+    private int mSpeechTextColor = 0;
 
     CustomObjectAnimator mHaloOverlayAnimator;
 
@@ -134,14 +137,8 @@ public class HaloProperties extends FrameLayout {
         mHaloSpeechLD = mContext.getResources().getDrawable(R.drawable.halo_speech_l_d);
         mHaloSpeechRD = mContext.getResources().getDrawable(R.drawable.halo_speech_r_d);
 
-        mHaloSpeechLC = mContext.getResources().getDrawable(R.drawable.custom_halo_speech_l_u);
-        mHaloSpeechRC = mContext.getResources().getDrawable(R.drawable.custom_halo_speech_r_u);
-        mHaloSpeechLDC = mContext.getResources().getDrawable(R.drawable.custom_halo_speech_l_d);
-        mHaloSpeechRDC = mContext.getResources().getDrawable(R.drawable.custom_halo_speech_r_d);
-
         mHaloBubble = mInflater.inflate(R.layout.halo_bubble, null);
         mHaloBg = (ImageView) mHaloBubble.findViewById(R.id.halo_bg);
-        mHaloBgCustom = (ImageView) mHaloBubble.findViewById(R.id.halo_bg_custom);
         mHaloIcon = (ImageView) mHaloBubble.findViewById(R.id.app_icon);
         mHaloOverlay = (ImageView) mHaloBubble.findViewById(R.id.halo_overlay);
 
@@ -205,7 +202,6 @@ public class HaloProperties extends FrameLayout {
         final int newBubbleSize = (int)(mContext.getResources().getDimensionPixelSize(R.dimen.halo_bubble_size) * fraction);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(newBubbleSize, newBubbleSize);
         mHaloBg.setLayoutParams(layoutParams);
-        mHaloBgCustom.setLayoutParams(layoutParams);
         mHaloIcon.setLayoutParams(layoutParams);
         mHaloOverlay.setLayoutParams(layoutParams);
 
@@ -390,24 +386,13 @@ public class HaloProperties extends FrameLayout {
     public void setHaloContentBackground(boolean contentLeft, ContentStyle style) {
         if (style != mLastContentStyle) {
             // Set background
-            if (mEnableColor) {
-                switch(style) {
-                    case CONTENT_UP:
-                        mHaloTickerWrapper.setBackground(contentLeft ? mHaloSpeechLC : mHaloSpeechRC);
-                        break;
-                    case CONTENT_DOWN:
-                        mHaloTickerWrapper.setBackground(contentLeft ? mHaloSpeechLDC : mHaloSpeechRDC);
-                        break;
-                }
-            } else {
-                switch(style) {
-                    case CONTENT_UP:
-                        mHaloTickerWrapper.setBackground(contentLeft ? mHaloSpeechL : mHaloSpeechR);
-                        break;
-                    case CONTENT_DOWN:
-                        mHaloTickerWrapper.setBackground(contentLeft ? mHaloSpeechLD : mHaloSpeechRD);
-                        break;
-                }
+            switch(style) {
+                case CONTENT_UP:
+                    mHaloTickerWrapper.setBackground(contentLeft ? mHaloSpeechL : mHaloSpeechR);
+                    break;
+                case CONTENT_DOWN:
+                    mHaloTickerWrapper.setBackground(contentLeft ? mHaloSpeechLD : mHaloSpeechRD);
+                    break;
             }
 
             // ... and override its padding
@@ -493,35 +478,38 @@ public class HaloProperties extends FrameLayout {
         ContentResolver cr = mContext.getContentResolver();
         mEnableColor = Settings.System.getInt(cr,
                Settings.System.HALO_COLORS, 0) == 1;
-        int mCircleColor = Settings.System.getInt(cr,
+        mCircleColor = Settings.System.getInt(cr,
                Settings.System.HALO_CIRCLE_COLOR, 0xFF33B5E5);
-        int mBubbleColor = Settings.System.getInt(cr,
+        mSpeechColor = Settings.System.getInt(cr,
                Settings.System.HALO_BUBBLE_COLOR, 0xFF33B5E5);
-        int mTextColor = Settings.System.getInt(cr,
+        mSpeechTextColor = Settings.System.getInt(cr,
                Settings.System.HALO_BUBBLE_TEXT_COLOR, 0xFFFFFFFF);
 
         if (mEnableColor) {
            // Ring
-           mHaloBgCustom.setBackgroundResource(R.drawable.halo_bg_custom);
-           mHaloBgCustom.getBackground().setColorFilter(ColorFilterMaker.
-                   changeColorAlpha(mCircleColor, .32f, 0f));
-           mHaloBg.setVisibility(View.GONE);
-           mHaloBgCustom.setVisibility(View.VISIBLE);
+           mHaloBg.setColorFilter(mCircleColor, PorterDuff.Mode.SRC_IN);
 
            // Speech bubbles
-           mHaloTextView.setBackgroundResource(R.drawable.custom_halo_speech_l_d);
-           mHaloTextView.setBackgroundResource(R.drawable.custom_halo_speech_l_u);
-           mHaloTextView.setBackgroundResource(R.drawable.custom_halo_speech_r_d);
-           mHaloTextView.setBackgroundResource(R.drawable.custom_halo_speech_r_u);
-           mHaloTextView.getBackground().setColorFilter(ColorFilterMaker.
-                    changeColorAlpha(mBubbleColor, .32f, 0f));
-           mHaloTextView.setTextColor(mTextColor);
+           mHaloSpeechL.setColorFilter(mSpeechColor, PorterDuff.Mode.SRC_IN);
+           mHaloSpeechR.setColorFilter(mSpeechColor, PorterDuff.Mode.SRC_IN);
+           mHaloSpeechLD.setColorFilter(mSpeechColor, PorterDuff.Mode.SRC_IN);
+           mHaloSpeechRD.setColorFilter(mSpeechColor, PorterDuff.Mode.SRC_IN);
+
+           // Speech text color
+           mHaloTextView.setTextColor(mSpeechTextColor);
         } else {
+           // Clear that color away! Just in case.
+
            // Ring
-           mHaloBg.setVisibility(View.VISIBLE);
-           mHaloBgCustom.setVisibility(View.GONE);
+           mHaloBg.clearColorFilter();
 
            // Speech bubbles
+           mHaloSpeechL.clearColorFilter();
+           mHaloSpeechR.clearColorFilter();
+           mHaloSpeechLD.clearColorFilter();
+           mHaloSpeechRD.clearColorFilter();
+
+           // Return back to default color
            mHaloTextView.setTextColor(getResources().getColor(R.color.halo_text_color));
         }
     }
