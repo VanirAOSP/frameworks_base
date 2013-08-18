@@ -1,8 +1,8 @@
 #
 # Original audio package that shipped on G1
-# 
+#
 # This file is included from core.mk so that all devices will have these sounds
-# 
+#
 # TODO: Clean up for future releases
 #
 

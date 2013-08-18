@@ -1,11 +1,11 @@
 #
 # Audio Package 4
-# 
+#
 # Include this file in a product makefile to include these audio files
 #
 # This is a larger package of sounds than the 1.0 release for devices
 # that have larger internal flash.
-# 
+#
 
 LOCAL_PATH:= frameworks/base/data/sounds
 
