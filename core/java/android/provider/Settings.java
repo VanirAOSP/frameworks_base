@@ -3405,6 +3405,12 @@ public final class Settings {
         public static final String CURRENT_UI_MODE = "current_ui_mode";
 
        /**
+        * to show the flip style pulldown or not...
+        * @hide
+        */
+        public static final String TABLET_STATUSBAR = "tablet_statusbar";
+
+       /**
         * MediaScanner behavior on boot.
         * 0 = enabled
         * 1 = ask (notification)

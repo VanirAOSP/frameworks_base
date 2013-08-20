@@ -81,7 +81,8 @@ public class PhoneStatusBarView extends PanelBar {
         } catch (NotFoundException ex) {
             mSettingsPanelDragzoneFrac = 0f;
         }
-        mFullWidthNotifications = mSettingsPanelDragzoneFrac <= 0f;
+
+        mFullWidthNotifications = (mSettingsPanelDragzoneFrac <= 0f) || Settings.System.getInt(mContext.getContentResolver(), Settings.System.TABLET_STATUSBAR, 0) == 0;
         Drawable bg = mContext.getResources().getDrawable(R.drawable.status_bar_background);
         if(bg instanceof ColorDrawable) {
             setBackground(new BackgroundAlphaColorDrawable(((ColorDrawable) bg).getColor()));
