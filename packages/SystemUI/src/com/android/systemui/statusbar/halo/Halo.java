@@ -1197,6 +1197,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         }
 
         CustomObjectAnimator contentYAnimator = new CustomObjectAnimator(this);
+        CustomObjectAnimator contentFlipAnimator = new CustomObjectAnimator(this);
 
         int tickerX, tickerY;
 
@@ -1281,6 +1282,9 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                     setHaloContentBackground(mTickerLeft, mGesture == Gesture.TASK && mHaloY > mIconHalfSize
                             ? HaloProperties.ContentStyle.CONTENT_DOWN : HaloProperties.ContentStyle.CONTENT_UP);
                     contentYAnimator.animate(ObjectAnimator.ofInt(this, "HaloContentY", y).setDuration(300),
+                            new DecelerateInterpolator(), null);
+                    contentFlipAnimator.animate(ObjectAnimator.ofFloat(mHaloTickerWrapper, "rotationY",
+                            mTickerLeft ? -180 : 180, 0).setDuration(300),
                             new DecelerateInterpolator(), null);
                 }
             }
