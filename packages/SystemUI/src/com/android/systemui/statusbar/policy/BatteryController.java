@@ -39,9 +39,9 @@ import com.android.systemui.R;
     public class BatteryController extends BroadcastReceiver {
     private static final String TAG = "StatusBar.BatteryController";
 
-    private Context mContext;
-    private ArrayList<ImageView> mIconViews = new ArrayList<ImageView>();
-    private ArrayList<TextView> mLabelViews = new ArrayList<TextView>();
+    private static Context mContext;
+    private static ArrayList<ImageView> mIconViews = new ArrayList<ImageView>();
+    private static ArrayList<TextView> mLabelViews = new ArrayList<TextView>();
 
     private static final int BATTERY_STYLE_NORMAL         = 0;
     private static final int BATTERY_STYLE_PERCENT        = 1;
@@ -68,13 +68,14 @@ import com.android.systemui.R;
     private static final int BATTERY_TEXT_STYLE_NORMAL  = R.string.status_bar_settings_battery_meter_format;
     private static final int BATTERY_TEXT_STYLE_MIN     = R.string.status_bar_settings_battery_meter_min_format;
 
-    private boolean mBatteryPlugged = false;
-    private int mBatteryStyle;
-    private int mBatteryIcon = BATTERY_ICON_STYLE_NORMAL;
+    private static boolean mBatteryPlugged = false;
+    private static int mBatteryStyle;
+    private static int mBatteryIcon = BATTERY_ICON_STYLE_NORMAL;
+    private static SettingsObserver mSettingsObserver;
 
-    Handler mHandler;
+    private static Handler mHandler;
 
-    class SettingsObserver extends ContentObserver {
+    private static class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
         }
@@ -90,7 +91,7 @@ import com.android.systemui.R;
         }
     }
 
-    private ArrayList<BatteryStateChangeCallback> mChangeCallbacks =
+    private static ArrayList<BatteryStateChangeCallback> mChangeCallbacks =
             new ArrayList<BatteryStateChangeCallback>();
 
     public interface BatteryStateChangeCallback {
@@ -101,24 +102,26 @@ import com.android.systemui.R;
         mContext = context;
         mHandler = new Handler();
 
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
-        updateSettings();
+        if (mSettingsObserver == null) {
+            mSettingsObserver = new SettingsObserver(mHandler);
+            mSettingsObserver.observe();
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        context.registerReceiver(this, filter);
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+            context.registerReceiver(this, filter);
+        }
+        updateSettings();
     }
 
-    public void addIconView(ImageView v) {
+    public static void addIconView(ImageView v) {
         mIconViews.add(v);
     }
 
-    public void addLabelView(TextView v) {
+    public static void addLabelView(TextView v) {
         mLabelViews.add(v);
     }
 
-    public void addStateChangedCallback(BatteryStateChangeCallback cb) {		
+    public static void addStateChangedCallback(BatteryStateChangeCallback cb) {		
         mChangeCallbacks.add(cb);
     }
 
@@ -152,7 +155,7 @@ import com.android.systemui.R;
         }
     }
 
-    private void updateBattery() {
+    private static void updateBattery() {
         int mIcon = View.GONE;
         int mText = View.GONE;
         int mIconStyle = BATTERY_ICON_STYLE_NORMAL;
@@ -185,7 +188,7 @@ import com.android.systemui.R;
         }
     }
 
-    private void updateSettings() {
+    private static void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
         mBatteryStyle = (Settings.System.getInt(resolver,

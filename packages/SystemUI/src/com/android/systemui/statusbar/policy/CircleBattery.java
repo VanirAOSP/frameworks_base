@@ -181,13 +181,7 @@ public class CircleBattery extends ImageView {
 
     public CircleBattery(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
         mContext = context;
-        mHandler = new Handler();
-
-        mObserver = new SettingsObserver(mHandler);
-        mBatteryReceiver = new BatteryReceiver(mContext);
-
         // initialize and setup all paint variables
         // stroke width is later set in initSizeBasedStuff()
         Resources res = getResources();
@@ -217,8 +211,13 @@ public class CircleBattery extends ImageView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (!mAttached) {
+            mHandler = new Handler();
             mAttached = true;
+            if (mObserver == null)
+                mObserver = new SettingsObserver(mHandler);
             mObserver.observe();
+            if (mBatteryReceiver == null)
+                mBatteryReceiver = new BatteryReceiver(mContext);
             mBatteryReceiver.updateRegistration();
             mHandler.postDelayed(mInvalidate, 250);
         }
@@ -230,7 +229,10 @@ public class CircleBattery extends ImageView {
         if (mAttached) {
             mAttached = false;
             mObserver.unobserve();
+            mObserver = null;
+            mHandler = null;
             mBatteryReceiver.updateRegistration();
+            mBatteryReceiver = null;
             mCircleRect = null; // makes sure, size based variables get
                                 // recalculated on next attach
             mCircleSize = 0;    // makes sure, mCircleSize is reread from icons on

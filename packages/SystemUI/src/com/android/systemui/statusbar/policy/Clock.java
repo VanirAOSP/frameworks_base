@@ -113,6 +113,10 @@ public class Clock extends TextView implements OnClickListener {
             updateSettings();
         }
 
+        void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
         @Override public void onChange(boolean selfChange) {
             updateSettings();
         }
@@ -180,6 +184,7 @@ public class Clock extends TextView implements OnClickListener {
 
         if (settingsObserver != null)
         {
+            settingsObserver.unobserve();
             settingsObserver = null;
             mHandler = null;
         }
