@@ -600,18 +600,16 @@ public class PieMenu extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
         observer().observe();
         observer().onChange(true);
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
+        mPolicy.destroy();
         unobserve();
+        super.onDetachedFromWindow();
     }
-				    
 
     public void init() {
         mStatusPanel = new PieStatusPanel(mContext, mPanel);
