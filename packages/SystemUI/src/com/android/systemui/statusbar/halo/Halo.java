@@ -1398,7 +1398,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         if (entry.notification.getPackageName().equals("com.paranoid.halo")) {
             msgType = HaloProperties.MessageType.PINNED;
         } else if (!entry.notification.isClearable()) {
-            msgType = HaloProperties.MessageType.SYSTEM;
+            msgType = HaloProperties.MessageType.PINNED;
         } else {
             msgType = HaloProperties.MessageType.MESSAGE;
         }
@@ -1441,7 +1441,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
                                 if (mHideTicker) mEffect.sleep(HaloEffect.SLEEP_DELAY + HaloEffect.WAKE_TIME * 2, HaloEffect.SLEEP_TIME, false);
                             }
 
-                            tick(entry, HaloEffect.WAKE_TIME * 2, 1000, true, true, true);
+                            tick(entry, HaloEffect.WAKE_TIME * 2, 1000, true, true, false);
 
                             // Pop while not tasking, only if notification is certified fresh
                             if (mGesture != Gesture.TASK && mState != State.SILENT) mEffect.ping(mPaintHolo, HaloEffect.WAKE_TIME * 2);
