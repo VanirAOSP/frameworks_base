@@ -17,7 +17,6 @@
 
 package com.android.systemui.statusbar.view;
 
-import android.database.ContentObserver;
 import android.content.Context;
 import android.graphics.Canvas;
 //import android.graphics.ColorFilterMaker;
@@ -25,8 +24,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
-import android.os.Handler;
-import android.provider.Settings;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
