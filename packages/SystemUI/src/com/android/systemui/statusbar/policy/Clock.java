@@ -395,37 +395,42 @@ public class Clock extends TextView implements OnClickListener {
 
     protected void updateClockVisibility() {
         boolean c = IsCenter();
-        if (mClockStyle == STYLE_CLOCK_RIGHT && !c || mClockStyle == STYLE_CLOCK_CENTER && c || IsShade())
+			
+        if (mClockStyle == STYLE_CLOCK_RIGHT && !c || mClockStyle == STYLE_CLOCK_CENTER && c || IsShade()) {
             setVisibility(View.VISIBLE);
-        else
+        } else {
             setVisibility(View.GONE);
+        }
     }
 
     private void collapseStartActivity(Intent what) {
-	        // collapse status bar
-	        StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(
-	                Context.STATUS_BAR_SERVICE);
-	        statusBarManager.collapsePanels();
+	    // collapse status bar
+	    StatusBarManager statusBarManager = (StatusBarManager) getContext().getSystemService(
+	            Context.STATUS_BAR_SERVICE);
+	    statusBarManager.collapsePanels();
 	
-	        // dismiss keyguard in case it was active and no passcode set
-	        try {
-	            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-	        } catch (Exception ex) {
-	            // no action needed here
-	        }
+        // dismiss keyguard in case it was active and no passcode set
+	    try {
+	        ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+	    } catch (Exception ex) {
+	        // no action needed here
+	    }
 	
-	        // start activity
-	        what.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    // start activity
+	    what.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    try {
 	        mContext.startActivity(what);
-	    }
-	
-	    @Override
-	    public void onClick(View v) {
+	    } catch (Exception e) {
+        }
+	}
+
+	@Override
+	public void onClick(View v) {
 	        // start com.android.deskclock/.DeskClock
-        ComponentName clock = new ComponentName("com.android.deskclock",
-                "com.android.deskclock.DeskClock");
-        Intent intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-                .setComponent(clock);
+            ComponentName clock = new ComponentName("com.android.deskclock",
+                    "com.android.deskclock.DeskClock");
+            Intent intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+                    .setComponent(clock);
 	        collapseStartActivity(intent);
-	    }
+	}
 }

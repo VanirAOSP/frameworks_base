@@ -100,9 +100,6 @@ import com.android.systemui.statusbar.halo.Halo;
 import com.android.systemui.statusbar.AppSidebar;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.phone.Ticker;
-import com.android.systemui.statusbar.policy.BatteryController;
-import com.android.systemui.statusbar.policy.Clock;
-import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.view.PieStatusPanel;
 import com.android.systemui.statusbar.view.PieExpandPanel;
 
@@ -175,12 +172,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected boolean mHaloTaskerActive = false;
     protected ImageView mHaloButton;
     protected boolean mHaloButtonVisible = true;
-
-    // Policy
-    public NetworkController mNetworkController;
-    public BatteryController mBatteryController;
-    public SignalClusterView mSignalCluster;
-    public Clock mClock;
 
     // left-hand icons
     public LinearLayout mStatusIcons;
@@ -525,17 +516,18 @@ public abstract class BaseStatusBar extends SystemUI implements
                    ));
         }
 
+        if (mBroadcastReceiver == null) {
+            mCurrentUserId = ActivityManager.getCurrentUser();
+            IntentFilter filter1 = new IntentFilter();
+            filter1.addAction(Intent.ACTION_USER_SWITCHED);
+            filter1.addAction(Intent.EXTRA_USER_HANDLE);
+            mContext.registerReceiver(mBroadcastReceiver, filter1);
+        }
+
         if (showPie()) {
 			if (mSettingsObserver == null) {
 			    mSettingsObserver = new PieObserver(new Handler());
                 mSettingsObserver.observe();
-            }
-            if (mBroadcastReceiver == null) {
-                mCurrentUserId = ActivityManager.getCurrentUser();
-                IntentFilter filter1 = new IntentFilter();
-                filter1.addAction(Intent.ACTION_USER_SWITCHED);
-                filter1.addAction(Intent.EXTRA_USER_HANDLE);
-                mContext.registerReceiver(mBroadcastReceiver, filter1);
             }
             updateSettings();
         } else {
@@ -599,11 +591,17 @@ public abstract class BaseStatusBar extends SystemUI implements
             }
         }
 
-        if (showHalo()) {
+        if (mHaloEnabled) {
 			if (mHaloObserver == null) {
                 mHaloObserver = new HaloObserver(new Handler());
                 mHaloObserver.observe();
             }
+            mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.HALO_SIZE), false, new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean selfChange) {                
+                restartHalo();
+            }});
         } else {
             if (mHalo != null) {
                 mHalo.cleanUp();
@@ -615,13 +613,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mHalo = null;
             }
         }
-
-        mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.HALO_SIZE), false, new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {                
-                restartHalo();
-            }});
 
         updateHalo();
     }
@@ -698,16 +689,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mWindowManager.removeView(mHalo);
                 mHalo = null;
             }
-        }
-    }
-
-    private boolean showHalo() {
-        boolean halo = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.HALO_ENABLED, 0) == 1;
-        if (halo) {
-            return (halo);
-        } else {
-            return false;
         }
     }
 

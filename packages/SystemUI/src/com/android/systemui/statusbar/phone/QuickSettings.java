@@ -100,8 +100,6 @@ import com.vanir.util.Helpers;
 import com.android.systemui.vanir.VanirAwesome;
 import static com.android.internal.util.vanir.VanirConstants.*;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;

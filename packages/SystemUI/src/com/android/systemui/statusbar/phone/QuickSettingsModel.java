@@ -58,8 +58,6 @@ import com.android.systemui.statusbar.policy.LocationController.LocationGpsState
 import com.android.systemui.statusbar.policy.NetworkController.NetworkSignalChangedCallback;
 import com.android.systemui.statusbar.policy.Prefs;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;

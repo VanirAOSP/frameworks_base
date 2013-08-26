@@ -166,13 +166,16 @@ public class DateView extends TextView implements OnClickListener {
 	
 	        // start activity
 	        what.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	        mContext.startActivity(what);
+	        try {
+	            mContext.startActivity(what);
+			} catch (Exception e) {
+		    }
 	    }
 	
 	    @Override
 	    public void onClick(View v) {
 	        long nowMillis = System.currentTimeMillis();
-	
+
 	        Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
 	        builder.appendPath("time");
 	        ContentUris.appendId(builder, nowMillis);
