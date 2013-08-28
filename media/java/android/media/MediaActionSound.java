@@ -18,6 +18,7 @@ package android.media;
 
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.SystemProperties;
 import android.util.Log;
 
 /**
