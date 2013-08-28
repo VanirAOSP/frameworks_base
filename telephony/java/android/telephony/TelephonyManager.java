@@ -994,10 +994,17 @@ public class TelephonyManager {
      */
     public String getLine1Number() {
         try {
-            return getSubscriberInfo().getLine1Number();
+            final IPhoneSubInfo subinfo = getSubscriberInfo();
+            if (subinfo == null) {
+                Rlog.e("WTF", "getSubscriberInfo IS A BAG OF DICKS! ");
+                return null;
+            }
+            return subinfo.getLine1Number();
         } catch (RemoteException ex) {
+            Rlog.e("WTF", "RemoteException in getSubscriberInfo() "+ex);
             return null;
         } catch (NullPointerException ex) {
+            Rlog.e("WTF", "NullPointerException in getSubscriberInfo() "+ex);
             // This could happen before phone restarts due to crashing
             return null;
         }
