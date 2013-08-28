@@ -107,7 +107,7 @@ public class ResolverActivity extends AlertActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState, Intent intent,
             CharSequence title, Intent[] initialIntents, List<ResolveInfo> rList,
             boolean alwaysUseOption) {
-        setTheme(R.style.Theme_DeviceDefault_Light_Dialog_Alert_ActPic);
+        setTheme(R.style.Theme_DeviceDefault_Light_Dialog_Alert);
         super.onCreate(savedInstanceState);
         try {
             mLaunchedFromUid = ActivityManagerNative.getDefault().getLaunchedFromUid(
