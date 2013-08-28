@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
+ * Copyright (C) 2012-2013 Sony Mobile Communications AB.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * NOTE: This file has been modified by Sony Mobile Communications AB.
+ * Modifications are licensed under the License.
  */
 
 package android.webkit;
@@ -768,8 +772,7 @@ public final class WebViewCore {
 
                             case RESUME_PRIORITY:
                                 Process.setThreadPriority(
-                                        Process.THREAD_PRIORITY_DEFAULT + -1 *
-                                        Process.THREAD_PRIORITY_MORE_FAVORABLE);
+                                        Process.THREAD_PRIORITY_DEFAULT);
                                 break;
 
                             case EventHub.ADD_PACKAGE_NAME:
@@ -1175,6 +1178,7 @@ public final class WebViewCore {
         static final int SELECT_TEXT = 213;
         static final int SELECT_WORD_AT = 214;
         static final int SELECT_ALL = 215;
+        static final int CLEAR_SELECT_TEXT = 216;
 
         // for updating state on trust storage change
         static final int TRUST_STORAGE_UPDATED = 220;
@@ -1699,6 +1703,10 @@ public final class WebViewCore {
                         case INSERT_TEXT:
                             nativeInsertText(mNativeClass, (String) msg.obj);
                             break;
+                        case CLEAR_SELECT_TEXT: {
+                            nativeClearTextSelection(mNativeClass);
+                            break;
+                        }
                         case SELECT_TEXT: {
                             int handleId = (Integer) msg.obj;
                             nativeSelectText(mNativeClass, handleId,

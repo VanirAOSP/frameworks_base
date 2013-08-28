@@ -109,10 +109,10 @@ public class Scroller  {
     private float mDeceleration;
     private final float mPpi;
 
-    private final PowerManager mPm;
-    
     // A context-specific coefficient adjusted to physical values.
     private float mPhysicalCoeff;
+
+    private final PowerManager mPm;
 
     static {
         float x_min = 0.0f;
@@ -185,8 +185,9 @@ public class Scroller  {
         mPpi = context.getResources().getDisplayMetrics().density * 160.0f;
         mDeceleration = computeDeceleration(ViewConfiguration.getScrollFriction());
         mFlywheel = flywheel;
-        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+
         mPhysicalCoeff = computeDeceleration(0.84f); // look and feel tuning
+        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     }
 
     /**
@@ -399,7 +400,6 @@ public class Scroller  {
      * @param duration Duration of the scroll in milliseconds.
      */
     public void startScroll(int startX, int startY, int dx, int dy, int duration) {
-        mPm.cpuBoost(1550000);
         mMode = SCROLL_MODE;
         mFinished = false;
         mDuration = duration;
@@ -411,6 +411,7 @@ public class Scroller  {
         mDeltaX = dx;
         mDeltaY = dy;
         mDurationReciprocal = 1.0f / (float) mDuration;
+        mPm.cpuBoost(1500000);
     }
 
     /**

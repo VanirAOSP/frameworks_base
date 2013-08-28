@@ -75,10 +75,11 @@ public class OverScroller {
     public OverScroller(Context context, Interpolator interpolator, boolean flywheel) {
         mInterpolator = interpolator;
         mFlywheel = flywheel;
+
         mScrollerX = new SplineOverScroller(context);
         mScrollerY = new SplineOverScroller(context);
-        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 
+        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     }
 
     /**

@@ -61,7 +61,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.os.SystemProperties;
 import android.security.KeyChain;
 import android.text.Editable;
 import android.text.InputType;
@@ -2174,10 +2173,6 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
             mAccessibilityInjector.destroy();
             mAccessibilityInjector = null;
         }
-        if (mSavePasswordDialog != null) {
-            mSavePasswordDialog.dismiss();
-            mSavePasswordDialog = null;
-        }
         if (mWebViewCore != null) {
             // Tell WebViewCore to destroy itself
             synchronized (this) {
@@ -2625,20 +2620,6 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
     @Override
     public void loadDataWithBaseURL(String baseUrl, String data,
             String mimeType, String encoding, String historyUrl) {
-
-        String debug_prop = "ro.debug.loadDataWithBaseURL";
-        if (SystemProperties.getBoolean(debug_prop, false)) {
-            String[] ary = data.split("\n", -1);
-            for (String ele: ary){
-                /**
-                 * Here we only debug the application that use this
-                 * loadDataWithBaseURL method, so we set the the log tag to
-                 * WebViewClassic.loadDataWithBaseURL instead of webview
-                 * defined by the LOGTAG variable
-                 * */
-                Log.d("WebViewClassic.loadDataWithBaseURL", ele);
-            }
-        }
 
         if (baseUrl != null && baseUrl.toLowerCase().startsWith("data:")) {
             loadDataImpl(data, mimeType, encoding);
@@ -3539,7 +3520,8 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
             // We want to pause the current playing video when switching out
             // from the current WebView/tab.
             if (mHTML5VideoViewProxy != null) {
-                mHTML5VideoViewProxy.pauseAndDispatch();
+                // Use suspend instead of pause to release the decoder
+                mHTML5VideoViewProxy.suspendAndDispatch();
             }
             if (mNativeClass != 0) {
                 nativeSetPauseDrawing(mNativeClass, true);
@@ -4503,6 +4485,13 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
         return selectText(x, y);
     }
 
+    public void clearSelection() {
+        selectionDone();
+        if (mWebViewCore != null) {
+            mWebViewCore.sendMessage(EventHub.CLEAR_SELECT_TEXT);
+        }
+    }
+
     /**
      * Select the word at the indicated content coordinates.
      */
@@ -4520,15 +4509,11 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
     public void onConfigurationChanged(Configuration newConfig) {
         mCachedOverlappingActionModeHeight = -1;
         if (mSelectingText && mOrientation != newConfig.orientation) {
-            selectionDone();
+            clearSelection();
         }
         mOrientation = newConfig.orientation;
         if (mWebViewCore != null && !mBlockWebkitViewMessages) {
             mWebViewCore.sendMessage(EventHub.CLEAR_CONTENT);
-        }
-
-        if (mHTML5VideoViewProxy != null) {
-            mHTML5VideoViewProxy.setMediaControllerHidden();
         }
     }
 

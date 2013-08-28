@@ -23,7 +23,6 @@ import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
-import android.text.InputType;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -39,15 +38,12 @@ import android.widget.NumberPicker.OnValueChangeListener;
 
 import com.android.internal.R;
 
-import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import libcore.icu.ICU;
 
 /**
  * This class is a widget for selecting a date. The date can be selected by a
@@ -481,24 +477,11 @@ public class DatePicker extends FrameLayout {
         mCurrentDate = getCalendarForLocale(mCurrentDate, locale);
 
         mNumberOfMonths = mTempDate.getActualMaximum(Calendar.MONTH) + 1;
-        mShortMonths = new DateFormatSymbols().getShortMonths();
-
-        if (usingNumericMonths()) {
-            // We're in a locale where a date should either be all-numeric, or all-text.
-            // All-text would require custom NumberPicker formatters for day and year.
-            mShortMonths = new String[mNumberOfMonths];
-            for (int i = 0; i < mNumberOfMonths; ++i) {
-                mShortMonths[i] = String.format("%d", i + 1);
-            }
+        mShortMonths = new String[mNumberOfMonths];
+        for (int i = 0; i < mNumberOfMonths; i++) {
+            mShortMonths[i] = DateUtils.getMonthString(Calendar.JANUARY + i,
+                    DateUtils.LENGTH_MEDIUM);
         }
-    }
-
-    /**
-     * Tests whether the current locale is one where there are no real month names,
-     * such as Chinese, Japanese, or Korean locales.
-     */
-    private boolean usingNumericMonths() {
-        return Character.isDigit(mShortMonths[Calendar.JANUARY].charAt(0));
     }
 
     /**
@@ -518,7 +501,7 @@ public class DatePicker extends FrameLayout {
         }
     }
 
-     /**
+    /**
      * Reorders the spinners according to the date format that is
      * explicitly set by the user and if no such is set fall back
      * to the current locale's default format.
@@ -546,7 +529,6 @@ public class DatePicker extends FrameLayout {
             }
         }
     }
-
 
     /**
      * Updates the current date.
@@ -678,10 +660,6 @@ public class DatePicker extends FrameLayout {
         mYearSpinner.setValue(mCurrentDate.get(Calendar.YEAR));
         mMonthSpinner.setValue(mCurrentDate.get(Calendar.MONTH));
         mDaySpinner.setValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
-
-        if (usingNumericMonths()) {
-            mMonthSpinnerInput.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-        }
     }
 
     /**

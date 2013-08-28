@@ -2168,20 +2168,20 @@ public final class MediaStore {
      */
     public static String getVersion(Context context) {
         Cursor c = null;
-            try {
-				c = context.getContentResolver().query(
-                Uri.parse(CONTENT_AUTHORITY_SLASH + "none/version"),
-                null, null, null, null);
-                if (c != null) {
-                    if (c.moveToFirst()) {
-                        return c.getString(0);
-                    }
-				}
-            } finally {
-				if (c != null) {
-                    c.close();
-			    }
+        try {
+            c = context.getContentResolver().query(
+            Uri.parse(CONTENT_AUTHORITY_SLASH + "none/version"),
+            null, null, null, null);
+            if (c != null) {
+                if (c.moveToFirst()) {
+                    return c.getString(0);
+                }
             }
+        } finally {
+            if (c != null) {
+                c.close();
+            }
+        }
         return null;
     }
 

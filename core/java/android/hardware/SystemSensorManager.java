@@ -24,9 +24,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
-import android.os.SystemProperties;
-import android.util.FloatMath;
-
 import dalvik.system.CloseGuard;
 
 import java.util.ArrayList;
@@ -40,12 +37,8 @@ import java.util.List;
  * @hide
  */
 public class SystemSensorManager extends SensorManager {
-    private static final int SENSOR_DISABLE = -1;
-    private static final long SENSOR_LOOPMINMS = SystemProperties.getLong( "sensor.loop.minms", 0); // minimal duration of a sensor loop => sleep to prevent notification storm if faster than that.
-    private static final float MAGNITUDE_THRESHOLD = ((float)SystemProperties.getLong( "sensor.magnitude.threshold", 0))/1000.0f;
     private static native void nativeClassInit();
     private static native int nativeGetNextSensor(Sensor sensor, int next);
-
 
     private static boolean sSensorModuleInitialized = false;
     private static final Object sSensorModuleLock = new Object();

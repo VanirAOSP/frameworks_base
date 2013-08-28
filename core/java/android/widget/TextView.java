@@ -41,7 +41,6 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.os.SystemProperties;
 import android.provider.Settings;
 import android.text.BoringLayout;
 import android.text.DynamicLayout;
@@ -1061,12 +1060,6 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
             }
         }
         a.recycle();
-
-        // if the TextView is from Talk and autoLink is set to 'all' then make the text selectable
-
-        if(getContext().getPackageName().equals("com.google.android.talk") && mAutoLinkMask==0x0f){
-            setTextIsSelectable(true);
-        }
 
         BufferType bufferType = BufferType.EDITABLE;
 
@@ -3644,10 +3637,6 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
                          boolean notifyBefore, int oldlen) {
         if (text == null) {
             text = "";
-        }
-
-        if (SystemProperties.getBoolean("ro.debug.textview",false)) {
-            Log.d(LOG_TAG, "" + text);
         }
 
         // If suggestions are not enabled, remove the suggestion spans from the text

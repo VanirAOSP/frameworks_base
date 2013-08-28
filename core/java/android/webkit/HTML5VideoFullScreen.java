@@ -316,14 +316,6 @@ public class HTML5VideoFullScreen extends HTML5VideoView
         return true;
     }
 
-    public void setMediaControllerHidden() {
-         if (mPlayer != null && mMediaController != null
-                  && mCurrentState == STATE_PREPARED
-                  && mMediaController.isShowing()) {
-             mMediaController.hide();
-         }
-    }
-
     // MediaController FUNCTIONS:
     @Override
     public boolean canPause() {
