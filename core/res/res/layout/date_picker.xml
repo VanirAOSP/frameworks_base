@@ -44,7 +44,8 @@
             android:layout_marginStart="1dip"
             android:layout_marginEnd="1dip"
             android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"
+            />
 
         <!-- Day -->
         <NumberPicker
@@ -54,7 +55,8 @@
             android:layout_marginStart="1dip"
             android:layout_marginEnd="1dip"
             android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"
+            />
 
         <!-- Year -->
         <NumberPicker
@@ -64,7 +66,9 @@
             android:layout_marginStart="1dip"
             android:layout_marginEnd="1dip"
             android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"
+            />
+
     </LinearLayout>
 
     <!-- calendar view -->
@@ -76,5 +80,7 @@
         android:layout_weight="1"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:visibility="gone" />
+        android:visibility="gone"
+        />
+
 </LinearLayout>

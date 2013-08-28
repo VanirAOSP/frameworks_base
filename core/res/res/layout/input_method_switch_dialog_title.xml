@@ -16,11 +16,10 @@
 ** limitations under the License.
 */
 -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,7 +29,7 @@
         android:layout_marginEnd="10dip"
         android:layout_marginTop="6dip"
         android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <com.android.internal.widget.DialogTitle
             android:id="@+id/alertTitle"
@@ -48,7 +47,7 @@
         android:id="@+id/hard_keyboard_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <View
             android:layout_width="match_parent"
@@ -58,7 +57,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal" >
 
             <LinearLayout
                 android:layout_width="0dip"
@@ -72,7 +71,7 @@
                 android:paddingBottom="5dip"
                 android:paddingStart="16dip"
                 android:paddingEnd="0dip"
-                android:paddingTop="5dip">
+                android:paddingTop="5dip" >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -105,4 +104,5 @@
         android:layout_width="match_parent"
         android:layout_height="2dip"
         android:background="@android:drawable/divider_horizontal_dark" />
+
 </LinearLayout>

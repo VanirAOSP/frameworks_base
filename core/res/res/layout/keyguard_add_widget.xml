@@ -22,13 +22,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/keyguard_add_widget"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    >
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/keyguard_accessibility_widget_empty_slot">
-
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/keyguard_accessibility_widget_empty_slot"
+            >
         <ImageView
             android:id="@+id/keyguard_add_widget_view"
             android:clickable="true"
@@ -37,6 +37,6 @@
             android:layout_gravity="center"
             android:padding="24dp"
             android:src="@drawable/keyguard_add_widget_button"
-            android:contentDescription="@string/keyguard_accessibility_add_widget" />
+            android:contentDescription="@string/keyguard_accessibility_add_widget"/>
     </FrameLayout>
 </com.android.internal.policy.impl.keyguard.KeyguardWidgetFrame>
