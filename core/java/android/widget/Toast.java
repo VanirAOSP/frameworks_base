@@ -23,6 +23,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Handler;
+import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.Log;
@@ -119,7 +120,7 @@ public class Toast {
      * after the appropriate duration.
      */
     public void cancel() {
-        mTN.hide();
+        mTN.cancel();
 
         try {
             getService().cancelToast(mContext.getPackageName(), mTN);
@@ -304,24 +305,24 @@ public class Toast {
     }
 
     private static class TN extends ITransientNotification.Stub {
-        final Runnable mShow = new Runnable() {
-            @Override
-            public void run() {
-                handleShow();
-            }
-        };
-
-        final Runnable mHide = new Runnable() {
-            @Override
-            public void run() {
-                handleHide();
-                // Don't do this in handleHide() because it is also invoked by handleShow()
-                mNextView = null;
-            }
-        };
+        protected static final int MSG_SHOW = 1;
+        protected static final int MSG_HIDE = 0;
 
         private final WindowManager.LayoutParams mParams = new WindowManager.LayoutParams();
-        final Handler mHandler = new Handler();
+
+        Handler mHandler = new Handler() { 
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                case MSG_SHOW:
+                    handleShow();
+                    break;
+                case MSG_HIDE:
+                    handleHide();
+                    break;
+                } 
+            }
+        };
 
         int mGravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         int mX, mY;
@@ -355,7 +356,7 @@ public class Toast {
         @Override
         public void show() {
             if (localLOGV) Log.v(TAG, "SHOW: " + this);
-            mHandler.post(mShow);
+            mHandler.sendEmptyMessage(MSG_SHOW); 
         }
 
         /**
@@ -364,7 +365,11 @@ public class Toast {
         @Override
         public void hide() {
             if (localLOGV) Log.v(TAG, "HIDE: " + this);
-            mHandler.post(mHide);
+            mHandler.sendEmptyMessage(MSG_HIDE);
+        }
+
+        public void cancel() {
+            mHandler.removeMessages(MSG_SHOW); 
         }
 
         public void handleShow() {
@@ -374,9 +379,11 @@ public class Toast {
                 // remove the old view if necessary
                 handleHide();
                 mView = mNextView;
-                Context context = mView.getContext().getApplicationContext();
-                if (context == null) {
-                    context = mView.getContext();
+                Context context = mView.getContext();
+                if (context.getApplicationContext() != null) {
+                    // Use application context, except when called from system
+                    // service where there is no application context.
+                    context = context.getApplicationContext(); 
                 }
                 mWM = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
                 // We can resolve the Gravity here by using the Locale for getting
