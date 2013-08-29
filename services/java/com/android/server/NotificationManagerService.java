@@ -145,6 +145,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     final IActivityManager mAm;
     final UserManager mUserManager;
     final IBinder mForegroundToken = new Binder();
+    private QuietHoursSettingsObserver qhObserver;
 
     private WorkerHandler mHandler;
     private StatusBarManagerService mStatusBar;
@@ -467,40 +468,6 @@ public class NotificationManagerService extends INotificationManager.Stub
             mHaloPolicyisBlack = readPolicy(mHaloPolicyFile, TAG_BLOCKED_PKGS, mHaloBlacklist, ATTR_HALO_POLICY_IS_BLACK, 1) == 1;
             mHaloWhitelist.clear();
             readPolicy(mHaloPolicyFile, TAG_ALLOWED_PKGS, mHaloWhitelist, null, 0);
-        }
-    }
-
-    private void writeBlockDb() {
-        synchronized(mBlockedPackages) {
-            FileOutputStream outfile = null;
-            try {
-                outfile = mPolicyFile.startWrite();
-
-                XmlSerializer out = new FastXmlSerializer();
-                out.setOutput(outfile, "utf-8");
-
-                out.startDocument(null, true);
-
-                out.startTag(null, TAG_BODY); {
-                    out.attribute(null, ATTR_VERSION, String.valueOf(DB_VERSION));
-                    out.startTag(null, TAG_BLOCKED_PKGS); {
-                        // write all known network policies
-                        for (String pkg : mBlockedPackages) {
-                            out.startTag(null, TAG_PACKAGE); {
-                                out.attribute(null, ATTR_NAME, pkg);
-                            } out.endTag(null, TAG_PACKAGE);
-                        }
-                    } out.endTag(null, TAG_BLOCKED_PKGS);
-                } out.endTag(null, TAG_BODY);
-
-                out.endDocument();
-
-                mPolicyFile.finishWrite(outfile);
-            } catch (IOException e) {
-                if (outfile != null) {
-                    mPolicyFile.failWrite(outfile);
-                }
-            }
         }
     }
 
@@ -1311,7 +1278,8 @@ public class NotificationManagerService extends INotificationManager.Stub
             boolean packageChanged = false;
             boolean cancelNotifications = true;
 
-            if (action.equals(Intent.ACTION_PACKAGE_REMOVED)
+            if (action.equals(Intent.ACTION_PACKAGE_ADDED)
+                    || (queryRemove=action.equals(Intent.ACTION_PACKAGE_REMOVED))
                     || action.equals(Intent.ACTION_PACKAGE_RESTARTED)
                     || (packageChanged=action.equals(Intent.ACTION_PACKAGE_CHANGED))
                     || (queryRestart=action.equals(Intent.ACTION_QUERY_PACKAGE_RESTART))
@@ -1494,7 +1462,8 @@ public class NotificationManagerService extends INotificationManager.Stub
             update();
         }
 
-        @Override public void onChange(boolean selfChange) {
+        @Override
+        public void onChange(boolean selfChange) {
             update();
             updateNotificationPulse();
         }
@@ -1542,7 +1511,6 @@ public class NotificationManagerService extends INotificationManager.Stub
         mToastQueue = new ArrayList<ToastRecord>();
         mHandler = new WorkerHandler();
 
-        loadBlockDb();
         loadHaloBlockDb();
 
         mAppOps = (AppOpsManager)context.getSystemService(Context.APP_OPS_SERVICE);
@@ -1613,7 +1581,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         IntentFilter sdFilter = new IntentFilter(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
         mContext.registerReceiver(mIntentReceiver, sdFilter);
 
-        QuietHoursSettingsObserver qhObserver = new QuietHoursSettingsObserver(mHandler);
+        qhObserver = new QuietHoursSettingsObserver(mHandler);
         qhObserver.observe();
         mSettingsObserver = new LEDSettingsObserver(mHandler);
         mSettingsObserver.observe();
