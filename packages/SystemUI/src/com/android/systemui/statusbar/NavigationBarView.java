@@ -808,6 +808,7 @@ public class NavigationBarView extends LinearLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mTransparencyManager.setup();
         observer().observe();
         observer().onChange(true);
         updateSettings();
@@ -816,6 +817,8 @@ public class NavigationBarView extends LinearLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mTransparencyManager.destroy();
+        mTransparencyManager = null;
         unobserve();
     }
 
