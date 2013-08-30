@@ -31,8 +31,6 @@ public class TransparencyManager {
 
     NavigationBarView mNavbar;
     PanelBar mStatusbar;
-    private boolean mListening = false;
-    private boolean mObserving = false;
 
     SomeInfo mNavbarInfo = new SomeInfo();
     SomeInfo mStatusbarInfo = new SomeInfo();
@@ -59,28 +57,19 @@ public class TransparencyManager {
 
     public TransparencyManager(Context context) {
         mContext = context;
-        setup();
-    }
 
-    public void setup() {
-        if (!mListening) {
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-            mContext.registerReceiver(new BroadcastReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        context.registerReceiver(new BroadcastReceiver() {
 
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    update();
-                }
-            }, intentFilter);
-            mListening = true;
-        }
-        
-        if (!mObserving) {
-            observer().observe();
-            observer().onChange(true);
-            mObserving = true;
-        }
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                update();
+            }
+        }, intentFilter);
+
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
     }
 
     public void update() {
@@ -183,18 +172,7 @@ public class TransparencyManager {
                 && homeInfo.name.equals(component.getClassName());
     }
 
-    private SettingsObserver _observer;
-        SettingsObserver observer() {
-			if (_observer == null)
-			    _observer = new SettingsObserver(new Handler());
-			    return _observer;
-			}
-        private void unobserve() {
-			if (_observer != null)
-			    _observer._unobserve();
-            }
-
-    private class SettingsObserver extends ContentObserver {
+    class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
         }
@@ -210,19 +188,11 @@ public class TransparencyManager {
                     this);
             updateSettings();
         }
-        private void _unobserve() {
-			mContext.getContentResolver().unregisterContentObserver(_observer);
-			_observer = null;
-        }
 
         @Override
         public void onChange(boolean selfChange) {
             updateSettings();
         }
-    }
-
-    public void destroy() {
-        unobserve();
     }
 
     protected void updateSettings() {

@@ -465,8 +465,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         } catch (RemoteException ex) {
             // If the system process isn't there we're doomed anyway.
         }
-        if (mTransparencyManager == null) 
-            mTransparencyManager = new TransparencyManager(mContext);
+        mTransparencyManager = new TransparencyManager(mContext);
 
         mHaloEnabled = Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.HALO_ENABLED, 0) == 1;
