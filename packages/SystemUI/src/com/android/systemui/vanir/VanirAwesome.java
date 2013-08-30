@@ -178,37 +178,6 @@ public class VanirAwesome {
                 intentTorch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intentTorch);
                 break;
-            case ACTION_TODAY:
-                long startMillis = System.currentTimeMillis();
-                Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
-                builder.appendPath("time");
-                ContentUris.appendId(builder, startMillis);
-                Intent intentToday = new Intent(Intent.ACTION_VIEW)
-                    .setData(builder.build());
-                intentToday.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intentToday);
-                break;
-            case ACTION_CLOCKOPTIONS:
-                Intent intentClock = new Intent(Intent.ACTION_QUICK_CLOCK);
-                intentClock.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intentClock);
-                break;
-            case ACTION_EVENT:
-                Intent intentEvent = new Intent(Intent.ACTION_INSERT)
-                    .setData(Events.CONTENT_URI);
-                intentEvent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intentEvent);
-                break;
-            case ACTION_VOICEASSIST:
-                Intent intentVoice = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
-                intentVoice.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intentVoice);
-                break;
-            case ACTION_ALARM:
-                Intent intentAlarm = new Intent(AlarmClock.ACTION_SET_ALARM);
-                intentAlarm.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intentAlarm);
-                break;
             case ACTION_NOTIFICATIONS:
                 if (wtf) {
 					if (!ftw) {
