@@ -52,6 +52,7 @@ import android.widget.LinearLayout;
 import static com.android.internal.util.vanir.VanirConstants.*;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
+import com.vanir.BackgroundAlphaColorDrawable;
 import com.android.systemui.TransparencyManager;
 import com.android.systemui.vanir.VanirAwesome;
 import com.android.systemui.vanir.NavBarHelpers;
@@ -808,6 +809,7 @@ public class NavigationBarView extends LinearLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mTransparencyManager.setup();
         observer().observe();
         observer().onChange(true);
         updateSettings();
@@ -816,6 +818,8 @@ public class NavigationBarView extends LinearLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mTransparencyManager.destroy();
+        mTransparencyManager = null;
         unobserve();
     }
 

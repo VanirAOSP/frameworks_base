@@ -141,7 +141,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     private static final String ENABLED_NOTIFICATION_LISTENERS_SEPARATOR = ":";
 
     final Context mContext;
-    Context mUiContext;
+
     final IActivityManager mAm;
     final UserManager mUserManager;
     final IBinder mForegroundToken = new Binder();

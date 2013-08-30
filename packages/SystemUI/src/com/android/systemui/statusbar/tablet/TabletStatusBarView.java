@@ -17,12 +17,17 @@
 package com.android.systemui.statusbar.tablet;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Slog;
 import android.view.View;
 import android.view.MotionEvent;
 import com.android.systemui.statusbar.phone.PanelBar;
+
+import com.vanir.BackgroundAlphaColorDrawable;
+import com.android.systemui.R; 
 
 public class TabletStatusBarView extends PanelBar {
     private Handler mHandler;
@@ -38,6 +43,11 @@ public class TabletStatusBarView extends PanelBar {
 
     public TabletStatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        Drawable bg = mContext.getResources().getDrawable(R.drawable.system_bar_background);
+        if(bg instanceof ColorDrawable) {
+            setBackground(new BackgroundAlphaColorDrawable(((ColorDrawable) bg).getColor()));
+        } 
     }
 
     public void setDelegateView(View view) {
