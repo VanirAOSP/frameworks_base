@@ -1195,4 +1195,14 @@ public interface WindowManagerPolicy {
      * @return True if the window is a top level one.
      */
     public boolean isTopLevelWindow(int windowType);
+
+    /**
+     * A window animation has been scheduled
+     */
+    public void windowAnimationStarted();
+
+    /**
+     * Animating windows has finished
+     */
+    public void windowAnimationFinished();
 }
