@@ -795,11 +795,9 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
-
         if (mNavigationBarView.getHomeButton() != null) {
-        mNavigationBarView.getHomeButton().setOnTouchListener(mHomeSearchActionListener);
+            mNavigationBarView.getHomeButton().setOnTouchListener(mHomeSearchActionListener);
         }
-
         mNavigationBarView.getSearchLight().setOnTouchListener(mHomeSearchActionListener);
         updateSearchPanel();
 
@@ -1039,7 +1037,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private void updateShowSearchHoldoff() {
         mShowSearchHoldoff = mContext.getResources().getInteger(
-            R.integer.config_show_search_delay);
+        R.integer.config_show_search_delay);
     }
 
     private void loadNotificationShade() {
