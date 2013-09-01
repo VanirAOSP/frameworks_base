@@ -3939,6 +3939,15 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_ALPHA_CONFIG = "status_bar_alpha_config";
+
+        /**
+         * Boolean value whether to allow the statusbar to be used as a
+         * brightness slider when collapsed
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
+
     }
 
     /**
