@@ -329,6 +329,9 @@ class BluetoothManagerService extends IBluetoothManager.Stub {
     }
 
     public void registerStateChangeCallback(IBluetoothStateChangeCallback callback) {
+        if (callback == null) {
+            return;
+        }
         mContext.enforceCallingOrSelfPermission(BLUETOOTH_PERM,
                                                 "Need BLUETOOTH permission");
         Message msg = mHandler.obtainMessage(MESSAGE_REGISTER_STATE_CHANGE_CALLBACK);
@@ -337,6 +340,9 @@ class BluetoothManagerService extends IBluetoothManager.Stub {
     }
 
     public void unregisterStateChangeCallback(IBluetoothStateChangeCallback callback) {
+        if (callback == null) {
+            return;
+        }
         mContext.enforceCallingOrSelfPermission(BLUETOOTH_PERM,
                                                 "Need BLUETOOTH permission");
         Message msg = mHandler.obtainMessage(MESSAGE_UNREGISTER_STATE_CHANGE_CALLBACK);
