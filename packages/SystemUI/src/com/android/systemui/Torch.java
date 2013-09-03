@@ -21,6 +21,7 @@ package com.android.systemui;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
@@ -55,12 +56,15 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
 
+    private KeyguardManager mKeyguardManager;
+
     private WakeLock wakeLock;
 
     private boolean reallystarted = false;
     private Object padlock = new Object();
-    private static final boolean DEBUG=false;
+    private static final boolean DEBUG = false;
     private String lastIntent = null;
+    private int startingstate = -1;
     public static final String KEY_TORCH_ON = "torch_on";
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
@@ -272,7 +276,6 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
             startTorch(); // torch is off, turn it on
     }
 
-    private int startingstate = -1;
     
     private void startTorch() {
         synchronized(padlock)
@@ -296,21 +299,17 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
             synchronized(padlock)
             {
                 brute.removeCallbacks(force);
-                if (reallystarted)
+                if (!Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false))
                 {
-                    if (!Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false))
-                    {
-                        Settings.System.putBoolean(getContentResolver(), Settings.System.TORCH_STATE, true);
-                    }
+                    Settings.System.putBoolean(getContentResolver(), Settings.System.TORCH_STATE, true);
                 }
-                else
+                if (!reallystarted && !isLocked())
                 {
                     brute.postDelayed(force, 100);
                 }
             }
         }
     };
-    
 
     private void stopTorch() {
         synchronized(padlock)
@@ -324,7 +323,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
                 mCamera.release();
                 mCamera = null;                
             }
-            if (!reallystarted || Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false))
+            if (Settings.System.getBoolean(getContentResolver(), Settings.System.TORCH_STATE, false))
             {
                 if (!reallystarted)
                     db("SETTING SHAREDPREF false BECAUSE !reallystarted");
@@ -354,7 +353,7 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
     private void intelligentIntent()
     {
         String s = getIntent().getAction();
-        if (s.equals("com.android.systemui.INTENT_TORCH") || s.equals("com.android.systemui.INTENT_TORCH_TOGGLE") || !s.equals(lastIntent))
+        if (s.equals("android.intent.action.MAIN") || s.equals("com.android.systemui.INTENT_TORCH_TOGGLE") || !s.equals(lastIntent))
             doSomething(s);
     }
 
@@ -426,5 +425,12 @@ public class Torch extends Activity implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+    }
+
+    private boolean isLocked() {
+        if (mKeyguardManager == null) {
+            mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        }
+        return mKeyguardManager != null && mKeyguardManager.inKeyguardRestrictedInputMode();
     }
 }

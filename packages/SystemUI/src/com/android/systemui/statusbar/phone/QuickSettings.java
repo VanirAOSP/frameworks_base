@@ -336,6 +336,7 @@ public class QuickSettings {
 
         new SettingsObserver(new Handler()).observe();
         new SoundObserver(new Handler()).observe();
+        new TorchObserver(new Handler()).observe();
     }
 
     public void setBar(PanelBar bar) {
@@ -1044,7 +1045,6 @@ public class QuickSettings {
                     @Override
                     public void onClick(View v) {
                         VanirAwesome.launchAction(mContext, VanirConstant.ACTION_TORCH);
-                        dothingsthewrongway();
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
@@ -2057,7 +2057,6 @@ public class QuickSettings {
             mModel.refreshWifiTetherTile();
             mModel.refreshUSBTetherTile();
             mModel.refreshNFCTile();
-            mModel.refreshTorchTile();
             if ((--ticksleft) > 0)
                 mHandler.postDelayed(delayedRefresh, 250);            
          }
@@ -2147,6 +2146,23 @@ public class QuickSettings {
         public void onChange(boolean selfChange) {
             mModel.refreshVibrateTile();
             mModel.refreshSilentTile();
+        }
+    }
+
+    class TorchObserver extends ContentObserver {
+        TorchObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.TORCH_STATE), false, this);
+            mModel.refreshTorchTile();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            mModel.refreshTorchTile();
         }
     }
 }
