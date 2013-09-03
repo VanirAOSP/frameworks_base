@@ -76,7 +76,7 @@ public class ZygoteInit {
     private static final int LOG_BOOT_PROGRESS_PRELOAD_END = 3030;
 
     /** when preloading, GC after allocating this many bytes */
-    private static final int PRELOAD_GC_THRESHOLD = 50000;
+    private static final int PRELOAD_GC_THRESHOLD = 1000000;
 
     private static final String ABI_LIST_ARG = "--abi-list=";
 
@@ -94,7 +94,7 @@ public class ZygoteInit {
      * The number of times that the main Zygote loop
      * should run before calling gc() again.
      */
-    static final int GC_LOOP_COUNT = 10;
+    static final int GC_LOOP_COUNT = 15;
 
     /**
      * The name of a resource file that contains classes to preload.
