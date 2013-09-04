@@ -3154,12 +3154,6 @@ public final class Settings {
         public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
 
        /**
-        * Lefty mode
-        * @hide
-        */
-        public static final String NAVIGATION_BAR_LEFTY_MODE = "navigation_bar_lefty_mode";
-
-       /**
         *
         * @hide
         */
