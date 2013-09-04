@@ -147,7 +147,10 @@ public class SearchPanelView extends FrameLayout implements
         mWm = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
         mPackageManager = mContext.getPackageManager();
         mResources = mContext.getResources();
-        
+
+        mCurrentUIMode = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.CURRENT_UI_MODE, 0);
+
         mContentResolver = mContext.getContentResolver();
         mObserver = new SettingsObserver(new Handler());
     }
@@ -158,7 +161,6 @@ public class SearchPanelView extends FrameLayout implements
             }
         }
     }
-    
 
     private H mHandler = new H();
 
@@ -670,8 +672,5 @@ public class SearchPanelView extends FrameLayout implements
 
         mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
                          Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);
-        // Not using getBoolean here, because CURRENT_UI_MODE can be 0,1 or 2
-        mCurrentUIMode = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.CURRENT_UI_MODE, 0);
     }
 }
