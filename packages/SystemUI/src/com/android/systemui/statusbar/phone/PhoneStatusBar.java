@@ -188,7 +188,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     IconMerger mNotificationIcons;
     // [+>
     View mMoreIcon;
-    LinearLayout mCenterClockLayout;
     Clock mCenterClock;
     Clock mClock;
     int mClockMode = 1;
@@ -246,6 +245,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     // ticker
     private View mTickerView;
     private boolean mTicking;
+    private boolean mModeChangedWhileTicking;
 
     // Tracking finger for opening/closing.
     int mEdgeBorder; // corresponds to R.dimen.status_bar_edge_ignore
@@ -328,6 +328,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         @Override
         public void onChange(boolean selfChange) {
              mClockMode = Settings.System.getInt(mContext.getContentResolver(), Settings.System.STATUS_BAR_CLOCK, 1);
+             if (mTicking)
+                  mModeChangedWhileTicking = true;
         }
     };
 
@@ -445,7 +447,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mMoreIcon = mStatusBarView.findViewById(R.id.moreIcon);
         mNotificationIcons.setOverflowIndicator(mMoreIcon);
         mStatusBarContents = (LinearLayout)mStatusBarView.findViewById(R.id.status_bar_contents);
-        mCenterClockLayout = (LinearLayout)mStatusBarView.findViewById(R.id.center_clock_layout);
         mClock = (Clock)mStatusBarView.findViewById(R.id.clock);
         mCenterClock = (Clock)mStatusBarView.findViewById(R.id.center_clock);
         mTickerView = mStatusBarView.findViewById(R.id.ticker);
@@ -1258,6 +1259,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     public void showClock() {
+        if (mTicking) return;
         if (mClock != null) {
             mClock.setVisibility(mClockMode == 1 && mShowClock ? View.VISIBLE : View.GONE);
         }
@@ -2144,10 +2146,11 @@ public class PhoneStatusBar extends BaseStatusBar {
             mTicking = true;
             if (!mHaloActive) {
                 mStatusBarContents.setVisibility(View.GONE);
-                mCenterClockLayout.setVisibility(View.GONE);
+                mCenterClock.setVisibility(View.GONE);
+                mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
+                mCenterClock.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
                 mTickerView.setVisibility(View.VISIBLE);
                 mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
-                mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
             }
         }
 
@@ -2155,9 +2158,10 @@ public class PhoneStatusBar extends BaseStatusBar {
         public void tickerDone() {
             if (!mHaloActive) {
                 mStatusBarContents.setVisibility(View.VISIBLE);
-                mCenterClockLayout.setVisibility(View.VISIBLE);
-                mTickerView.setVisibility(View.GONE);
+                mCenterClock.setVisibility(View.VISIBLE);
                 mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
+                mCenterClock.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
+                mTickerView.setVisibility(View.GONE);
                 mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out,
                             mTickingDoneListener));
             }
@@ -2166,9 +2170,10 @@ public class PhoneStatusBar extends BaseStatusBar {
         public void tickerHalting() {
             if (!mHaloActive) {
                 mStatusBarContents.setVisibility(View.VISIBLE);
-                mCenterClockLayout.setVisibility(View.VISIBLE);
+                mCenterClock.setVisibility(View.VISIBLE);
                 mTickerView.setVisibility(View.GONE);
                 mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
+                mCenterClock.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
                 // we do not animate the ticker away at this point, just get rid of it (b/6992707)
             }
         }
@@ -2177,6 +2182,10 @@ public class PhoneStatusBar extends BaseStatusBar {
     Animation.AnimationListener mTickingDoneListener = new Animation.AnimationListener() {;
         public void onAnimationEnd(Animation animation) {
             mTicking = false;
+            if (mModeChangedWhileTicking) {
+                mModeChangedWhileTicking = false;
+                showClock();
+            }
         }
         public void onAnimationRepeat(Animation animation) {
         }
