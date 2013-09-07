@@ -574,6 +574,10 @@
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_cancelNotifications">Allows the app to cancel notifications created by other apps.</string>
 
+    <!-- Change logging status, allows applications to enable/disable logging -->
+    <string name="permlab_changeLoggingStatus">disable or enable logging</string>
+    <string name="permdesc_changeLoggingStatus">Allows apps to enable or disable system level logging or debugging output.</string>
+
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_statusBar">disable or modify status bar</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
