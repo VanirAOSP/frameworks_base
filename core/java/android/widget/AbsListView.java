@@ -30,6 +30,7 @@ import android.os.Message;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.PowerManager;
 import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -594,6 +595,8 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
     private int mDecacheThreshold;
     private float mVelocityScale = 1.0f;
 
+    private final PowerManager mPm;
+
     final boolean[] mIsScrap = new boolean[1];
 
     // True when the popup should be hidden because of a call to
@@ -773,10 +776,17 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
         super(context);
         initAbsListView();
 
+        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+
         setVerticalScrollBarEnabled(true);
-        TypedArray a = context.obtainStyledAttributes(R.styleable.View);
-        initializeScrollbars(a);
-        a.recycle();
+        TypedArray a = null;
+        try {
+            a = context.obtainStyledAttributes(R.styleable.View);
+            initializeScrollbars(a);
+        } finally {
+            if (a != null)
+                a.recycle();
+        }
     }
 
     public AbsListView(Context context, AttributeSet attrs) {
@@ -787,44 +797,50 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
         super(context, attrs, defStyle);
         initAbsListView();
 
-        TypedArray a = context.obtainStyledAttributes(attrs,
+        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+
+        TypedArray a = null;
+        try {
+            a = context.obtainStyledAttributes(attrs,
                 com.android.internal.R.styleable.AbsListView, defStyle, 0);
 
-        Drawable d = a.getDrawable(com.android.internal.R.styleable.AbsListView_listSelector);
-        if (d != null) {
-            setSelector(d);
+            Drawable d = a.getDrawable(com.android.internal.R.styleable.AbsListView_listSelector);
+            if (d != null) {
+                setSelector(d);
+            }
+
+            mDrawSelectorOnTop = a.getBoolean(
+                    com.android.internal.R.styleable.AbsListView_drawSelectorOnTop, false);
+
+            final boolean stackFromBottom = a.getBoolean(R.styleable.AbsListView_stackFromBottom, false);
+            setStackFromBottom(stackFromBottom);
+
+            final boolean scrollingCacheEnabled = a.getBoolean(R.styleable.AbsListView_scrollingCache, true);
+            setScrollingCacheEnabled(scrollingCacheEnabled);
+
+            final boolean useTextFilter = a.getBoolean(R.styleable.AbsListView_textFilterEnabled, false);
+            setTextFilterEnabled(useTextFilter);
+
+            final int transcriptMode = a.getInt(R.styleable.AbsListView_transcriptMode,
+                    TRANSCRIPT_MODE_DISABLED);
+            setTranscriptMode(transcriptMode);
+
+            final int color = a.getColor(R.styleable.AbsListView_cacheColorHint, 0);
+            setCacheColorHint(color);
+
+            final boolean enableFastScroll = a.getBoolean(R.styleable.AbsListView_fastScrollEnabled, false);
+            setFastScrollEnabled(enableFastScroll);
+
+            final boolean smoothScrollbar = a.getBoolean(R.styleable.AbsListView_smoothScrollbar, true);
+            setSmoothScrollbarEnabled(smoothScrollbar);
+
+            setChoiceMode(a.getInt(R.styleable.AbsListView_choiceMode, CHOICE_MODE_NONE));
+            setFastScrollAlwaysVisible(
+                    a.getBoolean(R.styleable.AbsListView_fastScrollAlwaysVisible, false));
+        } finally {
+            if (a != null)
+                a.recycle();
         }
-
-        mDrawSelectorOnTop = a.getBoolean(
-                com.android.internal.R.styleable.AbsListView_drawSelectorOnTop, false);
-
-        boolean stackFromBottom = a.getBoolean(R.styleable.AbsListView_stackFromBottom, false);
-        setStackFromBottom(stackFromBottom);
-
-        boolean scrollingCacheEnabled = a.getBoolean(R.styleable.AbsListView_scrollingCache, true);
-        setScrollingCacheEnabled(scrollingCacheEnabled);
-
-        boolean useTextFilter = a.getBoolean(R.styleable.AbsListView_textFilterEnabled, false);
-        setTextFilterEnabled(useTextFilter);
-
-        int transcriptMode = a.getInt(R.styleable.AbsListView_transcriptMode,
-                TRANSCRIPT_MODE_DISABLED);
-        setTranscriptMode(transcriptMode);
-
-        int color = a.getColor(R.styleable.AbsListView_cacheColorHint, 0);
-        setCacheColorHint(color);
-
-        boolean enableFastScroll = a.getBoolean(R.styleable.AbsListView_fastScrollEnabled, false);
-        setFastScrollEnabled(enableFastScroll);
-
-        boolean smoothScrollbar = a.getBoolean(R.styleable.AbsListView_smoothScrollbar, true);
-        setSmoothScrollbarEnabled(smoothScrollbar);
-
-        setChoiceMode(a.getInt(R.styleable.AbsListView_choiceMode, CHOICE_MODE_NONE));
-        setFastScrollAlwaysVisible(
-                a.getBoolean(R.styleable.AbsListView_fastScrollAlwaysVisible, false));
-
-        a.recycle();
     }
 
     private void initAbsListView() {
@@ -2242,6 +2258,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
     }
 
     View setAnimation(View view) {
+        mPm.cpuBoost(1500000);
         final int mAnim = Settings.System.getInt(mContext.getContentResolver(),Settings.System.LISTVIEW_ANIMATION, 0);
         int scrollY = 0;
         boolean mDown = false;
@@ -3379,6 +3396,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
 
         switch (action & MotionEvent.ACTION_MASK) {
         case MotionEvent.ACTION_DOWN: {
+        mPm.cpuBoost(1500000);
         mIsTap = true;
         Inverse.sendEmptyMessageDelayed(0,100);
             switch (mTouchMode) {
