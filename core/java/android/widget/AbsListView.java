@@ -28,6 +28,7 @@ import android.os.Debug;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.PowerManager;
 import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -584,6 +585,8 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
     private int mDecacheThreshold;
     private float mVelocityScale = 1.0f;
 
+    private final PowerManager mPm;
+
     final boolean[] mIsScrap = new boolean[1];
 
     // True when the popup should be hidden because of a call to
@@ -754,9 +757,14 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
         initAbsListView();
 
         setVerticalScrollBarEnabled(true);
-        TypedArray a = context.obtainStyledAttributes(R.styleable.View);
-        initializeScrollbars(a);
-        a.recycle();
+        TypedArray a = null;
+        try {
+            a = context.obtainStyledAttributes(R.styleable.View);
+            initializeScrollbars(a);
+        } finally {
+            if (a != null)
+                a.recycle();
+        }
     }
 
     public AbsListView(Context context, AttributeSet attrs) {
@@ -767,44 +775,50 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
         super(context, attrs, defStyle);
         initAbsListView();
 
-        TypedArray a = context.obtainStyledAttributes(attrs,
+        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+
+        TypedArray a = null;
+        try {
+            a = context.obtainStyledAttributes(attrs,
                 com.android.internal.R.styleable.AbsListView, defStyle, 0);
 
-        Drawable d = a.getDrawable(com.android.internal.R.styleable.AbsListView_listSelector);
-        if (d != null) {
-            setSelector(d);
+            Drawable d = a.getDrawable(com.android.internal.R.styleable.AbsListView_listSelector);
+            if (d != null) {
+                setSelector(d);
+            }
+
+            mDrawSelectorOnTop = a.getBoolean(
+                    com.android.internal.R.styleable.AbsListView_drawSelectorOnTop, false);
+
+            boolean stackFromBottom = a.getBoolean(R.styleable.AbsListView_stackFromBottom, false);
+            setStackFromBottom(stackFromBottom);
+
+            boolean scrollingCacheEnabled = a.getBoolean(R.styleable.AbsListView_scrollingCache, true);
+            setScrollingCacheEnabled(scrollingCacheEnabled);
+
+            boolean useTextFilter = a.getBoolean(R.styleable.AbsListView_textFilterEnabled, false);
+            setTextFilterEnabled(useTextFilter);
+
+            int transcriptMode = a.getInt(R.styleable.AbsListView_transcriptMode,
+                    TRANSCRIPT_MODE_DISABLED);
+            setTranscriptMode(transcriptMode);
+
+            int color = a.getColor(R.styleable.AbsListView_cacheColorHint, 0);
+            setCacheColorHint(color);
+
+            boolean enableFastScroll = a.getBoolean(R.styleable.AbsListView_fastScrollEnabled, false);
+            setFastScrollEnabled(enableFastScroll);
+
+            boolean smoothScrollbar = a.getBoolean(R.styleable.AbsListView_smoothScrollbar, true);
+            setSmoothScrollbarEnabled(smoothScrollbar);
+
+            setChoiceMode(a.getInt(R.styleable.AbsListView_choiceMode, CHOICE_MODE_NONE));
+            setFastScrollAlwaysVisible(
+                    a.getBoolean(R.styleable.AbsListView_fastScrollAlwaysVisible, false));
+        } finally {
+            if (a != null)
+                a.recycle();
         }
-
-        mDrawSelectorOnTop = a.getBoolean(
-                com.android.internal.R.styleable.AbsListView_drawSelectorOnTop, false);
-
-        boolean stackFromBottom = a.getBoolean(R.styleable.AbsListView_stackFromBottom, false);
-        setStackFromBottom(stackFromBottom);
-
-        boolean scrollingCacheEnabled = a.getBoolean(R.styleable.AbsListView_scrollingCache, true);
-        setScrollingCacheEnabled(scrollingCacheEnabled);
-
-        boolean useTextFilter = a.getBoolean(R.styleable.AbsListView_textFilterEnabled, false);
-        setTextFilterEnabled(useTextFilter);
-
-        int transcriptMode = a.getInt(R.styleable.AbsListView_transcriptMode,
-                TRANSCRIPT_MODE_DISABLED);
-        setTranscriptMode(transcriptMode);
-
-        int color = a.getColor(R.styleable.AbsListView_cacheColorHint, 0);
-        setCacheColorHint(color);
-
-        boolean enableFastScroll = a.getBoolean(R.styleable.AbsListView_fastScrollEnabled, false);
-        setFastScrollEnabled(enableFastScroll);
-
-        boolean smoothScrollbar = a.getBoolean(R.styleable.AbsListView_smoothScrollbar, true);
-        setSmoothScrollbarEnabled(smoothScrollbar);
-
-        setChoiceMode(a.getInt(R.styleable.AbsListView_choiceMode, CHOICE_MODE_NONE));
-        setFastScrollAlwaysVisible(
-                a.getBoolean(R.styleable.AbsListView_fastScrollAlwaysVisible, false));
-
-        a.recycle();
     }
 
     private void initAbsListView() {
@@ -3344,6 +3358,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                         postDelayed(mPendingCheckForTap, ViewConfiguration.getTapTimeout());
                     } else {
                         if (mTouchMode == TOUCH_MODE_FLING) {
+                            mPm.cpuBoost(1500000);
                             // Stopped a fling. It is a scroll.
                             createScrollingCache();
                             mTouchMode = TOUCH_MODE_SCROLL;
@@ -3483,6 +3498,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
             case TOUCH_MODE_SCROLL:
                 final int childCount = getChildCount();
                 if (childCount > 0) {
+                    mPm.cpuBoost(1500000);
                     final int firstChildTop = getChildAt(0).getTop();
                     final int lastChildBottom = getChildAt(childCount - 1).getBottom();
                     final int contentTop = mListPadding.top;
