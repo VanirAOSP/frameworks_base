@@ -188,11 +188,11 @@ public class PhoneStatusBar extends BaseStatusBar {
     IconMerger mNotificationIcons;
     // [+>
     View mMoreIcon;
-    Clock mCenterClock;
-    LinearLayout mCenterClockLayout;
-    Clock mClock;
-    int mClockMode = 1;
-    boolean mShowClock = true;
+    private Clock mCenterClock;
+    private LinearLayout mCenterClockLayout;
+    private Clock mClock;
+    private int mClockMode = 1;
+    private boolean mShowClock = true;
 
     // expanded notifications
     NotificationPanelView mNotificationPanel; // the sliding/resizing panel within the notification window
@@ -569,7 +569,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         mShowCarrierInPanel = (mCarrierLabel != null);
         if (DEBUG) Slog.v(TAG, "carrierlabel=" + mCarrierLabel + " show=" + mShowCarrierInPanel);
         if (mShowCarrierInPanel) {
-            mCarrierLabel.setVisibility(mCarrierLabelVisible ? View.VISIBLE : View.INVISIBLE);
+            mCarrierLabel.setVisibility(mCarrierLabelVisible ? View.VISIBLE : View.GONE);
 
             // for mobile devices, we always show mobile connection info here (SPN/PLMN)
             // for other devices, we show whatever network is connected
@@ -1148,7 +1148,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     protected void updateCarrierLabelVisibility(boolean force) {
-        if (!mShowCarrierInPanel) return;
+        if (!mShowCarrierInPanel || mCarrierLabel == null) return;
         // The idea here is to only show the carrier label when there is enough room to see it,
         // i.e. when there aren't enough notifications to fill the panel.
         if (DEBUG) {
@@ -1165,7 +1165,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         if (force || mCarrierLabelVisible != makeVisible) {
             mCarrierLabelVisible = makeVisible;
             if (DEBUG) {
-                Slog.d(TAG, "making carrier label " + (makeVisible?"visible":"invisible"));
+                Slog.d(TAG, "making carrier label " + (makeVisible?"visible":"gone"));
             }
             mCarrierLabel.animate().cancel();
             if (makeVisible) {
@@ -1180,8 +1180,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         if (!mCarrierLabelVisible) { // race
-                            mCarrierLabel.setVisibility(View.INVISIBLE);
                             mCarrierLabel.setAlpha(0f);
+                            mCarrierLabel.setVisibility(View.GONE);
                         }
                     }
                 })
