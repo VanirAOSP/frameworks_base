@@ -105,44 +105,45 @@
                 android:layout_height="match_parent"
                 android:paddingStart="2dp"
                 android:orientation="horizontal"
-                android:gravity="center"
-                >
+                android:gravity="center" />
                 <include layout="@layout/signal_cluster_view" 
                     android:id="@+id/signal_cluster"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
+                    android:layout_height="wrap_content" />
                 <include layout="@layout/signal_cluster_text_view"
                     android:id="@+id/signal_cluster_text"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-            <TextView
-                android:id="@+id/battery_text"
-                android:textAppearance="@style/TextAppearance.StatusBar.Battery"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:singleLine="true"
-                android:paddingLeft="4dip"
-                android:layout_marginRight="-3dip"
-                android:gravity="center_vertical|left"
-                />
-            <ImageView
-                android:id="@+id/battery"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:gravity="center_vertical|bottom"
-                android:paddingLeft="4dip"
-                />
-            <com.android.systemui.statusbar.policy.CircleBattery
-                android:id="@+id/circle_battery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.StatusBar.Battery"
-                android:singleLine="true"
-                android:gravity="bottom"
-                android:paddingLeft="3dip"
-                />
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:id="@+id/batteries_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center" >
+                    <TextView
+                        android:id="@+id/battery_text"
+                        android:textAppearance="@style/TextAppearance.StatusBar.Battery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:singleLine="true"
+                        android:paddingLeft="4dip"
+                        android:layout_marginRight="-3dip"
+                        android:gravity="center_vertical|left" />
+                    <ImageView
+                        android:id="@+id/battery"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:gravity="center_vertical|bottom"
+                        android:paddingLeft="4dip" />                
+                    <com.android.systemui.statusbar.policy.CircleBattery
+                        android:id="@+id/circle_battery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.StatusBar.Battery"
+                        android:singleLine="true"
+                        android:gravity="bottom"
+                        android:paddingLeft="3dip" />
+                </LinearLayout>
             </LinearLayout>
     
             <com.android.systemui.statusbar.policy.Clock
