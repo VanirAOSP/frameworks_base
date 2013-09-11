@@ -1878,16 +1878,14 @@
   <java-symbol type="bool" name="config_noDelayInATwoDP" />
 
   <java-symbol type="bool" name="config_hasRemovableLid" />
+  <java-symbol type="bool" name="config_hasDockBattery" />
 
   <java-symbol type="integer" name="config_wallpaperMaxWidth" />
 
-  <!-- DeviceKeyHandle -->
-  <java-symbol type="string" name="config_legacyUmsLunFile" />
-  <java-symbol type="bool" name="config_hasRemovableLid" />
-  <java-symbol type="bool" name="config_hasDockBattery" />
-  <java-symbol type="bool" name="config_noDelayInATwoDP" />
-  <java-symbol type="string" name="config_deviceKeyHandlerLib" />
+  <!-- Device specific handlers -->
+  <java-symbol type="string" name="config_deviceHandlersLib" />
   <java-symbol type="string" name="config_deviceKeyHandlerClass" />
+  <java-symbol type="string" name="config_deviceDockBatteryHandlerClass" />
 
   <!-- Telephony -->
   <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />

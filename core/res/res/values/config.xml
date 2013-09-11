@@ -1181,11 +1181,24 @@
     <!-- If true, adds support for no delay A2DP in Samsung devices -->
     <bool name="config_noDelayInATwoDP">false</bool>
 
-    <!-- Path to the library that contains a device specific key handler -->
-    <string name="config_deviceKeyHandlerLib" translatable="false"></string>
+    <!-- Dock battery compatibility (disabled by default) -->
+    <bool name="config_hasDockBattery">false</bool>
 
-    <!-- Name of that key handler class -->
+    <!-- The list absolute paths of jar/apk files containing the device specific handlers,
+         delimited by File.pathSeparator, which defaults to ":" on Android -->
+    <string name="config_deviceHandlersLib" translatable="false"></string>
+
+    <!-- Full qualified name of the class that implements
+         com.android.internal.os.DeviceKeyHandler interface. -->
     <string name="config_deviceKeyHandlerClass" translatable="false"></string>
+
+    <!-- Name of that dock battery handler class -->
+    <string name="config_deviceDockBatteryHandlerClass" translatable="false"></string>
+
+    <!-- Full qualified name of the class that implements
+         com.android.internal.os.DeviceDockBatteryHandler interface.
+         Requires config_hasDockBattery set to true. -->
+    <string name="config_deviceDockBatteryHandlerLib" translatable="false"></string>
 
     <!-- If a dock provides a lid switch, that lid can be removed. This
          setting is used to determine, whether lidOpenRotation has to be
@@ -1235,8 +1248,5 @@
 
     <!-- True if the Irda service should be started at system start -->
     <bool name="config_enableIrdaManagerService">false</bool>
-
-    <!-- Workaround for devices with broken keyboards -->
-    <bool name="config_forceDisableHardwareKeyboard">false</bool>
 
 </resources>
