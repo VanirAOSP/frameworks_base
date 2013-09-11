@@ -3555,6 +3555,11 @@ public final class Settings {
         public static final String NOTIFICATION_VIBRATE_DURING_ALERTS_DISABLED = "vibrate_while_no_alerts";
 
         /**
+         * ListView Animation
+         */
+        public static final String LISTVIEW_ANIMATION = "listview_animation";
+
+        /**
          * Volume key controls ringtone or media sound stream
          *
          * @hide
