@@ -2891,18 +2891,6 @@ public final class Settings {
         public static final String DUAL_PANE_PREFS = "dual_pane_prefs";
 
        /**
-         * Show the Reboot on lockscreen dialog in Power menu
-         * @hide
-         */
-        public static final String POWER_DIALOG_SHOW_REBOOT_HIDE = "power_dialog_show_reboot_hide";
-
-       /**
-        * Option to hide expanded desktop in power menu
-        * @hide
-        */
-        public static final String POWER_DIALOG_SHOW_EXPANDED_DESKTOP_TOGGLE = "power_dialog_show_expanded_desktop_toggle";
-
-       /**
         * Statusbar State
         * @hide
         */
@@ -3449,21 +3437,6 @@ public final class Settings {
         public static final String FORCE_DUAL_PANEL = "force_dualpanel";
 
         /**
-         * @hide
-         */
-        public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
-
-         /**
-         * @hide
-         */
-        public static final String POWER_DIALOG_SHOW_AIRPLANE_TOGGLE = "power_dialog_show_airplane_toggle";
-
-         /**
-         * @hide
-         */
-        public static final String POWER_DIALOG_SHOW_TORCH_TOGGLE = "power_dialog_show_torch_toggle";
-
-        /**
          * enabled and order of quick toggles
          *
          * @hide
@@ -3496,11 +3469,6 @@ public final class Settings {
          * @hide
          */
         public static final String SYSTEM_POWER_CRT_MODE = "system_power_crt_mode";
-
-        /**
-         * @hide
-         */
-        public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD = "mute_annoying_notifications_threshold";
 
         /**
          * @hide
