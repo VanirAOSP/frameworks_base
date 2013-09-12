@@ -338,7 +338,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     IApplicationToken mFocusedApp;
 
     // Behavior of home wake
-    boolean mHomeWakeScreen;
+    boolean mHomeWakeScreen = true;
 
     // Behavior of volume wake
     boolean mVolumeWakeScreen;
