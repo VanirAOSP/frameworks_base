@@ -63,7 +63,6 @@ import android.util.Slog;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -250,7 +249,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     // Tracking finger for opening/closing.
     int mEdgeBorder; // corresponds to R.dimen.status_bar_edge_ignore
     boolean mTracking;
-    VelocityTracker mVelocityTracker;
 
     // help screen
     private boolean mClingShown;
