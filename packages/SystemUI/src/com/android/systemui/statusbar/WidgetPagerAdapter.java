@@ -20,7 +20,7 @@ public class WidgetPagerAdapter extends PagerAdapter {
     int[] widgetIds = new int[1];
     public AppWidgetHost mAppWidgetHost;
     AppWidgetHostView[] hostViews;
-    private Context mContext;
+    Context mContext;
     AppWidgetManager mAppWidgetManager;
 
     public WidgetPagerAdapter(Context c, int[] ids) {
