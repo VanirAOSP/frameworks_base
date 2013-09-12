@@ -849,8 +849,7 @@ public final class BatteryService extends Binder {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BATTERY_LIGHT_PULSE), false, this);
 
-            // Light colors
-            if (mMultiColorLed) {
+             if (mMultiColorLed) {
                 // Register observer if we have a multi color led
                 resolver.registerContentObserver(Settings.System.getUriFor(
                         Settings.System.BATTERY_LIGHT_LOW_COLOR), false, this);
@@ -889,26 +888,27 @@ public final class BatteryService extends Binder {
             mLedPulseEnabled = Settings.System.getInt(resolver,
                         Settings.System.BATTERY_LIGHT_PULSE, 1) != 0;
 
-            // Light colors
-            mBatteryLowARGB = Settings.System.getInt(resolver,
-                    Settings.System.BATTERY_LIGHT_LOW_COLOR,
-                    res.getInteger(com.android.internal.R.integer.config_notificationsBatteryLowARGB));
-            mBatteryMediumARGB = Settings.System.getInt(resolver,
-                    Settings.System.BATTERY_LIGHT_MEDIUM_COLOR,
-                    res.getInteger(com.android.internal.R.integer.config_notificationsBatteryMediumARGB));
-            mBatteryFullARGB = Settings.System.getInt(resolver,
-                    Settings.System.BATTERY_LIGHT_FULL_COLOR,
-                    res.getInteger(com.android.internal.R.integer.config_notificationsBatteryFullARGB));
+            if (mMultiColorLed) {
+                // Light colors
+                mBatteryLowARGB = Settings.System.getInt(resolver,
+                        Settings.System.BATTERY_LIGHT_LOW_COLOR,
+                        res.getInteger(com.android.internal.R.integer.config_notificationsBatteryLowARGB));
+                mBatteryMediumARGB = Settings.System.getInt(resolver,
+                        Settings.System.BATTERY_LIGHT_MEDIUM_COLOR,
+                        res.getInteger(com.android.internal.R.integer.config_notificationsBatteryMediumARGB));
+                mBatteryFullARGB = Settings.System.getInt(resolver,
+                        Settings.System.BATTERY_LIGHT_FULL_COLOR,
+                        res.getInteger(com.android.internal.R.integer.config_notificationsBatteryFullARGB));
+            }
 
-            // Quiet Hours
-            mQuietHoursEnabled = Settings.System.getIntForUser(resolver,
-                    Settings.System.QUIET_HOURS_ENABLED, 0, UserHandle.USER_CURRENT_OR_SELF) != 0;
-            mQuietHoursStart = Settings.System.getIntForUser(resolver,
-                    Settings.System.QUIET_HOURS_START, 0, UserHandle.USER_CURRENT_OR_SELF);
-            mQuietHoursEnd = Settings.System.getIntForUser(resolver,
-                    Settings.System.QUIET_HOURS_END, 0, UserHandle.USER_CURRENT_OR_SELF);
-            mQuietHoursDim = Settings.System.getIntForUser(resolver,
-                    Settings.System.QUIET_HOURS_DIM, 0, UserHandle.USER_CURRENT_OR_SELF) != 0;
+            mQuietHoursEnabled = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_ENABLED, 0) != 0;
+            mQuietHoursStart = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_START, 0);
+            mQuietHoursEnd = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_END, 0);
+            mQuietHoursDim = Settings.System.getInt(resolver,
+                    Settings.System.QUIET_HOURS_DIM, 0) != 0;
 
             updateLedPulse();
         }
