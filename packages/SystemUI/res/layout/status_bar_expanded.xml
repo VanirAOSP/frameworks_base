@@ -85,12 +85,21 @@
                 android:fadingEdge="none"
                 android:overScrollMode="ifContentScrolls"
                 >
+                <!-- Toggles -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/quick_toggles" />
                 <com.android.systemui.statusbar.policy.NotificationRowLayout
                     android:id="@+id/latestItems"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    systemui:rowHeight="@dimen/notification_row_min_height"
-                    />
+                    systemui:rowHeight="@dimen/notification_row_min_height" />
+                </LinearLayout>
             </ScrollView>
         </FrameLayout>
     </LinearLayout>
