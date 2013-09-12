@@ -936,15 +936,6 @@ public final class PowerManagerService extends IPowerManager.Stub
         }
     }
 
-    public void cpuBoost(int duration)
-    {
-        if (duration > 0 && duration <= MAX_CPU_BOOST_TIME) {
-            nativeCpuBoost(duration);
-        } else {
-            Log.e(TAG, "Invalid boost duration: " + duration);
-        }
-    }
-
     @Override // Binder call
     public void userActivity(long eventTime, int event, int flags) {
         final long now = SystemClock.uptimeMillis();
@@ -2046,6 +2037,20 @@ public final class PowerManagerService extends IPowerManager.Stub
             shutdownOrRebootInternal(true, confirm, null, wait);
         } finally {
             Binder.restoreCallingIdentity(ident);
+        }
+    }
+
+    /**
+     * Boost the CPU
+     * @param duration Duration to boost the CPU for, in milliseconds.
+     * @hide
+     */
+    @Override // Binder call
+    public void cpuBoost(int duration) {
+        if (duration > 0 && duration <= MAX_CPU_BOOST_TIME) {
+            nativeCpuBoost(duration);
+        } else {
+            Log.e(TAG, "Invalid boost duration: " + duration);
         }
     }
 
