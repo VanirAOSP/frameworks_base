@@ -1958,5 +1958,8 @@ public abstract class BaseStatusBar extends SystemUI implements
         lp.setTitle("ActiveDisplayView");
 
         return lp;
+
+    public boolean isTablet() {
+        return false;
     }
 }

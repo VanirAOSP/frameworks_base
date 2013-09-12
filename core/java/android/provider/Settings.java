@@ -3521,6 +3521,38 @@ public final class Settings {
         public static final String FORCE_DUAL_PANEL = "force_dualpanel";
 
         /**
+         * <!-- Toggles -->
+         * @hide
+         */
+        public static final String STATUSBAR_TOGGLES_USE_BUTTONS = "statusbar_toggles_use_buttons";
+
+        /**
+         * on off for toggles
+         * @hide
+         */
+        public static final String TOGGLE_CONTROLS = "toggles_controls";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_TOGGLES = "statusbar_toggles";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_TOGGLES_STYLE = "statusbar_toggles_style";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_TOGGLES_NUMBER_PER_ROW = "statusbar_toggles_number_per_row";
+
+        /**
+         * @hide
+         */
+        public static final String STATUS_BAR_LAYOUT = "statusbar_layout"; 
+
+        /**
          * enabled and order of quick toggles
          *
          * @hide
