@@ -53,7 +53,6 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
     private RecentsScrollViewPerformanceHelper mPerformanceHelper;
     private HashSet<View> mRecycledViews;
     private int mNumItemsInOneScreenful;
-    private Handler mHandler;
 
     public RecentsHorizontalScrollView(Context context, AttributeSet attrs) {
         super(context, attrs, 0);
@@ -62,7 +61,6 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
         mSwipeHelper = new SwipeHelper(SwipeHelper.Y, this, densityScale, pagingTouchSlop);
         mPerformanceHelper = RecentsScrollViewPerformanceHelper.create(context, attrs, this, false);
         mRecycledViews = new HashSet<View>();
-        mHandler = new Handler();
     }
 
     public void setMinSwipeAlpha(float minAlpha) {
@@ -182,30 +180,16 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
     @Override
     public void removeAllViewsInLayout() {
         smoothScrollTo(0, 0);
-        Thread clearAll = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int count = mLinearLayout.getChildCount();
-                View[] refView = new View[count];
-                for (int i = 0; i < count; i++) {
-                    refView[i] = mLinearLayout.getChildAt(i);
+        int count = mLinearLayout.getChildCount();
+        for (int i = 0; i < count; i++) {
+            final View child = mLinearLayout.getChildAt(i);
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dismissChild(child);
                 }
-                for (int i = 0; i < count; i++) {
-                    final View child = refView[i];
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            dismissChild(child);
-                        }
-                    });
-                    try {
-                        Thread.sleep(150);
-                    } catch (InterruptedException e) {
-                    }
-                }
-            }
-        });
-        clearAll.start();
+            }, i * 150);
+        }
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -228,7 +212,7 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
         mSwipeHelper.dismissChild(v, 0);
     }
 
-    public void onChildDismissed(View v, boolean fromUser) {
+    public void onChildDismissed(View v) {
         addToRecycledViews(v);
         mLinearLayout.removeView(v);
         mCallback.handleSwipe(v);
