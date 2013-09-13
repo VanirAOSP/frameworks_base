@@ -30,7 +30,7 @@ import java.io.IOException;
 
 public class LightsService {
     private static final String TAG = "LightsService";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final int LIGHT_ID_BACKLIGHT = 0;
     public static final int LIGHT_ID_KEYBOARD = 1;
@@ -118,7 +118,7 @@ public class LightsService {
 
         private void setLightLocked(int color, int mode, int onMS, int offMS, int brightnessMode) {
             if (color != mColor || mode != mMode || onMS != mOnMS || offMS != mOffMS) {
-                if (DEBUG) Slog.v(TAG, "setLight #" + mId + ": color=#"
+                if (DEBUG && mId == LIGHT_ID_BUTTONS) Slog.v(TAG, "setLight #" + mId + ": color=#"
                         + Integer.toHexString(color));
                 mColor = color;
                 mMode = mode;
