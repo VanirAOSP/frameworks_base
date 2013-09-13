@@ -43,8 +43,8 @@ public class WidgetView extends LinearLayout {
     float mFirstMoveY;
     int mCurrentWidgetPage = 0;
     long mDowntime;
-    boolean mMoving = false;
-    boolean showing = false;
+    private boolean mMoving = false;
+    private boolean showing = false;
 
     final static String TAG = "Widget";
 
@@ -64,14 +64,6 @@ public class WidgetView extends LinearLayout {
         mHandler = new Handler();
         mSettingsObserver = new SettingsObserver(mHandler);
         mSettingsObserver.observe();
-    }
-
-    @Override
-    public void onDetachedFromWindow() {
-        if (mSettingsObserver != null) {
-            mSettingsObserver.unobserve();
-            mHandler = null;
-        }
     }
 
     public void toggleWidgetView() {
@@ -212,13 +204,9 @@ public class WidgetView extends LinearLayout {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_WIDGETS),
-                false,
-                this);
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_WIDGETS),
+                            false, this);
             updateSettings();
-        }
-        void unobserve() {
-            mContext.getContentResolver().unregisterContentObserver(this);
         }
 
         @Override
