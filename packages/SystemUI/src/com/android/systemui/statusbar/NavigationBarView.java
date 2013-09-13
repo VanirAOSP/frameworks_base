@@ -56,6 +56,7 @@ import com.vanir.BackgroundAlphaColorDrawable;
 import com.android.systemui.TransparencyManager;
 import com.android.systemui.vanir.VanirAwesome;
 import com.android.systemui.vanir.NavBarHelpers;
+import com.android.systemui.statusbar.WidgetView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
 import com.android.systemui.statusbar.policy.key.RecentsKeyButtonView;
@@ -88,6 +89,8 @@ public class NavigationBarView extends LinearLayout {
     private boolean mMenuArrowKeys;
     
     public DelegateViewHelper mDelegateHelper;
+
+    private WidgetView mWidgetView;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
@@ -247,6 +250,8 @@ public class NavigationBarView extends LinearLayout {
         mVertical = false;
         mShowMenu = false;
         mDelegateHelper = new DelegateViewHelper(this);
+
+        mWidgetView = new WidgetView(mContext,null);
 
         mBackIcon = res.getDrawable(R.drawable.ic_sysbar_back);
         mBackLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_land);
