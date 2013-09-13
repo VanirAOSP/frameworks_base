@@ -66,14 +66,6 @@ public class WidgetView extends LinearLayout {
         mSettingsObserver.observe();
     }
 
-    @Override
-    public void onDetachedFromWindow() {
-        if (mSettingsObserver != null) {
-            mSettingsObserver.unobserve();
-            mHandler = null;
-        }
-    }
-
     public void toggleWidgetView() {
         if (showing) {
             if (mPopupView != null) {
@@ -212,13 +204,9 @@ public class WidgetView extends LinearLayout {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_WIDGETS),
-                false,
-                this);
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_WIDGETS),
+                            false, this);
             updateSettings();
-        }
-        void unobserve() {
-            mContext.getContentResolver().unregisterContentObserver(this);
         }
 
         @Override
