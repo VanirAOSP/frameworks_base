@@ -31,7 +31,6 @@ import com.android.systemui.recent.RecentsActivity;
 import com.android.systemui.recent.TaskDescription;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
-import com.android.systemui.statusbar.WidgetView;
 
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
@@ -123,8 +122,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected int mCurrentUIMode;
 
-    private WidgetView mWidgetView;
-
     protected static final boolean ENABLE_INTRUDERS = false;
 
     // Should match the value in PhoneWindowManager
@@ -136,6 +133,8 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected CommandQueue mCommandQueue;
     protected IStatusBarService mBarService;
     protected H mHandler = createHandler();
+
+    private Context mContext;
 
     // all notifications
     protected NotificationData mNotificationData = new NotificationData();
@@ -434,7 +433,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
         mDisplay = mWindowManager.getDefaultDisplay();
-        Context context = mContext;
+        mContext = context;
 
         mProvisioningObserver.onChange(false); // set up
         mContext.getContentResolver().registerContentObserver(
@@ -476,7 +475,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         createAndAddWindows();
         // create WidgetView
-        mWidgetView = new WidgetView(mContext,null);
         disable(switches[0]);
         setSystemUiVisibility(switches[1], 0xffffffff);
         topAppWindowChanged(switches[2] != 0);
