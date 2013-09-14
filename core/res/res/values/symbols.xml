@@ -1971,4 +1971,7 @@
   <!-- Irda Service -->
   <java-symbol type="bool" name="config_enableIrdaManagerService" />
 
+  <java-symbol type="bool" name="config_disableHomeUnlockSetting" />
+
+
 </resources>
