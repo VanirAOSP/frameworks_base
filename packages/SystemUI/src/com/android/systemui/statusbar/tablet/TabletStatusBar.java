@@ -487,9 +487,14 @@ public class TabletStatusBar extends BaseStatusBar implements
                 // we're screwed here fellas
             }
         }
+
         UpdateWeights(isLandscape());
         super.onConfigurationChanged(newConfig);
+
+        removeActiveDisplayView();
+        addActiveDisplayView();
         loadDimens();
+
         final int currentHeight = getStatusBarHeight();
         final int barHeight = (isLandscape() ? mUserBarHeightLand : mUserBarHeight);
         if (currentHeight != barHeight) {
@@ -709,6 +714,7 @@ public class TabletStatusBar extends BaseStatusBar implements
             removeSidebarView();
 		}
         addSidebarView();
+        addActiveDisplayView();
 
         observer().observe();
         updateSettings();
