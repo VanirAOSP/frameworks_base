@@ -3633,6 +3633,11 @@ public final class Settings {
          */
         public static final String UI_FORCE_OVERFLOW_BUTTON = "ui_force_overflow_button";
 
+        /*
+         * @hide
+         */
+        public static final String HOME_WAKE_SCREEN = "home_wake_screen";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
