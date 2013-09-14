@@ -76,9 +76,10 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
 import com.android.internal.statusbar.StatusBarIcon;
@@ -432,9 +433,12 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
 
         if (mRecreating) {
-			removeSidebarView();
-		}
-		addSidebarView();
+            removeSidebarView();
+        } else {
+			addActiveDisplayView();
+        }
+
+        addSidebarView();
 
         // figure out which pixel-format to use for the status bar.
         mPixelFormat = PixelFormat.OPAQUE;
@@ -2080,6 +2084,11 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
     }
 
+    public void setNavigationBarLightsOn(boolean on, boolean force) {
+        mNavigationBarView.setLowProfile(!on, true, force);
+    }
+
+    @Override
     public void topAppWindowChanged(boolean showMenu) {
         mTransparencyManager.update();
 
@@ -2432,6 +2441,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                 repositionNavigationBar();
                 updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
                 updateShowSearchHoldoff();
+                removeActiveDisplayView();
+                addActiveDisplayView();
 
                 if (mNavigationBarView != null && mNavigationBarView.mDelegateHelper != null) {
                     // if We are in Landscape/Phone Mode then swap the XY coordinates for NaVRing Swipe
