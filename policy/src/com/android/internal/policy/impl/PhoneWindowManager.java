@@ -675,6 +675,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this);
+            updateSettings();
+        }
+
+        void observeHardware() {
+            ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.KEY_HOME_LONG_PRESS_ACTION), false, this,
                     UserHandle.USER_ALL);
@@ -705,7 +710,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HOME_WAKE_SCREEN), false, this,
                     UserHandle.USER_ALL);
-
             updateSettings();
         }
         
@@ -1161,20 +1165,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mOrientationListener.setCurrentRotation(windowManager.getRotation());
         } catch (RemoteException ex) { }
 
-        try {
-            if (mPowerMenuReceiver != null)
-                mPowerMenuReceiver.unregisterSelf();
-                mPowerMenuReceiver = null;
-            if (mSettingsObserver != null)
-		        mSettingsObserver.unobserve();
-		        mSettingsObserver = null;
-            } finally {
-				mPowerMenuReceiver = new PowerMenuReceiver(context);
-                mPowerMenuReceiver.registerSelf();
-                mSettingsObserver = new SettingsObserver(mHandler);
-                mSettingsObserver.observe();
-	    }
-
         mShortcutManager = new ShortcutManager(context, mHandler);
         mShortcutManager.observe();
         mUiMode = context.getResources().getInteger(
@@ -1221,7 +1211,29 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mDeviceHardwareKeys = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_deviceHardwareKeys);
 
-        updateKeyAssignments();
+        
+        try {
+            if (mPowerMenuReceiver != null)
+                mPowerMenuReceiver.unregisterSelf();
+                mPowerMenuReceiver = null;
+            if (mSettingsObserver != null)
+		        mSettingsObserver.unobserve();
+		        mSettingsObserver = null;
+        } finally {
+            mPowerMenuReceiver = new PowerMenuReceiver(context);
+            mPowerMenuReceiver.registerSelf();
+            mSettingsObserver = new SettingsObserver(mHandler);
+            mSettingsObserver.observe();
+            if (mDeviceHardwareKeys != 0) {
+                mSettingsObserver.observeHardware();
+
+       //  to do: insert a way to poke settings to update the header entries here
+       //         Settings.System.putInt(mContext.getContentResolver(),
+       //                 Settings.System.KEYS_ENABLED, 1);
+
+                updateKeyAssignments();
+            }
+	    }
 
         // register for dock events
         IntentFilter filter = new IntentFilter();
@@ -1583,8 +1595,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR,
                     Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT,
                     UserHandle.USER_CURRENT);
-            mHomeWakeScreen = (Settings.System.getIntForUser(resolver,
-                    Settings.System.HOME_WAKE_SCREEN, 1, UserHandle.USER_CURRENT) == 1);
             mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH, 0) == 1;
             mVolumeWakeScreen = (Settings.System.getInt(resolver,
                     Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
@@ -1593,7 +1603,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mKillAppLongPressBack = (Settings.Secure.getInt(resolver,
                     Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
 
-            updateKeyAssignments();
+            mHomeWakeScreen = (Settings.System.getIntForUser(resolver,
+                    Settings.System.HOME_WAKE_SCREEN, 1, UserHandle.USER_CURRENT) == 1);
+            if (mDeviceHardwareKeys != 0) {
+                updateKeyAssignments();
+            }
 
             // Configure rotation lock.
             int userRotation = Settings.System.getIntForUser(resolver,
