@@ -108,6 +108,7 @@ static void read_png(const char* imageName,
     if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
         png_set_gray_to_rgb(read_ptr);
 
+    png_set_interlace_handling(read_ptr);
     png_read_update_info(read_ptr, read_info);
 
     outImageInfo->rows = (png_bytepp)malloc(
