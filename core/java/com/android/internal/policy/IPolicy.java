@@ -35,7 +35,7 @@ public interface IPolicy {
 
     public LayoutInflater makeNewLayoutInflater(Context context);
 
-    public WindowManagerPolicy makeNewWindowManager(IDeviceHandler device);
+    public WindowManagerPolicy makeNewWindowManager();
 
     public FallbackEventHandler makeNewFallbackEventHandler(Context context);
 }
