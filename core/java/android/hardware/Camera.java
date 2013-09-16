@@ -41,7 +41,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The Camera class is used to set image capture settings, start/stop preview,
