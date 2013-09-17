@@ -73,6 +73,7 @@ public class KeyguardViewManager {
 
     private FrameLayout mKeyguardHost;
     private KeyguardHostView mKeyguardView;
+    private SettingsObserver mObserver;
 
     private boolean mScreenOn = false;
     private LockPatternUtils mLockPatternUtils;
@@ -117,8 +118,8 @@ public class KeyguardViewManager {
         mViewMediatorCallback = callback;
         mLockPatternUtils = lockPatternUtils;
         
-        SettingsObserver observer = new SettingsObserver(new Handler());
-        observer.observe();
+        mObserver = new SettingsObserver(new Handler());
+        mObserver.observe();
     }
 
     /**
