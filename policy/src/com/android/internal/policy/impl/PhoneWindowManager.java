@@ -675,7 +675,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this);
-            updateSettings();
         }
 
         void observeHardware() {
@@ -710,7 +709,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HOME_WAKE_SCREEN), false, this,
                     UserHandle.USER_ALL);
-            updateSettings();
         }
         
         private void unobserve() {
@@ -1233,6 +1231,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
                 updateKeyAssignments();
             }
+            updateSettings();
 	    }
 
         // register for dock events
