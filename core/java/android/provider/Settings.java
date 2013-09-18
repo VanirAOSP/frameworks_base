@@ -4742,6 +4742,13 @@ public final class Settings {
             "lock_sync_encryption_password";
 
         /**
+        * External GPS source/device
+        * @hide
+        */
+        public static final String EXTERNAL_GPS_BT_DEVICE =
+            "external_gps_bt_device";
+
+        /**
          * The Logging ID (a unique 64-bit value) as a hex string.
          * Used as a pseudonymous identifier for logging.
          * @deprecated This identifier is poorly initialized and has

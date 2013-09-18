@@ -59,11 +59,13 @@ import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.WorkSource;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
 import com.android.internal.content.PackageMonitor;
 import com.android.internal.location.ProviderProperties;
 import com.android.internal.location.ProviderRequest;
+import com.android.server.location.BTGpsLocationProvider;
 import com.android.server.location.GeocoderProxy;
 import com.android.server.location.GeofenceProxy;
 import com.android.server.location.GeofenceManager;
@@ -347,6 +349,18 @@ public class LocationManagerService extends ILocationManager.Stub {
         GpsLocationProvider gpsProvider = new GpsLocationProvider(mContext, this,
                 mLocationHandler.getLooper());
 
+        // Create a gps location provider based on the setting
+        // EXTERNAL_GPS_BT_DEVICE
+        String btDevice = Settings.System.getString(mContext.getContentResolver(),
+                Settings.Secure.EXTERNAL_GPS_BT_DEVICE);
+        if (TextUtils.isEmpty(btDevice)) {
+            // default option
+            btDevice = "0";
+            Settings.System.putString(mContext.getContentResolver(),
+                    Settings.Secure.EXTERNAL_GPS_BT_DEVICE, btDevice);
+        }
+        setGPSSource(btDevice);
+
         if (GpsLocationProvider.isSupported()) {
             mGpsStatusProvider = gpsProvider.getGpsStatusProvider();
             mNetInitiatedListener = gpsProvider.getNetInitiatedListener();
@@ -441,6 +455,34 @@ public class LocationManagerService extends ILocationManager.Stub {
             mGeoFencer = null;
         }
 
+    }
+
+    public void setGPSSource(String device) {
+        synchronized (mLock) {
+            if (mProvidersByName.containsKey(LocationManager.GPS_PROVIDER)) {
+                LocationProviderInterface mGpsLocationProvider = mProvidersByName
+                        .get(LocationManager.GPS_PROVIDER);
+                removeProviderLocked(mGpsLocationProvider);
+                Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
+                        LocationManager.GPS_PROVIDER, false);
+            }
+            Slog.i(TAG, "Setting GPS Source to: " + device);
+            if ("0".equals(device)) {
+                if (!GpsLocationProvider.isSupported())
+                    return;
+                GpsLocationProvider gpsProvider = new GpsLocationProvider(mContext, this,
+                        mLocationHandler.getLooper());
+                mGpsStatusProvider = gpsProvider.getGpsStatusProvider();
+                mNetInitiatedListener = gpsProvider.getNetInitiatedListener();
+                addProviderLocked(gpsProvider);
+            } else {
+                BTGpsLocationProvider gpsProvider = new BTGpsLocationProvider(mContext, this,
+                        mLocationHandler.getLooper());
+                mGpsStatusProvider = gpsProvider.getGpsStatusProvider();
+                mNetInitiatedListener = null;
+                addProviderLocked(gpsProvider);
+            }
+        }
     }
 
     /**
