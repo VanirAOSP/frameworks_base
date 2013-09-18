@@ -89,5 +89,6 @@ interface ILocationManager
     // for reporting callback completion
     void locationCallbackFinished(ILocationListener listener);
 
-
+    // add set gps source
+    void setGPSSource(String device);
 }
