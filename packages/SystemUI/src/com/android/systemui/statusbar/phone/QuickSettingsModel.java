@@ -233,7 +233,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private NfcAdapter mNfcAdapter;
 
     private final boolean mHasMobileData;
-    private NfcAdapter adapter;
 
     private QuickSettingsTileView mUserTile;
     private RefreshCallback mUserCallback;
@@ -1562,27 +1561,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     public NfcAdapter getNfcAdapter() {
         if (mNfcAdapter == null)
         {
-            Log.w(TAG, "FML - nfcadapter was null, so getting a new one.");
             try
             {
                 mNfcAdapter = NfcAdapter.getDefaultAdapter(mContext);
-            }
-            catch (UnsupportedOperationException e)
-            {
-                Log.e(TAG,"Exception while getting nfc adapter: "+e);
-            }
-            if (mNfcAdapter == null)
-            {
-                Log.w(TAG, "FML - nfcadapter was null after non-deprecated get.");
-                try
-                {
-                    mNfcAdapter = NfcAdapter.getDefaultAdapter();
-                }
-                catch (UnsupportedOperationException e)
-                {
-                    Log.e(TAG,"Exception while getting nfc adapter with deprecated backup method: "+e);
-                }
-            }
+            } finally { }
         }
         return mNfcAdapter;
     }
