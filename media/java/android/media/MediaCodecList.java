@@ -45,7 +45,7 @@ final public class MediaCodecList {
     /* package private */ static native final String[] getSupportedTypes(int index);
 
     /* package private */ static native final MediaCodecInfo.CodecCapabilities
-        getCodecCapabilities(int index, String type);
+        getCodecCapabilities(int index, String type) throws IllegalArgumentException;
 
     /* package private */ static native final int findCodecByName(String codec);
 

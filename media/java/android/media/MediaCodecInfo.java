@@ -262,13 +262,13 @@ public final class MediaCodecInfo {
     };
 
     /**
-     * Enumerates the capabilities of the codec component. Since a single
-     * component can support data of a variety of types, the type has to be
-     * specified to yield a meaningful result.
-     * @param type The MIME type to query
+     * Gets CodecCapabilities that corresponded to the specified the media type.
+     * @param type The media type supported by the codec.
+     * @return CodecCapabilities Object correspond to the media type, or null if there is no valid CodecCapabilities with the given media type.
+     * @throws IllegalArgumentException if argument is null.
      */
     public final CodecCapabilities getCapabilitiesForType(
-            String type) {
+            String type) throws IllegalArgumentException{
         return MediaCodecList.getCodecCapabilities(mIndex, type);
     }
 }

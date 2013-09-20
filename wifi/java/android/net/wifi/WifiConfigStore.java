@@ -125,7 +125,8 @@ class WifiConfigStore {
             new HashMap<Integer, Integer>();
 
     /* Tracks the highest priority of configured networks */
-    private int mLastPriority = -1;
+    private int mLastOpenPriority = -1;
+    private int mLastSecurePriority = -1;
 
     private static final String ipConfigFile = Environment.getDataDirectory() +
             "/misc/wifi/ipconfig.txt";
@@ -197,7 +198,22 @@ class WifiConfigStore {
         }
     }
 
-
+    /**
+     * get the auth type of a configured wifi network.
+     *
+     * @param conf the configuration of the wifi network
+     * @return the return value of getAuthType of WifiConfiguration, or
+     * the value not KeyMgmt.NONE if allowedKeyManagement.cardinality() > 1
+     */
+    private int getAuthType(WifiConfiguration conf) {
+        if (conf.allowedKeyManagement.cardinality() > 1) {
+            //will throw exception in conf.getAuthType(),
+            //so just return a value not KeyMgmt.NONE
+            return KeyMgmt.NONE + 1;
+        } else {
+            return conf.getAuthType();
+        }
+    }
     /**
      * Selects the specified network for connection. This involves
      * updating the priority of all the networks and enabling the given
@@ -213,23 +229,46 @@ class WifiConfigStore {
     boolean selectNetwork(int netId) {
         if (netId == INVALID_NETWORK_ID) return false;
 
-        // Reset the priority of each network at start or if it goes too high.
-        if (mLastPriority == -1 || mLastPriority > 1000000) {
-            for(WifiConfiguration config : mConfiguredNetworks.values()) {
-                if (config.networkId != INVALID_NETWORK_ID) {
-                    config.priority = 0;
-                    addOrUpdateNetworkNative(config);
+        WifiConfiguration configToSave = new WifiConfiguration();
+        configToSave.networkId = netId;
+
+        WifiConfiguration configSelected = mConfiguredNetworks.get(netId);
+        int auth = getAuthType(configSelected);
+        if (auth == KeyMgmt.NONE) {
+            // Reset the priority of each unsecured network at start or if it
+            // goes too high.
+            if (mLastOpenPriority == -1 || mLastOpenPriority > 499999) {
+                for (WifiConfiguration config : mConfiguredNetworks.values()) {
+                    if ((config.networkId != INVALID_NETWORK_ID) &&
+                        (getAuthType(config) == KeyMgmt.NONE)) {
+                        config.priority = 0;
+                        addOrUpdateNetworkNative(config);
+                    }
                 }
+                mLastOpenPriority = 0;
             }
-            mLastPriority = 0;
+            // Set to the highest priority among unsecured networks and
+            // save the configuration.
+            configToSave.priority = ++mLastOpenPriority;
+        } else {
+            // Reset the priority of each secure network at start or if it
+            // goes too high.
+            if (mLastSecurePriority == -1 || mLastSecurePriority > 1000000) {
+                for(WifiConfiguration config : mConfiguredNetworks.values()) {
+                    if ((config.networkId != INVALID_NETWORK_ID) &&
+                        (getAuthType(config) != KeyMgmt.NONE)) {
+                        config.priority = 500000;
+                        addOrUpdateNetworkNative(config);
+                    }
+                }
+                mLastSecurePriority = 500000;
+            }
+            // Set to the highest priority among secure networks and
+            // save the configuration.
+            configToSave.priority = ++mLastSecurePriority;
         }
 
-        // Set to the highest priority and save the configuration.
-        WifiConfiguration config = new WifiConfiguration();
-        config.networkId = netId;
-        config.priority = ++mLastPriority;
-
-        addOrUpdateNetworkNative(config);
+        addOrUpdateNetworkNative(configToSave);
         mWifiNative.saveConfig();
 
         /* Enable the given network while disabling all other networks */
@@ -601,7 +640,8 @@ class WifiConfigStore {
 
     void loadConfiguredNetworks() {
         String listStr = mWifiNative.listNetworks();
-        mLastPriority = 0;
+        mLastOpenPriority = 0;
+        mLastSecurePriority = 500000;
 
         mConfiguredNetworks.clear();
         mNetworkIds.clear();
@@ -631,8 +671,15 @@ class WifiConfigStore {
                 config.status = WifiConfiguration.Status.ENABLED;
             }
             readNetworkVariables(config);
-            if (config.priority > mLastPriority) {
-                mLastPriority = config.priority;
+            int auth = getAuthType(config);
+            if (auth == KeyMgmt.NONE) {
+                if (config.priority > mLastOpenPriority) {
+                    mLastOpenPriority = config.priority;
+                }
+            } else {
+                if (config.priority > mLastSecurePriority) {
+                    mLastSecurePriority = config.priority;
+                }
             }
             config.ipAssignment = IpAssignment.DHCP;
             config.proxySettings = ProxySettings.NONE;
@@ -1587,7 +1634,8 @@ class WifiConfigStore {
 
     void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
         pw.println("WifiConfigStore");
-        pw.println("mLastPriority " + mLastPriority);
+        pw.println("mLastOpenPriority " + mLastOpenPriority);
+        pw.println("mLastSecurePriority " + mLastSecurePriority);
         pw.println("Configured networks");
         for (WifiConfiguration conf : getConfiguredNetworks()) {
             pw.println(conf);

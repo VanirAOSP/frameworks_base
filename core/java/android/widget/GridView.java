@@ -344,7 +344,7 @@ public class GridView extends AbsListView {
 
             nextLeft += (isLayoutRtl ? -1 : +1) * columnWidth;
             if (pos < last - 1) {
-                nextLeft += horizontalSpacing;
+                nextLeft += (isLayoutRtl ? -1 : +1) * horizontalSpacing;
             }
 
             if (selected && (hasFocus || inClick)) {

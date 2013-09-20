@@ -1179,6 +1179,17 @@ public class NetworkController extends BroadcastReceiver {
 
             combinedLabel = mContext.getString(R.string.status_bar_settings_signal_meter_disconnected);
             // On devices without mobile radios, we want to show the wifi icon
+
+            // Remove airplane icon if not in airplane mode.
+            if ((R.drawable.stat_sys_signal_flightmode == mDataSignalIconId)
+                && !mAirplaneMode) {
+                mDataSignalIconId = R.drawable.stat_sys_signal_null;
+            }
+            if ((R.drawable.stat_sys_signal_flightmode == mPhoneSignalIconId)
+                && !mAirplaneMode) {
+                mPhoneSignalIconId = R.drawable.stat_sys_signal_null;
+            }
+
             combinedSignalIconId =
                 mHasMobileDataFeature ? mDataSignalIconId : mWifiIconId;
             mContentDescriptionCombinedSignal = mHasMobileDataFeature

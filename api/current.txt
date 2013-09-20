@@ -11666,7 +11666,7 @@ package android.media {
   }
 
   public final class MediaCodecInfo {
-    method public final android.media.MediaCodecInfo.CodecCapabilities getCapabilitiesForType(java.lang.String);
+    method public final android.media.MediaCodecInfo.CodecCapabilities getCapabilitiesForType(java.lang.String) throws java.lang.IllegalArgumentException;
     method public final java.lang.String getName();
     method public final java.lang.String[] getSupportedTypes();
     method public final boolean isEncoder();

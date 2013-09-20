@@ -43,6 +43,7 @@ bool YuvToJpegEncoder::encode(SkWStream* stream, void* inYuv, int width,
     compress(&cinfo, (uint8_t*) inYuv, offsets);
 
     jpeg_finish_compress(&cinfo);
+    jpeg_destroy_compress(&cinfo);
 
     return true;
 }
@@ -83,9 +84,24 @@ void Yuv420SpToJpegEncoder::compress(jpeg_compress_struct* cinfo,
     int height = cinfo->image_height;
     uint8_t* yPlanar = yuv + offsets[0];
     uint8_t* vuPlanar = yuv + offsets[1]; //width * height;
-    uint8_t* uRows = new uint8_t [8 * (width >> 1)];
-    uint8_t* vRows = new uint8_t [8 * (width >> 1)];
+    uint8_t* uRows = new uint8_t [8 * (((width + 15) & ~15) >> 1)];
+    uint8_t* vRows = new uint8_t [8 * (((width + 15) & ~15) >> 1)];
+    uint8_t* yRows = NULL;
+    int paddingLines = 0;
+    int paddingPixels = 0;
 
+    // jpeg_write_raw_data require 16 scanlines at least. Eevey scanline should
+    // contain 16 pixels at least. If it has more than 15 pixels in width, we can
+    // use the first row for padding. Otherwise, we have to allocate buffer and
+    // copy the last lines out
+    if (fStrides[0] < 16) {
+        // If lines * fStrides[0] <= 15, we should copy these Y lines out.
+        paddingLines = 15 / fStrides[0];
+        paddingPixels = paddingLines * fStrides[0] + (16 - fStrides[0]);
+        yRows = new uint8_t [paddingPixels];
+        memcpy(&yRows[0], yPlanar + (height - paddingLines) * fStrides[0],
+                paddingLines * fStrides[0]);
+    }
 
     // process 16 lines of Y and 8 lines of U/V each time.
     while (cinfo->next_scanline < cinfo->image_height) {
@@ -94,8 +110,21 @@ void Yuv420SpToJpegEncoder::compress(jpeg_compress_struct* cinfo,
 
         // Jpeg library ignores the rows whose indices are greater than height.
         for (int i = 0; i < 16; i++) {
-            // y row
-            y[i] = yPlanar + (cinfo->next_scanline + i) * fStrides[0];
+            if (fStrides[0] >= 16) {
+                // y row. Use the first line for padding.
+                if ((height & 0xf) != 0 && (cinfo->next_scanline + i) >= height) {
+                    y[i] = yPlanar;
+                } else {
+                    y[i] = yPlanar + (cinfo->next_scanline + i) * fStrides[0];
+                }
+            } else if ((cinfo->next_scanline + i + paddingLines) < height) {
+                y[i] = yPlanar + (cinfo->next_scanline + i) * fStrides[0];
+            } else if ((cinfo->next_scanline + i) < height) {
+                int paddingIdx = (cinfo->next_scanline + i) - (height - paddingLines);
+                y[i] = &yRows[paddingIdx * fStrides[0]];
+            } else {//Padding Y rows.
+                y[i] = &yRows[0];
+            }
 
             // construct u row and v row
             if ((i & 1) == 0) {
@@ -107,6 +136,7 @@ void Yuv420SpToJpegEncoder::compress(jpeg_compress_struct* cinfo,
           }
         jpeg_write_raw_data(cinfo, planes, 16);
     }
+    if (fStrides[0] < 16) delete [] yRows;
     delete [] uRows;
     delete [] vRows;
 
@@ -114,9 +144,12 @@ void Yuv420SpToJpegEncoder::compress(jpeg_compress_struct* cinfo,
 
 void Yuv420SpToJpegEncoder::deinterleave(uint8_t* vuPlanar, uint8_t* uRows,
         uint8_t* vRows, int rowIndex, int width, int height) {
-    int numRows = (height - rowIndex) / 2;
-    if (numRows > 8) numRows = 8;
-    for (int row = 0; row < numRows; ++row) {
+    int lines = 16;
+    //In case there isn't enough lines to process
+    if ((rowIndex + lines) > height) lines = (height - rowIndex);
+
+    for (int row = 0; row < (lines >> 1); ++row) {
+
         int offset = ((rowIndex >> 1) + row) * fStrides[1];
         uint8_t* vu = vuPlanar + offset;
         for (int i = 0; i < (width >> 1); ++i) {

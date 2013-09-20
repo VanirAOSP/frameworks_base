@@ -3680,6 +3680,10 @@ final class ActivityStack {
                 mService.mCancelledThumbnails.clear();
             }
 
+        }
+
+        mService.mBootingCondition.block();
+        synchronized (mService) {
             if (mMainStack) {
                 booting = mService.mBooting;
                 mService.mBooting = false;

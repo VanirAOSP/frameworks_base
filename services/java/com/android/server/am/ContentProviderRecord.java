@@ -235,6 +235,21 @@ class ContentProviderRecord {
         }
     }
 
+    /**
+     * Force removes handles to external process, if any, should be used
+     * only when the process hosting this content provider is terminated.
+     */
+    public void removeExternalProcessHandles() {
+        synchronized (service) {
+            if (externalProcessTokenToHandle != null) {
+                Iterator iterator = externalProcessTokenToHandle.keySet().iterator();
+                while (iterator.hasNext()) {
+                     removeExternalProcessHandleInternalLocked((IBinder)iterator.next());
+                }
+            }
+        }
+    }
+
     // This class represents a handle from an external process to a provider.
     private class ExternalProcessHandle implements DeathRecipient {
         private static final String LOG_TAG = "ExternalProcessHanldle";

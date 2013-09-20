@@ -393,10 +393,12 @@ public class Vpn extends BaseNetworkStateTracker {
         }
 
         try {
-            // System dialogs are also allowed to control VPN.
+            // System VPN dialogs are also allowed to control VPN.
             PackageManager pm = mContext.getPackageManager();
             ApplicationInfo app = pm.getApplicationInfo(VpnConfig.DIALOGS_PACKAGE, 0);
-            if (Binder.getCallingUid() == app.uid) {
+            // The System VPN dialogs better be on the system parition.
+            if ((app.flags & ApplicationInfo.FLAG_SYSTEM) != 0 &&
+                Binder.getCallingUid() == app.uid) {
                 return;
             }
         } catch (Exception e) {

@@ -137,6 +137,12 @@ public final class GpsStatus {
      * Used internally within {@link LocationManager} to copy GPS status
      * data from the Location Manager Service to its cached GpsStatus instance.
      * Is synchronized to ensure that GPS status updates are atomic.
+     * The GpsSvStatus structure that is communicated through the HAL via sv_status_cb function from GpsCallbacks must contain the following information :
+     * num_svs must contain the total number of visible satellites (GPS + GLONASS)
+     * sv_list[GPS_MAX_SVS] must contain all the visible satellites (GPS + GLONASS)
+     * GLONASS PRNs must be within their allocated range (i.e. starting from 64) – And GPS PRNs in theirs (1 – 32)
+     * GPS_MAX_SVS allows for up to 32 visible satellites at the same time. This is enough for GPS + GLONASS.
+     * ephemeris_mask, almanac_mask and used_in_fix_mask must be filled in the same order as the satellites in sv_list, they must not be based on the PRN as a bit index in the bitfields.
      */
     synchronized void setStatus(int svCount, int[] prns, float[] snrs,
             float[] elevations, float[] azimuths, int ephemerisMask,
@@ -149,7 +155,7 @@ public final class GpsStatus {
         
         for (i = 0; i < svCount; i++) {
             int prn = prns[i] - 1;
-            int prnShift = (1 << prn);
+            int prnShift = (1 << i);
             if (prn >= 0 && prn < mSatellites.length) {
                 GpsSatellite satellite = mSatellites[prn];
     
