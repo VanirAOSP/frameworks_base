@@ -107,6 +107,7 @@ import com.android.internal.util.Objects;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
@@ -1119,7 +1120,7 @@ public final class ActivityThread {
 
         @Override
         public void dumpDbInfo(FileDescriptor fd, String[] args) {
-            PrintWriter pw = new PrintWriter(new FileOutputStream(fd));
+            PrintWriter pw = new PrintWriter(new BufferedOutputStream(new FileOutputStream(fd)));
             PrintWriterPrinter printer = new PrintWriterPrinter(pw);
             SQLiteDebug.dump(printer, args);
             pw.flush();

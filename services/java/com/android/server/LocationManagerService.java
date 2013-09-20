@@ -265,7 +265,10 @@ public class LocationManagerService extends ILocationManager.Stub {
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 if (Intent.ACTION_USER_SWITCHED.equals(action)) {
-                    switchUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE, 0));
+                    int newUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, 0);
+                    if (mCurrentUserId != newUserId) {
+                        switchUser(newUserId);
+                    }
                 }
             }
         }, UserHandle.ALL, intentFilter, null, mLocationHandler);

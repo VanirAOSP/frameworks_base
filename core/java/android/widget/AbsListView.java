@@ -3510,7 +3510,8 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                                     mPendingCheckForTap : mPendingCheckForLongPress);
                         }
                         mLayoutMode = LAYOUT_NORMAL;
-                        if (!mDataChanged && mAdapter.isEnabled(motionPosition)) {
+                        if (!mDataChanged && (mAdapter.areAllItemsEnabled() ||
+                                  mAdapter.isEnabled(motionPosition))) {
                             mTouchMode = TOUCH_MODE_TAP;
                             setSelectedPositionInt(mMotionPosition);
                             layoutChildren();
@@ -3545,7 +3546,8 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                             updateSelectorState();
                         }
                         return true;
-                    } else if (!mDataChanged && mAdapter.isEnabled(motionPosition)) {
+                    } else if (!mDataChanged && (mAdapter.areAllItemsEnabled() ||
+                                     mAdapter.isEnabled(motionPosition))) {
                         performClick.run();
                     }
                 }
@@ -3978,7 +3980,8 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
 
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
-            if (adapter.isEnabled(firstPosition + i)) {
+            if (adapter.areAllItemsEnabled() ||
+                adapter.isEnabled(firstPosition + i)) {
                 views.add(child);
             }
             child.addTouchables(views);

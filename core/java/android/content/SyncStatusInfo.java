@@ -148,7 +148,13 @@ public class SyncStatusInfo implements Parcelable {
         if (periodicSyncTimes == null || periodicSyncTimes.size() < (index + 1)) {
             return 0;
         }
-        return periodicSyncTimes.get(index);
+        long mIndex = 0;
+        try{
+        	mIndex = periodicSyncTimes.get(index);
+        }catch(NullPointerException e){
+        	Log.e(TAG, "Exception is "+e);
+        }
+        return mIndex;
     }
 
     public void removePeriodicSyncTime(int index) {

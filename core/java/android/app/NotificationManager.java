@@ -122,30 +122,21 @@ public class NotificationManager
      */
     public void notify(String tag, int id, Notification notification)
     {
-        int[] idOut = new int[1];
-        INotificationManager service = getService();
-        String pkg = mContext.getPackageName();
-        if (notification.sound != null) {
-            notification.sound = notification.sound.getCanonicalUri();
-            if (StrictMode.vmFileUriExposureEnabled()) {
-                notification.sound.checkFileUriExposed("Notification.sound");
-            }
-        }
-        if (localLOGV) Log.v(TAG, pkg + ": notify(" + id + ", " + notification + ")");
-        try {
-            service.enqueueNotificationWithTag(pkg, mContext.getBasePackageName(), tag, id,
-                    notification, idOut, UserHandle.myUserId());
-            if (id != idOut[0]) {
-                Log.w(TAG, "notify: id corrupted: sent " + id + ", got back " + idOut[0]);
-            }
-        } catch (RemoteException e) {
-        }
+        notifyAsUser(tag, id, notification, UserHandle.myUserId());
     }
 
     /**
      * @hide
      */
     public void notifyAsUser(String tag, int id, Notification notification, UserHandle user)
+    {
+        notifyAsUser(tag, id, notification, user.getIdentifier());
+    }
+
+    /**
+     * @hide
+     */
+    public void notifyAsUser(String tag, int id, Notification notification, int userId)
     {
         int[] idOut = new int[1];
         INotificationManager service = getService();
@@ -159,7 +150,7 @@ public class NotificationManager
         if (localLOGV) Log.v(TAG, pkg + ": notify(" + id + ", " + notification + ")");
         try {
             service.enqueueNotificationWithTag(pkg, mContext.getBasePackageName(), tag, id,
-                    notification, idOut, user.getIdentifier());
+                    notification, idOut, userId);
             if (id != idOut[0]) {
                 Log.w(TAG, "notify: id corrupted: sent " + id + ", got back " + idOut[0]);
             }
@@ -184,13 +175,7 @@ public class NotificationManager
      */
     public void cancel(String tag, int id)
     {
-        INotificationManager service = getService();
-        String pkg = mContext.getPackageName();
-        if (localLOGV) Log.v(TAG, pkg + ": cancel(" + id + ")");
-        try {
-            service.cancelNotificationWithTag(pkg, tag, id, UserHandle.myUserId());
-        } catch (RemoteException e) {
-        }
+        cancelAsUser(tag, id, UserHandle.myUserId());
     }
 
     /**
@@ -198,14 +183,23 @@ public class NotificationManager
      */
     public void cancelAsUser(String tag, int id, UserHandle user)
     {
+        cancelAsUser(tag, id, user.getIdentifier());
+    }
+
+    /**
+     * @hide
+     */
+    public void cancelAsUser(String tag, int id, int userId)
+    {
         INotificationManager service = getService();
         String pkg = mContext.getPackageName();
         if (localLOGV) Log.v(TAG, pkg + ": cancel(" + id + ")");
         try {
-            service.cancelNotificationWithTag(pkg, tag, id, user.getIdentifier());
+            service.cancelNotificationWithTag(pkg, tag, id, userId);
         } catch (RemoteException e) {
         }
     }
+
 
     /**
      * Cancel all previously shown notifications. See {@link #cancel} for the

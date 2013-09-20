@@ -484,7 +484,7 @@ public class ScrollingTabContainerView extends HorizontalScrollView
                     mTextView.setText(null);
                 }
 
-                if (mIconView != null) {
+                if (mIconView != null && mIconView.getVisibility() == View.VISIBLE) {
                     mIconView.setContentDescription(tab.getContentDescription());
                 }
 

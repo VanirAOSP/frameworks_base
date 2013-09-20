@@ -276,10 +276,13 @@ public class AudioRecord
 
         //--------------
         // channel config
+        if (channelConfig == AudioFormat.CHANNEL_IN_DEFAULT) {
+            channelConfig = AudioFormat.CHANNEL_IN_DEFAULT_VALUE;
+        }
+
         mChannelConfiguration = channelConfig;
 
         switch (channelConfig) {
-        case AudioFormat.CHANNEL_IN_DEFAULT: // AudioFormat.CHANNEL_CONFIGURATION_DEFAULT
         case AudioFormat.CHANNEL_IN_MONO:
         case AudioFormat.CHANNEL_CONFIGURATION_MONO:
             mChannelCount = 1;
@@ -303,10 +306,11 @@ public class AudioRecord
 
         //--------------
         // audio format
+        if (audioFormat == AudioFormat.ENCODING_DEFAULT) {
+            audioFormat = AudioFormat.ENCODING_DEFAULT_VALUE;
+        }
+
         switch (audioFormat) {
-        case AudioFormat.ENCODING_DEFAULT:
-            mAudioFormat = AudioFormat.ENCODING_PCM_16BIT;
-            break;
         case AudioFormat.ENCODING_PCM_16BIT:
         case AudioFormat.ENCODING_PCM_8BIT:
         case AudioFormat.ENCODING_AMRNB:
@@ -472,8 +476,10 @@ public class AudioRecord
      */
     static public int getMinBufferSize(int sampleRateInHz, int channelConfig, int audioFormat) {
         int channelCount = 0;
+        if (channelConfig == AudioFormat.CHANNEL_IN_DEFAULT) {
+            channelConfig = AudioFormat.CHANNEL_IN_DEFAULT_VALUE;
+        }
         switch (channelConfig) {
-        case AudioFormat.CHANNEL_IN_DEFAULT: // AudioFormat.CHANNEL_CONFIGURATION_DEFAULT
         case AudioFormat.CHANNEL_IN_MONO:
         case AudioFormat.CHANNEL_CONFIGURATION_MONO:
             channelCount = 1;
@@ -489,6 +495,9 @@ public class AudioRecord
             return AudioRecord.ERROR_BAD_VALUE;
         }
 
+        if (audioFormat == AudioFormat.ENCODING_DEFAULT) {
+            audioFormat = AudioFormat.ENCODING_DEFAULT_VALUE;
+        }
         // PCM_8BIT is not supported at the moment
         if (audioFormat != AudioFormat.ENCODING_PCM_16BIT
             && audioFormat != AudioFormat.ENCODING_AMRNB

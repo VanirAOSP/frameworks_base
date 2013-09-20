@@ -120,10 +120,12 @@ public class ProviderMap {
     }
 
     void removeProviderByName(String name, int userId) {
+        ContentProviderRecord removedRecord = null;
+
         if (mSingletonByName.containsKey(name)) {
             if (DBG)
                 Slog.i(TAG, "Removing from globalByName name=" + name);
-            mSingletonByName.remove(name);
+            removedRecord = mSingletonByName.remove(name);
         } else {
             if (userId < 0) throw new IllegalArgumentException("Bad user " + userId);
             if (DBG)
@@ -131,18 +133,25 @@ public class ProviderMap {
                         "Removing from providersByName name=" + name + " user=" + userId);
             HashMap<String, ContentProviderRecord> map = getProvidersByName(userId);
             // map returned by getProvidersByName wouldn't be null
-            map.remove(name);
+            removedRecord = map.remove(name);
             if (map.size() == 0) {
                 mProvidersByNamePerUser.remove(userId);
             }
         }
+
+        // Clean up references to external process.
+        if (removedRecord != null) {
+            removedRecord.removeExternalProcessHandles();
+        }
     }
 
     void removeProviderByClass(ComponentName name, int userId) {
+        ContentProviderRecord removedRecord = null;
+
         if (mSingletonByClass.containsKey(name)) {
             if (DBG)
                 Slog.i(TAG, "Removing from globalByClass name=" + name);
-            mSingletonByClass.remove(name);
+            removedRecord = mSingletonByClass.remove(name);
         } else {
             if (userId < 0) throw new IllegalArgumentException("Bad user " + userId);
             if (DBG)
@@ -150,10 +159,15 @@ public class ProviderMap {
                         "Removing from providersByClass name=" + name + " user=" + userId);
             HashMap<ComponentName, ContentProviderRecord> map = getProvidersByClass(userId);
             // map returned by getProvidersByClass wouldn't be null
-            map.remove(name);
+            removedRecord = map.remove(name);
             if (map.size() == 0) {
                 mProvidersByClassPerUser.remove(userId);
             }
+        }
+
+        // Clean up references to external process.
+        if (removedRecord != null) {
+            removedRecord.removeExternalProcessHandles();
         }
     }
 

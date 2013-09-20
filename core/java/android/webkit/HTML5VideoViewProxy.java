@@ -188,6 +188,15 @@ class HTML5VideoViewProxy extends Handler
                                 || playerState == HTML5VideoView.STATE_PLAYING;
                     }
                 }
+                if (canSkipPrepare) {
+                    // since nuplayer can not support setting display after player starts,for
+                    // HLS and RTSP which uses nuplayer,it should not skip prepare.
+                    if (((url.startsWith("https://") || url.startsWith("http://"))
+                         && url.endsWith(".m3u8")) || url.startsWith("rtsp://")) {
+                         canSkipPrepare = false;
+                         mHTML5VideoView.reset();
+                    }
+                }
                 mHTML5VideoView = new HTML5VideoFullScreen(proxy.getContext(),
                         layerId, savePosition, canSkipPrepare);
                 mHTML5VideoView.setStartWhenPrepared(forceStart);

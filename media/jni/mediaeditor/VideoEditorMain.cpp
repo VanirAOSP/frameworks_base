@@ -1721,7 +1721,7 @@ videoEditor_populateSettings(
 
                  aFramingCtx->width = pContext->pEditSettings->Effects[j].xVSS.pFramingBuffer->u_width;
                  aFramingCtx->height = pContext->pEditSettings->Effects[j].xVSS.pFramingBuffer->u_height;
-
+                aFramingCtx->exportmode = 0;
                 result = M4xVSS_internalConvertARGB888toYUV420_FrammingEffect(pContext->engineContext,
                     &(pContext->pEditSettings->Effects[j]),aFramingCtx,
                 pContext->pEditSettings->Effects[j].xVSS.framingScaledSize);
