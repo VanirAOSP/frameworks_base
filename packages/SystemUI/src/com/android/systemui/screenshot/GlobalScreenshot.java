@@ -192,64 +192,74 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_DISPLAY);
 
         Context context = params[0].context;
-        Bitmap image = params[0].image;
+        Bitmap image = null;
         Resources r = context.getResources();
         OutputStream outStream = null;
-        try {
-            // Create screenshot directory if it doesn't exist
-            mScreenshotDir.mkdirs();
 
-            // Save the screenshot to the MediaStore
-            ContentValues values = new ContentValues();
-            ContentResolver resolver = context.getContentResolver();
-            values.put(MediaStore.Images.ImageColumns.DATA, mImageFilePath);
-            values.put(MediaStore.Images.ImageColumns.TITLE, mImageFileName);
-            values.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, mImageFileName);
-            values.put(MediaStore.Images.ImageColumns.DATE_TAKEN, mImageTime);
-            values.put(MediaStore.Images.ImageColumns.DATE_ADDED, mImageTime);
-            values.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, mImageTime);
-            values.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png");
-            values.put(MediaStore.Images.ImageColumns.WIDTH, mImageWidth);
-            values.put(MediaStore.Images.ImageColumns.HEIGHT, mImageHeight);
-            Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        // Create screenshot directory if it doesn't exist
+        mScreenshotDir.mkdirs();
 
-            String subjectDate = new SimpleDateFormat("hh:mma, MMM dd, yyyy")
-                .format(new Date(mImageTime));
-            String subject = String.format(SCREENSHOT_SHARE_SUBJECT_TEMPLATE, subjectDate);
-            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-            sharingIntent.setType("image/png");
-            sharingIntent.putExtra(Intent.EXTRA_STREAM, uri);
-            sharingIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        // Save the screenshot to the MediaStore
+        ContentValues values = new ContentValues();
+        ContentResolver resolver = context.getContentResolver();
+        values.put(MediaStore.Images.ImageColumns.DATA, mImageFilePath);
+        values.put(MediaStore.Images.ImageColumns.TITLE, mImageFileName);
+        values.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, mImageFileName);
+        values.put(MediaStore.Images.ImageColumns.DATE_TAKEN, mImageTime);
+        values.put(MediaStore.Images.ImageColumns.DATE_ADDED, mImageTime);
+        values.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, mImageTime);
+        values.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png");
+        values.put(MediaStore.Images.ImageColumns.WIDTH, mImageWidth);
+        values.put(MediaStore.Images.ImageColumns.HEIGHT, mImageHeight);
+        Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
-            Intent chooserIntent = Intent.createChooser(sharingIntent, null);
-            chooserIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK 
-                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+        String subjectDate = new SimpleDateFormat("hh:mma, MMM dd, yyyy")
+            .format(new Date(mImageTime));
+        String subject = String.format(SCREENSHOT_SHARE_SUBJECT_TEMPLATE, subjectDate);
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("image/png");
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
 
-            mNotificationBuilder.addAction(R.drawable.ic_menu_share,
-                     r.getString(com.android.internal.R.string.share),
-                     PendingIntent.getActivity(context, 0, chooserIntent, 
-                             PendingIntent.FLAG_CANCEL_CURRENT));
+        Intent chooserIntent = Intent.createChooser(sharingIntent, null);
+        chooserIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK 
+                | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            Intent trashIntent = new Intent();
-            trashIntent.setClass(context, TrashScreenshot.class);
-            trashIntent.putExtra(TrashScreenshot.SCREENSHOT_URI, uri.toString());
-
-            mNotificationBuilder.addAction(R.drawable.ic_menu_trash,
-                     r.getString(com.android.internal.R.string.trash),
-                     PendingIntent.getBroadcast(context, 0, trashIntent,
+        mNotificationBuilder.addAction(R.drawable.ic_menu_share,
+                r.getString(com.android.internal.R.string.share),
+                PendingIntent.getActivity(context, 0, chooserIntent, 
                         PendingIntent.FLAG_CANCEL_CURRENT));
 
+        Intent trashIntent = new Intent();
+        trashIntent.setClass(context, TrashScreenshot.class);
+        trashIntent.putExtra(TrashScreenshot.SCREENSHOT_URI, uri.toString());
+
+        mNotificationBuilder.addAction(R.drawable.ic_menu_trash,
+                r.getString(com.android.internal.R.string.trash),
+                PendingIntent.getBroadcast(context, 0, trashIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT));
+
+        try {
+            image = params[0].image;
             outStream = resolver.openOutputStream(uri);
-            image.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+            boolean success = image.compress(Bitmap.CompressFormat.PNG, 100, outStream);
 
-            // update file size in the database
-            values.clear();
-            values.put(MediaStore.Images.ImageColumns.SIZE, new File(mImageFilePath).length());
-            resolver.update(uri, values, null, null);
+            if (!success) {
+                resolver.delete(uri, null, null);
+                File file = new File(mImageFilePath);
+                file.delete();
+                params[0].clearImage();
+                params[0].result = 1;
+            } else {
+                // update file size in the database
+                values.clear();
+                values.put(MediaStore.Images.ImageColumns.SIZE, new File(mImageFilePath).length());
+                resolver.update(uri, values, null, null);
 
-            params[0].imageUri = uri;
-            params[0].image = null;
-            params[0].result = 0;
+                params[0].imageUri = uri;
+                params[0].image = null;
+                params[0].result = 0;
+            } 
         } catch (Exception e) {
             // IOException/UnsupportedOperationException may be thrown if external storage is not
             // mounted
@@ -263,11 +273,10 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
                 } catch (IOException ioe) {
                     // let it go
                 }
+                if (image != null) {
+                   image.recycle();
+                }
             }
-        }
-        // Recycle the bitmap data
-        if (image != null) {
-            image.recycle();
         }
 
         return params[0];
