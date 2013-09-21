@@ -379,8 +379,7 @@ public class ActiveDisplayView extends FrameLayout {
         //mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
 
         mPM = IPowerManager.Stub.asInterface(ServiceManager.getService(Context.POWER_SERVICE));
-        mNM = INotificationManager.Stub.asInterface(
-                ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+        mNM = INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE));
         mNotificationListener = new INotificationListenerWrapper();
 
         mIconSize = getResources().getDimensionPixelSize(R.dimen.overflow_icon_size);
@@ -755,37 +754,45 @@ public class ActiveDisplayView extends FrameLayout {
         mOverflowNotifications.post(new Runnable() {
             @Override
             public void run() {
+                StatusBarNotification[] sbns;
                 try {
                     // check if other clearable notifications exist and if so display the next one
-                    StatusBarNotification[] sbns = mNM
-                            .getActiveNotificationsFromListener(mNotificationListener);
-                    mOverflowNotifications.removeAllViews();
-                    for (int i = sbns.length - 1; i >= 0; i--) {
-                        if (isValidNotification(sbns[i])
-                                && mOverflowNotifications.getChildCount() < MAX_OVERFLOW_ICONS) {
-                            ImageView iv = new ImageView(mContext);
-                            if (mOverflowNotifications.getChildCount() < (MAX_OVERFLOW_ICONS - 1)) {
-                                Context pkgContext = mContext.createPackageContext(
-                                        sbns[i].getPackageName(), Context.CONTEXT_RESTRICTED);
-                                iv.setImageDrawable(pkgContext.getResources()
-                                        .getDrawable(sbns[i].getNotification().icon));
-                                iv.setTag(sbns[i]);
-                                if (sbns[i].getPackageName().equals(mNotification.getPackageName())
-                                        && sbns[i].getId() == mNotification.getId()) {
-                                    iv.setBackgroundResource(R.drawable.ad_active_notification_background);
-                                } else {
-                                    iv.setBackgroundResource(0);
-                                }
-                            } else {
-                                iv.setImageResource(R.drawable.ic_ad_morenotifications);
+                    sbns = mNM.getActiveNotificationsFromListener(mNotificationListener);
+                } catch (RemoteException re) {
+                    Log.e(TAG, re);
+                    return;
+                }
+                mOverflowNotifications.removeAllViews();
+                for (int i = sbns.length - 1; i >= 0; i--) {
+                    if (isValidNotification(sbns[i])
+                            && mOverflowNotifications.getChildCount() < MAX_OVERFLOW_ICONS) {
+                        ImageView iv = new ImageView(mContext);
+                        if (mOverflowNotifications.getChildCount() < (MAX_OVERFLOW_ICONS - 1)) {
+                            Context pkgContext = null;
+                            try {
+                                pkgContext = mContext.createPackageContext(sbns[i].getPackageName(), Context.CONTEXT_RESTRICTED);
+                            } catch (NameNotFoundException nnfe) {
+                                Log.e(TAG, nnfe);
+                                continue;
                             }
+                            iv.setImageDrawable(pkgContext.getResources().getDrawable(sbns[i].getNotification().icon));
+                            iv.setTag(sbns[i]);
+                            if (sbns[i].getPackageName().equals(mNotification.getPackageName())
+                                    && sbns[i].getId() == mNotification.getId()) {
+                                iv.setBackgroundResource(R.drawable.ad_active_notification_background);
+                            } else {
+                                Log.w(TAG, "Intentionally setting imageview background resource to 0");
+                                iv.setBackgroundResource(0);
+                            }
+                        } else {
+                            iv.setImageResource(R.drawable.ic_ad_morenotifications);
+                        }
+                        if (iv != null) {
                             iv.setPadding(mIconPadding, mIconPadding, mIconPadding, mIconPadding);
                             iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
                             mOverflowNotifications.addView(iv, mOverflowLayoutParams);
                         }
                     }
-                } catch (RemoteException re) {
-                } catch (NameNotFoundException nnfe) {
                 }
             }
         });
@@ -847,7 +854,7 @@ public class ActiveDisplayView extends FrameLayout {
      * @return True if it should be used, false otherwise.
      */
     private boolean isValidNotification(StatusBarNotification sbn) {
-        return (sbn.isClearable() || mShowAllNotifications);
+        return (sbns[i].getNotification().icon != 0 && (sbn.isClearable() || mShowAllNotifications));
     }
 
     /**
