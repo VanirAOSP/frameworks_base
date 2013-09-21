@@ -379,8 +379,7 @@ public class ActiveDisplayView extends FrameLayout {
         //mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
 
         mPM = IPowerManager.Stub.asInterface(ServiceManager.getService(Context.POWER_SERVICE));
-        mNM = INotificationManager.Stub.asInterface(
-                ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+        mNM = INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE));
         mNotificationListener = new INotificationListenerWrapper();
 
         mIconSize = getResources().getDimensionPixelSize(R.dimen.overflow_icon_size);
@@ -482,30 +481,34 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     public void updateResources() {
-        ArrayList<TargetDrawable> storedDraw = new ArrayList<TargetDrawable>();
-        final Resources res = getResources();
-        final int targetInset = res.getDimensionPixelSize(com.android.internal.R.dimen.lockscreen_target_inset);
-        final Drawable blankActiveDrawable =
-                res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_target_activated);
-        final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
+        try {
+            ArrayList<TargetDrawable> storedDraw = new ArrayList<TargetDrawable>();
+            final Resources res = getResources();
+            final int targetInset = res.getDimensionPixelSize(com.android.internal.R.dimen.lockscreen_target_inset);
+            final Drawable blankActiveDrawable =
+                    res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_target_activated);
+            final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
 
-        // Add unlock target
-        storedDraw.add(new TargetDrawable(res, res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_unlock)));
-        if (mNotificationDrawable != null) {
-            storedDraw.add(new TargetDrawable(res, null));
-            storedDraw.add(new TargetDrawable(res, null));
-            storedDraw.add(new TargetDrawable(res, null));
-            storedDraw.add(new TargetDrawable(res, getLayeredDrawable(activeBack,
-                    mNotificationDrawable, targetInset, false)));
-            storedDraw.add(new TargetDrawable(res, null));
-            if (mNotification.isClearable()) {
-                storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_ad_dismiss_notification)));
-            } else {
+            // Add unlock target
+            storedDraw.add(new TargetDrawable(res, res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_unlock)));
+            if (mNotificationDrawable != null) {
                 storedDraw.add(new TargetDrawable(res, null));
+                storedDraw.add(new TargetDrawable(res, null));
+                storedDraw.add(new TargetDrawable(res, null));
+                storedDraw.add(new TargetDrawable(res, getLayeredDrawable(activeBack,
+                        mNotificationDrawable, targetInset, false)));
+                storedDraw.add(new TargetDrawable(res, null));
+                if (mNotification.isClearable()) {
+                    storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_ad_dismiss_notification)));
+                } else {
+                    storedDraw.add(new TargetDrawable(res, null));
+                }
             }
+            storedDraw.add(new TargetDrawable(res, null));
+            mGlowPadView.setTargetResources(storedDraw);
+        } catch(Resources.NotFoundException nfe) {
+            Log.e(TAG, "updateResources()", nfe);
         }
-        storedDraw.add(new TargetDrawable(res, null));
-        mGlowPadView.setTargetResources(storedDraw);
     }
 
     private void doTransition(View view, float to, long duration) {
@@ -602,6 +605,7 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     private void handleDismissNotification() {
+        if (mNotification == null) return;
         try {
             mNM.cancelNotificationFromListener(mNotificationListener,
                     mNotification.getPackageName(), mNotification.getTag(),
@@ -755,37 +759,45 @@ public class ActiveDisplayView extends FrameLayout {
         mOverflowNotifications.post(new Runnable() {
             @Override
             public void run() {
+                StatusBarNotification[] sbns;
                 try {
                     // check if other clearable notifications exist and if so display the next one
-                    StatusBarNotification[] sbns = mNM
-                            .getActiveNotificationsFromListener(mNotificationListener);
-                    mOverflowNotifications.removeAllViews();
-                    for (int i = sbns.length - 1; i >= 0; i--) {
-                        if (isValidNotification(sbns[i])
-                                && mOverflowNotifications.getChildCount() < MAX_OVERFLOW_ICONS) {
-                            ImageView iv = new ImageView(mContext);
-                            if (mOverflowNotifications.getChildCount() < (MAX_OVERFLOW_ICONS - 1)) {
-                                Context pkgContext = mContext.createPackageContext(
-                                        sbns[i].getPackageName(), Context.CONTEXT_RESTRICTED);
-                                iv.setImageDrawable(pkgContext.getResources()
-                                        .getDrawable(sbns[i].getNotification().icon));
-                                iv.setTag(sbns[i]);
-                                if (sbns[i].getPackageName().equals(mNotification.getPackageName())
-                                        && sbns[i].getId() == mNotification.getId()) {
-                                    iv.setBackgroundResource(R.drawable.ad_active_notification_background);
-                                } else {
-                                    iv.setBackgroundResource(0);
-                                }
-                            } else {
-                                iv.setImageResource(R.drawable.ic_ad_morenotifications);
+                    sbns = mNM.getActiveNotificationsFromListener(mNotificationListener);
+                } catch (RemoteException re) {
+                    Log.e(TAG, "updateOtherNoticiations()", re);
+                    return;
+                }
+                mOverflowNotifications.removeAllViews();
+                for (int i = sbns.length - 1; i >= 0; i--) {
+                    if (isValidNotification(sbns[i])
+                            && mOverflowNotifications.getChildCount() < MAX_OVERFLOW_ICONS) {
+                        ImageView iv = new ImageView(mContext);
+                        if (mOverflowNotifications.getChildCount() < (MAX_OVERFLOW_ICONS - 1)) {
+                            Context pkgContext = null;
+                            try {
+                                pkgContext = mContext.createPackageContext(sbns[i].getPackageName(), Context.CONTEXT_RESTRICTED);
+                            } catch (NameNotFoundException nnfe) {
+                                Log.e(TAG, "updateOtherNoticiations()", nnfe);
+                                continue;
                             }
+                            iv.setImageDrawable(pkgContext.getResources().getDrawable(sbns[i].getNotification().icon));
+                            iv.setTag(sbns[i]);
+                            if (sbns[i].getPackageName().equals(mNotification.getPackageName())
+                                    && sbns[i].getId() == mNotification.getId()) {
+                                iv.setBackgroundResource(R.drawable.ad_active_notification_background);
+                            } else {
+                                Log.w(TAG, "Intentionally setting imageview background resource to 0");
+                                iv.setBackgroundResource(0);
+                            }
+                        } else {
+                            iv.setImageResource(R.drawable.ic_ad_morenotifications);
+                        }
+                        if (iv != null) {
                             iv.setPadding(mIconPadding, mIconPadding, mIconPadding, mIconPadding);
                             iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
                             mOverflowNotifications.addView(iv, mOverflowLayoutParams);
                         }
                     }
-                } catch (RemoteException re) {
-                } catch (NameNotFoundException nnfe) {
                 }
             }
         });
@@ -847,7 +859,7 @@ public class ActiveDisplayView extends FrameLayout {
      * @return True if it should be used, false otherwise.
      */
     private boolean isValidNotification(StatusBarNotification sbn) {
-        return (sbn.isClearable() || mShowAllNotifications);
+        return (sbn.getNotification().icon != 0 && (sbn.isClearable() || mShowAllNotifications));
     }
 
     /**
