@@ -144,8 +144,6 @@ public class QuickSettings {
     private static final int SOUND_STATE_TILE = 24;
     private static final int REBOOTMENU_TILE = 25;
     private static final int QUICKRECORD_TILE = 26;
-    
-  //  private static final int WEATHER_TILE = 27;
     private static final int MEMORY_TILE = 27;
     private static final int PIE_TILE = 28;
     private static final int EXPANDED_DESKTOP_TILE = 29;
@@ -183,7 +181,6 @@ public class QuickSettings {
     public static final String SOUND_STATE_TOGGLE = "SOUNDSTATE";
     public static final String REBOOTMENU_TOGGLE = "REBOOTMENU";
     public static final String QUICKRECORD_TOGGLE = "QUICKRECORD";
-   // public static final String WEATHER_TOGGLE = "WEATHER";
     public static final String MEMORY_TOGGLE = "MEMORY";
     public static final String PIE_TOGGLE = "PIE";
     public static final String EXPANDED_DESKTOP_TOGGLE = "EXPANDED_DESKTOP";
@@ -276,7 +273,6 @@ public class QuickSettings {
             toggleMap.put(FAV_CONTACT_TOGGLE, FAV_CONTACT_TILE);
             toggleMap.put(SOUND_STATE_TOGGLE, SOUND_STATE_TILE);
             toggleMap.put(QUICKRECORD_TOGGLE, QUICKRECORD_TILE);
-        //    toggleMap.put(WEATHER_TOGGLE, WEATHER_TILE);
             toggleMap.put(REBOOTMENU_TOGGLE, REBOOTMENU_TILE);
             toggleMap.put(MEMORY_TOGGLE, MEMORY_TILE);
             //toggleMap.put(BT_TETHER_TOGGLE, BT_TETHER_TILE);
@@ -1585,48 +1581,7 @@ public class QuickSettings {
                     }
                 });
                 break;
-      /*      case WEATHER_TILE:
-                quick = (QuickSettingsTileView)
-                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
-                quick.setContent(R.layout.quick_settings_tile_weather, inflater);
-                quick.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        try
-                        {  
-                                String raw = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.LOCK_CLOCK_CACHED_WEATHER);
-                                String link = raw.split("\\|")[13];
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-                                browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivity(browserIntent);
-                                mBar.collapseAllPanels(true);
-                        } catch (Exception e) {
-                        
-                        }
-                    }
-                });
-                quick.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        Intent i = new Intent(Intent.ACTION_MAIN);
-                        i.setComponent(new ComponentName("com.cyanogenmod.lockclock","com.cyanogenmod.lockclock.preference.Preferences"));
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(i);
-                        mBar.collapseAllPanels(true);
-                        return true;
-                    }
-                });
-                mModel.addWeatherTile(quick, new QuickSettingsModel.RefreshCallback() {
-                    @Override
-                    public void refreshView(QuickSettingsTileView view, State state) {
-                        TextView tv = (TextView) view.findViewById(R.id.weather_textview);
-                        tv.setText(state.label);
-                        tv.setTextSize(1, mTileTextSize);
-                        tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
-                    }
-                });
-                break;
-       */     case MEMORY_TILE:
+            case MEMORY_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
                 quick.setContent(R.layout.quick_settings_tile_memory, inflater);
