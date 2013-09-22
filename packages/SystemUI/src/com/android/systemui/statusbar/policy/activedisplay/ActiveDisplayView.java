@@ -34,6 +34,9 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
@@ -108,7 +111,6 @@ public class ActiveDisplayView extends FrameLayout {
     private static final int MSG_DISMISS_NOTIFICATION   = 1003;
 
     private BaseStatusBar mBar;
-    private boolean mActivate = false;
     private GlowPadView mGlowPadView;
     private View mRemoteView;
     private View mClock;
@@ -117,6 +119,7 @@ public class ActiveDisplayView extends FrameLayout {
     private FrameLayout mContents;
     private ObjectAnimator mAnim;
     private Drawable mNotificationDrawable;
+    private Paint mInvertedPaint;
     private int mCreationOrientation;
     private SettingsObserver mSettingsObserver;
     private IPowerManager mPM;
@@ -127,6 +130,7 @@ public class ActiveDisplayView extends FrameLayout {
     private Sensor mLightSensor;
     private Sensor mProximitySensor;
     private boolean mProximityIsFar = true;
+    private boolean mIsInBrightLight = false;
     private LinearLayout mOverflowNotifications;
     private LayoutParams mRemoteViewLayoutParams;
     private int mIconSize;
@@ -145,6 +149,7 @@ public class ActiveDisplayView extends FrameLayout {
     private float mInitialBrightness = 1f;
     private int mBrightnessMode = -1;
     private int mUserBrightnessLevel = -1;
+    private boolean mSunlightModeEnabled = false;
 
     /**
      * Simple class that listens to changes in notifications
@@ -259,12 +264,6 @@ public class ActiveDisplayView extends FrameLayout {
                     ActiveDisplayView.this.mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_ACTIVE_DISPLAY), false, this);
-            update();
-        }
-
-        void activate() {
-            ContentResolver resolver =
-                    ActiveDisplayView.this.mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACTIVE_DISPLAY_TEXT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -276,7 +275,10 @@ public class ActiveDisplayView extends FrameLayout {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACTIVE_DISPLAY_BRIGHTNESS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ACTIVE_DISPLAY_SUNLIGHT_MODE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
+            update();
         }
 
         void unobserve() {
@@ -297,10 +299,6 @@ public class ActiveDisplayView extends FrameLayout {
                     resolver, Settings.System.ENABLE_ACTIVE_DISPLAY, 0) == 1;
 
             if (mDisplayNotifications) {
-                // activate the rest of the settings observer
-                if (!mActivate) {
-                    mSettingsObserver.activate();
-                }
                 mDisplayNotificationText = Settings.System.getInt(
                         resolver, Settings.System.ACTIVE_DISPLAY_TEXT, 0) == 1;
                 mShowAllNotifications = Settings.System.getInt(
@@ -311,6 +309,8 @@ public class ActiveDisplayView extends FrameLayout {
                         resolver, Settings.System.ACTIVE_DISPLAY_REDISPLAY, 0L);
                 mInitialBrightness = Settings.System.getInt(
                         resolver, Settings.System.ACTIVE_DISPLAY_BRIGHTNESS, 100) / 100f;
+                mSunlightModeEnabled = Settings.System.getInt(
+                    resolver, Settings.System.ACTIVE_DISPLAY_SUNLIGHT_MODE, 0) == 1;
 
                 int brightnessMode = Settings.System.getInt(
                         resolver, Settings.System.SCREEN_BRIGHTNESS_MODE, -1);
@@ -358,8 +358,7 @@ public class ActiveDisplayView extends FrameLayout {
 
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
         mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        // uncomment once we figure out if and when we are going to use the light sensor
-        //mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
 
         mPM = IPowerManager.Stub.asInterface(ServiceManager.getService(Context.POWER_SERVICE));
         mNM = INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE));
@@ -373,6 +372,19 @@ public class ActiveDisplayView extends FrameLayout {
 
         mSettingsObserver = new SettingsObserver(new Handler());
         mCreationOrientation = Resources.getSystem().getConfiguration().orientation;
+        mInvertedPaint = makeInvertedPaint();
+    }
+
+    private Paint makeInvertedPaint() {
+        Paint p = new Paint();
+        float[] colorMatrix_Negative = {
+                -1.0f, 0, 0, 0, 255, //red
+                0, -1.0f, 0, 0, 255, //green
+                0, 0, -1.0f, 0, 255, //blue
+                0, 0, 0, 1.0f, 0 //alpha
+        };
+        p.setColorFilter(new ColorMatrixColorFilter(colorMatrix_Negative));
+        return p;
     }
 
     public void setStatusBar(BaseStatusBar bar) {
@@ -407,6 +419,17 @@ public class ActiveDisplayView extends FrameLayout {
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         makeActiveDisplayView(newConfig.orientation, true);
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        int layer = 0;
+        if (mIsInBrightLight && mSunlightModeEnabled) {
+            layer = canvas.saveLayer(0, 0, getWidth(), getHeight(), mInvertedPaint,
+                   Canvas.HAS_ALPHA_LAYER_SAVE_FLAG | Canvas.FULL_COLOR_LAYER_SAVE_FLAG);
+        }
+        super.dispatchDraw(canvas);
+        if (mIsInBrightLight && mSunlightModeEnabled) canvas.restoreToCount(layer);
     }
 
     private void makeActiveDisplayView(int orientation, boolean recreate) {
@@ -572,7 +595,16 @@ public class ActiveDisplayView extends FrameLayout {
             mKeyguardLock.disableKeyguard();
         }
         setVisibility(View.VISIBLE);
-        mBar.disable(0xffffffff);
+        // delay hiding system ui a bit because if the keyguard has not dismissed
+        // yet it will end up changing the visibility which we don't want
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mBar.disable(0xffffffff);
+            }
+        }, 100);
+        if (mLightSensor != null)
+            mSensorManager.registerListener(mSensorListener, mLightSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
     private void handleHideNotificationView() {
@@ -584,6 +616,8 @@ public class ActiveDisplayView extends FrameLayout {
         restoreBrightness();
         mBar.disable(0);
         cancelTimeoutTimer();
+        if (mLightSensor != null)
+            mSensorManager.unregisterListener(mSensorListener, mLightSensor);
     }
 
     private void handleShowNotification(boolean ping) {
@@ -727,15 +761,11 @@ public class ActiveDisplayView extends FrameLayout {
     private void registerSensorListener() {
         if (mProximitySensor != null)
             mSensorManager.registerListener(mSensorListener, mProximitySensor, SensorManager.SENSOR_DELAY_UI);
-        if (mLightSensor != null)
-            mSensorManager.registerListener(mSensorListener, mLightSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
     private void unregisterSensorListener() {
         if (mProximitySensor != null)
             mSensorManager.unregisterListener(mSensorListener, mProximitySensor);
-        if (mLightSensor != null)
-            mSensorManager.unregisterListener(mSensorListener, mLightSensor);
     }
 
     private StatusBarNotification getNextAvailableNotification() {
@@ -983,6 +1013,20 @@ public class ActiveDisplayView extends FrameLayout {
                     mProximityIsFar = false;
                 }
             } else if (event.sensor.equals(mLightSensor)) {
+                boolean isBright = mIsInBrightLight;
+                final float max = mLightSensor.getMaximumRange();
+                // we don't want the display switching back and forth so there is a region
+                // between 50% and 80% max that we will not toggle the bright light condition
+                if (value > (max * 0.8f)) {
+                    isBright = true;
+                } else if (value < (max * 0.5f)) {
+                    isBright = false;
+                }
+
+                if (mIsInBrightLight != isBright) {
+                    mIsInBrightLight = isBright;
+                    ActiveDisplayView.this.invalidate();
+                }
             }
         }
 
