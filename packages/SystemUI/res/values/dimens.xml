@@ -312,7 +312,7 @@
     <dimen name="overflow_icon_size">28dp</dimen>
 
     <!-- Active display Handle notification icon size -->
-    <dimen name="handle_icon_size">32dp</dimen>
+    <dimen name="handle_icon_size">52dp</dimen>
 
     <!-- Active display overflow notification padding -->
     <dimen name="overflow_icon_padding">2dp</dimen>
