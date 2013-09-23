@@ -133,7 +133,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     /** Broadcast receive to determine if there is an alarm set. */
-    private BroadcastReceiver mAlarmIntentReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mAlarmIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -143,93 +143,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             }
         }
     };
-
-    /** ContentObserver to determine the next alarm */
-    private class NextAlarmObserver extends ContentObserver {
-        public NextAlarmObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onNextAlarmChanged();
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NEXT_ALARM_FORMATTED), false, this,
-                    UserHandle.USER_ALL);
-        }
-    }
-
-    /** ContentObserver to watch adb */
-    private class BugreportObserver extends ContentObserver {
-        public BugreportObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onBugreportChanged();
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
-            cr.registerContentObserver(
-                    Settings.Global.getUriFor(Settings.Global.BUGREPORT_IN_POWER_MENU), false, this);
-        }
-    }
-
-    /** ContentObserver to watch brightness **/
-    private class BrightnessObserver extends ContentObserver {
-        public BrightnessObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onBrightnessLevelChanged();
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
-            cr.unregisterContentObserver(this);
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE),
-                    false, this, mUserTracker.getCurrentUserId());
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS),
-                    false, this, mUserTracker.getCurrentUserId());
-        }
-    }
- /*   private class WeatherObserver extends ContentObserver {
-        public WeatherObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onWeatherChanged();
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
-            cr.unregisterContentObserver(this);
-            cr.registerContentObserver(
-                    Settings.Secure.getUriFor(Settings.Secure.LOCK_CLOCK_CACHED_WEATHER),
-                    false, this);
-                    
-            onChange(false);
-        }
-    }
- */   private final Context mContext;
+ 
+    private final Context mContext;
     private final Handler mHandler;
     private final CurrentUserTracker mUserTracker;
-    private final NextAlarmObserver mNextAlarmObserver;
-    private final BugreportObserver mBugreportObserver;
-    private final BrightnessObserver mBrightnessObserver;
- //   private final WeatherObserver mWeatherObserver;
     private NfcAdapter mNfcAdapter;
 
     private final boolean mHasMobileData;
@@ -273,10 +190,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private QuickSettingsTileView mBatteryTile;
     private RefreshCallback mBatteryCallback;
     private BatteryState mBatteryState = new BatteryState();
-
- //   private QuickSettingsTileView mWeatherTile;
- //   private RefreshCallback mWeatherCallback;
- //   private State mWeatherState = new State();
 
     private QuickSettingsTileView mMemoryTile;
     private RefreshCallback mMemoryCallback;
@@ -370,12 +283,42 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mRebootMenuCallback;
     private State mRebootMenuState = new State();
 
+    /** generic ContentObserver to watch shit happening **/
+    private class SettingsObserver extends ContentObserver {
+        public SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        public void startObserving() {
+            final ContentResolver cr = mContext.getContentResolver();
+            cr.unregisterContentObserver(this);
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NEXT_ALARM_FORMATTED),
+                    false, this, UserHandle.USER_ALL);
+            cr.registerContentObserver(
+                    Settings.Global.getUriFor(Settings.Global.BUGREPORT_IN_POWER_MENU),
+                    false, this);
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE),
+                    false, this, mUserTracker.getCurrentUserId());
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS),
+                    false, this, mUserTracker.getCurrentUserId());
+        }
+        
+        @Override
+        public void onChange(boolean selfChange) {
+            onBrightnessLevelChanged();
+            onBugreportChanged();
+            onNextAlarmChanged();
+        }
+    }
+
     public QuickSettingsModel(Context context) {
         mContext = context;
         mHandler = new Handler();
         mUserTracker = new CurrentUserTracker(mContext) {
             public void onUserSwitched(int newUserId) {
-                mBrightnessObserver.startObserving();
                 onRotationLockChanged();
                 onBrightnessLevelChanged();
                 onNextAlarmChanged();
@@ -384,15 +327,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         };
 
         mFastChargePath = mContext.getString(com.android.internal.R.string.config_fastChargePath);
-        mNextAlarmObserver = new NextAlarmObserver(mHandler);
-        mNextAlarmObserver.startObserving();
-        mBugreportObserver = new BugreportObserver(mHandler);
-        mBugreportObserver.startObserving();
-        mBrightnessObserver = new BrightnessObserver(mHandler);
-        mBrightnessObserver.startObserving();
-
-   //     mWeatherObserver = new WeatherObserver(mHandler);
-   //     mWeatherObserver.startObserving();
+        new SettingsObserver(mHandler).startObserving();
 
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -407,7 +342,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         context.registerReceiver(mBroadcastReceiver, filter);
     }
 
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NfcAdapter.ACTION_ADAPTER_STATE_CHANGED.equals(intent.getAction())) {
@@ -554,7 +489,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mAlarmCallback.refreshView(mAlarmTile, mAlarmState);
     }
 
-    void onNextAlarmChanged() {
+    private void onNextAlarmChanged() {
         final String alarmText = Settings.System.getStringForUser(mContext.getContentResolver(),
                 Settings.System.NEXT_ALARM_FORMATTED,
                 UserHandle.USER_CURRENT);
@@ -813,39 +748,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mMemoryState.label = availMem + "MB Free";
         mMemoryState.iconId = R.drawable.ic_qs_memory;
     }
-    
- /*   void addWeatherTile(QuickSettingsTileView view, RefreshCallback cb) {
-        mWeatherTile = view;
-        mWeatherCallback = cb;
-        mWeatherCallback.refreshView(mWeatherTile, mWeatherState);
-    }
-    void onWeatherChanged() {
-        String raw = Settings.Secure.getString(mContext.getContentResolver(),
-                Settings.Secure.LOCK_CLOCK_CACHED_WEATHER);
-        
-        mWeatherState.label = "N/A";
-        mWeatherState.iconId = R.drawable.weather_na;
-            
-        if (raw != null)
-        {
-        String[] split = raw.split("\\|");
-        if (split.length > 3)
-        {
-        int code = Integer.parseInt(split[3]);
-        mWeatherState.label = split[0];
-        int resId = mContext.getResources().getIdentifier("weather_" + code, "drawable", mContext.getPackageName());
-        mWeatherState.iconId = resId;
-        }
-        }
-        
-        refreshWeatherTile();
-    }
-    
-    void refreshWeatherTile() {
-        if (mWeatherCallback != null)
-            mWeatherCallback.refreshView(mWeatherTile, mWeatherState);
-    }
-  */  
+
     // Battery
     void addBatteryTile(QuickSettingsTileView view, RefreshCallback cb) {
         mBatteryTile = view;
@@ -898,7 +801,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     // SettingsObserver callback
-    public void onBugreportChanged() {
+    private void onBugreportChanged() {
         final ContentResolver cr = mContext.getContentResolver();
         boolean enabled = false;
         try {
@@ -1552,7 +1455,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     // User switch: need to update visuals of all tiles known to have per-user
     // state
     void onUserSwitched() {
-        mBrightnessObserver.startObserving();
         onRotationLockChanged();
         onBrightnessLevelChanged();
         onNextAlarmChanged();
