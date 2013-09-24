@@ -259,6 +259,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mSafeMode;
     WindowState mStatusBar = null;
     boolean mHasSystemNavBar;
+    private boolean showByDefault;
     int mStatusBarHeight;
     WindowState mNavigationBar = null;
     boolean mHasNavigationBar = false;
@@ -1216,6 +1217,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 com.android.internal.R.integer.config_backKillTimeout);
         mDeviceHardwareKeys = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_deviceHardwareKeys);
+        showByDefault = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);
 
         
         try {
@@ -1508,8 +1511,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         Settings.System.putInt(mContext.getContentResolver(),
                 Settings.System.CURRENT_UI_MODE, mUserUIMode);
         if (!mHasSystemNavBar) {
-             final boolean showByDefault = mContext.getResources().getBoolean(
-                     com.android.internal.R.bool.config_showNavigationBar);
              mHasNavigationBar = Settings.System.getBoolean(mContext.getContentResolver(),
                      Settings.System.NAVIGATION_BAR_SHOW, showByDefault);
 
@@ -1593,6 +1594,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         boolean updateRotation = false, updateDisplayMetrics = false;
+
+        mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH, 0) == 1;
+        mVolumeWakeScreen = (Settings.System.getInt(resolver,
+                Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
+        mVolBtnMusicControls = (Settings.System.getInt(resolver,
+                Settings.System.VOLBTN_MUSIC_CONTROLS, 1) == 1);
+        mKillAppLongPressBack = (Settings.Secure.getInt(resolver,
+                Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
+
         synchronized (mLock) {
             mEndcallBehavior = Settings.System.getIntForUser(resolver,
                     Settings.System.END_BUTTON_BEHAVIOR,
@@ -1602,13 +1612,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR,
                     Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT,
                     UserHandle.USER_CURRENT);
-            mEnableQuickTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH, 0) == 1;
-            mVolumeWakeScreen = (Settings.System.getInt(resolver,
-                    Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
-            mVolBtnMusicControls = (Settings.System.getInt(resolver,
-                    Settings.System.VOLBTN_MUSIC_CONTROLS, 1) == 1);
-            mKillAppLongPressBack = (Settings.Secure.getInt(resolver,
-                    Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
 
             mHomeWakeScreen = (Settings.System.getIntForUser(resolver,
                     Settings.System.HOME_WAKE_SCREEN, 1, UserHandle.USER_CURRENT) == 1);
@@ -1664,8 +1667,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             updateDisplayMetrics();
         }
 
-        boolean showByDefault = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_showNavigationBar);
         showByDefault = showByDefault || Settings.System.getBoolean(resolver,
                         Settings.System.NAVIGATION_BAR_SHOW, showByDefault);
         boolean showNavBarNow = Settings.System.getBoolean(resolver,
