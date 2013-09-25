@@ -122,10 +122,10 @@ import com.android.systemui.R;
         mLabelViews.add(v);
     }
 
-    public static void addStateChangedCallback(BatteryStateChangeCallback cb) {
+    public void addStateChangedCallback(BatteryStateChangeCallback cb) {
         mChangeCallbacks.add(cb);
         // trigger initial update
-        cb.onBatteryLevelChanged(getBatteryLevel(), isBatteryStatusCharging());
+        cb.onBatteryLevelChanged(getBatteryLevel(), mBatteryPlugged);
     }
 
     public void onReceive(Context context, Intent intent) {
@@ -139,29 +139,27 @@ import com.android.systemui.R;
             }
         }
 
-    private static void updateViews() {
+    public void updateViews() {
         int level = getBatteryLevel();
-        if (mUiController) {
-            int N = mIconViews.size();
-            for (int i=0; i<N; i++) {
-                ImageView v = mIconViews.get(i);
-                v.setImageLevel(level);
-                v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
-                        level));
-            }
-            N = mLabelViews.size();
-            for (int i=0; i<N; i++) {
-                TextView v = mLabelViews.get(i);
-                v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN, level));
-            }
+        int N = mIconViews.size();
+        for (int i=0; i<N; i++) {
+            ImageView v = mIconViews.get(i);
+            v.setImageLevel(level);
+            v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
+                    level));
         }
-
+        N = mLabelViews.size();
+        for (int i=0; i<N; i++) {
+            TextView v = mLabelViews.get(i);
+            v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN,
+                    level)); 
+        }
         for (BatteryStateChangeCallback cb : mChangeCallbacks) {
-            cb.onBatteryLevelChanged(level, isBatteryStatusCharging());
+            cb.onBatteryLevelChanged(level, mBatteryPlugged);
         }
     }
 
-    private static void updateBattery() {
+    public static void updateBattery() {
         int mIcon = View.GONE;
         int mText = View.GONE;
         int mIconStyle = BATTERY_ICON_STYLE_NORMAL;
@@ -200,5 +198,9 @@ import com.android.systemui.R;
         mBatteryStyle = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_BATTERY, 0));
         updateBattery();
+    }
+
+    protected int getBatteryLevel() {
+        return mBatteryLevel;
     }
 }
