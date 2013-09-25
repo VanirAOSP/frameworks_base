@@ -16,14 +16,6 @@
 
 package com.android.systemui.statusbar.phone;
 
-<<<<<<< HEAD
-=======
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
->>>>>>> 042159d... SystemUI: Add dock battery icon styles
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -118,6 +110,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PhoneStatusBar extends BaseStatusBar {
     static final String TAG = "PhoneStatusBar";
@@ -567,8 +560,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                     (ImageView)mStatusBarView.findViewById(R.id.dock_battery));
             mDockBatteryController.addLabelView(
                     (TextView)mStatusBarView.findViewById(R.id.dock_battery_text));
-<<<<<<< HEAD
-=======
         } else {
             // Remove dock battery icons if device doesn't hava dock battery support
             View v = mStatusBarView.findViewById(R.id.dock_battery);
@@ -577,7 +568,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             if (v != null) mStatusBarView.removeView(v);
             v = mStatusBarView.findViewById(R.id.circle_dock_battery);
             if (v != null) mStatusBarView.removeView(v);
->>>>>>> 042159d... SystemUI: Add dock battery icon styles
         }
 
         mNetworkController = new NetworkController(mContext);
@@ -2063,9 +2053,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             final View notifications = mStatusBarView.findViewById(R.id.notification_icon_area);
             final View systemIcons = mStatusBarView.findViewById(R.id.statusIcons);
             final View signal = mStatusBarView.findViewById(R.id.signal_cluster);
-<<<<<<< HEAD
-            final View battery = mStatusBarView.findViewById(R.id.batteries_container);
-=======
             final View signal2 = mStatusBarView.findViewById(R.id.signal_cluster_text);
             final View battery = mStatusBarView.findViewById(R.id.battery);
             final View battery2 = mStatusBarView.findViewById(R.id.battery_text);
@@ -2074,7 +2061,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             final View dockBattery2 = mStatusBarView.findViewById(R.id.dock_battery_text);
             final View dockBattery3 = mStatusBarView.findViewById(R.id.circle_dock_battery);
             final View clock = mStatusBarView.findViewById(R.id.clock);
->>>>>>> 042159d... SystemUI: Add dock battery icon styles
 
             List<ObjectAnimator> lightsOutObjs = new ArrayList<ObjectAnimator>();
             lightsOutObjs.add(ObjectAnimator.ofFloat(notifications, View.ALPHA, 0));
@@ -2116,32 +2102,12 @@ public class PhoneStatusBar extends BaseStatusBar {
 
             final AnimatorSet lightsOutAnim = new AnimatorSet();
             lightsOutAnim.playTogether(
-<<<<<<< HEAD
-                    ObjectAnimator.ofFloat(notifications, View.ALPHA, 0),
-                    ObjectAnimator.ofFloat(systemIcons, View.ALPHA, 0),
-                    ObjectAnimator.ofFloat(signal, View.ALPHA, 0),
-                    ObjectAnimator.ofFloat(battery, View.ALPHA, 0.5f),
-                    ObjectAnimator.ofFloat(mClock, View.ALPHA, 0.5f),
-                    ObjectAnimator.ofFloat(mCenterClock, View.ALPHA, 0.5f)
-                );
-=======
                     lightsOutObjs.toArray(new ObjectAnimator[lightsOutObjs.size()]));
->>>>>>> 042159d... SystemUI: Add dock battery icon styles
             lightsOutAnim.setDuration(750);
 
             final AnimatorSet lightsOnAnim = new AnimatorSet();
             lightsOnAnim.playTogether(
-<<<<<<< HEAD
-                    ObjectAnimator.ofFloat(notifications, View.ALPHA, 1),
-                    ObjectAnimator.ofFloat(systemIcons, View.ALPHA, 1),
-                    ObjectAnimator.ofFloat(signal, View.ALPHA, 1),
-                    ObjectAnimator.ofFloat(battery, View.ALPHA, 1),
-                    ObjectAnimator.ofFloat(mClock, View.ALPHA, 1),
-                    ObjectAnimator.ofFloat(mCenterClock, View.ALPHA, 1)
-                );
-=======
                     lightsOnObjs.toArray(new ObjectAnimator[lightsOnObjs.size()]));
->>>>>>> 042159d... SystemUI: Add dock battery icon styles
             lightsOnAnim.setDuration(250);
 
             mLightsOutAnimation = lightsOutAnim;

@@ -16,6 +16,7 @@
 
 package com.android.systemui.statusbar.policy;
 
+import android.view.ViewGroup.LayoutParams;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -353,7 +354,7 @@ public class CircleBattery extends ImageView {
      * uses mInvalidate for delayed invalidate() callbacks
      */
     private void updateChargeAnim() {
-        if (!mIsCharging() || getLevel() >= 97) {
+        if ((getBatteryStatus() != BatteryManager.BATTERY_STATUS_CHARGING) || getLevel() >= 97) {
             if (mIsAnimating) {
                 mIsAnimating = false;
                 mAnimOffset = 0;
