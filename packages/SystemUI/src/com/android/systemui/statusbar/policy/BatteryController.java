@@ -68,7 +68,7 @@ import com.android.systemui.R;
 
     private static Handler mHandler;
 
-    private static class SettingsObserver extends ContentObserver {
+    class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
         }
@@ -194,51 +194,6 @@ import com.android.systemui.R;
         }
     }
 
-    public static void updateBattery() {
-        int mIcon = View.GONE;
-        int mText = View.GONE;
-        int mIconStyle = BATTERY_ICON_STYLE_NORMAL;
-
-        if (mBatteryStyle == BATTERY_STYLE_NORMAL) {
-            mIcon = (View.VISIBLE);
-            mIconStyle = mBatteryPlugged ? BATTERY_ICON_STYLE_CHARGE
-                    : BATTERY_ICON_STYLE_NORMAL;
-        } else if (mBatteryStyle == BATTERY_STYLE_PERCENT) {
-            mIcon = (View.VISIBLE);
-            mText = (View.VISIBLE);
-            mIconStyle = mBatteryPlugged ? BATTERY_ICON_STYLE_CHARGE_MIN
-                    : BATTERY_ICON_STYLE_NORMAL_MIN;
-        } else if (mBatteryStyle == 5) {
-            mIcon = (View.VISIBLE);
-            mIconStyle = mBatteryPlugged ? BATTERY_ICON_STYLE_CHARGE_GEAR
-                    : BATTERY_ICON_STYLE_NORMAL_GEAR;
-            mBatteryStatus = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
-                                                BatteryManager.BATTERY_STATUS_UNKNOWN);
-            updateViews(level);
-            updateBattery();
-        }
-    }
-
-    protected void updateViews(int level) {
-        int N = mIconViews.size();
-        for (int i=0; i<N; i++) {
-            ImageView v = mIconViews.get(i);
-            v.setImageLevel(level);
-            v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
-                    level));
-        }
-        N = mLabelViews.size();
-        for (int i=0; i<N; i++) {
-            TextView v = mLabelViews.get(i);
-            v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN,
-                    level));
-        }
-
-        for (BatteryStateChangeCallback cb : mChangeCallbacks) {
-            cb.onBatteryLevelChanged(level, isBatteryStatusCharging());
-        }
-    }
-
     protected void updateBattery() {
         int mIcon = View.GONE;
         int mText = View.GONE;
@@ -271,14 +226,34 @@ import com.android.systemui.R;
         N = mLabelViews.size();
         for (int i=0; i<N; i++) {
             TextView v = mLabelViews.get(i);
-            if (v != null) v.setVisibility(mText);
+            v.setVisibility(mText);
         }
     }
 
-    private static void updateSettings() {
+    protected void updateViews(int level) {
+        int N = mIconViews.size();
+        for (int i=0; i<N; i++) {
+            ImageView v = mIconViews.get(i);
+            v.setImageLevel(level);
+            v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
+                    level));
+        }
+        N = mLabelViews.size();
+        for (int i=0; i<N; i++) {
+            TextView v = mLabelViews.get(i);
+            v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN,
+                    level));
+        }
+
+        for (BatteryStateChangeCallback cb : mChangeCallbacks) {
+            cb.onBatteryLevelChanged(level, isBatteryStatusCharging());
+        }
+    }
+
+    public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         mBatteryStyle = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_BATTERY, BATTERY_STYLE_NORMAL));
+                Settings.System.STATUS_BAR_BATTERY, 0));
         updateBattery();
     }
 

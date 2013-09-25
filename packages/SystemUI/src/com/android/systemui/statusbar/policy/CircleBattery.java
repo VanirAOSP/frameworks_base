@@ -16,6 +16,7 @@
 
 package com.android.systemui.statusbar.policy;
 
+import android.view.ViewGroup.LayoutParams;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -300,36 +301,29 @@ public class CircleBattery extends ImageView {
 
     protected void drawCircle(Canvas canvas, int level, int animOffset, float textX, RectF drawRect) {
         Paint usePaint = mPaintSystem;
-        int internalLevel = level;
-        boolean unknownStatus = isBatteryStatusUnknown();
-        // turn red at 14% - same level android battery warning appears
+        boolean unknownStatus = getBatteryStatus() == BatteryManager.BATTERY_STATUS_UNKNOWN;
+
         if (unknownStatus) {
             usePaint = mPaintGray;
-            internalLevel = 100; // Draw all the circle;
-        } else if (internalLevel <= 14) {
+            level = 100; // Draw all the circle;
+        } else if (level <= 14) {
             usePaint = mPaintRed;
-        }
-
-        // pad circle percentage to 100% once it reaches 97%
-        // for one, the circle looks odd with a too small gap,
-        // for another, some phones never reach 100% due to hardware design
-        int padLevel = internalLevel;
-        if (padLevel >= 97) {
-            padLevel = 100;
+        } else if (getBatteryStatus() == BatteryManager.BATTERY_STATUS_FULL) {
+            level = 100;
         }
 
         // draw thin gray ring first
-        canvas.drawArc(mCircleRect, 270, 360, false, mPaintGray);
-        // draw thin colored ring-level last
-        canvas.drawArc(mCircleRect, 270+mAnimOffset, 3.6f * padLevel, false, usePaint);
+        canvas.drawArc(drawRect, 270, 360, false, mPaintGray);
+        // draw colored arc representing charge level
+        canvas.drawArc(drawRect, 270 + animOffset, 3.6f * level, false, usePaint);
         // if chosen by options, draw percentage text in the middle
         // always skip percentage when 100, so layout doesnt break
         if (unknownStatus) {
             mPaintFont.setColor(usePaint.getColor());
             canvas.drawText("?", textX, mTextY, mPaintFont);
-        } else if (internalLevel < 100 && mPercentage) {
+        } else if (level < 100 && mPercentage) {
             mPaintFont.setColor(usePaint.getColor());
-            canvas.drawText(Integer.toString(internalLevel), textX, mTextY, mPaintFont);
+            canvas.drawText(Integer.toString(level), textX, mTextY, mPaintFont);
         }
 
     }
@@ -342,9 +336,10 @@ public class CircleBattery extends ImageView {
 
         updateChargeAnim();
 
-        drawCircle(canvas,
-                   getLevel(),
-                   (isBatteryStatusCharging() ? mAnimOffset : 0), mTextLeftX, mRectLeft);
+        boolean charging = getBatteryStatus() == BatteryManager.BATTERY_STATUS_CHARGING;
+        int offset = charging ? mAnimOffset : 0;
+
+        drawCircle(canvas, getLevel(), offset, mTextLeftX, mRectLeft);
     }
 
     /***
@@ -353,7 +348,7 @@ public class CircleBattery extends ImageView {
      * uses mInvalidate for delayed invalidate() callbacks
      */
     private void updateChargeAnim() {
-        if (!mIsCharging() || getLevel() >= 97) {
+        if ((getBatteryStatus() != BatteryManager.BATTERY_STATUS_CHARGING) || getLevel() >= 97) {
             if (mIsAnimating) {
                 mIsAnimating = false;
                 mAnimOffset = 0;
