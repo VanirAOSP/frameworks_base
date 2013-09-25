@@ -122,10 +122,10 @@ import com.android.systemui.R;
         mLabelViews.add(v);
     }
 
-    public static void addStateChangedCallback(BatteryStateChangeCallback cb) {		
+    public static void addStateChangedCallback(BatteryStateChangeCallback cb) {
         mChangeCallbacks.add(cb);
         // trigger initial update
-        cb.onBatteryLevelChanged(mBatteryLevel, isBatteryStatusCharging());
+        cb.onBatteryLevelChanged(mBatteryLevel, mBatteryPlugged);
     }
 
     public void onReceive(Context context, Intent intent) {
@@ -135,29 +135,29 @@ import com.android.systemui.R;
         if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
             mBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
             mBatteryPlugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0;
-            updateViews(); 
+            updateViews();
+            }
+        }
 
-    protected void updateViews() {
+    private static void updateViews() {
+        int level = getBatteryLevel();
         if (mUiController) {
             int N = mIconViews.size();
             for (int i=0; i<N; i++) {
                 ImageView v = mIconViews.get(i);
-                v.setImageLevel(mBatteryLevel);
+                v.setImageLevel(level);
                 v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
-                        mBatteryLevel));
+                        level));
             }
             N = mLabelViews.size();
             for (int i=0; i<N; i++) {
                 TextView v = mLabelViews.get(i);
-                if (v != null)
-                v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN,
-                        mBatteryLevel));
+                v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN, level));
             }
-            for (BatteryStateChangeCallback cb : mChangeCallbacks) {
-                cb.onBatteryLevelChanged(level, mBatteryPlugged);
-            }
-            for (BatteryStateChangeCallback cb : mChangeCallbacks) {
-            	cb.onBatteryLevelChanged(mBatteryLevel, isBatteryStatusCharging());
+        }
+
+        for (BatteryStateChangeCallback cb : mChangeCallbacks) {
+            cb.onBatteryLevelChanged(level, getBatteryStatus());
         }
     }
 
