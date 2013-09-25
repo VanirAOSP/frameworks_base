@@ -158,7 +158,7 @@ class KeyguardMessageArea extends TextView {
         @Override
         public void onRefreshBatteryInfo(KeyguardUpdateMonitor.BatteryStatus status) {
             // Use the status instead of plugged attribute
-            mPluggedIn = status.status == BatteryManager.BATTERY_STATUS_CHARGING ||
+            mCharging = status.status == BatteryManager.BATTERY_STATUS_CHARGING ||
                          status.status == BatteryManager.BATTERY_STATUS_FULL;
             mBatteryLevel = status.level;
             mBatteryCharged = status.isCharged();

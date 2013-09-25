@@ -239,42 +239,6 @@ import com.android.systemui.R;
         }
     }
 
-    protected void updateBattery() {
-        int mIcon = View.GONE;
-        int mText = View.GONE;
-        int mIconStyle = getIconStyleNormal();
-
-        if (isBatteryPresent()) {
-            if ( isBatteryStatusUnknown() &&
-                (mBatteryStyle == BATTERY_STYLE_NORMAL || mBatteryStyle == BATTERY_STYLE_PERCENT)) {
-                // Unknown status doesn't relies on any style
-                mIcon = (View.VISIBLE);
-                mIconStyle = getIconStyleUnknown();
-            } else if (mBatteryStyle == BATTERY_STYLE_NORMAL) {
-                mIcon = (View.VISIBLE);
-                mIconStyle = isBatteryStatusCharging() ?
-                                getIconStyleCharge() : getIconStyleNormal();
-            } else if (mBatteryStyle == BATTERY_STYLE_PERCENT) {
-                mIcon = (View.VISIBLE);
-                mText = (View.VISIBLE);
-                mIconStyle = isBatteryStatusCharging() ?
-                                getIconStyleChargeMin() : getIconStyleNormalMin();
-            }
-        }
-
-        int N = mIconViews.size();
-        for (int i=0; i<N; i++) {
-            ImageView v = mIconViews.get(i);
-            v.setVisibility(mIcon);
-            v.setImageResource(mIconStyle);
-        }
-        N = mLabelViews.size();
-        for (int i=0; i<N; i++) {
-            TextView v = mLabelViews.get(i);
-            if (v != null) v.setVisibility(mText);
-        }
-    }
-
     private static void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         mBatteryStyle = (Settings.System.getInt(resolver,
