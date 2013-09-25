@@ -1882,7 +1882,6 @@
 
   <java-symbol type="bool" name="config_hasRemovableLid" />
   <java-symbol type="bool" name="config_hasDockBattery" />
-<<<<<<< HEAD
 
   <java-symbol type="integer" name="config_wallpaperMaxWidth" />
 
@@ -1890,9 +1889,6 @@
   <java-symbol type="string" name="config_deviceHandlersLib" />
   <java-symbol type="string" name="config_deviceKeyHandlerClass" />
   <java-symbol type="string" name="config_deviceDockBatteryHandlerClass" />
-=======
-  <java-symbol type="bool" name="config_noDelayInATwoDP" />
->>>>>>> 042159d... SystemUI: Add dock battery icon styles
 
   <!-- Telephony -->
   <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
