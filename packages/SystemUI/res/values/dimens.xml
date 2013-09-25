@@ -299,7 +299,7 @@
     <!-- Quick Settings tile geometry: icon size -->
     <dimen name="qs_tile_icon_size">32dp</dimen>
 
-    <!-- Top margin for overflow notifications container shown in the P.O.R.N. view -->
+    <!-- Top margin for overflow notifications container shown in the active display view -->
     <dimen name="glowpad_overflow_notifications_margin_top">64dp</dimen>
 
     <!-- Top margin for overflow notifications container shown in the active display view -->
@@ -309,13 +309,13 @@
     <dimen name="ad_notification_margin">4dp</dimen>
 
     <!-- Active display overflow notification icon size -->
-    <dimen name="overflow_icon_size">28dp</dimen>
+    <dimen name="overflow_icon_size">32dp</dimen>
 
     <!-- Active display Handle notification icon size -->
-    <dimen name="handle_icon_size">52dp</dimen>
+    <dimen name="handle_icon_size">32dp</dimen>
 
     <!-- Active display overflow notification padding -->
-    <dimen name="overflow_icon_padding">2dp</dimen>
+    <dimen name="overflow_icon_padding">4dp</dimen>
 
     <!-- Active display clock font size -->
     <dimen name="ad_clock_font_size">75dp</dimen>
