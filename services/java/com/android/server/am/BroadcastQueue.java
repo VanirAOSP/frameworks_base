@@ -21,7 +21,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import android.app.ActivityManager;
-import android.app.ActivityManagerNative;
 import android.app.AppGlobals;
 import android.app.AppOpsManager;
 import android.content.ComponentName;
@@ -544,7 +543,7 @@ public class BroadcastQueue {
             }
 
             boolean looped = false;
-
+            
             do {
                 if (mOrderedBroadcasts.size() == 0) {
                     // No more broadcasts pending, so all done!

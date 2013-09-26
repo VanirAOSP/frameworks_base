@@ -2944,9 +2944,13 @@
     <!-- Button to close error alert when a video cannot be played -->
     <string name="VideoView_error_button">OK</string>
 
+
+
+
     <!-- Format indicating a relative expression and time.
          Example: "4 hours ago, 11:00 am" -->
     <string name="relative_time">"<xliff:g id="date" example="4 hours ago">%1$s</xliff:g>, <xliff:g id="time" example="11:00 am">%2$s</xliff:g>"</string>
+
 
     <!-- Quoted name for 12pm, lowercase -->
     <string name="noon">"noon"</string>
@@ -2956,6 +2960,16 @@
     <string name="midnight">"midnight"</string>
     <!-- Quoted name for 12am, uppercase first letter -->
     <string name="Midnight">"Midnight"</string>
+
+
+
+
+
+
+
+
+
+
 
     <!-- Format string for durations like "01:23" (1 minute, 23 seconds) -->
     <string name="elapsed_time_short_format_mm_ss"><xliff:g id="minutes" example="1">%1$02d</xliff:g>:<xliff:g id="seconds" example="23">%2$02d</xliff:g></string>
@@ -3494,6 +3508,7 @@
     <!-- Strings for search suggestions. These are going here because they are referenced by both
          ContactsProvider and GoogleContactsProvider -->
     <skip />
+
 
     <!-- This string appears (on two lines) when you type a number into contacts search, to let you dial the phone number you typed.  The first line will be in bigger type than the second. -->
     <string name="dial_number_using">Dial number\nusing <xliff:g id="number" example="555">%s</xliff:g></string>
@@ -4144,12 +4159,6 @@
     <string name="global_actions_expanded_desktop_mode_on_status">Enabled</string>
     <!-- status message in phone options dialog for when expand desktop mode is off -->
     <string name="global_actions_expanded_desktop_mode_off_status">Disabled</string>
-
-    <!-- Privacy Guard -->
-    <string name="permlab_changePrivacyGuardState">enable or disable privacy guard</string>
-    <string name="permdesc_changePrivacyGuardState">Allows the application to change whether another application runs with Privacy Guard. When an application is running with Privacy Guard, it will not have access to personal data such as contacts, call logs, or messages.</string>
-    <string name="privacy_guard_notification">Privacy Guard active</string>
-    <string name="privacy_guard_notification_detail"><xliff:g id="app">%1$s</xliff:g> will not be able to access personal data</string>
 
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_interceptSmsSent">intercept outgoing SMS</string>
