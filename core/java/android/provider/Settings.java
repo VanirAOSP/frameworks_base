@@ -18,7 +18,6 @@ package android.provider;
 
 import android.annotation.SdkConstant;
 import android.annotation.SdkConstant.SdkConstantType;
-import android.app.ActivityManagerNative;
 import android.app.SearchManager;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
@@ -38,7 +37,6 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.DropBoxManager;
 import android.os.IBinder;
@@ -2418,7 +2416,7 @@ public final class Settings {
         */
         public static final String NOTIFICATION_LIGHT_PULSE_VMAIL_LED_ON = "notification_light_pulse_vmail_led_on";
 
-        /**
+        /**  
          * Defines the shortcuts to be shown on lockscreen
          * Usage is like this: target:icon|target:icon|target:icon
          * if :icon is not set, default application icon will be used
@@ -2436,7 +2434,7 @@ public final class Settings {
          * How long to wait between flashes for the voicemail notification LED
          * @hide
          */
-        public static final String NOTIFICATION_LIGHT_PULSE_VMAIL_LED_OFF = "notification_light_pulse_vmail_led_off";
+        public static final String NOTIFICATION_LIGHT_PULSE_VMAIL_LED_OFF = "notification_light_pulse_vmail_led_off";	
 
         /**
          * Whether to use the custom LED values for the notification pulse LED.
@@ -2786,7 +2784,7 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
-        /**
+        /**	
          * Allows to show the background activity back the lockscreen
          * @hide
          */
@@ -2827,7 +2825,7 @@ public final class Settings {
 
         /**
          * hmm
-         *
+         * 
          */
         public static final String PREF_ENABLE = "clock_style";
 
@@ -2835,7 +2833,7 @@ public final class Settings {
          * comments are for noobs
          * @hide
          */
-        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
+        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm"; 
 
         /**
          * Whether or not to use the app sidebar
@@ -3317,7 +3315,7 @@ public final class Settings {
          * Which layout to use to display the navigation menu at the bottom.
          * 0 = default
          * 1 = default w/search
-         *
+         * 
          * @hide
          */
         public static final String NAVIGATION_BAR_LAYOUT = "navigation_bar_layout";
@@ -3339,7 +3337,7 @@ public final class Settings {
          */
         public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
 
-        /**
+        /**          
          * If checked hide extra system bar stuff
          * ie compatmode button and extra ime switcher.
          */
@@ -3361,7 +3359,7 @@ public final class Settings {
 
         /**
          * The action to take when long pressing home
-         *
+         * 
          * @hide
          */
         public static final String NAVIGATION_BAR_HOME_LONGPRESS = "navigation_bar_home_longpress";
@@ -3369,7 +3367,7 @@ public final class Settings {
         /**
          * [0] = how long to animate glow off
          * [1] = how long to animate glow on
-         *
+         * 
          * @hide
          */
         public static final String[] NAVIGATION_BAR_GLOW_DURATION = new String[] {
@@ -3378,7 +3376,7 @@ public final class Settings {
         };
 
         /**
-         *
+         * 
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
@@ -3388,21 +3386,21 @@ public final class Settings {
          * 0 = right (default)
          * 1 = left
          * 2 = both
-         *
+         * 
          * @hide
          */
         public static final String MENU_LOCATION = "menu_location";
 
        /**
          * Menu visibility style
-         *
+         * 
          * @hide
          */
         public static final String MENU_VISIBILITY = "menu_visibility";
 
         /**
          * Custom navigation bar intents (short press)
-         *
+         * 
          * @hide
          */
         public static final String[] NAVIGATION_CUSTOM_ACTIVITIES = new String[] {
@@ -3417,7 +3415,7 @@ public final class Settings {
 
         /**
          * Custom navigation bar intents (long press)
-         *
+         * 
          * @hide
          */
         public static final String[] NAVIGATION_LONGPRESS_ACTIVITIES = new String[] {
@@ -3480,7 +3478,7 @@ public final class Settings {
          *
          * @hide
          */
-        public static final String ENABLE_FAST_TORCH = "enable_fast_torch";
+        public static final String ENABLE_FAST_TORCH = "enable_fast_torch"; 
 
         /**
          * Whether the UI is initiated in tablet UI (false = phone UI)
@@ -3522,7 +3520,7 @@ public final class Settings {
 
         /**
          * enabled and order of quick toggles
-         *
+         * 
          * @hide
          */
         public static final String QUICK_TOGGLES = "quick_toggles";
@@ -3568,7 +3566,7 @@ public final class Settings {
 
        /**
         * Key to store Torch state.
-        * @hide
+        * @hide 
         */
         public static final String TORCH_STATE = "torch_state";
 
@@ -3620,7 +3618,7 @@ public final class Settings {
 
         /**
          * User selected UI Mode
-         *
+         * 
          *  0 = Phone UI
          *  1 = Tablet UI
          *  2 = Phablet UI
@@ -4600,7 +4598,7 @@ public final class Settings {
          * @hide
          */
         public static final String ADB_ICON = "adb_icon";
-
+        
         /**
          * The TCP/IP port to run ADB on, or -1 for USB
          * @hide
@@ -5578,12 +5576,6 @@ public final class Settings {
         public static final String SCREENSAVER_ACTIVATE_ON_WIRELESS_CHARGE = "screensaver_activate_on_wireless_charger";
 
         /**
-         * Whether newly installed apps should run with privacy guard by default
-         * @hide
-         */
-        public static final String PRIVACY_GUARD_DEFAULT = "privacy_guard_default";
-
-        /**
          * Name of a package that the current user has explicitly allowed to see all of that
          * user's notifications.
          *
@@ -5641,7 +5633,6 @@ public final class Settings {
             UI_NIGHT_MODE,
             LOCK_SCREEN_OWNER_INFO,
             LOCK_SCREEN_OWNER_INFO_ENABLED,
-            PRIVACY_GUARD_DEFAULT,
             DIALPAD_AUTOCOMPLETE
         };
 
@@ -5664,13 +5655,6 @@ public final class Settings {
          * @hide
          */
         public static final boolean isLocationProviderEnabledForUser(ContentResolver cr, String provider, int userId) {
-            try {
-                if (ActivityManagerNative.getDefault().isPrivacyGuardEnabledForProcess(Binder.getCallingPid())) {
-                    return false;
-                }
-            } catch (RemoteException e) {
-                // ignore
-            }
             String allowedProviders = Settings.Secure.getStringForUser(cr,
                     LOCATION_PROVIDERS_ALLOWED, userId);
             return TextUtils.delimitedStringContains(allowedProviders, ',', provider);
@@ -6331,7 +6315,7 @@ public final class Settings {
         * @hide
         */
        public static final String WIFI_COUNTRY_CODE = "wifi_country_code";
-
+       
        /**
          * 802.11 country code in ISO 3166 format custom user value
          * @hide

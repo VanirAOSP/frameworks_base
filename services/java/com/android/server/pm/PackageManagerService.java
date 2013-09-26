@@ -1345,7 +1345,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     mAppInstallDir.getPath(), OBSERVER_EVENTS, false);
                 mAppInstallObserver.startWatching();
                 scanDirLI(mAppInstallDir, 0, scanMode, 0);
-
+    
                 mDrmAppInstallObserver = new AppDirObserver(
                     mDrmAppPrivateInstallDir.getPath(), OBSERVER_EVENTS, false);
                 mDrmAppInstallObserver.startWatching();
@@ -1766,7 +1766,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         return out;
     }
-
+    
     public String[] canonicalToCurrentPackageNames(String[] names) {
         String[] out = new String[names.length];
         // reader
@@ -1836,7 +1836,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         pi.protectionLevel = bp.protectionLevel;
         return pi;
     }
-
+    
     public PermissionInfo getPermissionInfo(String name, int flags) {
         // reader
         synchronized (mPackages) {
@@ -2249,7 +2249,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         return s1.equals(s2);
     }
-
+    
     static boolean comparePermissionInfos(PermissionInfo pi1, PermissionInfo pi2) {
         if (pi1.icon != pi2.icon) return false;
         if (pi1.logo != pi2.logo) return false;
@@ -2265,7 +2265,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         //if (pi1.descriptionRes != pi2.descriptionRes) return false;
         return true;
     }
-
+    
     boolean addPermissionLocked(PermissionInfo info, boolean async) {
         if (info.labelRes == 0 && info.nonLocalizedLabel == null) {
             throw new SecurityException("Label must be specified in permission");
@@ -3356,7 +3356,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         File fname = new File(systemDir, "uiderrors.txt");
         return fname;
     }
-
+    
     static void reportSettingsProblem(int priority, String msg) {
         try {
             File fname = getSettingsProblemFile();
@@ -4087,7 +4087,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                                 + "): packages=" + suid.packages);
                 }
             }
-
+            
             // Check if we are renaming from an original package name.
             PackageSetting origPackage = null;
             String realName = null;
@@ -4107,7 +4107,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                         // it is not already done.
                         pkg.setPackageName(renamed);
                     }
-
+                    
                 } else {
                     for (int i=pkg.mOriginalPackages.size()-1; i>=0; i--) {
                         if ((origPackage = mSettings.peekPackageLPr(
@@ -4137,12 +4137,12 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                 }
             }
-
+            
             if (mTransferedPackages.contains(pkg.packageName)) {
                 Slog.w(TAG, "Package " + pkg.packageName
                         + " was transferred to another, but its .apk remains");
             }
-
+            
             // Just create the setting, don't add it yet. For already existing packages
             // the PkgSetting exists already and doesn't have to be created.
             pkgSetting = mSettings.getPackageLPw(pkg, origPackage, realName, suid, destCodeFile,
@@ -4153,31 +4153,31 @@ public class PackageManagerService extends IPackageManager.Stub {
                 mLastScanError = PackageManager.INSTALL_FAILED_INSUFFICIENT_STORAGE;
                 return null;
             }
-
+            
             if (pkgSetting.origPackage != null) {
                 // If we are first transitioning from an original package,
                 // fix up the new package's name now.  We need to do this after
                 // looking up the package under its new name, so getPackageLP
                 // can take care of fiddling things correctly.
                 pkg.setPackageName(origPackage.name);
-
+                
                 // File a report about this.
                 String msg = "New package " + pkgSetting.realName
                         + " renamed to replace old package " + pkgSetting.name;
                 reportSettingsProblem(Log.WARN, msg);
-
+                
                 // Make a note of it.
                 mTransferedPackages.add(origPackage.name);
-
+                
                 // No longer need to retain this.
                 pkgSetting.origPackage = null;
             }
-
+            
             if (realName != null) {
                 // Make a note of it.
                 mTransferedPackages.add(pkg.packageName);
             }
-
+            
             if (mSettings.isDisabledSystemPackageLPr(pkg.packageName)) {
                 pkg.applicationInfo.flags |= ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
             }
@@ -5249,7 +5249,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
             }
         }
-
+        
         if (pkgInfo != null) {
             grantPermissionsLPw(pkgInfo, (flags&UPDATE_PERMISSIONS_REPLACE_PKG) != 0);
         }
@@ -5579,7 +5579,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 PackageParser.ActivityIntentInfo info) {
             return packageName.equals(info.activity.owner.packageName);
         }
-
+        
         @Override
         protected ResolveInfo newResult(PackageParser.ActivityIntentInfo info,
                 int match, int userId) {
@@ -5777,7 +5777,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 PackageParser.ServiceIntentInfo info) {
             return packageName.equals(info.service.owner.packageName);
         }
-
+        
         @Override
         protected ResolveInfo newResult(PackageParser.ServiceIntentInfo filter,
                 int match, int userId) {
@@ -5975,7 +5975,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         mHandler.sendMessage(mHandler.obtainMessage(START_CLEANING_PACKAGE,
                 userId, andCode ? 1 : 0, packageName));
     }
-
+    
     void startCleaningPackages() {
         // reader
         synchronized (mPackages) {
@@ -5996,7 +5996,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
         }
     }
-
+    
     private final class AppDirObserver extends FileObserver {
         public AppDirObserver(String path, int mask, boolean isrom) {
             super(path, mask);
@@ -8085,7 +8085,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         return false;
     }
-
+    
     // Utility method that returns the relative package path with respect
     // to the installation directory. Like say for /data/data/com.test-1.apk
     // string com.test-1 is returned.
@@ -8346,7 +8346,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 res.removedInfo.args = null;
             }
         }
-
+        
         // Successfully disabled the old package. Now proceed with re-installation
         mLastScanError = PackageManager.INSTALL_SUCCEEDED;
         pkg.applicationInfo.flags |= ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
@@ -8445,7 +8445,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
             */
         }
-
+            
         synchronized (mPackages) {
             updatePermissionsLPw(newPackage.packageName, newPackage,
                     UPDATE_PERMISSIONS_REPLACE_PKG | (newPackage.permissions.size() > 0
@@ -9163,17 +9163,12 @@ public class PackageManagerService extends IPackageManager.Stub {
                 // its data.  If this is a system app, we only allow this to happen if
                 // they have set the special DELETE_SYSTEM_APP which requests different
                 // semantics than normal for uninstalling system apps.
-                boolean privacyGuard = android.provider.Settings.Secure.getIntForUser(
-                        mContext.getContentResolver(),
-                        android.provider.Settings.Secure.PRIVACY_GUARD_DEFAULT,
-                        0, user.getIdentifier()) == 1;
                 if (DEBUG_REMOVE) Slog.d(TAG, "Only deleting for single user");
                 ps.setUserState(user.getIdentifier(),
                         COMPONENT_ENABLED_STATE_DEFAULT,
                         false, //installed
                         true,  //stopped
                         true,  //notLaunched
-                        privacyGuard,
                         null, null, null);
                 if (!isSystemApp(ps)) {
                     if (ps.isAnyInstalled(sUserManager.getUserIds())) {
@@ -9591,7 +9586,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         return Build.VERSION_CODES.CUR_DEVELOPMENT;
     }
-
+    
     public void addPreferredActivity(IntentFilter filter, int match,
             ComponentName[] set, ComponentName activity, int userId) {
         // writer
@@ -9780,60 +9775,6 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         return num;
-    }
-
-    @Override
-    public void setPrivacyGuardSetting(String appPackageName,
-            boolean enabled, int userId) {
-        if (!sUserManager.exists(userId)) return;
-        setPrivacyGuard(appPackageName, enabled, userId);
-    }
-
-    @Override
-    public boolean getPrivacyGuardSetting(String packageName, int userId) {
-        if (!sUserManager.exists(userId)) return false;
-        int uid = Binder.getCallingUid();
-        enforceCrossUserPermission(uid, userId, false, "get privacy guard");
-        // reader
-        synchronized (mPackages) {
-            return mSettings.getPrivacyGuardSettingLPr(packageName, userId);
-        }
-    }
-
-    private void setPrivacyGuard(final String packageName,
-            final boolean enabled, final int userId) {
-        PackageSetting pkgSetting;
-        final int uid = Binder.getCallingUid();
-        final int permission = mContext.checkCallingPermission(
-                android.Manifest.permission.CHANGE_PRIVACY_GUARD_STATE);
-        final boolean allowedByPermission = (permission == PackageManager.PERMISSION_GRANTED);
-        enforceCrossUserPermission(uid, userId, false, "set privacy guard");
-
-        synchronized (mPackages) {
-            pkgSetting = mSettings.mPackages.get(packageName);
-            if (pkgSetting == null) {
-                throw new IllegalArgumentException(
-                        "Unknown package: " + packageName);
-            }
-            // Allow root and verify that userId is not being specified by a different user
-            if (!allowedByPermission && !UserHandle.isSameApp(uid, pkgSetting.appId)) {
-                throw new SecurityException(
-                        "Permission Denial: attempt to change privacy guard state from pid="
-                        + Binder.getCallingPid()
-                        + ", uid=" + uid + ", package uid=" + pkgSetting.appId);
-            }
-            if (pkgSetting.isPrivacyGuard(userId) == enabled) {
-                // Nothing to do
-                return;
-            }
-            pkgSetting.setPrivacyGuard(enabled, userId);
-            mSettings.writePackageRestrictionsLPr(userId);
-        }
-        try {
-            ActivityManagerNative.getDefault().forceStopPackage(packageName, userId);
-        } catch (RemoteException e) {
-            //nothing
-        }
     }
 
     @Override
@@ -10240,7 +10181,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 pw.println("Unknown argument: " + opt + "; use -h for help");
             }
         }
-
+        
         // Is the caller requesting to dump a particular piece of data?
         if (opti < args.length) {
             String cmd = args[opti];
@@ -10417,7 +10358,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                 }
             }
-
+            
             if (dumpState.isDumping(DumpState.DUMP_PACKAGES)) {
                 mSettings.dumpPackagesLPr(pw, packageName, dumpState);
             }
