@@ -1650,7 +1650,7 @@ public abstract class Context {
      * @hide like {@link #stopService(Intent)} but for a specific user.
      */
     public abstract boolean stopServiceAsUser(Intent service, UserHandle user);
-
+    
     /**
      * Connect to an application service, creating it if needed.  This defines
      * a dependency between your application and the service.  The given
@@ -2285,16 +2285,6 @@ public abstract class Context {
      * @see android.os.UserManager
      */
     public static final String USER_SERVICE = "user";
-
-    /**
-     * Determine whether the application or calling application has
-     * privacy guard. This is a privacy feature intended to permit the user
-     * to control access to personal data. Applications and content providers
-     * can check this value if they wish to honor privacy guard.
-     *
-     * @hide
-     */
-    public abstract boolean isPrivacyGuardEnabled();
 
     /**
      * Use with {@link #getSystemService} to retrieve a

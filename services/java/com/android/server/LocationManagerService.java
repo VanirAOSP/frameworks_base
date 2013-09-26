@@ -985,7 +985,7 @@ public class LocationManagerService extends ILocationManager.Stub {
     public List<String> getProviders(Criteria criteria, boolean enabledOnly) {
         int allowedResolutionLevel = getCallerAllowedResolutionLevel();
         ArrayList<String> out;
-        int uid = Binder.getCallingUid();;
+        int uid = Binder.getCallingUid();
         long identity = Binder.clearCallingIdentity();
         try {
             synchronized (mLock) {
@@ -1401,7 +1401,6 @@ public class LocationManagerService extends ILocationManager.Stub {
         checkPackageName(packageName);
 
         final int pid = Binder.getCallingPid();
-
         final int uid = Binder.getCallingUid();
 
         synchronized (mLock) {
@@ -1653,7 +1652,6 @@ public class LocationManagerService extends ILocationManager.Stub {
             throw new SecurityException(
                     "calling sendNiResponse from outside of the system is not allowed");
         }
-
         try {
             return mNetInitiatedListener.sendNiResponse(notifId, userResponse);
         } catch (RemoteException e) {
