@@ -76,32 +76,32 @@ public class NavigationBarView extends LinearLayout {
     View mCurrentView = null;
     View[] mRotatedViews = new View[4];
 
-    float mButtonWidth, mMenuWidth;
-    float mGlowScale = 1.8f;
-    boolean mVertical;
-    boolean mScreenOn;
+    private float mButtonWidth, mMenuWidth;
+    private float mGlowScale = 1.8f;
+    private boolean mVertical;
+    private boolean mScreenOn;
 
-    boolean mHidden, mLowProfile, mShowMenu;
-    int mDisabledFlags = 0;
-    int mNavigationIconHints = 0;
-    private Drawable mBackIcon, mBackLandIcon, mBackAltIcon, mBackAltLandIcon;
+    private boolean mHidden, mLowProfile, mShowMenu;
+    private int mDisabledFlags = 0;
+    private int mNavigationIconHints = 0;
+    private Drawable mBackIcon, mBackAltIcon;
     private boolean mMenuArrowKeys;
     
     public DelegateViewHelper mDelegateHelper;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
-    final static boolean WORKAROUND_INVALID_LAYOUT = true;
-    final static int MSG_CHECK_INVALID_LAYOUT = 8686;
+    private final static boolean WORKAROUND_INVALID_LAYOUT = true;
+    private final static int MSG_CHECK_INVALID_LAYOUT = 8686;
 
-    int mNumberOfButtons = 3;
+    private int mNumberOfButtons = 3;
 
     /* 0 = Phone UI
      * 1 = Tablet UI
      * 2 = Phablet UI
      */
-    int mCurrentUIMode = 0;
+    private int mCurrentUIMode = 0;
 
-    int mNavigationBarColor = -1;
+    private int mNavigationBarColor = -1;
 
     private TransparencyManager mTransparencyManager;
 
@@ -249,9 +249,7 @@ public class NavigationBarView extends LinearLayout {
         mDelegateHelper = new DelegateViewHelper(this);
 
         mBackIcon = res.getDrawable(R.drawable.ic_sysbar_back);
-        mBackLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_land);
         mBackAltIcon = ((KeyButtonView)generateKey(false, KEY_BACK_ALT)).getDrawable(); //res.getDrawable(R.drawable.ic_sysbar_back_ime);
-        mBackAltLandIcon = ((KeyButtonView)generateKey(true, KEY_BACK_ALT)).getDrawable(); // res.getDrawable(R.drawable.ic_sysbar_back_ime);
         mButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_key_width);
         mMenuWidth = res.getDimensionPixelSize(R.dimen.navigation_menu_key_width);
     }
@@ -286,7 +284,6 @@ public class NavigationBarView extends LinearLayout {
                         mLongpressActions[j],
                         mPortraitIcons[j]);
                 v.setTag((landscape ? "key_land_" : "key_") + j);
-//                v.setAokpTarget(mAokpTarget);
                 iconUri = mPortraitIcons[j];
                 if (iconUri != null && iconUri.length() > 0) {
                     // custom icon from the URI here
@@ -300,11 +297,10 @@ public class NavigationBarView extends LinearLayout {
                     v.setTint(mClickActions[j].startsWith("**"));
                 }
                 addButton(navButtonLayout, v, landscape);
-                // if we are in LeftyMode, then we want to add to end, like Portrait
                 addLightsOutButton(lightsOut, v, landscape, false);
 
                 if (v.getId() == R.id.back){
-                	mBackIcon = mBackLandIcon = v.getDrawable();
+                	mBackIcon = v.getDrawable();
                 }
                 if (v.getId() == R.id.menu){
                     mHasBigMenuButton = true;
@@ -540,8 +536,8 @@ public class NavigationBarView extends LinearLayout {
             getBackButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
             ((ImageView)getBackButton()).setImageDrawable(
                     (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
-                    ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
-                    : (mVertical ? mBackLandIcon : mBackIcon));
+                    ? (mBackAltIcon)
+                    : (mBackIcon));
         }
         if (getHomeButton()!=null) {
             getHomeButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
@@ -556,15 +552,14 @@ public class NavigationBarView extends LinearLayout {
         setDisabledFlags(disabledFlags, false);
     }
 
-    private boolean areKeyguardHintsEnabled() {
-        return ((mDisabledFlags & View.STATUS_BAR_DISABLE_HOME) != 0) && !((mDisabledFlags & View.STATUS_BAR_DISABLE_SEARCH) != 0);
-    }
-
     private boolean isKeyguardEnabled() {
         KeyguardManager km = (KeyguardManager)mContext.getSystemService(Context.KEYGUARD_SERVICE);
         if(km == null) return false;
-
         return km.isKeyguardLocked();
+    }
+
+    private boolean areKeyguardHintsEnabled() {		
+	      return ((mDisabledFlags & View.STATUS_BAR_DISABLE_HOME) != 0) && !((mDisabledFlags & View.STATUS_BAR_DISABLE_SEARCH) != 0);		
     }
 
     public void setDisabledFlags(int disabledFlags, boolean force) {
@@ -574,10 +569,8 @@ public class NavigationBarView extends LinearLayout {
 
         final boolean disableHome = ((disabledFlags & View.STATUS_BAR_DISABLE_HOME) != 0);
         final boolean disableRecent = ((disabledFlags & View.STATUS_BAR_DISABLE_RECENT) != 0);
-        final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0)
-              && ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) == 0);
+        final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0);
         final boolean disableSearch = ((disabledFlags & View.STATUS_BAR_DISABLE_SEARCH) != 0);
-        final boolean keygaurdProbablyEnabled = areKeyguardHintsEnabled();
 
         if (mCurrentUIMode != 1 && SLIPPERY_WHEN_DISABLED) { // Tabletmode doesn't deal with slippery
             setSlippery(disableHome && disableRecent && disableBack && disableSearch);
@@ -605,7 +598,7 @@ public class NavigationBarView extends LinearLayout {
 
             }
         }
-        getSearchLight().setVisibility(keygaurdProbablyEnabled ? View.VISIBLE : View.GONE);
+        getSearchLight().setVisibility(areKeyguardHintsEnabled() ? View.VISIBLE : View.GONE);
         updateMenuArrowKeys();
     }
 
