@@ -99,6 +99,7 @@ public class ActiveDisplayView extends FrameLayout {
     private static final int MAX_OVERFLOW_ICONS = 8;
 
     private static final long DISPLAY_TIMEOUT = 8000L;
+    private static final int POCKET_SENSOR_TIMEOUT = 60000;
 
     // Targets
     private static final int UNLOCK_TARGET = 0;
@@ -658,8 +659,34 @@ public class ActiveDisplayView extends FrameLayout {
     private void onScreenTurnedOff() {
         hideNotificationView();
         cancelTimeoutTimer();
-        registerSensorListener();
+        pocketPulling();
         if (mRedisplayTimeout > 0) updateRedisplayTimer();
+    }
+
+    private synchronized void pocketPulling() {
+        
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        boolean A = false;
+
+        if (!shouldShowNotification()) {
+            do {
+               try {
+                    if (!A) {
+                        registerSensorListener();
+                        A = true;
+                        Thread.sleep(3000);
+                    } else {
+                        unregisterSensorListener();
+                        A = false;
+                        Thread.sleep(POCKET_SENSOR_TIMEOUT);
+                    }
+                } catch (InterruptedException e) {
+                    // nooo!
+                }
+            } while (!isScreenOn());
+        }
+
+        Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
     }
 
     private void turnScreenOff() {
