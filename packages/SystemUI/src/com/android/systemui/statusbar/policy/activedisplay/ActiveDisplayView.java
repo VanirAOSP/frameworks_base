@@ -79,6 +79,7 @@ import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
 
 import java.util.ArrayList;
+import android.util.Log;
 import java.util.Calendar;
 
 public class ActiveDisplayView extends FrameLayout {
@@ -148,19 +149,28 @@ public class ActiveDisplayView extends FrameLayout {
     private int mBrightnessMode = -1;
     private int mUserBrightnessLevel = -1;
 
+    private void logi(String s) { if (DEBUG) Log.i(TAG, s); }
+    private void logd(String s) { if (DEBUG) Log.d(TAG, s); }
+    private void logw(String s) { if (DEBUG) Log.w(TAG, s); }
+    private void loge(String s) { if (DEBUG) Log.e(TAG, s); }
+
     /**
      * Simple class that listens to changes in notifications
      */
     private class INotificationListenerWrapper extends INotificationListener.Stub {
         @Override
         public void onNotificationPosted(final StatusBarNotification sbn) {
-            if (shouldShowNotification() && isValidNotification(sbn)) {
+            if (shouldShowNotification() && isValidNotification(sbn) ) {
                 // need to make sure either the screen is off or the user is currently
                 // viewing the notifications
                 if (!isCallIncoming()) {
                     if (ActiveDisplayView.this.getVisibility() == View.VISIBLE
                             || !isScreenOn())
                         showNotification(sbn, true);
+                }
+                else
+                {
+                    logw("Not showing notification because phone is ringing");
                 }
             }
         }
@@ -710,7 +720,7 @@ public class ActiveDisplayView extends FrameLayout {
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         /* uncomment the line below for testing */
-        filter.addAction(ACTION_FORCE_DISPLAY);
+        //filter.addAction(ACTION_FORCE_DISPLAY);
         mContext.registerReceiver(mBroadcastReceiver, filter);
     }
 
@@ -751,6 +761,8 @@ public class ActiveDisplayView extends FrameLayout {
             mSensorManager.unregisterListener(mSensorListener, mProximitySensor);
             mProximitySensor = null;
         }
+        //prevent the proximity sensor from triggering an instantaneous screen on event
+        mProximityIsFar = true;
     }
 
     private StatusBarNotification getNextAvailableNotification() {
@@ -1008,9 +1020,11 @@ public class ActiveDisplayView extends FrameLayout {
         public void onSensorChanged(SensorEvent event) {
             float value = event.values[0];
             if (event.sensor.equals(mProximitySensor)) {
-                if (value >= mProximitySensor.getMaximumRange()) {
-                    mProximityIsFar = true;
-                    if (!isScreenOn() && mPocketModeEnabled && !isOnCall()) {
+                //only fire when initially removed from pocket
+                if (!mProximityIsFar && value >= mProximitySensor.getMaximumRange()) {
+                    mProximityIsFar = true; 
+                    if (!isScreenOn() && mPocketModeEnabled && !isOnCall() && !isCallIncoming()) {
+                        logd("Waking because just removed from pocket");
                         mNotification = getNextAvailableNotification();
                         if (mNotification != null) showNotification(mNotification, true);
                     }
