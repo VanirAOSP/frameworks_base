@@ -327,7 +327,7 @@ public class ActiveDisplayView extends FrameLayout {
             }
 
             if (mAttached && !mDisplayNotifications) {
-                unregisterNotificationListener();
+                unregisterNotificationListener();                
                 unregisterSensorListener();
                 unregisterBroadcastReceiver();
                 mAttached = false;
@@ -370,7 +370,6 @@ public class ActiveDisplayView extends FrameLayout {
         super(context, attrs);
 
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-        mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
         mPM = IPowerManager.Stub.asInterface(ServiceManager.getService(Context.POWER_SERVICE));
         mNM = INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE));
@@ -639,11 +638,13 @@ public class ActiveDisplayView extends FrameLayout {
 
     private void onScreenTurnedOn() {
         cancelRedisplayTimer();
+        unregisterSensorListener();
     }
 
     private void onScreenTurnedOff() {
         hideNotificationView();
         cancelTimeoutTimer();
+        resgisterSensorListener();
         if (mRedisplayTimeout > 0) updateRedisplayTimer();
     }
 
@@ -737,13 +738,19 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     private void registerSensorListener() {
-        if (mProximitySensor != null)
+        if (mProximitySensor == null)
+        {
+            mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
             mSensorManager.registerListener(mSensorListener, mProximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     private void unregisterSensorListener() {
         if (mProximitySensor != null)
+        {
             mSensorManager.unregisterListener(mSensorListener, mProximitySensor);
+            mProximitySensor = null;
+        }
     }
 
     private StatusBarNotification getNextAvailableNotification() {
