@@ -17,7 +17,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
 
     public ExtensibleKeyButtonView(Context context, AttributeSet attrs, String clickAction,
             String longPress) {
-        super(context, attrs);
+        super(context, attrs, clickAction.startsWith("**"));
         mClickAction = clickAction;
         mLongpress = longPress;
         setActions(clickAction, longPress);
