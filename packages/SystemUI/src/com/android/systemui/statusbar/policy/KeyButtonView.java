@@ -107,27 +107,30 @@ public class KeyButtonView extends ImageView {
     public KeyButtonView(Context context, AttributeSet attrs, int defStyle, boolean colorable) {
         super(context, attrs);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
+        TypedArray a = null;
+
+        try {
+            a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
                 defStyle, 0);
 
-        mCode = a.getInteger(R.styleable.KeyButtonView_keyCode, 0);
+            mCode = a.getInteger(R.styleable.KeyButtonView_keyCode, 0);
 
-        mSupportsLongpress = a.getBoolean(R.styleable.KeyButtonView_keyRepeat, true);
+            mSupportsLongpress = a.getBoolean(R.styleable.KeyButtonView_keyRepeat, true);
 
-        mGlowBG = a.getDrawable(R.styleable.KeyButtonView_glowBackground);
-        if (mGlowBG != null) {
-            setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
-            mGlowWidth = mGlowBG.getIntrinsicWidth();
-            mGlowHeight = mGlowBG.getIntrinsicHeight();
+            mGlowBG = a.getDrawable(R.styleable.KeyButtonView_glowBackground);
+            if (mGlowBG != null) {
+                setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
+                mGlowWidth = mGlowBG.getIntrinsicWidth();
+                mGlowHeight = mGlowBG.getIntrinsicHeight();
+            }
+        } finally {
+            if (a != null)
+                a.recycle();
         }
-
-        a.recycle();
 
         setClickable(true);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-
         mSettingsObserver = GlobalSettingsObserver.getInstance(context);
-
     }
 
     @Override
@@ -479,6 +482,5 @@ public class KeyButtonView extends ImageView {
                 kbv.invalidate();
             }
         }
-
     }
 }
