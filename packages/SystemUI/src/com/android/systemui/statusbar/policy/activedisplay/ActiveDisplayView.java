@@ -83,7 +83,7 @@ import android.util.Log;
 import java.util.Calendar;
 
 public class ActiveDisplayView extends FrameLayout {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = "ActiveDisplayView";
 
     // the following is used for testing purposes
@@ -110,6 +110,8 @@ public class ActiveDisplayView extends FrameLayout {
     private static final int MSG_HIDE_NOTIFICATION_VIEW = 1001;
     private static final int MSG_SHOW_NOTIFICATION      = 1002;
     private static final int MSG_DISMISS_NOTIFICATION   = 1003;
+
+    private static final long NAP_TIME = 100;
 
     private BaseStatusBar mBar;
     private boolean mAttached = false;
@@ -138,6 +140,7 @@ public class ActiveDisplayView extends FrameLayout {
     private LinearLayout.LayoutParams mOverflowLayoutParams;
     private KeyguardManager mKeyguardManager;
     private KeyguardLock mKeyguardLock;
+    private float value = 8.0f;
 
     // user customizable settings
     private boolean mDisplayNotifications = false;
@@ -395,7 +398,7 @@ public class ActiveDisplayView extends FrameLayout {
 
         mKeyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
 
-        mSettingsObserver = new SettingsObserver(new Handler());
+        mSettingsObserver = new SettingsObserver(mHandler);
         mCreationOrientation = Resources.getSystem().getConfiguration().orientation;
     }
 
@@ -752,16 +755,16 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     private void registerSensorListener() {
-        if (mProximitySensor == null)
-        {
+        if (mProximitySensor == null) {
+            logd("Registering sensor");
             mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            mSensorManager.registerListener(mSensorListener, mProximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(mSensorListener, mProximitySensor, 2000000);
         }
     }
 
     private void unregisterSensorListener() {
-        if (mProximitySensor != null)
-        {
+        if (mProximitySensor != null) {
+            logd("Unegistering sensor");
             mSensorManager.unregisterListener(mSensorListener, mProximitySensor);
             mProximitySensor = null;
         }
@@ -1020,10 +1023,13 @@ public class ActiveDisplayView extends FrameLayout {
     private SensorEventListener mSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            float value = event.values[0];
-            if (event.sensor.equals(mProximitySensor)) {
-                //only fire when initially removed from pocket
-                if (!mProximityIsFar && value >= mProximitySensor.getMaximumRange() / 2.0) {
+            float newvalue = event.values[0];
+            logd("new:"+newvalue+" old:"+value);
+            if (Math.abs(newvalue-value)>0.1) {
+                value = newvalue;
+                //only fire when initially removed from pocket                
+                logd("Got a proximity reading!\nvalue:"+value+"\nthresh:"+(mProximitySensor.getMaximumRange()));
+                if (value >= mProximitySensor.getMaximumRange()) {
                     mProximityIsFar = true;
                     if (!isScreenOn() && mPocketModeEnabled && !isOnCall() && !isCallIncoming()) {
                         logd("Waking because just removed from pocket");
