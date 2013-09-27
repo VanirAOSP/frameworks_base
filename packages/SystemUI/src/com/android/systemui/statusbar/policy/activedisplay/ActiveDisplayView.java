@@ -111,6 +111,8 @@ public class ActiveDisplayView extends FrameLayout {
     private static final int MSG_SHOW_NOTIFICATION      = 1002;
     private static final int MSG_DISMISS_NOTIFICATION   = 1003;
 
+    private static final int NAP_TIME = 2000;
+
     private BaseStatusBar mBar;
     private boolean mAttached = false;
     private GlowPadView mGlowPadView;
@@ -138,6 +140,13 @@ public class ActiveDisplayView extends FrameLayout {
     private LinearLayout.LayoutParams mOverflowLayoutParams;
     private KeyguardManager mKeyguardManager;
     private KeyguardLock mKeyguardLock;
+    private Handler mRegDelayer = new Handler();
+    private Runnable mRegger = new Runnable() {
+        @Override
+        public void run() {
+            registerSensorListener();
+        }
+    }
 
     // user customizable settings
     private boolean mDisplayNotifications = false;
@@ -334,7 +343,7 @@ public class ActiveDisplayView extends FrameLayout {
 
                 if (!mAttached) {
                     registerNotificationListener();
-                    registerSensorListener();
+                    delayedRegister();
                     registerBroadcastReceiver();
                     mAttached = true;
                 }
@@ -658,7 +667,7 @@ public class ActiveDisplayView extends FrameLayout {
     private void onScreenTurnedOff() {
         hideNotificationView();
         cancelTimeoutTimer();
-        registerSensorListener();
+        delayedRegistration();
         if (mRedisplayTimeout > 0) updateRedisplayTimer();
     }
 
@@ -751,19 +760,32 @@ public class ActiveDisplayView extends FrameLayout {
         }
     }
 
+    private void delayedRegister() {
+        synchronized (mRegDelayer) {
+            logd("Scheduling delayed sensor registration");
+            mRegDelayer.removeCallbacks(mRegger);
+            mRegDelayer.postDelated(mRegger, NAP_TIME);
+        }
+    }
+
     private void registerSensorListener() {
-        if (mProximitySensor == null)
-        {
-            mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            mSensorManager.registerListener(mSensorListener, mProximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+        synchronized(mRegDelayer) {
+            if (mProximitySensor == null) {
+                logd("Registering sensor");
+                mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+                mSensorManager.registerListener(mSensorListener, mProximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+            }
         }
     }
 
     private void unregisterSensorListener() {
-        if (mProximitySensor != null)
-        {
-            mSensorManager.unregisterListener(mSensorListener, mProximitySensor);
-            mProximitySensor = null;
+        synchronized(mRegDelayer) {
+            mRegDelayer.removeCallbacks(mRegger); //clear any pending delayedRegs, because we don't want it to restart
+            if (mProximitySensor != null) {
+                logd("Unegistering sensor");
+                mSensorManager.unregisterListener(mSensorListener, mProximitySensor);
+                mProximitySensor = null;
+            }
         }
     }
 
@@ -1035,6 +1057,9 @@ public class ActiveDisplayView extends FrameLayout {
                         logd("HOT POCKET HOT POCKET");
                     mProximityIsFar = false;
                 }
+                logd("Got a proximity reading!");
+                unregisterSensorListener(); //1 event happened, so unregister
+                delayedRegister(); //we'll re-register after a quick nap
             }
         }
 
