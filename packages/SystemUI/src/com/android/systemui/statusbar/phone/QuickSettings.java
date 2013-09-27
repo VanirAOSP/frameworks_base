@@ -468,10 +468,17 @@ public class QuickSettings {
                             cursor.close();
                         }
                     }
-                    InputStream input = ContactsContract.Contacts.
+
+                    InputStream input = null;
+                    try {
+                        input = ContactsContract.Contacts.
                             openContactPhotoInputStream(mContext.getContentResolver(), res, true);
-                    if (input != null) {
-                        rawAvatar = BitmapFactory.decodeStream(input);
+                        if (input != null) {
+                            rawAvatar = BitmapFactory.decodeStream(input);
+                        }
+                    } finally {
+                        if (cursor != null)
+                            cursor.close();
                     }
 
                     if (rawAvatar != null) {
