@@ -501,34 +501,30 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     public void updateResources() {
-        try {
-            ArrayList<TargetDrawable> storedDraw = new ArrayList<TargetDrawable>();
-            final Resources res = getResources();
-            final int targetInset = res.getDimensionPixelSize(com.android.internal.R.dimen.lockscreen_target_inset);
-            final Drawable blankActiveDrawable =
-                    res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_target_activated);
-            final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
+        ArrayList<TargetDrawable> storedDraw = new ArrayList<TargetDrawable>();
+        final Resources res = getResources();
+        final int targetInset = res.getDimensionPixelSize(com.android.internal.R.dimen.lockscreen_target_inset);
+        final Drawable blankActiveDrawable =
+                res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_target_activated);
+        final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
 
-            // Add unlock target
-            storedDraw.add(new TargetDrawable(res, res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_unlock)));
-            if (mNotificationDrawable != null) {
-                storedDraw.add(new TargetDrawable(res, null));
-                storedDraw.add(new TargetDrawable(res, null));
-                storedDraw.add(new TargetDrawable(res, null));
-                storedDraw.add(new TargetDrawable(res, getLayeredDrawable(activeBack,
-                        mNotificationDrawable, targetInset, false)));
-                storedDraw.add(new TargetDrawable(res, null));
-                if (mNotification != null && mNotification.isClearable()) {
-                    storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_ad_dismiss_notification)));
-                } else {
-                    storedDraw.add(new TargetDrawable(res, null));
-                }
-            }
+        // Add unlock target
+        storedDraw.add(new TargetDrawable(res, res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_unlock)));
+        if (mNotificationDrawable != null) {
             storedDraw.add(new TargetDrawable(res, null));
-            mGlowPadView.setTargetResources(storedDraw);
-        } catch(Resources.NotFoundException nfe) {
-            Log.e(TAG, "updateResources()", nfe);
+            storedDraw.add(new TargetDrawable(res, null));
+            storedDraw.add(new TargetDrawable(res, null));
+            storedDraw.add(new TargetDrawable(res, getLayeredDrawable(activeBack,
+                    mNotificationDrawable, targetInset, false)));
+            storedDraw.add(new TargetDrawable(res, null));
+            if (mNotification != null && mNotification.isClearable()) {
+                storedDraw.add(new TargetDrawable(res, res.getDrawable(R.drawable.ic_ad_dismiss_notification)));
+            } else {
+                storedDraw.add(new TargetDrawable(res, null));
+            }
         }
+        storedDraw.add(new TargetDrawable(res, null));
+        mGlowPadView.setTargetResources(storedDraw);
     }
 
     private void doTransition(View view, float to, long duration) {
@@ -612,7 +608,7 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     private void handleShowNotification(boolean ping) {
-        if (!mDisplayNotifications) return;
+        if (!mDisplayNotifications || inQuietHours()) return;
         showNotificationView();
         setActiveNotification(mNotification, true);
         inflateRemoteView(mNotification);
@@ -876,6 +872,31 @@ public class ActiveDisplayView extends FrameLayout {
     };
 
     /**
+     * Check if device is in Quiet Hours in the moment.
+     */
+    private boolean inQuietHours() {
+        boolean quietHoursEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_ENABLED, 0, UserHandle.USER_CURRENT_OR_SELF) != 0;
+        int quietHoursStart = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_START, 0, UserHandle.USER_CURRENT_OR_SELF);
+        int quietHoursEnd = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_END, 0, UserHandle.USER_CURRENT_OR_SELF);
+        boolean quietHoursDim = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.QUIET_HOURS_DIM, 0, UserHandle.USER_CURRENT_OR_SELF) != 0;
+
+        if (quietHoursEnabled && quietHoursDim && (quietHoursStart != quietHoursEnd)) {
+            Calendar calendar = Calendar.getInstance();
+            int minutes = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+            if (quietHoursEnd < quietHoursStart) {
+                return (minutes > quietHoursStart) || (minutes < quietHoursEnd);
+            } else {
+                return (minutes > quietHoursStart) && (minutes < quietHoursEnd);
+            }
+        }
+        return false;
+    } 
+
+    /**
      * Swaps the current StatusBarNotification with {@code sbn}
      * @param sbn The StatusBarNotification to swap with the current
      */
@@ -1025,7 +1046,7 @@ public class ActiveDisplayView extends FrameLayout {
                 //only fire when initially removed from pocket
                 if (!mProximityIsFar && value >= mProximitySensor.getMaximumRange() / 2.0) {
                     mProximityIsFar = true;
-                    if (!isScreenOn() && mPocketModeEnabled && !isOnCall() && !isCallIncoming()) {
+                    if (!isScreenOn() && mPocketModeEnabled && !isOnCall() && !isCallIncoming() && !inQuietHours()) {
                         logd("Waking because just removed from pocket");
                         mNotification = getNextAvailableNotification();
                         if (mNotification != null) showNotification(mNotification, true);
