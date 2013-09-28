@@ -622,7 +622,7 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     private void handleShowNotification(boolean ping) {
-        if (!mDisplayNotifications) return;
+        if (!mDisplayNotifications || inQuietHours()) return;
         showNotificationView();
         setActiveNotification(mNotification, true);
         inflateRemoteView(mNotification);
@@ -886,6 +886,31 @@ public class ActiveDisplayView extends FrameLayout {
     };
 
     /**
+     * Check if device is in Quiet Hours in the moment.
+     */
+    private boolean inQuietHours() {
+        boolean quietHoursEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_ENABLED, 0, UserHandle.USER_CURRENT_OR_SELF) != 0;
+        int quietHoursStart = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_START, 0, UserHandle.USER_CURRENT_OR_SELF);
+        int quietHoursEnd = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_END, 0, UserHandle.USER_CURRENT_OR_SELF);
+        boolean quietHoursDim = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.QUIET_HOURS_DIM, 0, UserHandle.USER_CURRENT_OR_SELF) != 0;
+
+        if (quietHoursEnabled && quietHoursDim && (quietHoursStart != quietHoursEnd)) {
+            Calendar calendar = Calendar.getInstance();
+            int minutes = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+            if (quietHoursEnd < quietHoursStart) {
+                return (minutes > quietHoursStart) || (minutes < quietHoursEnd);
+            } else {
+                return (minutes > quietHoursStart) && (minutes < quietHoursEnd);
+            }
+        }
+        return false;
+    } 
+
+    /**
      * Swaps the current StatusBarNotification with {@code sbn}
      * @param sbn The StatusBarNotification to swap with the current
      */
@@ -1039,7 +1064,7 @@ public class ActiveDisplayView extends FrameLayout {
                 logd("Got a proximity reading!\nvalue:"+value+"\nthresh:"+(mProximitySensor.getMaximumRange()));
                 if (value >= mProximitySensor.getMaximumRange()) {
                     mProximityIsFar = true;
-                    if (!isScreenOn() && mPocketModeEnabled && !isOnCall() && !isCallIncoming()) {
+                    if (!isScreenOn() && mPocketModeEnabled && !isOnCall() && !isCallIncoming() && !inQuietHours()) {
                         logd("Waking because just removed from pocket");
                         mNotification = getNextAvailableNotification();
                         if (mNotification != null) showNotification(mNotification, true);
