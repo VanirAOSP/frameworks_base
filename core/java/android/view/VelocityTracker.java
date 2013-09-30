@@ -120,9 +120,6 @@ public final class VelocityTracker {
      * @param event The MotionEvent you received and would like to track.
      */
     public void addMovement(MotionEvent event) {
-        if (event == null) {
-            throw new IllegalArgumentException("event must not be null");
-        }
         nativeAddMovement(mPtr, event);
     }
 
