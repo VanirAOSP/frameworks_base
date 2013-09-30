@@ -98,6 +98,7 @@ public class NumPadKey extends Button {
             }
         }
         setText(builder);
+        a.recycle();
     }
 
     @Override
