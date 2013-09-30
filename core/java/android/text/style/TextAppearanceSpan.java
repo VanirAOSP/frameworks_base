@@ -93,8 +93,6 @@ public class TextAppearanceSpan extends MetricAffectingSpan implements Parcelabl
             }
         }
 
-        a.recycle();
-
         if (colorList >= 0) {
             a = context.obtainStyledAttributes(com.android.internal.R.style.Theme,
                                             com.android.internal.R.styleable.Theme);
@@ -102,7 +100,9 @@ public class TextAppearanceSpan extends MetricAffectingSpan implements Parcelabl
             textColor = a.getColorStateList(colorList);
             a.recycle();
         }
-        
+
+        if (a != null)
+            a.recycle();        
         mTextColor = textColor;
     }
 

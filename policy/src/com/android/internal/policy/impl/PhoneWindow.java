@@ -2767,6 +2767,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 }
             }
             mTextColor = a.getColor(com.android.internal.R.styleable.Window_textColor, 0xFF000000);
+            a.recycle();
         }
 
         // Inflate the window decor.
