@@ -18,7 +18,6 @@ package com.android.systemui.statusbar.tablet;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.RemoteException;
 import android.util.AttributeSet;
 import android.util.Slog;

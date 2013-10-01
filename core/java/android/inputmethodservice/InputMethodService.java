@@ -255,7 +255,7 @@ public class InputMethodService extends AbstractInputMethodService {
     boolean mHardwareAccelerated = false;
     
     LayoutInflater mInflater;
-    TypedArray mThemeAttrs;
+    private TypedArray mThemeAttrs;
     View mRootView;
     SoftInputWindow mWindow;
     boolean mInitialized;

@@ -2170,6 +2170,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         com.android.internal.R.styleable.Window_windowShowWallpaper,false)) {
                 return null;
             }
+            ta.recycle();
 
             Resources r = context.getResources();
             win.setTitle(r.getText(labelRes, nonLocalizedLabel));
