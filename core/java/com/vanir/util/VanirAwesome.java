@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.vanir;
+package com.vanir.util;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -62,7 +62,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-import static com.android.internal.util.vanir.VanirConstants.*;
+import static com.vanir.util.VanirConstants.*;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.R;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.vanir;
+package com.vanir.util;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

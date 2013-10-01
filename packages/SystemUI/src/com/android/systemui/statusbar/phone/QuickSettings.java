@@ -97,8 +97,8 @@ import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.telephony.Phone;
 import com.vanir.util.CMDProcessor;
 import com.vanir.util.Helpers;
-import com.android.systemui.vanir.VanirAwesome;
-import static com.android.internal.util.vanir.VanirConstants.*;
+import com.vanir.util.VanirAwesome;
+import static com.vanir.util.VanirConstants.*;
 
 import java.io.File;
 import java.io.FileReader;

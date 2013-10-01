@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.internal.util.vanir;
+package com.vanir.util;
 
 import java.util.HashMap;
 import java.util.List;
