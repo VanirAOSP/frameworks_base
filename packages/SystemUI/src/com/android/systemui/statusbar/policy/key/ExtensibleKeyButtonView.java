@@ -6,9 +6,9 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 
-import static com.android.internal.util.vanir.VanirConstants.*;
+import static com.vanir.util.VanirConstants.*;
 import com.android.systemui.R;
-import com.android.systemui.vanir.VanirAwesome;
+import com.vanir.util.VanirAwesome;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 
 public class ExtensibleKeyButtonView extends KeyButtonView {
