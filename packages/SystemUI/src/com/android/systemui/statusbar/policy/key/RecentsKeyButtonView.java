@@ -9,7 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.android.systemui.R;
-import com.android.systemui.vanir.VanirAwesome;
+import com.vanir.util.VanirAwesome;
 import com.android.systemui.recent.RecentTasksLoader;
 import com.android.systemui.recent.RecentsActivity;
 

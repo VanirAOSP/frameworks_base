@@ -49,12 +49,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import static com.android.internal.util.vanir.VanirConstants.*;
+import static com.vanir.util.VanirConstants.*;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.vanir.BackgroundAlphaColorDrawable;
 import com.android.systemui.TransparencyManager;
-import com.android.systemui.vanir.VanirAwesome;
+import com.vanir.util.VanirAwesome;
 import com.android.systemui.vanir.NavBarHelpers;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;

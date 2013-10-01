@@ -45,7 +45,7 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import static com.android.internal.util.vanir.VanirConstants.*;
+import static com.vanir.util.VanirConstants.*;
 import com.android.systemui.R;
 import java.io.File;
 import java.net.URISyntaxException;

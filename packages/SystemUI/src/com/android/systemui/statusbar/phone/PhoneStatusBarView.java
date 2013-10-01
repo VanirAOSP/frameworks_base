@@ -43,7 +43,7 @@ import com.android.systemui.EventLogTags;
 import com.android.systemui.R;
 import com.vanir.BackgroundAlphaColorDrawable;
 import com.android.systemui.statusbar.NavigationBarView;
-import com.android.systemui.vanir.VanirAwesome;
+import com.vanir.util.VanirAwesome;
 
 public class PhoneStatusBarView extends PanelBar {
     private static final String TAG = "PhoneStatusBarView";
