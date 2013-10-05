@@ -363,4 +363,8 @@
     <!-- Top margin for overflow notifications shown in the P.O.R.N. view -->
     <dimen name="glowpad_overflow_notifications_margin_top">48dp</dimen>
 
+    <!-- We don't use this, but cm's device trees set it, so let's just head-nod
+       to allow build to work with 100% CM device repos -->
+    <dimen name="pie_trigger_thickness">-9000dp</dimen>
+
 </resources>
