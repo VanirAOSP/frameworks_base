@@ -243,9 +243,9 @@ public class QuickSettings {
     private static final int TICKS_UNTIL_CONFIDENT_QS_UPDATED=12; //3 seoncds at 4 hz
     private int ticksleft;
 
-    private HashMap<String, Integer> toggleMap;
+    private static HashMap<String, Integer> toggleMap;
 
-    private HashMap<String, Integer> getToggleMap() {
+    private static HashMap<String, Integer> getToggleMap() {
         if (toggleMap == null) {
             toggleMap = new HashMap<String, Integer>();
             toggleMap.put(USER_TOGGLE, USER_TILE);
