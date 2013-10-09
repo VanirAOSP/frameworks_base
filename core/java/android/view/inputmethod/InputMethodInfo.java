@@ -180,7 +180,6 @@ public final class InputMethodInfo implements Parcelable {
                             a.getInt(com.android.internal.R.styleable
                                     .InputMethod_Subtype_subtypeId, 0 /* use Arrays.hashCode */)
                             );
-                    a.recycle();
                     if (!subtype.isAuxiliary()) {
                         mIsAuxIme = false;
                     }
