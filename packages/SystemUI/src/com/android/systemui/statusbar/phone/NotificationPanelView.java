@@ -54,8 +54,6 @@ public class NotificationPanelView extends PanelView {
     private float mSwipeDirection;
     private boolean mTrackingSwipe;
     private boolean mSwipeTriggered;
-    private boolean mPullDownOne;
-    private boolean mPullDownTwo;
 
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -120,16 +118,6 @@ public class NotificationPanelView extends PanelView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                mPullDownOne = Settings.System.getInt(getContext().getContentResolver(),
-                                Settings.System.QS_QUICK_PULLDOWN, 0) == 1;
-                mPullDownTwo = Settings.System.getInt(getContext().getContentResolver(),
-                                Settings.System.QS_QUICK_PULLDOWN, 0) == 2;
-            }
-        });
-
         if (DEBUG_GESTURES) {
             if (event.getActionMasked() != MotionEvent.ACTION_MOVE) {
                 EventLog.writeEvent(EventLogTags.SYSUI_NOTIFICATIONPANEL_TOUCH,
@@ -148,10 +136,12 @@ public class NotificationPanelView extends PanelView {
                     mTrackingSwipe = isFullyExpanded();
                     mOkToFlip = getExpandedHeight() == 0;
                     if (event.getX(0) > getWidth() * (1.0f - STATUS_BAR_SETTINGS_RIGHT_PERCENTAGE) &&
-                            mPullDownOne) {
+                            Settings.System.getInt(getContext().getContentResolver(),
+                                    Settings.System.QS_QUICK_PULLDOWN, 0) == 1) {
 					flip = true;
                     } else if (event.getX(0) < getWidth() * (1.0f - STATUS_BAR_SETTINGS_LEFT_PERCENTAGE) &&
-                            mPullDownTwo) {
+                            Settings.System.getInt(getContext().getContentResolver(),
+                                    Settings.System.QS_QUICK_PULLDOWN, 0) == 2) {
                     flip = true;
                     }
                     break;
