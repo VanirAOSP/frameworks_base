@@ -173,6 +173,7 @@ public class SuggestionSpan extends CharacterStyle implements ParcelableSpan {
                 com.android.internal.R.styleable.SuggestionSpan_textUnderlineThickness, 0);
         mMisspelledUnderlineColor = typedArray.getColor(
                 com.android.internal.R.styleable.SuggestionSpan_textUnderlineColor, Color.BLACK);
+        typedArray.recycle();
 
         defStyle = com.android.internal.R.attr.textAppearanceEasyCorrectSuggestion;
         typedArray = context.obtainStyledAttributes(
@@ -181,6 +182,7 @@ public class SuggestionSpan extends CharacterStyle implements ParcelableSpan {
                 com.android.internal.R.styleable.SuggestionSpan_textUnderlineThickness, 0);
         mEasyCorrectUnderlineColor = typedArray.getColor(
                 com.android.internal.R.styleable.SuggestionSpan_textUnderlineColor, Color.BLACK);
+        typedArray.recycle();
 
         defStyle = com.android.internal.R.attr.textAppearanceAutoCorrectionSuggestion;
         typedArray = context.obtainStyledAttributes(
