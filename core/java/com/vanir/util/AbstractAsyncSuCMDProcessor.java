@@ -1,4 +1,3 @@
-
 package com.vanir.util;
 
 import android.os.AsyncTask;
@@ -107,4 +106,3 @@ public abstract class AbstractAsyncSuCMDProcessor extends AsyncTask<String, Void
     @Override
     protected abstract void onPostExecute(String result);
 }
-

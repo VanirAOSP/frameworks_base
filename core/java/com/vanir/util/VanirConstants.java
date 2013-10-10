@@ -17,7 +17,6 @@
 package com.vanir.util;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class VanirConstants {
 

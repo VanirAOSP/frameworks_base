@@ -19,42 +19,21 @@ package com.vanir.util;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.Intent.ShortcutIconResource;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.net.Uri;
-import android.os.Vibrator;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
-import android.os.Messenger;
-import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.Vibrator;
-import android.provider.AlarmClock;
-import android.provider.CalendarContract;
-import android.provider.CalendarContract.Events;
-import android.provider.Settings;
-import android.speech.RecognizerIntent;
-import android.util.AttributeSet;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.InputDevice;
@@ -67,7 +46,6 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.R;
 
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
 
 public class VanirAwesome {
@@ -180,7 +158,7 @@ public class VanirAwesome {
                 break;
             case ACTION_NOTIFICATIONS:
                 if (wtf) {
-					if (!ftw) {
+                    if (!ftw) {
                         try {
                             IStatusBarService.Stub.asInterface(
                                 ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandNotificationsPanel();
@@ -190,24 +168,24 @@ public class VanirAwesome {
                             // Let's hope we don't catch one!
                         }
                     } else {
-						try {
-							IStatusBarService.Stub.asInterface(
+                        try {
+                            IStatusBarService.Stub.asInterface(
                                 ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandSettingsPanel();
                             ftw = false;
                         } catch (RemoteException e) {
-							// NO!!!
-					    }
-					    wtf = false;
-                    }
-			    } else {
-					try {
-					    IStatusBarService.Stub.asInterface(
+                            // NO!!!
+                        }
+                        wtf = false;
+                        }
+                    } else {
+                    try {
+                        IStatusBarService.Stub.asInterface(
                             ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).collapsePanels();
                     wtf = true;
                     } catch (RemoteException e) {
-						// EL CHUPACABRA!!
-					}
-				}
+                        // EL CHUPACABRA!!
+                    }
+                }
                 break;
             case ACTION_BLANK:
                 // FRRRRRT...
@@ -219,7 +197,7 @@ public class VanirAwesome {
                 Intent robocop = new Intent("android.intent.action.REBOOTMENU");
                 robocop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(robocop);
-                break; 
+                break;
             case ACTION_APP:
                 return false;
                 //this should only happen during the end of days.
@@ -252,13 +230,13 @@ public class VanirAwesome {
     }
 
    private static void injectKeyDelayed(int keycode) {
-	   KeyUp onInjectKey_Up = new KeyUp(keycode);
-	   KeyDown onInjectKey_Down = new KeyDown(keycode);
+       KeyUp onInjectKey_Up = new KeyUp(keycode);
+       KeyDown onInjectKey_Down = new KeyDown(keycode);
        mHandler.removeCallbacks(onInjectKey_Down);
        mHandler.removeCallbacks(onInjectKey_Up);
        mHandler.post(onInjectKey_Down);
        mHandler.postDelayed(onInjectKey_Up, 10); // introduce small delay to
-                                                  // handle key press
+                                                 // handle key press
     }
 
     public static class KeyDown implements Runnable {
@@ -347,9 +325,9 @@ public class VanirAwesome {
     }
 
     public static void wtfHelper() {
-		wtf = true;
-		ftw = false;
-	}
+        wtf = true;
+        ftw = false;
+    }
 
     private static Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {

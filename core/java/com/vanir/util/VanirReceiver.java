@@ -19,7 +19,6 @@ package com.vanir.util;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 public class VanirReceiver extends BroadcastReceiver {
 
@@ -28,7 +27,7 @@ public class VanirReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        // get extras from intent
+       // get extras from intent
        String action = intent.getStringExtra("action");
        //Get instance of awesome action and launch
        VanirAwesome.launchAction(context, action);

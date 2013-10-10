@@ -1,4 +1,3 @@
-
 package com.vanir.util;
 
 import android.util.Log;
