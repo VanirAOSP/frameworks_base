@@ -21,14 +21,12 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
-import android.os.Vibrator;
-import android.provider.Settings;
 
 /*
  * Toggle Ring/Vibrate/Silent
  */
 
-public class RingSilentToggle extends Activity  {
+public class RingSilentToggle extends Activity {
   public RingSilentToggle() {
     super();
   }

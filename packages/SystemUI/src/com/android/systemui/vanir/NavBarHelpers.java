@@ -16,42 +16,22 @@
 
 package com.android.systemui.vanir;
 
-import android.app.SearchManager;
-import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Xfermode;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
-import android.media.AudioManager;
-import android.os.UserHandle;
-import android.provider.Settings;
 import android.text.TextUtils;
 
 import static com.vanir.util.VanirConstants.*;
 import com.android.systemui.R;
-import java.io.File;
 import java.net.URISyntaxException;
 
 public class NavBarHelpers {
-	private static boolean wtf;
+    private static boolean wtf;
 
     private NavBarHelpers() {
     }
@@ -64,12 +44,12 @@ public class NavBarHelpers {
         Drawable newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_null);
         VanirConstant IconEnum = fromString(uri);
         switch (IconEnum) {
-		case ACTION_BLANK:
-		     newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_blank);
-		     break;
+        case ACTION_BLANK:
+            newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_blank);
+            break;
         case ACTION_HOME:
-             newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_home);
-             break;
+            newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_home);
+            break;
         case ACTION_BACK:
             newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_back);
             break;
@@ -120,9 +100,9 @@ public class NavBarHelpers {
         String newSummary = mContext.getResources().getString(R.string.action_none);
         VanirConstant stringEnum = fromString(uri);
         switch (stringEnum) {
-		case ACTION_BLANK:
-		    newSummary = mContext.getResources().getString(R.string.action_blank);
-		    break;
+        case ACTION_BLANK:
+            newSummary = mContext.getResources().getString(R.string.action_blank);
+            break;
         case ACTION_HOME:
             newSummary = mContext.getResources().getString(R.string.action_home);
             break;

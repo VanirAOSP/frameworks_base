@@ -26,7 +26,7 @@ import android.os.Bundle;
  * Toggle the NavBar
  */
 
-public class WidgetToggle extends Activity  {
+public class WidgetToggle extends Activity {
   public WidgetToggle() {
     super();
   }
