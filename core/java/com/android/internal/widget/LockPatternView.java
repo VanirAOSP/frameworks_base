@@ -256,7 +256,6 @@ public class LockPatternView extends View {
             mAspect = ASPECT_SQUARE;
         }
 
-        a.recycle();
         setClickable(true);
 
         mPathPaint.setAntiAlias(true);
