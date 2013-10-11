@@ -1,4 +1,3 @@
-
 package com.android.systemui.statusbar;
 
 import android.appwidget.AppWidgetHost;
@@ -10,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 
 public class WidgetPagerAdapter extends PagerAdapter {

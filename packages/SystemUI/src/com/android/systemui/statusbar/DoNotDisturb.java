@@ -17,12 +17,8 @@
 package com.android.systemui.statusbar;
 
 import android.app.StatusBarManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.RemoteException;
-import android.os.ServiceManager;
-import android.util.Slog;
 
 import com.android.systemui.statusbar.policy.Prefs;
 
@@ -57,4 +53,3 @@ public class DoNotDisturb implements SharedPreferences.OnSharedPreferenceChangeL
         mStatusBar.disable(mDoNotDisturb ? disabled : 0);
     }
 }
-
