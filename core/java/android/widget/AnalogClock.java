@@ -90,8 +90,6 @@ public class AnalogClock extends View {
             mMinuteHand = r.getDrawable(com.android.internal.R.drawable.clock_hand_minute);
         }
 
-        a.recycle();
-
         mCalendar = new Time();
 
         mDialWidth = mDial.getIntrinsicWidth();

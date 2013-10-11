@@ -68,7 +68,6 @@ public class KeyguardGlowStripView extends LinearLayout {
         mNumDots = a.getInt(R.styleable.KeyguardGlowStripView_numDots, mNumDots);
         mDotDrawable = a.getDrawable(R.styleable.KeyguardGlowStripView_glowDot);
         mLeftToRight = a.getBoolean(R.styleable.KeyguardGlowStripView_leftToRight, mLeftToRight);
-        a.recycle();
     }
 
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {

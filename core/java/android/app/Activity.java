@@ -5109,7 +5109,6 @@ public class Activity extends ContextThemeWrapper
             // Apps that have no title don't need no title bar
             TypedValue outValue = new TypedValue();
             boolean result = styleArray.getValue(com.android.internal.R.styleable.Window_windowNoTitle, outValue);
-            styleArray.recycle();
 
             if (backgroundValue != null && backgroundValue.toString().contains("light")) {
                 context.getTheme().applyStyle(com.android.internal.R.style.Theme_DeviceDefault_FloatingWindowLight, true);
