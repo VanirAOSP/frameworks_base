@@ -17,7 +17,6 @@
 package com.android.systemui.statusbar.phone;
 
 import com.android.internal.view.RotationPolicy;
-import com.android.internal.widget.LockPatternUtils;
 import com.android.systemui.R;
 
 import com.android.systemui.statusbar.BaseStatusBar;
@@ -83,7 +82,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -93,7 +91,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.telephony.Phone;
 import com.vanir.util.CMDProcessor;
 import com.vanir.util.Helpers;
@@ -101,16 +98,11 @@ import com.vanir.util.VanirAwesome;
 import static com.vanir.util.VanirConstants.*;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- *
- */
 public class QuickSettings {
     private static final String TAG = "QuickSettings";
     public static final boolean SHOW_IME_TILE = false;
@@ -153,7 +145,7 @@ public class QuickSettings {
     public static final int STATE_RECORDING = 2;
     public static final int STATE_JUST_RECORDED = 3;
     public static final int STATE_NO_RECORDING = 4;
-    
+
     public static final String USER_TOGGLE = "USER";
     public static final String BRIGHTNESS_TOGGLE = "BRIGHTNESS";
     public static final String SETTINGS_TOGGLE = "SETTINGS";
@@ -184,7 +176,7 @@ public class QuickSettings {
     public static final String MEMORY_TOGGLE = "MEMORY";
     public static final String PIE_TOGGLE = "PIE";
     public static final String EXPANDED_DESKTOP_TOGGLE = "EXPANDED_DESKTOP";
-    
+
     private static final String LOG_TAG = "AudioRecord";
     private static String mQuickAudio = null;
 
@@ -712,21 +704,21 @@ public class QuickSettings {
                             inflater.inflate(R.layout.quick_settings_tile, parent, false);
                     quick.setContent(R.layout.quick_settings_tile_rebootmenu, inflater);
                     quick.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mBar.collapseAllPanels(true);
-							Intent intent = new Intent(Intent.ACTION_REBOOTMENU);
+                     @Override
+                    public void onClick(View v) {
+                        mBar.collapseAllPanels(true);
+                        Intent intent = new Intent(Intent.ACTION_REBOOTMENU);
                             mContext.sendBroadcast(intent);
-						}
-				    });
-					mModel.addRebootMenuTile(quick, new QuickSettingsModel.RefreshCallback() {
-					@Override
-					public void refreshView(QuickSettingsTileView view, State state) {
-						TextView tv = (TextView) view.findViewById(R.id.rebootmenu_tileview);
-						tv.setText("Reboot Menu");
-					}
-				});
-				break;
+                    }
+                });
+                    mModel.addRebootMenuTile(quick, new QuickSettingsModel.RefreshCallback() {
+                     @Override
+                    public void refreshView(QuickSettingsTileView view, State state) {
+                        TextView tv = (TextView) view.findViewById(R.id.rebootmenu_tileview);
+                        tv.setText("Reboot Menu");
+                    }
+                });
+                break;
             case SIGNAL_TILE:
                 if (mModel.deviceHasMobileData()) {
                     // Mobile Network state
@@ -1259,14 +1251,14 @@ public class QuickSettings {
                         if (mModel.getNfcAdapter() != null) {
                             try {
                                 enabled = mModel.getNfcAdapter().isEnabled();
-                                if (enabled) {                                    
+                                if (enabled) {
                                     mModel.getNfcAdapter().disable();
                                 } else {
                                     mModel.getNfcAdapter().enable();
                                 }
                             } catch (NullPointerException ex) {
                                 // we'll ignore this click
-                                Log.e(TAG, "NFC QS Click Fail!\n"+ex); 
+                                Log.e(TAG, "NFC QS Click Fail!\n"+ex);
                             }
                         }
                     }
@@ -2009,7 +2001,7 @@ public class QuickSettings {
             mModel.refreshUSBTetherTile();
             mModel.refreshNFCTile();
             if ((--ticksleft) > 0)
-                mHandler.postDelayed(delayedRefresh, 250);            
+                mHandler.postDelayed(delayedRefresh, 250);
          }
      };
 
@@ -2092,7 +2084,7 @@ public class QuickSettings {
             mModel.refreshVibrateTile();
             mModel.refreshSilentTile();
         }
- 
+
         @Override
         public void onChange(boolean selfChange) {
             mModel.refreshVibrateTile();

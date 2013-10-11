@@ -23,7 +23,6 @@ import android.graphics.drawable.Drawable;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.EventLog;
-import android.util.Slog;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -161,10 +160,10 @@ public class NotificationPanelView extends PanelView {
                            if the user keeps swiping in the same direction as she started the
                            gesture. If she, however, moves her finger the other way, deltaX will
                            decrease.
-                          
+
                            This allows for a horizontal, in any direction, to always flip the
                            views. */
-                           
+
                         mSwipeDirection = mSwipeDirection < 0f ? -1f : 1f;
                         if (mStatusBar.isShowingSettings()) {
                             mFlipOffset = 1f;
@@ -182,7 +181,7 @@ public class NotificationPanelView extends PanelView {
                 case MotionEvent.ACTION_POINTER_DOWN:
                     flip = true;
                     break;
-			    case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_UP:
                     swipeFlipJustFinished = mSwipeTriggered;
                     mSwipeTriggered = false;
                     mTrackingSwipe = false;
@@ -213,8 +212,8 @@ public class NotificationPanelView extends PanelView {
                 }
             } else if (swipeFlipJustFinished) {
                 mStatusBar.completePartialFlip();
-			}
-			if (swipeFlipJustStarted || swipeFlipJustFinished) {
+            }
+            if (swipeFlipJustStarted || swipeFlipJustFinished) {
                 // Made up event: finger at the middle bottom of the view.
                 MotionEvent original = event;
                 event = MotionEvent.obtain(original.getDownTime(), original.getEventTime(),

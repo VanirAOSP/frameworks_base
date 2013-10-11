@@ -19,7 +19,6 @@ package com.android.systemui.statusbar.phone;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Slog;
 import android.view.View;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
@@ -31,11 +30,11 @@ public class TrackingPatternView extends View {
     private Paint mPaint;
     private int mTextureWidth;
     private int mTextureHeight;
-    
+
     public TrackingPatternView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mTexture = BitmapFactory.decodeResource(getResources(), 
+        mTexture = BitmapFactory.decodeResource(getResources(),
                 com.android.internal.R.drawable.status_bar_background);
         mTextureWidth = mTexture.getWidth();
         mTextureHeight = mTexture.getHeight();
