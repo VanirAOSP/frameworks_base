@@ -814,14 +814,22 @@ public class ActiveDisplayView extends FrameLayout {
                             && mOverflowNotifications.getChildCount() < MAX_OVERFLOW_ICONS) {
                         ImageView iv = new ImageView(mContext);
                         if (mOverflowNotifications.getChildCount() < (MAX_OVERFLOW_ICONS - 1)) {
+                            Drawable iconDrawable = null;
                             Context pkgContext = null;
                             try {
                                 pkgContext = mContext.createPackageContext(sbns[i].getPackageName(), Context.CONTEXT_RESTRICTED);
+                                iconDrawable = pkgContext.getResources()
+                                        .getDrawable(sbns[i].getNotification().icon);
                             } catch (NameNotFoundException nnfe) {
+                                iconDrawable = mContext.getResources()
+                                            .getDrawable(R.drawable.ic_ad_unknown_icon);
                                 Log.e(TAG, "updateOtherNoticiations()", nnfe);
                                 continue;
+                            } catch (Resources.NotFoundException nfe) {
+                                iconDrawable = mContext.getResources()
+                                        .getDrawable(R.drawable.ic_ad_unknown_icon);
                             }
-                            iv.setImageDrawable(pkgContext.getResources().getDrawable(sbns[i].getNotification().icon));
+                            iv.setImageDrawable(iconDrawable);
                             iv.setTag(sbns[i]);
                             if (sbns[i].getPackageName().equals(mNotification.getPackageName())
                                     && sbns[i].getId() == mNotification.getId()) {
@@ -975,22 +983,26 @@ public class ActiveDisplayView extends FrameLayout {
         try {
             Context pkgContext = mContext.createPackageContext(sbn.getPackageName(), Context.CONTEXT_RESTRICTED);
             mNotificationDrawable = pkgContext.getResources().getDrawable(sbn.getNotification().icon);
-            TargetDrawable centerDrawable = new TargetDrawable(getResources(),createCenterDrawable(mNotificationDrawable));
-            centerDrawable.setScaleX(0.9f);
-            centerDrawable.setScaleY(0.9f);
-            mGlowPadView.setCenterDrawable(centerDrawable);
-            setHandleText(sbn);
-            mNotification = sbn;
-            mGlowPadView.post(new Runnable() {
-                @Override
-                public void run() {
-                    updateResources();
-                    mGlowPadView.invalidate();
-                    if (updateOthers) updateOtherNotifications();
-                }
-            });
-        } catch (NameNotFoundException e) {
+        } catch (NameNotFoundException nnfe) {
+            mNotificationDrawable = getResources().getDrawable(R.drawable.ic_ad_unknown_icon);
+        } catch (Resources.NotFoundException nfe) {
+            mNotificationDrawable = getResources().getDrawable(R.drawable.ic_ad_unknown_icon);
         }
+
+        TargetDrawable centerDrawable = new TargetDrawable(getResources(),createCenterDrawable(mNotificationDrawable));
+        centerDrawable.setScaleX(0.9f);
+        centerDrawable.setScaleY(0.9f);
+        mGlowPadView.setCenterDrawable(centerDrawable);
+        setHandleText(sbn);
+        mNotification = sbn;
+        mGlowPadView.post(new Runnable() {
+            @Override
+            public void run() {
+                updateResources();
+                mGlowPadView.invalidate();
+                if (updateOthers) updateOtherNotifications();
+            }
+        });
     }
 
     /**
@@ -1066,7 +1078,9 @@ public class ActiveDisplayView extends FrameLayout {
                     mProximityIsFar = true;
                     if (!isScreenOn() && mPocketModeEnabled && !isOnCall() && !isCallIncoming() && !inQuietHours()) {
                         logd("Waking because just removed from pocket");
-                        mNotification = getNextAvailableNotification();
+                        if (mNotification == null) {
+                            mNotification = getNextAvailableNotification();
+                        }
                         if (mNotification != null) showNotification(mNotification, true);
                     }
                 } else {
@@ -1087,7 +1101,9 @@ public class ActiveDisplayView extends FrameLayout {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (ACTION_REDISPLAY_NOTIFICATION.equals(action)) {
-                mNotification = getNextAvailableNotification();
+                if (mNotification == null) {
+                    mNotification = getNextAvailableNotification();
+                }
                 if (mNotification != null) showNotification(mNotification, true);
             } else if (ACTION_DISPLAY_TIMEOUT.equals(action)) {
                 turnScreenOff();
@@ -1096,7 +1112,9 @@ public class ActiveDisplayView extends FrameLayout {
             } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 onScreenTurnedOn();
             } else if (ACTION_FORCE_DISPLAY.equals(action)) {
-                mNotification = getNextAvailableNotification();
+                if (mNotification == null) {
+                    mNotification = getNextAvailableNotification();
+                }
                 if (mNotification != null) showNotification(mNotification, true);
                 restoreBrightness();
             }
