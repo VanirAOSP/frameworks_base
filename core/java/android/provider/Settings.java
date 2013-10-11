@@ -2414,12 +2414,6 @@ public final class Settings {
          public static final String LOCKSCREEN_SHORTCUTS = "lockscreen_shortcuts";
 
         /**
-         * Whether to use the custom quick unlock screen control
-         * @hide
-         */
-        public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
-
-        /**
          * How long to wait between flashes for the voicemail notification LED
          * @hide
          */

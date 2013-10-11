@@ -137,6 +137,7 @@ public class LockPatternUtils {
             = "lockscreen.biometricweakeverchosen";
     public final static String LOCKSCREEN_POWER_BUTTON_INSTANTLY_LOCKS
             = "lockscreen.power_button_instantly_locks";
+    public final static String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen.lockscreen_quick_unlock_control";
 
     public final static String PASSWORD_HISTORY_KEY = "lockscreen.passwordhistory";
 
@@ -1346,6 +1347,14 @@ public class LockPatternUtils {
 
     public boolean getPowerButtonInstantlyLocks() {
         return getBoolean(LOCKSCREEN_POWER_BUTTON_INSTANTLY_LOCKS, true);
+    }
+
+    public boolean getQuickUnlock() {
+        return getBoolean(LOCKSCREEN_QUICK_UNLOCK_CONTROL, true);
+    }
+
+    public void setQuickUnlock(boolean enabled) {
+        setBoolean(LOCKSCREEN_QUICK_UNLOCK_CONTROL, enabled);
     }
 
     public static boolean isSafeModeEnabled() {
