@@ -50,7 +50,7 @@ public class PanelView extends FrameLayout {
     public static final boolean DEBUG = PanelBar.DEBUG;
     public static final String TAG = PanelView.class.getSimpleName();
 
-    public static final boolean DEBUG_NAN = true; // http://b/7686690
+    public static final boolean DEBUG_NAN = false; // http://b/7686690
 
     public final void LOG(String fmt, Object... args) {
         if (!DEBUG) return;
@@ -328,6 +328,7 @@ public class PanelView extends FrameLayout {
                 post(mStopAnimator);
             }
         } else {
+            if (DEBUG)
             Slog.v(TAG, "animationTick called with dtms=" + dtms + "; nothing to do (h="
                     + mExpandedHeight + " v=" + mVel + ")");
         }
@@ -402,6 +403,7 @@ public class PanelView extends FrameLayout {
 
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
+                            mShouldReactToBrightnessSlider = false;
                             mTracking = true;
                             mHandleView.setPressed(true);
                             postInvalidate(); // catch the press state change
@@ -450,6 +452,7 @@ public class PanelView extends FrameLayout {
                         case MotionEvent.ACTION_UP:
                         case MotionEvent.ACTION_CANCEL:
                             mFinalTouchY = y;
+                            mShouldReactToBrightnessSlider = false;
                             mTracking = false;
                             mHandleView.setPressed(false);
                             postInvalidate(); // catch the press state change
@@ -710,7 +713,7 @@ public class PanelView extends FrameLayout {
               / Float.valueOf(outSize.x);
     }
 
-    Runnable mChangeBrightnessRunnable = new Runnable() {
+    private Runnable mChangeBrightnessRunnable = new Runnable() {
         @Override
         public void run() {
             if (autoBrightnessEnabled()) {
@@ -731,14 +734,14 @@ public class PanelView extends FrameLayout {
         }
     };
 
-    Runnable mSetShouldReact = new Runnable() {
+    private Runnable mSetShouldReact = new Runnable() {
         @Override
         public void run() {
             mShouldReactToBrightnessSlider = true;
         }
     };
 
-    Runnable mOnStopChangingBrightnessRunnable = new Runnable() {
+    private Runnable mOnStopChangingBrightnessRunnable = new Runnable() {
         @Override
         public void run() {
             mHandler.removeCallbacks(mSetShouldReact);

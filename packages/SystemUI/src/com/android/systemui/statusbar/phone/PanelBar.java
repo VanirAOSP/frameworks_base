@@ -44,9 +44,9 @@ public class PanelBar extends FrameLayout {
     public static final int STATE_OPENING = 1;
     public static final int STATE_OPEN = 2;
 
-    PanelHolder mPanelHolder;
+    private PanelHolder mPanelHolder;
     ArrayList<PanelView> mPanels = new ArrayList<PanelView>();
-    PanelView mTouchingPanel;
+    private PanelView mTouchingPanel;
     private int mState = STATE_CLOSED;
     private boolean mTracking;
     private BaseStatusBar mStatusBar;
@@ -211,8 +211,7 @@ public class PanelBar extends FrameLayout {
 
     public void collapseAllPanels(boolean animate) {
         boolean waiting = false;
-        boolean mCHammer = Settings.System.getInt(mContext.getContentResolver(),
-                                  Settings.System.CURRENT_UI_MODE, 0) == 1;
+
         for (PanelView pv : mPanels) {
             if (animate && !pv.isFullyCollapsed()) {
                 pv.collapse();
@@ -229,7 +228,8 @@ public class PanelBar extends FrameLayout {
             go(STATE_CLOSED);
             onAllPanelsCollapsed();
         }
-        if (mCHammer) {
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.CURRENT_UI_MODE, 0) == 1) {
             collapse();
         }
     }

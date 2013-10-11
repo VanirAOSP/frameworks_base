@@ -325,7 +325,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         };
 
         mFastChargePath = mContext.getString(com.android.internal.R.string.config_fastChargePath);
-        new SettingsObserver(mHandler).startObserving();
 
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -337,7 +336,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
-        context.registerReceiver(mBroadcastReceiver, filter);
+        mContext.registerReceiver(mBroadcastReceiver, filter);
+
+        new SettingsObserver(mHandler).startObserving();
     }
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -377,7 +378,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             if (toggle.equals(QuickSettings.TORCH_TOGGLE))
                 refreshTorchTile();
             if (toggle.equals(QuickSettings.PIE_TOGGLE))
-                refreshPieTile();
+                onPieChanged();
             if (toggle.equals(QuickSettings.EXPANDED_DESKTOP_TOGGLE))
                 refreshExpandedDesktopTile();
             if (toggle.equals(QuickSettings.WIFI_TETHER_TOGGLE))
@@ -1328,12 +1329,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
         if (mPieTile != null && mPieCallback != null) {
             mPieCallback.refreshView(mPieTile, mPieState);
-        }
-    }
-
-    void refreshPieTile() {
-        if (mPieTile != null) {
-            onPieChanged();
         }
     }
 

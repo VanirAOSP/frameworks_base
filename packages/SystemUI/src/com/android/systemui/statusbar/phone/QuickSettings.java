@@ -95,7 +95,10 @@ import com.android.internal.telephony.Phone;
 import com.vanir.util.CMDProcessor;
 import com.vanir.util.Helpers;
 import com.vanir.util.VanirAwesome;
-import static com.vanir.util.VanirConstants.*;
+import static com.vanir.util.VanirConstants.VanirConstant.ACTION_VIB;
+import static com.vanir.util.VanirConstants.VanirConstant.ACTION_SILENT;
+import static com.vanir.util.VanirConstants.VanirConstant.ACTION_SILENT_VIB;
+import static com.vanir.util.VanirConstants.VanirConstant.ACTION_TORCH;
 
 import java.io.File;
 import java.io.InputStream;
@@ -235,9 +238,9 @@ public class QuickSettings {
     private static final int TICKS_UNTIL_CONFIDENT_QS_UPDATED=12; //3 seoncds at 4 hz
     private int ticksleft;
 
-    private HashMap<String, Integer> toggleMap;
+    private static HashMap<String, Integer> toggleMap;
 
-    private HashMap<String, Integer> getToggleMap() {
+    private static HashMap<String, Integer> getToggleMap() {
         if (toggleMap == null) {
             toggleMap = new HashMap<String, Integer>();
             toggleMap.put(USER_TOGGLE, USER_TILE);
@@ -323,8 +326,7 @@ public class QuickSettings {
                 null, null);
 
         new SettingsObserver(new Handler()).observe();
-        new SoundObserver(new Handler()).observe();
-        new TorchObserver(new Handler()).observe();
+        new StateObserver(new Handler()).observe();
     }
 
     public void setBar(PanelBar bar) {
@@ -948,7 +950,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VanirAwesome.launchAction(mContext, VanirConstant.ACTION_VIB);
+                        VanirAwesome.launchAction(mContext, ACTION_VIB);
                         mModel.refreshVibrateTile();
                     }
                 });
@@ -976,7 +978,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VanirAwesome.launchAction(mContext, VanirConstant.ACTION_SILENT);
+                        VanirAwesome.launchAction(mContext, ACTION_SILENT);
                         mModel.refreshSilentTile();
                     }
                 });
@@ -1004,7 +1006,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VanirAwesome.launchAction(mContext, VanirConstant.ACTION_SILENT_VIB);
+                        VanirAwesome.launchAction(mContext, ACTION_SILENT_VIB);
                         mModel.refreshSoundStateTile();
                     }
                 });
@@ -1032,14 +1034,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VanirAwesome.launchAction(mContext, VanirConstant.ACTION_TORCH);
-                    }
-                });
-                quick.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        // maybe something here?
-                        return true;
+                        VanirAwesome.launchAction(mContext, ACTION_TORCH);
                     }
                 });
                 mModel.addTorchTile(quick, new QuickSettingsModel.RefreshCallback() {
@@ -1066,13 +1061,6 @@ public class QuickSettings {
                         Helpers.restartSystemUI();
                     }
                 });
-                quick.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        //If you wanna put something here, be my guest
-                        return true;
-                    }
-                });
                 mModel.addPieTile(quick, new QuickSettingsModel.RefreshCallback() {
                     @Override
                     public void refreshView(QuickSettingsTileView view, State state) {
@@ -1094,13 +1082,7 @@ public class QuickSettings {
                                 Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
                         Settings.System.putInt(mContext.getContentResolver(),
                                 Settings.System.EXPANDED_DESKTOP_STATE, !getExpandedDesktopState ? 1 : 0);
-                    }
-                });
-                quick.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        //If you wanna put something here, be my guest
-                        return true;
+                        mModel.refreshExpandedDesktopTile();
                     }
                 });
                 mModel.addExpandedDesktopTile(quick, new QuickSettingsModel.RefreshCallback() {
@@ -1126,13 +1108,6 @@ public class QuickSettings {
                     @Override
                     public void onClick(View v) {
                         setFastCharge(!Prefs.getLastFastChargeState(mContext));
-                    }
-                });
-                quick.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        // What do we put here?
-                        return true;
                     }
                 });
                 mModel.addFChargeTile(quick, new QuickSettingsModel.RefreshCallback() {
@@ -1261,6 +1236,7 @@ public class QuickSettings {
                                 Log.e(TAG, "NFC QS Click Fail!\n"+ex);
                             }
                         }
+                        mModel.refreshNFCTile();
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
@@ -2071,8 +2047,8 @@ public class QuickSettings {
         }
     }
 
-    class SoundObserver extends ContentObserver {
-        SoundObserver(Handler handler) {
+    class StateObserver extends ContentObserver {
+        StateObserver(Handler handler) {
             super(handler);
         }
 
@@ -2081,31 +2057,20 @@ public class QuickSettings {
             resolver.registerContentObserver(Settings.Global
                     .getUriFor(Settings.Global.MODE_RINGER),
                     false, this);
-            mModel.refreshVibrateTile();
-            mModel.refreshSilentTile();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.TORCH_STATE), false, this);
+            refresh();
         }
 
         @Override
         public void onChange(boolean selfChange) {
-            mModel.refreshVibrateTile();
-            mModel.refreshSilentTile();
+            refresh();
         }
     }
 
-    class TorchObserver extends ContentObserver {
-        TorchObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.TORCH_STATE), false, this);
-            mModel.refreshTorchTile();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            mModel.refreshTorchTile();
-        }
+    private void refresh() {
+        mModel.refreshVibrateTile();
+        mModel.refreshSilentTile();
+        mModel.refreshTorchTile();
     }
 }
