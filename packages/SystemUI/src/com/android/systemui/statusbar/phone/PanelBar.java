@@ -31,7 +31,6 @@ import android.widget.FrameLayout;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.statusbar.BaseStatusBar;
-import com.android.systemui.statusbar.PieControlPanel;
 
 public class PanelBar extends FrameLayout {
     public static final boolean DEBUG = false;
@@ -225,14 +224,14 @@ public class PanelBar extends FrameLayout {
         }
         if (DEBUG) LOG("collapseAllPanels: animate=%s waiting=%s", animate, waiting);
         if (!waiting && mState != STATE_CLOSED) {
-            // it's possible that nothing animated, so we replicate the termination 
+            // it's possible that nothing animated, so we replicate the termination
             // conditions of panelExpansionChanged here
             go(STATE_CLOSED);
             onAllPanelsCollapsed();
         }
         if (mCHammer) {
             collapse();
-	    }
+        }
     }
 
      protected void collapse() {
@@ -242,7 +241,7 @@ public class PanelBar extends FrameLayout {
             sb.collapsePanels();
         } catch (RemoteException e) {
         }
-    } 
+    }
 
     public void onPanelPeeked() {
         if (DEBUG) LOG("onPanelPeeked");

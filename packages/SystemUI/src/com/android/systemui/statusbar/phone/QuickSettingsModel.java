@@ -39,7 +39,6 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -60,7 +59,6 @@ import com.android.systemui.statusbar.policy.Prefs;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +77,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private static final String TAG_TRY_SUPPRESSING_IME_SWITCHER = "TrySuppressingImeSwitcher";
 
     private String mFastChargePath;
-    
+
     private MemInfoReader mMemInfoReader = new MemInfoReader();
 
     private int dataState = -1;
@@ -143,7 +141,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             }
         }
     };
- 
+
     private final Context mContext;
     private final Handler mHandler;
     private final CurrentUserTracker mUserTracker;
@@ -305,7 +303,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                     Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS),
                     false, this, mUserTracker.getCurrentUserId());
         }
-        
+
         @Override
         public void onChange(boolean selfChange) {
             onBrightnessLevelChanged();
@@ -464,11 +462,11 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     // Reboot
-	    void addRebootMenuTile(QuickSettingsTileView view, RefreshCallback cb) {
-	        mRebootMenuTile = view;
-	        mRebootMenuCallback = cb;
-	        mRebootMenuCallback.refreshView(mRebootMenuTile, mRebootMenuState);
-	    }
+    void addRebootMenuTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mRebootMenuTile = view;
+        mRebootMenuCallback = cb;
+        mRebootMenuCallback.refreshView(mRebootMenuTile, mRebootMenuState);
+    }
 
     // Time
     void addTimeTile(QuickSettingsTileView view, RefreshCallback cb) {
@@ -707,16 +705,16 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             onBluetoothStateChange(mBluetoothState.enabled);
         }
     }
-    
+
     void addMemoryTile(QuickSettingsTileView view, RefreshCallback cb) {
         mMemoryTile = view;
         mMemoryCallback = cb;
         updateMemoryState();
         refreshMemoryTile();
-        mHandler.postDelayed(new Runnable() { @Override public void run() { 
+        mHandler.postDelayed(new Runnable() { @Override public void run() {
             updateMemoryState();
             refreshMemoryTile();
-            
+
             if (mMemoryTile != null)
                 mHandler.postDelayed(this, 20000);
                 
@@ -729,22 +727,22 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             }
         });
     }
-    
+
     void refreshMemoryTile() {
         if (mMemoryCallback != null)
             mMemoryCallback.refreshView(mMemoryTile, mMemoryState);
     }
-    
+
     void updateMemoryState() {
         mMemInfoReader.readMemInfo();
         ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
-        
+
         int availMem = (int)((mMemInfoReader.getFreeSize() + mMemInfoReader.getCachedSize()
             - memInfo.secondaryServerThreshold) / 1048576); // = 1024*1024
         if (availMem < 0) {
             availMem = 0;
         }
-        
+
         mMemoryState.label = availMem + "MB Free";
         mMemoryState.iconId = R.drawable.ic_qs_memory;
     }
@@ -1185,10 +1183,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     void onNFCChanged() {
-        boolean enabled = false;        
+        boolean enabled = false;
         if (getNfcAdapter() != null) {
             enabled = getNfcAdapter().isEnabled();
-        }            
+        }
         mNFCState.enabled = enabled;
         mNFCState.iconId = enabled
                 ? R.drawable.ic_qs_nfc_on
@@ -1412,14 +1410,14 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
     /**
      * Method checks for if a tile is being used or not
-     * 
+     *
      * @param QuickSettings Tile String Constant
      * @return if that tile is being used
      */
     private boolean togglesContain(String tile) {
         ContentResolver resolver = mContext.getContentResolver();
         String toggles = Settings.System.getString(resolver, Settings.System.QUICK_TOGGLES);
-       
+
         if (toggles != null) {
             ArrayList tiles = new ArrayList();
             String[] splitter = toggles.split("\\|");
@@ -1431,7 +1429,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
         return getDefaultTiles().contains(tile);
     }
-    
+
     private ArrayList getDefaultTiles() {
         ArrayList tiles = new ArrayList();
         tiles.add(QuickSettings.USER_TOGGLE);

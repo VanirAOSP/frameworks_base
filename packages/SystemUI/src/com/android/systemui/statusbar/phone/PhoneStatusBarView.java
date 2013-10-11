@@ -16,21 +16,14 @@
 
 package com.android.systemui.statusbar.phone;
 
-import java.util.List;
-
 import android.app.ActivityManager;
 import android.app.StatusBarManager;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-import android.database.ContentObserver;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.EventLog;
@@ -42,7 +35,6 @@ import android.view.accessibility.AccessibilityEvent;
 import com.android.systemui.EventLogTags;
 import com.android.systemui.R;
 import com.vanir.BackgroundAlphaColorDrawable;
-import com.android.systemui.statusbar.NavigationBarView;
 import com.vanir.util.VanirAwesome;
 
 public class PhoneStatusBarView extends PanelBar {
@@ -106,13 +98,13 @@ public class PhoneStatusBarView extends PanelBar {
         }
         pv.setRubberbandingEnabled(!mFullWidthNotifications);
     }
-   
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mBar.onBarViewDetached();
     }
- 
+
     @Override
     public boolean panelsEnabled() {
         return ((mBar.mDisabled & StatusBarManager.DISABLE_EXPAND) == 0);
@@ -140,9 +132,9 @@ public class PhoneStatusBarView extends PanelBar {
 
         if (mFullWidthNotifications) {
             // No double swiping. If either panel is open, nothing else can be pulled down.
-            return ((mSettingsPanel == null ? 0 : mSettingsPanel.getExpandedHeight()) 
-                        + mNotificationPanel.getExpandedHeight() > 0) 
-                    ? null 
+            return ((mSettingsPanel == null ? 0 : mSettingsPanel.getExpandedHeight())
+                        + mNotificationPanel.getExpandedHeight() > 0)
+                    ? null
                     : mNotificationPanel;
         }
 
