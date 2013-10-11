@@ -17,17 +17,12 @@
 
 package com.android.systemui.statusbar;
 
-import android.app.ActionBar.Tab;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -38,9 +33,6 @@ import com.android.systemui.statusbar.view.PieItem;
 import com.android.systemui.statusbar.view.PieMenu;
 
 import com.android.systemui.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Controller for Quick Controls pie menu

@@ -16,10 +16,8 @@
 
 package com.android.systemui.statusbar;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.provider.Settings;
@@ -27,19 +25,12 @@ import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.CharacterStyle;
-import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
-import android.util.Slog;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.R;
 
 // Intimately tied to the design of res/layout/signal_cluster_text_view.xml

@@ -21,10 +21,8 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Slog;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -148,4 +146,3 @@ public class ToggleSlider extends RelativeLayout
         mSlider.setProgress(value);
     }
 }
-
