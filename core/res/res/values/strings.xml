@@ -4160,6 +4160,9 @@
     <!-- status message in phone options dialog for when expand desktop mode is off -->
     <string name="global_actions_expanded_desktop_mode_off_status">Disabled</string>
 
+    <!-- label for item that screenshots in phone options dialog -->
+    <string name="global_action_screenshot">Screenshot</string>
+
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_interceptSmsSent">intercept outgoing SMS</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->

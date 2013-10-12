@@ -77,6 +77,10 @@ import com.android.internal.app.ThemeUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+//Needed for Screenshot
+import android.app.Activity;
+import com.vanir.util.VanirAwesome;
+
 /**
  * Helper to show the global actions dialog.  Each item is an {@link Action} that
  * may show depending on whether the keyguard is showing, and whether the device
@@ -306,7 +310,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             });
 
         // next: reboot
-        mItems.add(
+        // only shown if enabled, enabled by default
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_REBOOT_ENABLED, 1) == 1) {
+            mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
                     public void onPress() {
                         mWindowManagerFuncs.reboot(true);
@@ -325,6 +332,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         return true;
                     }
                 });
+        }
 
         // next: expanded desktop
         if (Settings.System.getInt(mContext.getContentResolver(),
@@ -332,8 +340,32 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mItems.add(mExpandDesktopModeOn);
         }
 
+        // next: screenshot
+        // only shown if enabled, disabled by default
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0) == 1) {
+            mItems.add(
+                new SinglePressAction(R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
+                    public void onPress() {
+                        Intent intent = new Intent(Intent.ACTION_SCREENSHOT);
+                        mContext.sendBroadcast(intent);
+                    }
+
+                    public boolean showDuringKeyguard() {
+                        return true;
+                    }
+
+                    public boolean showBeforeProvisioning() {
+                        return true;
+                    }
+                });
+        }
+
         // next: airplane mode
-        mItems.add(mAirplaneModeOn);
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_AIRPLANE_ENABLED, 1) == 1) {
+            mItems.add(mAirplaneModeOn);
+        }
 
         // next: bug report, if enabled
         if (Settings.Global.getInt(mContext.getContentResolver(),
@@ -384,14 +416,16 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 });
         }
 
-        // last: silent mode
-        if (mShowSilentToggle) {
-            mItems.add(mSilentModeAction);
-        }
-
         // one more thing: optionally add a list of users to switch to
         if (SystemProperties.getBoolean("fw.power_user_switcher", false)) {
             addUsersToMenu(mItems);
+        }
+
+        // last: silent mode
+        if ((Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_SILENT_ENABLED, 1) == 1) &&
+                (SHOW_SILENT_TOGGLE)) {
+            mItems.add(mSilentModeAction);
         }
 
         mAdapter = new MyAdapter();

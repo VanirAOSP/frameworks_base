@@ -2033,8 +2033,10 @@
   <public type="array" name="shutdown_reboot_actions" />
   <public type="drawable" name="ic_lock_reboot" />
   <public type="drawable" name="ic_lock_expanded_desktop" />
+  <public type="drawable" name="ic_lock_screenshot" />
   <public type="string" name="global_actions" />
   <public type="string" name="global_action_reboot" />
+  <public type="string" name="global_action_screenshot" />
   <public type="string" name="global_actions_toggle_expanded_desktop_mode" />
   <public type="string" name="global_actions_expanded_desktop_mode_off_status" />
   <public type="string" name="global_actions_expanded_desktop_mode_on_status" />
