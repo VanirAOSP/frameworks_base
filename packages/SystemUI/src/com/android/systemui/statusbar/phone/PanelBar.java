@@ -50,6 +50,7 @@ public class PanelBar extends FrameLayout {
     private int mState = STATE_CLOSED;
     private boolean mTracking;
     private BaseStatusBar mStatusBar;
+    private boolean mCHammer;
 
     float mPanelExpandedFractionSum;
 
@@ -60,6 +61,8 @@ public class PanelBar extends FrameLayout {
 
     public PanelBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mCHammer = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.CURRENT_UI_MODE, 0) == 1;
     }
 
     @Override
@@ -228,8 +231,7 @@ public class PanelBar extends FrameLayout {
             go(STATE_CLOSED);
             onAllPanelsCollapsed();
         }
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.CURRENT_UI_MODE, 0) == 1) {
+        if (mCHammer) {
             collapse();
         }
     }
