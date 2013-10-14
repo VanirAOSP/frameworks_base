@@ -62,6 +62,8 @@ public class CreateShortcut extends LauncherActivity {
           return R.drawable.ic_sysbar_widget;
       } else if (c.equals ("FlushMemory")) {
           return R.drawable.vanir_flush_memory;
+      } else if (c.equals ("Reboot")) {
+          return R.drawable.ic_sysbar_reboot;
       } else if (c.equals ("RingVibToggle")) {
           return R.drawable.ic_lockscreen_vib;
       } else if (c.equals ("RingSilentToggle")) {

@@ -77,6 +77,9 @@ public class NavBarHelpers {
         case ACTION_LAST_APP:
             newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_lastapp);
             break;
+        case ACTION_ROBOCOP:
+            newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_reboot);
+            break;
         case ACTION_APP:
             try {
                 newDrawable = mContext.getPackageManager().getActivityIcon(Intent.parseUri(uri, 0));
@@ -132,6 +135,9 @@ public class NavBarHelpers {
             break;
         case ACTION_NULL:
             newSummary = mContext.getResources().getString(R.string.action_none);
+            break;
+        case ACTION_ROBOCOP:
+            newSummary = mContext.getResources().getString(R.string.action_robocop);
             break;
         case ACTION_APP:
             try {
