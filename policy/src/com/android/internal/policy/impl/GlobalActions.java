@@ -347,8 +347,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
                     public void onPress() {
-                        Intent intent = new Intent(Intent.ACTION_SCREENSHOT);
-                        mContext.sendBroadcast(intent);
+                        mHandler.postDelayed(new Runnable() {
+                            @Override public void run() {
+                                Intent intent = new Intent(Intent.ACTION_SCREENSHOT);
+                                mContext.sendBroadcast(intent);
+                            }
+                        }, 500);
                     }
 
                     public boolean showDuringKeyguard() {
@@ -394,7 +398,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                                                 } catch (RemoteException e) {
                                                 }
                                             }
-                                        }, 500);
+                                        }, 1000);
                                     }
                                 });
                         AlertDialog dialog = builder.create();
