@@ -59,6 +59,7 @@ import android.provider.Settings;
 import android.service.notification.INotificationListener;
 import android.service.notification.StatusBarNotification;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -79,8 +80,10 @@ import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
 
 import java.util.ArrayList;
-import android.util.Log;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ActiveDisplayView extends FrameLayout {
     private static final boolean DEBUG = false;
@@ -159,6 +162,9 @@ public class ActiveDisplayView extends FrameLayout {
     private void logd(String s) { if (DEBUG) Log.d(TAG, s); }
     private void logw(String s) { if (DEBUG) Log.w(TAG, s); }
     private void loge(String s) { if (DEBUG) Log.e(TAG, s); }
+
+    private boolean mSunlightModeEnabled = false;
+    private Set<String> mExcludedApps = new HashSet<String>();
 
     /**
      * Simple class that listens to changes in notifications
@@ -294,6 +300,8 @@ public class ActiveDisplayView extends FrameLayout {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACTIVE_DISPLAY_BRIGHTNESS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ACTIVE_DISPLAY_EXCLUDED_APPS), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
             update();
         }
@@ -334,6 +342,10 @@ public class ActiveDisplayView extends FrameLayout {
                         resolver, Settings.System.ACTIVE_DISPLAY_REDISPLAY, 0L);
                 mInitialBrightness = Settings.System.getInt(
                         resolver, Settings.System.ACTIVE_DISPLAY_BRIGHTNESS, 100) / 100f;
+
+            String excludedApps = Settings.System.getString(resolver,
+                    Settings.System.ACTIVE_DISPLAY_EXCLUDED_APPS);
+            createExcludedAppsSet(excludedApps);
 
                 int brightnessMode = Settings.System.getInt(
                         resolver, Settings.System.SCREEN_BRIGHTNESS_MODE, -1);
@@ -1181,5 +1193,16 @@ public class ActiveDisplayView extends FrameLayout {
             am.cancel(pi);
         } catch (Exception e) {
         }
+    }
+
+    /**
+     * Create the set of excluded apps given a string of packages delimited with '|'.
+     * @param excludedApps
+     */
+    private void createExcludedAppsSet(String excludedApps) {
+        if (TextUtils.isEmpty(excludedApps))
+            return;
+        String[] appsToExclude = excludedApps.split("\\|");
+        mExcludedApps = new HashSet<String>(Arrays.asList(appsToExclude));
     }
 }

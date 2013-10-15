@@ -2624,7 +2624,14 @@ public final class Settings {
         public static final String QUIET_HOURS_HAPTIC = "quiet_hours_haptic";
 
         /**
-         * Whether to remove the vibration from outgoing notifications during quiet hours.
+         * excluded apps
+         * @hide
+         */
+        public static final String ACTIVE_DISPLAY_EXCLUDED_APPS = "active_display_excluded_apps";
+
+        /**
+         * @deprecated Use {@link android.provider.Settings.Global#LOW_BATTERY_SOUND}
+         * instead
          * @hide
          */
         public static final String QUIET_HOURS_STILL = "quiet_hours_still";
