@@ -2541,6 +2541,15 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_MAXIMIZE_WIDGETS = "lockscreen_maximize_widgets";
 
+       /**
+        * Whether music controls should be shown on the lockscreen if a supporting
+        * music player is active.
+        * @hide
+        */
+        public static final String LOCKSCREEN_MUSIC_CONTROLS = "lockscreen_music_controls";
+
+
+
         /**
          * Stores values for custom lockscreen targets
          * @hide

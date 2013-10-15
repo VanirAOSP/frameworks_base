@@ -71,6 +71,7 @@ public class KeyguardHostView extends KeyguardViewBase {
     static final int TRANSPORT_VISIBLE = 2;
 
     private int mTransportState = TRANSPORT_GONE;
+    private boolean mTransportShouldBeVisible;
 
     // Use this to debug all of keyguard
     public static boolean DEBUG = KeyguardViewMediator.DEBUG;
@@ -387,6 +388,9 @@ public class KeyguardHostView extends KeyguardViewBase {
         mViewStateManager.setSecurityViewContainer(mSecurityViewContainer);
 
         setBackButtonEnabled(false);
+
+        mTransportShouldBeVisible = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) != 0;
 
         addDefaultWidgets();
 
@@ -1497,7 +1501,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         final boolean showing = getWidgetPosition(R.id.keyguard_transport_control) != -1;
         final boolean visible = state == TRANSPORT_VISIBLE;
         final boolean shouldBeVisible = state == TRANSPORT_INVISIBLE && isMusicPlaying(state);
-        if (!showing && (visible || shouldBeVisible)) {
+        if (!showing && mTransportShouldBeVisible && (visible || shouldBeVisible)) {
             if (DEBUGXPORT) Log.v(TAG, "add transport");
             // insert to left of camera if it exists, otherwise after right-most widget
             int lastWidget = mAppWidgetContainer.getChildCount() - 1;
@@ -1507,7 +1511,7 @@ public class KeyguardHostView extends KeyguardViewBase {
                         lastWidget : lastWidget + 1;
             }
             mAppWidgetContainer.addWidget(getOrCreateTransportControl(), position);
-        } else if (showing && state == TRANSPORT_GONE) {
+        } else if (showing && (state == TRANSPORT_GONE || !mTransportShouldBeVisible)) {
             if (DEBUGXPORT) Log.v(TAG, "remove transport");
             mAppWidgetContainer.removeWidget(getOrCreateTransportControl());
             mTransportControl = null;
@@ -1540,7 +1544,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             mAppWidgetToShow = AppWidgetManager.INVALID_APPWIDGET_ID;
         }
         // if music playing, show transport
-        if (musicTransportState == TRANSPORT_VISIBLE) {
+        if (musicTransportState == TRANSPORT_VISIBLE && mTransportShouldBeVisible) {
             if (DEBUG) Log.d(TAG, "Music playing, show transport");
             return mAppWidgetContainer.getWidgetPageIndex(getOrCreateTransportControl());
         }
