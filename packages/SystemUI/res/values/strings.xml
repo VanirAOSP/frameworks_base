@@ -597,8 +597,10 @@
     <string name="quick_settings_fcharge_off_label">F-Charge Off</string>
     <string name="quick_settings_torch_on_label">Torch On</string>
     <string name="quick_settings_torch_off_label">Torch Off</string>
-    <string name="quick_settings_pie_off_label">PIE Off</string>
-    <string name="quick_settings_pie_on_label">PIE On</string>
+    <string name="quick_settings_pie_off_label">Pie Off</string>
+    <string name="quick_settings_pie_on_label">Pie On</string>
+    <string name="quick_settings_halo_off_label">Halo Off</string>
+    <string name="quick_settings_halo_on_label">Halo On</string>
     <string name="quick_settings_expanded_desktop_off_label">Expanded Off</string>
     <string name="quick_settings_expanded_desktop_on_label">Expanded On</string>
     <string name="quick_settings_nfc_on_label">NFC On</string>

@@ -142,6 +142,7 @@ public class QuickSettings {
     private static final int MEMORY_TILE = 27;
     private static final int PIE_TILE = 28;
     private static final int EXPANDED_DESKTOP_TILE = 29;
+    private static final int HALO_TILE = 30;
 
     public static final int STATE_IDLE = 0;
     public static final int STATE_PLAYING = 1;
@@ -179,6 +180,7 @@ public class QuickSettings {
     public static final String MEMORY_TOGGLE = "MEMORY";
     public static final String PIE_TOGGLE = "PIE";
     public static final String EXPANDED_DESKTOP_TOGGLE = "EXPANDED_DESKTOP";
+    public static final String HALO_TOGGLE = "HALO";
 
     private static final String LOG_TAG = "AudioRecord";
     private static String mQuickAudio = null;
@@ -273,6 +275,7 @@ public class QuickSettings {
             //toggleMap.put(BT_TETHER_TOGGLE, BT_TETHER_TILE);
             toggleMap.put(PIE_TOGGLE, PIE_TILE);
             toggleMap.put(EXPANDED_DESKTOP_TOGGLE, EXPANDED_DESKTOP_TILE);
+            toggleMap.put(HALO_TOGGLE, HALO_TILE);
         }
         return toggleMap;
     }
@@ -1041,6 +1044,30 @@ public class QuickSettings {
                     @Override
                     public void refreshView(QuickSettingsTileView view, State state) {
                         TextView tv = (TextView) view.findViewById(R.id.torch_textview);
+                        tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
+                        tv.setText(state.label);
+                        tv.setTextSize(1, mTileTextSize);
+                    }
+                });
+                break;
+            case HALO_TILE:
+                quick = (QuickSettingsTileView)
+                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                quick.setContent(R.layout.quick_settings_tile_halo, inflater);
+                quick.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        boolean getHaloControls = Settings.System.getInt(mContext.getContentResolver(),
+                                Settings.System.HALO_ENABLED, 0) == 1;
+                        Settings.System.putInt(mContext.getContentResolver(),
+                                Settings.System.HALO_ENABLED, !getHaloControls ? 1 : 0);
+                        Helpers.restartSystemUI();
+                    }
+                });
+                mModel.addHaloTile(quick, new QuickSettingsModel.RefreshCallback() {
+                    @Override
+                    public void refreshView(QuickSettingsTileView view, State state) {
+                        TextView tv = (TextView) view.findViewById(R.id.halo_textview);
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);

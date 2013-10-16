@@ -245,6 +245,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mPieCallback;
     private State mPieState = new State();
 
+    private QuickSettingsTileView mHaloTile;
+    private RefreshCallback mHaloCallback;
+    private State mHaloState = new State();
+
     private QuickSettingsTileView mExpandedDesktopTile;
     private RefreshCallback mExpandedDesktopCallback;
     private State mExpandedDesktopState = new State();
@@ -393,6 +397,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 refresh2gTile();
             if (toggle.equals(QuickSettings.LTE_TOGGLE))
                 refreshLTETile();
+            if (toggle.equals(QuickSettings.HALO_TOGGLE))
+                onHaloChanged();
         }
 
     }
@@ -1310,6 +1316,29 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
     }
 
+    //HALO
+    void addHaloTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mHaloTile = view;
+        mHaloCallback = cb;
+        onHaloChanged();
+    }
+
+    void onHaloChanged() {
+        boolean enabled = Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.HALO_ENABLED, 0) == 1;
+        mHaloState.enabled = enabled;
+        mHaloState.iconId = enabled
+            ? R.drawable.ic_notify_halo_pressed
+            : R.drawable.ic_notify_halo_normal;
+        mHaloState.label = enabled
+            ? mContext.getString(R.string.quick_settings_halo_on_label)
+            : mContext.getString(R.string.quick_settings_halo_off_label);
+
+        if (mHaloTile != null && mHaloCallback != null) {
+            mHaloCallback.refreshView(mHaloTile, mHaloState);
+        }
+    }
+
     //PIE
     void addPieTile(QuickSettingsTileView view, RefreshCallback cb) {
         mPieTile = view;
@@ -1318,7 +1347,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     void onPieChanged() {
-        boolean enabled = Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.PIE_CONTROLS, false);
+        boolean enabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.PIE_CONTROLS, 0) == 1;
         mPieState.enabled = enabled;
         mPieState.iconId = enabled
             ? R.drawable.ic_qs_pie_on
