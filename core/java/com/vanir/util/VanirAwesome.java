@@ -145,6 +145,14 @@ public class VanirAwesome {
                     }
                 }
                 break;
+            case ACTION_SCREENSHOT:
+                Intent intentSHOT = new Intent(Intent.ACTION_SCREENSHOT);
+			    mContext.sendBroadcast(intentSHOT);
+                break;
+            case ACTION_RINGSHOT:
+                Intent intentring = new Intent(Intent.ACTION_SCREENSHOT);
+			    mContext.sendBroadcast(intentring);
+                break;
             case ACTION_POWER:
                 injectKeyDelayed(KeyEvent.KEYCODE_POWER);
                 break;

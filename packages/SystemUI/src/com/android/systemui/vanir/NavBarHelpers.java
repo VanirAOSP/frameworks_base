@@ -68,6 +68,12 @@ public class NavBarHelpers {
         case ACTION_POWER:
             newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_power);
             break;
+        case ACTION_RINGSHOT:
+            newDrawable = mContext.getResources().getDrawable(R.drawable.ic_navbar_screenshot);
+            break;
+        case ACTION_SCREENSHOT:
+            newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_screenshot);
+            break;
         case ACTION_SEARCH:
             newDrawable = mContext.getResources().getDrawable(R.drawable.ic_sysbar_search);
             break;
@@ -123,6 +129,12 @@ public class NavBarHelpers {
             break;
         case ACTION_POWER:
             newSummary = mContext.getResources().getString(R.string.action_power);
+            break;
+        case ACTION_RINGSHOT:
+            newSummary = mContext.getResources().getString(R.string.action_screenshot);
+            break;
+        case ACTION_SCREENSHOT:
+            newSummary = mContext.getResources().getString(R.string.action_screenshot);
             break;
         case ACTION_SEARCH:
             newSummary = mContext.getResources().getString(R.string.action_search);
