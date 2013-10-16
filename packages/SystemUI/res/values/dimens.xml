@@ -26,8 +26,8 @@
     <dimen name="status_bar_recents_app_icon_max_height">48dp</dimen>
 
     <!-- Size of application thumbnail -->
-    <dimen name="status_bar_recents_thumbnail_width">210dp</dimen>
-    <dimen name="status_bar_recents_thumbnail_height">170dp</dimen>
+    <dimen name="status_bar_recents_thumbnail_width">164dp</dimen>
+    <dimen name="status_bar_recents_thumbnail_height">145dp</dimen>
     <dimen name="status_bar_recents_thumbnail_bg_padding">4dp</dimen>
 
     <!-- Size of application label text -->
@@ -41,7 +41,7 @@
     <!-- Margin between recents container and glow on the right -->
     <dimen name="status_bar_recents_right_glow_margin">100dip</dimen>
     <!-- How far the thumbnail for a recent app appears from left edge -->
-    <dimen name="status_bar_recents_thumbnail_left_margin">10dp</dimen>
+    <dimen name="status_bar_recents_thumbnail_left_margin">20dp</dimen>
     <!-- Padding for text descriptions -->
     <dimen name="status_bar_recents_text_description_padding">8dp</dimen>
     <!-- Width of application label text -->
@@ -89,7 +89,7 @@
     <dimen name="status_bar_icon_drawing_size">18dip</dimen>
 
     <!-- opacity at which Notification icons will be drawn in the status bar -->
-    <item type="dimen" name="status_bar_icon_drawing_alpha">100%</item>
+    <item type="dimen" name="status_bar_icon_drawing_alpha">65%</item>
 
     <!-- gap on either side of status bar notification icons -->
     <dimen name="status_bar_icon_padding">0dp</dimen>
