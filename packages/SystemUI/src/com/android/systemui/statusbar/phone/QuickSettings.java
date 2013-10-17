@@ -816,6 +816,17 @@ public class QuickSettings {
                         startSettingsActivity(android.provider.Settings.ACTION_SETTINGS);
                     }
                 });
+                quick.setOnLongClickListener(new View.OnLongClickListener() {
+                     @Override
+                    public boolean onLongClick(View v) {
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(
+                                "com.android.settings",
+                                "com.android.settings.Settings$VanirSettingsActivity"));
+                        startSettingsActivity(intent);
+                        return true;
+                    }
+                });
                 mModel.addSettingsTile(quick, new QuickSettingsModel.RefreshCallback() {
                     @Override
                     public void refreshView(QuickSettingsTileView view, State state) {
