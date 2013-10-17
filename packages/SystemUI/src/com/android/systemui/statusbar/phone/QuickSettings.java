@@ -1076,6 +1076,17 @@ public class QuickSettings {
                         Helpers.restartSystemUI();
                     }
                 });
+                quick.setOnLongClickListener(new View.OnLongClickListener() {
+                     @Override
+                    public boolean onLongClick(View v) {
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(
+                                "com.android.settings",
+                                "com.android.settings.Settings$HaloActivity"));
+                        startSettingsActivity(intent);
+                        return true;
+                    }
+                });
                 mModel.addHaloTile(quick, new QuickSettingsModel.RefreshCallback() {
                     @Override
                     public void refreshView(QuickSettingsTileView view, State state) {
@@ -1098,6 +1109,17 @@ public class QuickSettings {
                         Settings.System.putInt(mContext.getContentResolver(),
                                 Settings.System.PIE_CONTROLS, !getPieControls ? 1 : 0);
                         Helpers.restartSystemUI();
+                    }
+                });
+                quick.setOnLongClickListener(new View.OnLongClickListener() {
+                     @Override
+                    public boolean onLongClick(View v) {
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(
+                                "com.android.settings",
+                                "com.android.settings.Settings$PieActivity"));
+                        startSettingsActivity(intent);
+                        return true;
                     }
                 });
                 mModel.addPieTile(quick, new QuickSettingsModel.RefreshCallback() {
