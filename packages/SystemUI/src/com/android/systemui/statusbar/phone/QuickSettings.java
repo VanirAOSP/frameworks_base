@@ -683,9 +683,10 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent("android.intent.action.MAIN");
-                        intent.setComponent(ComponentName.unflattenFromString("com.android.deskclock.AlarmProvider"));
-                        intent.addCategory("android.intent.category.LAUNCHER");
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(
+                                "com.android.deskclock",
+                                "com.android.deskclock.DeskClock"));
                         startSettingsActivity(intent);
                     }
                 });
