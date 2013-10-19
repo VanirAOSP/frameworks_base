@@ -23,6 +23,7 @@ import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.util.AttributeSet;
@@ -60,6 +61,8 @@ public class NotificationPanelView extends PanelView {
 
     private int pantyPullDown;
     private SettingsObserver mObserver;
+    
+    private final PowerManager mPm;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -84,6 +87,7 @@ public class NotificationPanelView extends PanelView {
 
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         mObserver = new SettingsObserver(new Handler());
     }
 
@@ -99,6 +103,7 @@ public class NotificationPanelView extends PanelView {
         mHandleBar = resources.getDrawable(R.drawable.status_bar_close);
         mHandleBarHeight = resources.getDimensionPixelSize(R.dimen.close_handle_height);
         mHandleView = findViewById(R.id.handle);
+
     }
 
     @Override
@@ -171,6 +176,7 @@ public class NotificationPanelView extends PanelView {
             boolean swipeFlipJustStarted = false;
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
+
                     mGestureStartX = event.getX(0);
                     mGestureStartY = event.getY(0);
                     mTrackingSwipe = isFullyExpanded();
@@ -184,6 +190,7 @@ public class NotificationPanelView extends PanelView {
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
+                    mPm.cpuBoost(1500000);
                     final float deltaX = Math.abs(event.getX(0) - mGestureStartX);
                     final float deltaY = Math.abs(event.getY(0) - mGestureStartY);
                     final float maxDeltaY = getHeight() * STATUS_BAR_SWIPE_VERTICAL_MAX_PERCENTAGE;
@@ -218,6 +225,8 @@ public class NotificationPanelView extends PanelView {
                     }
                     break;
                 case MotionEvent.ACTION_POINTER_DOWN:
+                    // boost two fingers also
+                    mPm.cpuBoost(1500000);
                     flip = true;
                     break;
                 case MotionEvent.ACTION_UP:
