@@ -17,10 +17,14 @@
 package com.android.systemui.statusbar.phone;
 
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.util.AttributeSet;
 import android.util.EventLog;
 import android.view.MotionEvent;
@@ -54,8 +58,33 @@ public class NotificationPanelView extends PanelView {
     private boolean mTrackingSwipe;
     private boolean mSwipeTriggered;
 
+    private int pantyPullDown;
+    private SettingsObserver mObserver;
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        private void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.QS_QUICK_PULLDOWN), false, this);
+            updateSettings();
+        }
+        private void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mObserver = new SettingsObserver(new Handler());
     }
 
     public void setStatusBar(PhoneStatusBar bar) {
@@ -70,6 +99,18 @@ public class NotificationPanelView extends PanelView {
         mHandleBar = resources.getDrawable(R.drawable.status_bar_close);
         mHandleBarHeight = resources.getDimensionPixelSize(R.dimen.close_handle_height);
         mHandleView = findViewById(R.id.handle);
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mObserver.observe();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mObserver.unobserve();
     }
 
     @Override
@@ -135,12 +176,10 @@ public class NotificationPanelView extends PanelView {
                     mTrackingSwipe = isFullyExpanded();
                     mOkToFlip = getExpandedHeight() == 0;
                     if (event.getX(0) > getWidth() * (1.0f - STATUS_BAR_SETTINGS_RIGHT_PERCENTAGE) &&
-                            Settings.System.getInt(getContext().getContentResolver(),
-                                    Settings.System.QS_QUICK_PULLDOWN, 0) == 1) {
+                            (pantyPullDown == 1)) {
 					flip = true;
                     } else if (event.getX(0) < getWidth() * (1.0f - STATUS_BAR_SETTINGS_LEFT_PERCENTAGE) &&
-                            Settings.System.getInt(getContext().getContentResolver(),
-                                    Settings.System.QS_QUICK_PULLDOWN, 0) == 2) {
+                            (pantyPullDown == 2)) {
                     flip = true;
                     }
                     break;
@@ -230,5 +269,13 @@ public class NotificationPanelView extends PanelView {
             event.recycle();
         }
         return result;
+    }
+    
+    private void updateSettings() {
+        try {
+            pantyPullDown = Settings.System.getInt(getContext().getContentResolver(),
+                                    Settings.System.QS_QUICK_PULLDOWN);
+        } catch (SettingNotFoundException e) {
+        }
     }
 }
