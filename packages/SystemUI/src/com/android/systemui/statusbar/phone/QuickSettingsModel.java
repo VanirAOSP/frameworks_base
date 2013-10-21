@@ -1160,7 +1160,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         try {
             dataState = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.PREFERRED_NETWORK_MODE);
         } catch (SettingNotFoundException e) {
-            e.printStackTrace();
         }
         boolean enabled = dataState == Phone.NT_MODE_GSM_ONLY;
         m2gState.enabled = enabled;
@@ -1510,7 +1509,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             reader.read(chars);
             content = new String(chars).trim();
         } catch (Exception e) {
-            e.printStackTrace();
             content = null;
         } finally {
             try {

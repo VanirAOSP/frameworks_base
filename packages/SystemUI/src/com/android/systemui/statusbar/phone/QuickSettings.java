@@ -888,7 +888,6 @@ public class QuickSettings {
                             mDataState = Settings.Global.getInt(mContext.getContentResolver(),
                                     Settings.Global.PREFERRED_NETWORK_MODE);
                         } catch (SettingNotFoundException e) {
-                            e.printStackTrace();
                         }
                         if (mDataState == Phone.NT_MODE_GSM_ONLY) {
                             tm.toggle2G(false);
