@@ -177,6 +177,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mWifiDisplayCallback;
     private State mWifiDisplayState = new State();
 
+    private QuickSettingsTileView mTimeoutTile;
+    private RefreshCallback mTimeoutTileCallback;
+    private State mTimeoutTileState = new State();
+
     private QuickSettingsTileView mRSSITile;
     private RefreshCallback mRSSICallback;
     private RSSIState mRSSIState = new RSSIState();
@@ -816,6 +820,12 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
         mBugreportState.enabled = enabled;
         mBugreportCallback.refreshView(mBugreportTile, mBugreportState);
+    }
+
+    // Timeout tile
+    void addTimeoutTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mTimeoutTile = view;
+        mTimeoutTileCallback = cb;
     }
 
     // Wifi Display
