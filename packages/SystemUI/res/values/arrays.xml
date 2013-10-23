@@ -46,7 +46,6 @@
         <item>60000</item>
         <item>120000</item>
         <item>300000</item>
-        <item>0</item> <!-- 0 == never -->
     </integer-array>
 
 </resources>
