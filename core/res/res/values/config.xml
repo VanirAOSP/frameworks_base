@@ -1281,4 +1281,8 @@
 
     <!-- True if the gesture service should be started at system start -->
     <bool name="config_enableGestureService">false</bool>
+
+    <!-- CM repo compatibility inclusions -->
+    <!-- Device supports LED flashlight -->
+    <bool name="config_enableTorch">true</bool>
 </resources>
