@@ -143,12 +143,7 @@ public class QuickSettings {
     private static final int PIE_TILE = 28;
     private static final int EXPANDED_DESKTOP_TILE = 29;
     private static final int HALO_TILE = 30;
-
-    public static final int STATE_IDLE = 0;
-    public static final int STATE_PLAYING = 1;
-    public static final int STATE_RECORDING = 2;
-    public static final int STATE_JUST_RECORDED = 3;
-    public static final int STATE_NO_RECORDING = 4;
+    private static final int TIMEOUT_TILE = 31;
 
     public static final String USER_TOGGLE = "USER";
     public static final String BRIGHTNESS_TOGGLE = "BRIGHTNESS";
@@ -181,9 +176,20 @@ public class QuickSettings {
     public static final String PIE_TOGGLE = "PIE";
     public static final String EXPANDED_DESKTOP_TOGGLE = "EXPANDED_DESKTOP";
     public static final String HALO_TOGGLE = "HALO";
+    public static final String TIMEOUT_TOGGLE = "TIMEOUT";
 
     private static final String LOG_TAG = "AudioRecord";
     private static String mQuickAudio = null;
+
+    public static final int STATE_IDLE = 0;
+    public static final int STATE_PLAYING = 1;
+    public static final int STATE_RECORDING = 2;
+    public static final int STATE_JUST_RECORDED = 3;
+    public static final int STATE_NO_RECORDING = 4;
+
+    // screen timeout values
+    private static int[] mTimeouts;
+    private static HashMap<Integer,Integer> mTimeoutIndex;
 
     private static final String DEFAULT_TOGGLES = "default";
 
@@ -192,6 +198,8 @@ public class QuickSettings {
     private int mRecordingState;
 
     private int mDataState = -1;
+    private int screenTimeout;
+    private String mTimeoutString;
 
     private boolean usbTethered;
 
@@ -276,6 +284,7 @@ public class QuickSettings {
             toggleMap.put(PIE_TOGGLE, PIE_TILE);
             toggleMap.put(EXPANDED_DESKTOP_TOGGLE, EXPANDED_DESKTOP_TILE);
             toggleMap.put(HALO_TOGGLE, HALO_TILE);
+            toggleMap.put(TIMEOUT_TOGGLE, TIMEOUT_TILE);
         }
         return toggleMap;
     }
@@ -304,6 +313,15 @@ public class QuickSettings {
         mHandler = new Handler();
 
         Resources r = mContext.getResources();
+        if (mTimeouts == null)
+            mTimeouts = r.getIntArray(R.array.qs_screen_timeout_values);
+        if (mTimeoutIndex == null) {
+            mTimeoutIndex = new HashMap<Integer,Integer>();
+            int i=0;
+            for (int t : mTimeouts)
+                mTimeoutIndex.put(t, i++);
+        }            
+        mTimeoutString = r.getString(R.string.timeout_off);
         mBatteryLevels = (LevelListDrawable) r.getDrawable(R.drawable.qs_sys_battery);
         mChargingBatteryLevels =
                 (LevelListDrawable) r.getDrawable(R.drawable.qs_sys_battery_charging);
@@ -1337,6 +1355,32 @@ public class QuickSettings {
                     }
                 });
                 break;
+            case TIMEOUT_TILE:
+                quick = (QuickSettingsTileView)
+                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                quick.setContent(R.layout.quick_settings_tile_timeout, inflater);
+                quick.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBar.collapseAllPanels(true);
+                        updateTimeoutValue();
+                    }
+                });
+                quick.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        Intent intent = new Intent("android.settings.DISPLAY_SETTINGS");
+                        startSettingsActivity(intent);
+                        return true;
+                    }
+                });
+                mModel.addTimeoutTile(quick, new QuickSettingsModel.RefreshCallback() {
+                    @Override
+                    public void refreshView(QuickSettingsTileView view, State state) {
+                        // perhaps add image states here later
+                    }
+                });
+                break;
             case BATTERY_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
@@ -1873,6 +1917,30 @@ public class QuickSettings {
         } catch (RemoteException e) {
         }
         dialog.show();
+    }
+
+    private void updateTimeoutValue() {
+        screenTimeout = mTimeouts[(mTimeoutIndex.get(getScreenTimeout())+1)%mTimeouts.length];
+        screenTimeout = screenTimeout > 0 ? screenTimeout : Integer.MAX_VALUE;
+        Settings.System.putInt(
+                mContext.getContentResolver(),
+                Settings.System.SCREEN_OFF_TIMEOUT, screenTimeout);
+        getToasty(screenTimeout);
+    }
+
+    private int getScreenTimeout() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SCREEN_OFF_TIMEOUT, 0);
+    }
+
+    private void getToasty(int screenTimeout) {
+        String string = "";
+        if (screenTimeout == Integer.MAX_VALUE) {
+            string = mTimeoutString;
+        } else {
+            string = "Timeout set to " + Integer.toString((screenTimeout) / 1000) + " seconds";
+        }
+        Toast.makeText(mContext, string, Toast.LENGTH_SHORT).show();
     }
 
     private void updateWifiDisplayStatus() {

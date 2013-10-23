@@ -40,4 +40,13 @@
         <item>@null</item>
     </array>
 
+    <integer-array name="qs_screen_timeout_values">
+        <item>15000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>300000</item>
+        <item>0</item> <!-- 0 == never -->
+    </integer-array>
+
 </resources>
