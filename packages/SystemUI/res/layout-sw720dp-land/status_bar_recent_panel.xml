@@ -73,16 +73,16 @@
                   style="?android:attr/progressBarStyleHorizontal"
                   android:layout_height="wrap_content"
                   android:layout_width="match_parent"
-                  android:layout_gravity="top|left"
-                  android:layout_marginTop="25dp"
+                  android:layout_gravity="bottom|right"
+                  android:layout_marginBottom="1dp"
                   android:layout_marginRight="5dp" />
 
         <TextView android:id="@+id/recents_memory_text"
                   android:textColor="@android:color/holo_blue_dark"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:layout_gravity="top|left"
-                  android:layout_marginTop="32dp"
+                  android:layout_gravity="bottom|right"
+                  android:layout_marginBottom="10dp"
                   android:layout_marginRight="5dp"
                   android:layout_marginLeft="5dp" />
 
@@ -91,10 +91,10 @@
             android:clickable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
-            android:layout_marginRight="5dp"
-            android:paddingBottom="10dp"
-            android:layout_gravity="top|right"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="5dp"
+            android:paddingTop="5dp"
+            android:layout_gravity="bottom|left"
             android:src="@drawable/ic_notify_clear"
             android:state_pressed="true" android:drawable="@drawable/ic_notify_clear_pressed" />
 
