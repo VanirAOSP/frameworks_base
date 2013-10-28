@@ -19,7 +19,6 @@ package com.android.systemui.recent;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.animation.Animator.AnimatorListener;
 import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.view.View;

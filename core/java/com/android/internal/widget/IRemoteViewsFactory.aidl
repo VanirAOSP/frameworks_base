@@ -32,4 +32,3 @@ interface IRemoteViewsFactory {
     boolean hasStableIds();
     boolean isCreated();
 }
-

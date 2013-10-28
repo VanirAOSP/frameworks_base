@@ -17,4 +17,3 @@
 package com.android.internal.statusbar;
 
 parcelable StatusBarIcon;
-
