@@ -462,14 +462,14 @@ static jlong getFreeMemoryImpl(const char* const sums[], const int sumsLen[], in
 static jlong android_os_Process_getFreeMemory(JNIEnv* env, jobject clazz)
 {
     static const char* const sums[] = { "MemFree:", "Cached:", NULL };
-    static const int sumsLen[] = { static_cast<int>(strlen("MemFree:"), strlen("Cached:")), 0 };
+    static const int sumsLen[] = { strlen("MemFree:"), strlen("Cached:"), 0 };
     return getFreeMemoryImpl(sums, sumsLen, 2);
 }
 
 static jlong android_os_Process_getTotalMemory(JNIEnv* env, jobject clazz)
 {
     static const char* const sums[] = { "MemTotal:", NULL };
-    static const int sumsLen[] = { static_cast<int>(strlen("MemTotal:")), 0 };
+    static const int sumsLen[] = { strlen("MemTotal:"), 0 };
     return getFreeMemoryImpl(sums, sumsLen, 1);
 }
 

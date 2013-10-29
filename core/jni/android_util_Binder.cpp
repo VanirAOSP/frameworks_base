@@ -638,7 +638,7 @@ void signalExceptionForError(JNIEnv* env, jobject obj, status_t err,
         bool canThrowRemoteException)
 {
     switch (err) {
-        case static_cast<status_t>(UNKNOWN_ERROR):
+        case UNKNOWN_ERROR:
             jniThrowException(env, "java/lang/RuntimeException", "Unknown error");
             break;
         case NO_MEMORY:
@@ -653,7 +653,7 @@ void signalExceptionForError(JNIEnv* env, jobject obj, status_t err,
         case BAD_INDEX:
             jniThrowException(env, "java/lang/IndexOutOfBoundsException", NULL);
             break;
-        case static_cast<status_t>(BAD_TYPE):
+        case BAD_TYPE:
             jniThrowException(env, "java/lang/IllegalArgumentException", NULL);
             break;
         case NAME_NOT_FOUND:
@@ -680,7 +680,7 @@ void signalExceptionForError(JNIEnv* env, jobject obj, status_t err,
         case UNKNOWN_TRANSACTION:
             jniThrowException(env, "java/lang/RuntimeException", "Unknown transaction code");
             break;
-        case static_cast<status_t>(FAILED_TRANSACTION):
+        case FAILED_TRANSACTION:
             ALOGE("!!! FAILED BINDER TRANSACTION !!!");
             // TransactionTooLargeException is a checked exception, only throw from certain methods.
             // FIXME: Transaction too large is the most common reason for FAILED_TRANSACTION
@@ -692,7 +692,7 @@ void signalExceptionForError(JNIEnv* env, jobject obj, status_t err,
                     ? "android/os/TransactionTooLargeException"
                             : "java/lang/RuntimeException", NULL);
             break;
-        case static_cast<status_t>(FDS_NOT_ALLOWED):
+        case FDS_NOT_ALLOWED:
             jniThrowException(env, "java/lang/RuntimeException",
                     "Not allowed to write file descriptors here");
             break;
