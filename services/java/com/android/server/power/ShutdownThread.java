@@ -203,6 +203,7 @@ public final class ShutdownThread extends Thread {
             sConfirmDialog.setOnDismissListener(closer);
             sConfirmDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
             sConfirmDialog.show();
+
         } else {
             beginShutdownSequence(context);
         }
@@ -271,8 +272,13 @@ public final class ShutdownThread extends Thread {
         // throw up an indeterminate system dialog to indicate radio is
         // shutting down.
         ProgressDialog pd = new ProgressDialog(context);
-        pd.setTitle(context.getText(com.android.internal.R.string.power_off));
-        pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
+        if (mReboot) {
+            pd.setTitle(context.getText(com.android.internal.R.string.reboot_system));
+            pd.setMessage(context.getText(com.android.internal.R.string.reboot_progress));
+        } else {
+            pd.setTitle(context.getText(com.android.internal.R.string.power_off));
+            pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
+        }
         pd.setIndeterminate(true);
         pd.setCancelable(false);
         pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
@@ -352,7 +358,7 @@ public final class ShutdownThread extends Thread {
         }
 
         Log.i(TAG, "Sending shutdown broadcast...");
-        
+
         // First send the high-level shut down broadcast.
         mActionDone = false;
         Intent intent = new Intent(Intent.ACTION_SHUTDOWN);
@@ -374,9 +380,9 @@ public final class ShutdownThread extends Thread {
                 }
             }
         }
-        
+
         Log.i(TAG, "Shutting down activity manager...");
-        
+
         final IActivityManager am =
             ActivityManagerNative.asInterface(ServiceManager.checkService("activity"));
         if (am != null) {
