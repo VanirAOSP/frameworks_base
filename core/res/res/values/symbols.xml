@@ -1763,5 +1763,49 @@
   <java-symbol type="array" name="shutdown_reboot_options" />
   <java-symbol type="array" name="shutdown_reboot_actions" />
   <java-symbol type="drawable" name="ic_lock_reboot" />
+  <java-symbol type="drawable" name="ic_lock_profile" />
+
+  <!-- Profiles -->
+  <java-symbol type="xml" name="profile_default" />
+  <java-symbol type="string" name="wildcardProfile" />
+  <java-symbol type="string" name="profile_picker_title" />
+  <java-symbol type="string" name="profile_none" />
+
+  <!-- Power widget -->
+  <java-symbol type="string" name="hour" />
+  <java-symbol type="string" name="hours" />
+  <java-symbol type="string" name="minute" />
+  <java-symbol type="string" name="minutes" />
+  <java-symbol type="string" name="second" />
+  <java-symbol type="string" name="seconds" />
+
+  <!-- Developer settings - Kill app back press -->
+  <java-symbol type="string" name="app_killed_message" />
+
+  <!-- HW rotation lock -->
+  <java-symbol type="string" name="toast_rotation_unlocked" />
+  <java-symbol type="string" name="toast_rotation_locked" />
+
+  <!-- Wifi -->
+  <java-symbol type="bool" name="config_wifiApStartInterface" />
+  <java-symbol type="bool" name="config_wifiApFirmwareReload" />
+
+  <!-- Stylus gestures -->
+  <java-symbol type="bool" name="config_stylusGestures" />
+  <java-symbol type="string" name="stylus_app_not_installed" />
+
+  <!-- Panel auto brightness -->
+  <java-symbol type="integer" name="config_panelAutoBrightnessValue" />
+
+  <!-- Electron Beam -->
+  <java-symbol type="bool" name="config_screenOffAnimation" />
+
+  <!-- Privacy Guard -->
+  <java-symbol type="string" name="privacy_guard_notification" />
+  <java-symbol type="string" name="privacy_guard_notification_detail" />
+  <java-symbol type="drawable" name="stat_notify_privacy_guard" />
+
+  <!-- Package Manager -->
+  <java-symbol type="array" name="config_disabledComponents" />
 
 </resources>
