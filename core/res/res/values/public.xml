@@ -2106,4 +2106,5 @@
   <java-symbol type="string" name="wildcardProfile" />
   <java-symbol type="xml" name="profile_default" />
 
+  <java-symbol type="bool" name="config_forceDisableHardwareKeyboard" />
 </resources>

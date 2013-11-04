@@ -1346,4 +1346,7 @@
          applied. -->
     <bool name="config_hasRemovableLid">false</bool>
 
+    <!-- Workaround for devices with broken keyboards -->
+    <bool name="config_forceDisableHardwareKeyboard">false</bool>
+
 </resources>
