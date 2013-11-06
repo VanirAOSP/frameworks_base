@@ -2529,7 +2529,7 @@ public final class Settings {
             POINTER_SPEED,
             VIBRATE_WHEN_RINGING,
             RINGTONE,
-            NOTIFICATION_SOUND
+            NOTIFICATION_SOUND,
             PHONE_BLACKLIST_ENABLED,
             PHONE_BLACKLIST_NOTIFY_ENABLED,
             PHONE_BLACKLIST_PRIVATE_NUMBER_MODE,
