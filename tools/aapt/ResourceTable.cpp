@@ -1835,9 +1835,8 @@ status_t ResourceTable::startBag(const SourcePos& sourcePos,
             }
         }
         if (!canAdd) {
-            sourcePos.error("Resource does not already exist in overlay at '%s'; use <add-resource> to add.\n",
-                            String8(name).string());
-            return UNKNOWN_ERROR;
+            fprintf(stdout, "Resource does not already exist in overlay at '%s'; use <add-resource> to add.\n", String8(name).string());
+            return NO_ERROR;
         }
     }
     sp<Entry> e = getEntry(package, type, name, sourcePos, overlay, params);
@@ -2399,10 +2398,8 @@ bool ResourceTable::getAttributeFlags(
             }
             pos++;
         }
-
-        return true;
     }
-    return false;
+    return true;
 }
 
 status_t ResourceTable::assignResourceIds()
@@ -3534,10 +3531,7 @@ sp<ResourceTable::Entry> ResourceTable::Type::getEntry(const String16& entry,
     int pos = -1;
     sp<ConfigList> c = mConfigs.valueFor(entry);
     if (c == NULL) {
-        if (overlay && !autoAddOverlay && mCanAddEntries.indexOf(entry) < 0) {
-            sourcePos.error("Resource at %s appears in overlay but not"
-                            " in the base package; use <add-resource> to add.\n",
-                            String8(entry).string());
+        if (overlay && !autoAddOverlay && mCanAddEntries.indexOf(entry) < 0) {            
             return NULL;
         }
         c = new ConfigList(entry, sourcePos);
