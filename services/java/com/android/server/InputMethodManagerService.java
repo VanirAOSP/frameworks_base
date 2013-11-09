@@ -15,8 +15,6 @@
 
 package com.android.server;
 
-import android.provider.Settings.SettingNotFoundException;
-
 import com.android.internal.app.ThemeUtils;
 import com.android.internal.content.PackageMonitor;
 import com.android.internal.inputmethod.InputMethodUtils;
@@ -407,7 +405,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                     Settings.System.STATUS_BAR_IME_SWITCHER),
                     false, new ContentObserver(mHandler) {
                         public void onChange(boolean selfChange) {
-                            updateFromSettingsLocked(true);
+                            updateFromSettingsLocked();
                         }
                     });
         }
