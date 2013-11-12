@@ -304,7 +304,6 @@
     <string name="screen_lock">Screen lock</string>
     <!-- Button to turn off the phone, within the Phone Options dialog -->
     <string name="power_off">Power off</string>
-
     <!-- Spoken description for ringer silent option. [CHAR LIMIT=NONE] -->
     <string name="silent_mode_silent">Ringer off</string>
     <!-- Spoken description for ringer vibrate option. [CHAR LIMIT=NONE] -->
