@@ -1366,4 +1366,7 @@
     <!-- Integer to configure panel auto brightness mode when changed -->
     <integer name="config_panelAutoBrightnessValue">-1</integer>
 
+    <!-- Superficial CM Compatibility (AKA the female hyena department) -->
+    <bool name="config_enableTorch">false</bool>
+
 </resources>
