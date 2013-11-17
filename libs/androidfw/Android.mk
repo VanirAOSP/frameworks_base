@@ -51,7 +51,7 @@ LOCAL_MODULE:= libandroidfw
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_CFLAGS += -DSTATIC_ANDROIDFW_FOR_TOOLS
+LOCAL_CFLAGS += -DSTATIC_ANDROIDFW_FOR_TOOLS -Wno-error=strict-aliasing
 
 LOCAL_C_INCLUDES := \
 	external/zlib
@@ -78,6 +78,8 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_C_INCLUDES := \
     external/icu4c/common \
 	external/zlib
+
+LOCAL_CFLAGS += -Wno-error=strict-aliasing
 
 LOCAL_MODULE:= libandroidfw
 
