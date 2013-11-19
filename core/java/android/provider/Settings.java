@@ -3430,8 +3430,18 @@ public final class Settings {
                 "wallpaper_intra_close",
         };
 
+        /**
+         * Setting for animation controls
+         *
+         * @hide
+         */
         public static final String ANIMATION_CONTROLS_DURATION = "animation_controls_duration";
 
+        /**
+         * Setting for animation controls
+         *
+         * @hide
+         */
         public static final String ANIMATION_CONTROLS_NO_OVERRIDE = "animation_controls_no_override";
 
         /**
