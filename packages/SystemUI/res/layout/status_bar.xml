@@ -30,6 +30,22 @@
     android:fitsSystemWindows="true"
     >
 
+    <LinearLayout
+        android:id="@+id/center_clock_layout"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent">
+        <com.android.systemui.statusbar.policy.Clock
+            android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+            android:gravity="center"
+            android:id="@+id/center_clock"
+            android:tag="center"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:singleLine="true" />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/notification_lights_out"
         android:layout_width="@dimen/status_bar_icon_size"
@@ -88,13 +104,11 @@
                 android:layout_height="match_parent"
                 android:paddingStart="2dp"
                 android:orientation="horizontal"
-                android:gravity="center"
-                >
+                android:gravity="center" >
                 <include layout="@layout/signal_cluster_view" 
                     android:id="@+id/signal_cluster"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
+                    android:layout_height="wrap_content" />
                 <!-- battery must be padded below by 2px to match assets -->
                 <com.android.systemui.BatteryMeterView
                     android:id="@+id/battery"
@@ -116,7 +130,7 @@
                 />
         </LinearLayout>
     </LinearLayout>
-        
+
     <LinearLayout android:id="@+id/ticker"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
