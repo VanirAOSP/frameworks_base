@@ -94,7 +94,7 @@
     <string name="storage_sd_dock_card">Dock SD card</string>
 
     <!-- Long-press back kill application -->
-    <string name="app_killed_message">App killed</string>
+    <string name="app_killed_message">Destroyed.</string>
 
     <!-- Label for item that reboots the device in phone options dialog -->
     <string name="global_action_reboot">Reboot</string>

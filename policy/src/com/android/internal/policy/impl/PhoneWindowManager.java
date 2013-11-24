@@ -938,7 +938,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
-    Runnable mBackLongPress = new Runnable() {
+    private Runnable mBackLongPress = new Runnable() {
         public void run() {
             if (DevUtils.killForegroundApplication(mContext)) {
                 performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
