@@ -42,7 +42,6 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.os.SystemProperties;
 import android.provider.Settings;
 import android.text.BoringLayout;
 import android.text.DynamicLayout;
@@ -3691,10 +3690,6 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
                          boolean notifyBefore, int oldlen) {
         if (text == null) {
             text = "";
-        }
-
-        if (SystemProperties.getBoolean("ro.debug.textview",false)) {
-            Log.d(LOG_TAG, "" + text);
         }
 
         // If suggestions are not enabled, remove the suggestion spans from the text
