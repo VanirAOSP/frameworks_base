@@ -21,6 +21,11 @@ LOCAL_SRC_FILES:= \
     android_mtp_MtpDevice.cpp \
     android_mtp_MtpServer.cpp \
 
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+    LOCAL_SRC_FILES += \
+    android_media_ExtMediaPlayer.cpp
+endif
+
 LOCAL_SHARED_LIBRARIES := \
     libandroid_runtime \
     libnativehelper \
