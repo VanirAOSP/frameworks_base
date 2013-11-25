@@ -1304,6 +1304,50 @@ public final class Settings {
         }
 
         /**
+         * @hide
+         * Convenience function for retrieving a single system settings value
+         * as a boolean.  Note that internally setting values are always
+         * stored as strings; this function converts the string to a boolean
+         * for you. It will only return true if the stored value is "1"
+         *
+         * @param cr The ContentResolver to access.
+         * @param name The name of the setting to retrieve.
+         * @param def Value to return if the setting is not defined.
+         *
+         * @return The setting's current value, or 'def' if it is not defined
+         * or not a valid integer.
+         */
+        public static boolean getBoolean(ContentResolver cr, String name, boolean def) {
+            String v = getString(cr, name);
+            try {
+                if(v != null)
+                    return "1".equals(v);
+                else
+                    return def;
+            } catch (NumberFormatException e) {
+                return def;
+           }
+        }
+
+        /**
+        * @hide
+        * Convenience function for updating a single settings value as a
+        * boolean. This will either create a new entry in the table if the
+        * given name does not exist, or modify the value of the existing row
+        * with that name. Note that internally setting values are always
+        * stored as strings, so this function converts the given value to a
+        * string (1 or 0) before storing it.
+        *
+        * @param cr The ContentResolver to access.
+        * @param name The name of the setting to modify.
+        * @param value The new value for the setting.
+        * @return true if the value was set, false on database errors
+        */
+        public static boolean putBoolean(ContentResolver cr, String name, boolean value) {
+            return putString(cr, name, value ? "1" : "0");
+        }
+
+        /**
          * Convenience function for retrieving a single system settings value
          * as a {@code long}.  Note that internally setting values are always
          * stored as strings; this function converts the string to a {@code long}
@@ -3298,6 +3342,60 @@ public final class Settings {
          * @hide
          */
         public static final String UI_FORCE_OVERFLOW_BUTTON = "ui_force_overflow_button";
+
+        /**
+         * ListView Animations
+         * 0 == None
+         * 1 == Wave (Left)
+         * 2 == Wave (Right)
+         * 3 == Scale
+         * 4 == Alpha
+         * 5 == Stack (Top)
+         * 6 == Stack (Bottom)
+         * 7 == Translate (Left)
+         * 8 == Translate (Right)
+         */
+        public static final String LISTVIEW_ANIMATIONS = "listview_animations";
+
+        /**
+         * Listview animation duration
+         */
+        public static final String LISTVIEW_SCROLL_DURATION = "listview_scroll_duration";
+
+        /**
+         * ListView Interpolators
+         * 0 == None
+         * 1 == accelerate_interpolator
+         * 2 == decelerate_interpolator
+         * 3 == accelerate_decelerate_interpolator
+         * 4 == anticipate_interpolator
+         * 5 == overshoot_interpolator
+         * 6 == anticipate_overshoot_interpolator
+         * 7 == bounce_interpolator
+         */
+         public static final String LISTVIEW_INTERPOLATOR = "listview_interpolator"; 
+
+        /**
+         * Setting for animation controls
+         *
+         * @hide
+         */
+        public static final String[] ACTIVITY_ANIMATION_CONTROLS = new String[] {
+                "activity_open",
+                "activity_close",
+                "task_open",
+                "task_close",
+                "task_to_front",
+                "task_to_back",
+                "wallpaper_open",
+                "wallpaper_close",
+                "wallpaper_intra_open",
+                "wallpaper_intra_close",
+        };
+
+        public static final String ANIMATION_CONTROLS_DURATION = "animation_controls_duration";
+
+        public static final String ANIMATION_CONTROLS_NO_OVERRIDE = "animation_controls_no_override";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
