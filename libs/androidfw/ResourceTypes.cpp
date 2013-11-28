@@ -3957,7 +3957,7 @@ bool ResTable::expandResourceRef(const uint16_t* refStr, size_t refLen,
 {
     const char16_t* packageEnd = NULL;
     const char16_t* typeEnd = NULL;
-    const char16_t* p = refStr;
+    const char16_t* p = (const char16_t*)refStr;
     const char16_t* const end = p + refLen;
     while (p < end) {
         if (*p == ':') packageEnd = p;
@@ -4246,7 +4246,7 @@ bool ResTable::stringToFloat(const char16_t* s, size_t len, Res_value* outValue)
     if (*end == 0) {
         if (outValue) {
             outValue->dataType = outValue->TYPE_FLOAT;
-            *(float*)(&outValue->data) = f;
+            memcpy(&outValue->data, &f, sizeof(float)); // *(float*)(&outValue->data) = f;
             return true;
         }
     }
@@ -4366,7 +4366,7 @@ bool ResTable::stringToValue(Res_value* outValue, String16* outString,
                 resourceNameLen = len - 1;
             }
             String16 package, type, name;
-            if (!expandResourceRef(resourceRefName,resourceNameLen, &package, &type, &name,
+            if (!expandResourceRef((const uint16_t*)resourceRefName,resourceNameLen, &package, &type, &name,
                                    defType, defPackage, &errorMsg)) {
                 if (accessor != NULL) {
                     accessor->reportError(accessorCookie, errorMsg);
@@ -4516,7 +4516,7 @@ bool ResTable::stringToValue(Res_value* outValue, String16* outString,
 
         static const String16 attr16("attr");
         String16 package, type, name;
-        if (!expandResourceRef(s+1, len-1, &package, &type, &name,
+        if (!expandResourceRef((const uint16_t*)s+1, len-1, &package, &type, &name,
                                &attr16, defPackage, &errorMsg)) {
             if (accessor != NULL) {
                 accessor->reportError(accessorCookie, errorMsg);
@@ -5198,7 +5198,7 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
             idx = mPackageGroups.size()+1;
 
             char16_t tmpName[sizeof(pkg->name)/sizeof(char16_t)];
-            strcpy16_dtoh(tmpName, pkg->name, sizeof(pkg->name)/sizeof(char16_t));
+            strcpy16_dtoh((uint16_t*)tmpName, (const uint16_t*)pkg->name, sizeof(pkg->name)/sizeof(char16_t));
             group = new PackageGroup(this, String16(tmpName), id);
             if (group == NULL) {
                 delete package;
@@ -5685,7 +5685,9 @@ void ResTable::print_value(const Package* pkg, const Res_value& value) const
             }
         } 
     } else if (value.dataType == Res_value::TYPE_FLOAT) {
-        printf("(float) %g\n", *(const float*)&value.data);
+        float f;
+        memcpy(&f, &value.data, sizeof(float));
+        printf("(float) %g\n", f);
     } else if (value.dataType == Res_value::TYPE_DIMENSION) {
         printf("(dimension) ");
         print_complex(value.data, false);
