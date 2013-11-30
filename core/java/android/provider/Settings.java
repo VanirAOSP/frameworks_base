@@ -3197,6 +3197,12 @@ public final class Settings {
         public static final String POWER_MENU_REBOOT_ENABLED = "power_menu_reboot_enabled";
 
         /**
+         * Show ScreenRecord in Power Menu
+         * @hide
+         */
+        public static final String SCREENRECORD_IN_POWER_MENU = "screenrecord_in_power_menu";
+
+        /**
          * Whether power menu screenshot is enabled
          * @hide
          */
