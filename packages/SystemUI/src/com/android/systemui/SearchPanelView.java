@@ -179,6 +179,8 @@ public class SearchPanelView extends FrameLayout implements
                 if (DEBUG) Log.v(TAG, "Couldn't grab icon for component " + component);
             }
         }
+        mGlowPadView.setTargetDescriptionsResourceId(0);
+        mGlowPadView.setDirectionDescriptionsResourceId(0);
     }
 
     private boolean pointInside(int x, int y, View v) {

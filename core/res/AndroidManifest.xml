@@ -204,6 +204,7 @@
     <protected-broadcast android:name="android.intent.action.PROXY_CHANGE" />
 
     <protected-broadcast android:name="android.os.UpdateLock.UPDATE_LOCK_CHANGED" />
+    <protected-broadcast android:name="android.intent.action.NAVBAR_EDIT" />
 
     <protected-broadcast android:name="android.intent.action.DREAMING_STARTED" />
     <protected-broadcast android:name="android.intent.action.DREAMING_STOPPED" />
@@ -2206,13 +2207,6 @@
         android:description="@string/permdesc_broadcastPackageRemoved"
         android:protectionLevel="signature" />
 
-    <!-- Allows an application to cancel notifications from other apps
-         -->
-    <permission android:name="android.permission.CANCEL_NOTIFICATIONS"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="signature|system"
-        android:label="@string/permlab_cancelNotifications"
-        android:description="@string/permdesc_cancelNotifications" />
 
     <!-- Allows an application to intercept and rewrite outgoing SMS
          @hide -->
