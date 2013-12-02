@@ -23,6 +23,7 @@ import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.FloatMath;
@@ -181,16 +182,19 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
 
     @Override
     public void removeAllViewsInLayout() {
-        smoothScrollTo(0, 0);
         int count = mLinearLayout.getChildCount();
-        for (int i = 0; i < count; i++) {
+        int scrollX = getScrollX();
+        for (int i = 0, delayCounter = 0; i < count; i++) {
             final View child = mLinearLayout.getChildAt(i);
+            if (child.getRight() > scrollX) {
+                delayCounter++;
+            }
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     dismissChild(child);
                 }
-            }, i * 150);
+            }, delayCounter * 150);
         }
     }
 
