@@ -2787,9 +2787,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
 
     private View.OnClickListener mClockClickListener = new View.OnClickListener() {
         public void onClick(View v) {
-<<<<<<< HEAD
-            startActivityDismissingKeyguard(new Intent(Intent.ACTION_QUICK_CLOCK), true); // have fun, everyone
-=======
             startActivityDismissingKeyguard(
                     new Intent(AlarmClock.ACTION_SHOW_ALARMS), true); // have fun, everyone
         }
@@ -2798,7 +2795,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
         public void onClick(View v) {
             Intent intent=Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_CALENDAR);
             startActivityDismissingKeyguard(intent,true);
->>>>>>> d70b674... Statusbar: Time and Date actions
         }
     };
 
