@@ -60,4 +60,11 @@
   <java-symbol type="anim" name="slide_in_left_no_fade" />
   <java-symbol type="anim" name="slide_out_right_no_fade" />
 
+  <!-- Expanded Desktop -->
+  <java-symbol type="string" name="global_actions_toggle_global_immersive_mode" />
+  <java-symbol type="string" name="global_actions_global_immersive_mode_off_status" />
+  <java-symbol type="string" name="global_actions_global_immersive_mode_on_status" />
+  <java-symbol type="drawable" name="ic_lock_immersive_mode_on" />
+  <java-symbol type="drawable" name="ic_lock_immersive_mode_off" />
+
 </resources>
