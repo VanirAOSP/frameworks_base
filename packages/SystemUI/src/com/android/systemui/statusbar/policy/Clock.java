@@ -81,6 +81,9 @@ public class Clock extends TextView implements OnClickListener, DemoMode {
 
     private static int mClockStyle = STYLE_CLOCK_RIGHT;
     private static int mAmPmStyle;
+    protected static int mClockColor = com.android.internal.R.color.holo_blue_light;
+    protected static int mExpandedClockColor = com.android.internal.R.color.white;
+    protected static int defaultColor, defaultExpandedColor;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -93,6 +96,10 @@ public class Clock extends TextView implements OnClickListener, DemoMode {
                     Settings.System.STATUS_BAR_AM_PM), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CLOCK), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_CLOCK_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_EXPANDED_CLOCK_COLOR), false, this);
             updateSettings();
         }
 
@@ -334,7 +341,6 @@ public class Clock extends TextView implements OnClickListener, DemoMode {
             mClockFormatString = "";
         }
 
-/*
         if (IsShade()) {
             defaultExpandedColor = getCurrentTextColor();
             mExpandedClockColor = Settings.System.getInt(resolver,
@@ -354,7 +360,6 @@ public class Clock extends TextView implements OnClickListener, DemoMode {
             }
             setTextColor(mClockColor);
         }
-*/
 
         updateClockVisibility();
         updateClock();
