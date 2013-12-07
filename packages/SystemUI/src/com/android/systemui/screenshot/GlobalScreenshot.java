@@ -353,6 +353,8 @@ class GlobalScreenshot {
 
     private MediaActionSound mCameraSound;
 
+    private final int mSfHwRotation;
+
 
     /**
      * @param context everything needs a context :(
@@ -406,6 +408,9 @@ class GlobalScreenshot {
         // Setup the Camera shutter sound
         mCameraSound = new MediaActionSound();
         mCameraSound.load(MediaActionSound.SHUTTER_CLICK);
+
+        // Load hardware rotation from prop
+        mSfHwRotation = android.os.SystemProperties.getInt("ro.sf.hwrotation",0) / 90;
     }
 
     /**
