@@ -141,6 +141,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     // power reboot dialog
     private boolean mStockMode = false;
     private boolean showBugReport;
+    private boolean AllowPowerMenuOnLockscreen;
     private boolean showScreenshot;
     private boolean showGlobalImmersiveMode;
     private boolean powerMenuImmersiveMode;
@@ -209,18 +210,20 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mKeyguardLocked = keyguardLocked;
         mDeviceProvisioned = isDeviceProvisioned;
-        if (mDialog != null) {
-            if (mUiContext != null) {
-                mUiContext = null;
-            }
-            mDialog.dismiss();
-            mDialog = null;
-            if (mQuickCam && !isKeyguardEnabled()) {
-                launchCameraAssistant();
-            }
-        } else {
-            mDialog = createDialog();
-            handleShow();
+        if (!keyguardLocked || (keyguardLocked && AllowPowerMenuOnLockscreen)) {
+           if (mDialog != null) {
+               if (mUiContext != null) {
+                   mUiContext = null;
+               }
+               mDialog.dismiss();
+               mDialog = null;
+               if (mQuickCam && !isKeyguardEnabled()) {
+                   launchCameraAssistant();
+               }
+           } else {
+               mDialog = createDialog();
+               handleShow();
+           }
         }
     }
 
@@ -1434,6 +1437,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 UserHandle.USER_CURRENT) == 1;
 
         if (!mStockMode) {
+        AllowPowerMenuOnLockscreen =
+                Settings.System.getIntForUser(cr,
+                        Settings.System.LOCKSCREEN_ENABLE_POWER_MENU, 1, UserHandle.USER_CURRENT) == 1;
             showScreenshot = Settings.System.getIntForUser(cr,
                 Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
             showGlobalImmersiveMode =
@@ -1468,6 +1474,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mScreenRecordRebootDialog = false;
             showOnTheGo = false;
             showReboot = true;
+            AllowPowerMenuOnLockscreen = true;
             showAirplaneMode = true;
             showSoundMode = true;
         }
