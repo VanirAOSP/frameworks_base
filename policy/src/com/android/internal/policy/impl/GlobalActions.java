@@ -141,6 +141,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     // power reboot dialog
     private boolean mStockMode = false;
     private boolean showBugReport;
+    private boolean PowermenuOnLockScreen;
     private boolean showScreenshot;
     private boolean showGlobalImmersiveMode;
     private boolean powerMenuImmersiveMode;
@@ -206,21 +207,22 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      * @param keyguardLocked True if keyguard is locked
      */
     public void showDialog(boolean keyguardLocked, boolean isDeviceProvisioned) {
-
         mKeyguardLocked = keyguardLocked;
         mDeviceProvisioned = isDeviceProvisioned;
-        if (mDialog != null) {
-            if (mUiContext != null) {
-                mUiContext = null;
-            }
-            mDialog.dismiss();
-            mDialog = null;
-            if (mQuickCam && !isKeyguardEnabled()) {
-                launchCameraAssistant();
-            }
-        } else {
-            mDialog = createDialog();
-            handleShow();
+        if (!onLockscreen || (onLockscreen && AllowPowerMenuOnLockscreen)) {
+           if (mDialog != null) {
+               if (mUiContext != null) {
+                   mUiContext = null;
+               }
+               mDialog.dismiss();
+               mDialog = null;
+               if (mQuickCam && !isKeyguardEnabled()) {
+                   launchCameraAssistant();
+               }
+           } else {
+               mDialog = createDialog();
+               handleShow();
+           }
         }
     }
 
@@ -1432,6 +1434,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 UserHandle.USER_CURRENT) == 1;
         expanded = Settings.System.getIntForUser(cr, Settings.System.EXPANDED_DESKTOP, 0,
                 UserHandle.USER_CURRENT) == 1;
+        PowermenuOnLockScreen = Settings.System.getIntForUser(cr,
+                Settings.System.LOCKSCREEN_ENABLE_POWER_MENU, 1) == 1;
 
         if (!mStockMode) {
             showScreenshot = Settings.System.getIntForUser(cr,
