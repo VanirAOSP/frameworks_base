@@ -3463,7 +3463,12 @@ public final class Settings {
          * Global immersive mode style (with status bar or without status bar)
          * @hide
          */
-        public static final String GLOBAL_IMMERSIVE_MODE_STYLE = "global_immersive_mode_style";        
+        public static final String GLOBAL_IMMERSIVE_MODE_STYLE = "global_immersive_mode_style";
+
+        /**
+         * @hide
+         */
+        public static final String SYSTEMUI_RECENTS_MEM_DISPLAY = "vanir_interface_recents_mem_display";        
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
