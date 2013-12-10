@@ -292,6 +292,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         final ContentResolver cr = mContext.getContentResolver();
         mItems = new ArrayList<Action>();
 
+        final boolean USER_MODE = Settings.Secure.getInt(cr,
+                Settings.Secure.STOCK_MODE, 1) == 1;
+
         // first: power off
         mItems.add(
             new SinglePressAction(
@@ -316,7 +319,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // only shown if enabled, enabled by default
         boolean showReboot = Settings.System.getIntForUser(cr,
                 Settings.System.POWER_MENU_REBOOT_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        if (showReboot) {
+        if (showReboot || USER_MODE) {
             mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
                     public void onPress() {
@@ -345,7 +348,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         Settings.System.SYSTEM_PROFILES_ENABLED, 1, UserHandle.USER_CURRENT) == 1
                 && Settings.System.getIntForUser(cr,
                         Settings.System.POWER_MENU_PROFILES_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        if (showProfiles) {
+        if (showProfiles && !USER_MODE) {
             mItems.add(
                 new ProfileChooseAction() {
                     public void onPress() {
@@ -375,8 +378,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.getIntForUser(cr,
                         Settings.System.POWER_MENU_IMMERSIVE, 0, UserHandle.USER_CURRENT) == 0;
 
-        if (showGlobalImmersiveMode && powerMenuImmersiveMode) {
-            Integer showImmersiveMode =Settings.System.getInt(mContext.getContentResolver(),
+        if (showGlobalImmersiveMode && !USER_MODE && powerMenuImmersiveMode) {
+            Integer showImmersiveMode = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.POWERMENU_IMMERSIVE_PREFS, 2);
             if ((showImmersiveMode == 2) || (showImmersiveMode == 1 && mKeyguardLocked == false)) { 		
                     mItems.add(mGlobalImmersiveModeOn);
@@ -387,7 +390,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // only shown if enabled, disabled by default
         boolean showScreenshot = Settings.System.getIntForUser(cr,
                 Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
-        if (showScreenshot) {
+        if (showScreenshot && !USER_MODE) {
             mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
                     public void onPress() {
@@ -409,7 +412,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // next: airplane mode
         boolean showAirplaneMode = Settings.System.getIntForUser(cr,
                 Settings.System.POWER_MENU_AIRPLANE_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        if (showAirplaneMode) {
+        if (showAirplaneMode || USER_MODE) {
             mItems.add(mAirplaneModeOn);
         }
 
@@ -473,7 +476,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // last: silent mode
         boolean showSoundMode = SHOW_SILENT_TOGGLE && Settings.System.getIntForUser(cr,
                 Settings.System.POWER_MENU_SOUND_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        if (showSoundMode) {
+        if (showSoundMode || USER_MODE) {
             mItems.add(mSilentModeAction);
         }
 

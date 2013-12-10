@@ -5599,6 +5599,12 @@ public final class Settings {
         public static final String ADVANCED_REBOOT = "advanced_reboot";
 
         /**
+         * deactivate custom rom interface
+         * @hide
+         */
+        public static final String STOCK_MODE = "stock_mode";
+
+        /**
          * Whether to display the 'Wipe data' and 'Force close' options in the notification
          * area and in the recent app list
          * @hide
