@@ -7171,7 +7171,9 @@ public final class Settings {
          * @hide
          */
         public static final String[] SETTINGS_TO_BACKUP = {
+            DEVELOPMENT_SETTINGS_ENABLED,
             BUGREPORT_IN_POWER_MENU,
+            ADB_ENABLED,
             STAY_ON_WHILE_PLUGGED_IN,
             WAKE_WHEN_PLUGGED_OR_UNPLUGGED,
             AUTO_TIME,
