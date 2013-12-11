@@ -20,6 +20,7 @@ import android.animation.Animator;
 import android.animation.LayoutTransition;
 import android.animation.TimeInterpolator;
 import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityManagerNative;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
@@ -66,6 +67,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -75,6 +77,11 @@ import com.android.systemui.statusbar.StatusBarPanel;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 
 import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class RecentsPanelView extends FrameLayout implements OnItemClickListener, RecentsCallback,
         StatusBarPanel, Animator.AnimatorListener {
@@ -317,6 +324,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mWaitingToShow = true;
             refreshRecentTasksList(recentTaskDescriptions, firstScreenful);
             showIfReady();
+            showMemDisplay();
         } else {
             showImpl(false);
         }
@@ -756,6 +764,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
             setContentDescription(null);
         }
+        showMemDisplay();
     }
 
     private void startApplicationDetailsActivity(String packageName) {
@@ -859,6 +868,56 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             }
         });
         popup.show();
+    }
+
+    private boolean showMemDisplay() {
+      boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
+          Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
+
+      final TextView memText = (TextView) findViewById(R.id.recents_memory_text);
+      final ProgressBar memBar = (ProgressBar) findViewById(R.id.recents_memory_bar);
+
+      if (!enableMemDisplay) {
+        memText.setVisibility(View.GONE);
+        memBar.setVisibility(View.GONE);
+        return false;
+      }
+
+      memText.setVisibility(View.VISIBLE);
+      memBar.setVisibility(View.VISIBLE);
+
+      int totalMem = getTotalMemory();
+      memBar.setMax(totalMem);
+
+      int availMem = Integer.parseInt(getAvailMemory());
+      memText.setText("Free RAM: " + String.valueOf(availMem) + "MB");
+      memBar.setProgress(totalMem - availMem);
+      return true;
+    }
+
+    private String getAvailMemory() {
+      MemoryInfo memInfo = new MemoryInfo();
+      ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+      am.getMemoryInfo(memInfo);
+      long availableMem = memInfo.availMem / 1048576L;
+      return String.valueOf(availableMem);
+    }
+
+    public int getTotalMemory() {
+      String str1 = "/proc/meminfo";
+      String str2;
+      String[] arrayOfString;
+      int memory = 0;
+      try {
+        FileReader localFileReader = new FileReader(str1);
+        BufferedReader localBufferedReader = new BufferedReader(localFileReader, 8192);
+        str2 = localBufferedReader.readLine(); // meminfo
+        arrayOfString = str2.split("\\s+");
+        memory = Integer.valueOf(arrayOfString[1]).intValue() * 1024;
+        localBufferedReader.close();
+      } catch (IOException e) {
+      }
+      return memory / 1048576;
     }
 
     @Override
