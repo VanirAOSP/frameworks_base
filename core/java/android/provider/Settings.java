@@ -3489,6 +3489,13 @@ public final class Settings {
         public static final String GLOBAL_IMMERSIVE_MODE_STYLE = "global_immersive_mode_style";
 
         /**
+         * Should call status sounds be player
+         *
+         * @hide
+         */
+        public static final String CALL_END_SOUND = "call_end_sound";
+
+        /**
          * @hide
          */
         public static final String SYSTEMUI_RECENTS_MEM_DISPLAY = "vanir_interface_recents_mem_display";        
