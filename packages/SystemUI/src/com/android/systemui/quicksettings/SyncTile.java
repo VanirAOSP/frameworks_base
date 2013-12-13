@@ -26,6 +26,7 @@ public class SyncTile extends QuickSettingsTile {
                 updateResources();
                 if (isFlipTilesEnabled()) {
                     flipTile(0);
+                }
             }
         };
 

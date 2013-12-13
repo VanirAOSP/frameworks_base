@@ -53,6 +53,7 @@ public class ProfileTile extends QuickSettingsTile {
                 createProfileDialog();
                 if (isFlipTilesEnabled()) {
                     flipTile(0);
+                }
             }
         };
         mOnLongClick = new View.OnLongClickListener() {

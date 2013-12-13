@@ -39,6 +39,7 @@ public class ScreenTimeoutTile extends QuickSettingsTile {
                 updateResources();
                 if (isFlipTilesEnabled()) {
                     flipTile(0);
+                }
             }
         };
 

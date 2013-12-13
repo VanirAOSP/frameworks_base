@@ -33,6 +33,7 @@ public class LteTile extends QuickSettingsTile {
                 updateResources();
                 if (isFlipTilesEnabled()) {
                     flipTile(0);
+                }
             }
         };
 

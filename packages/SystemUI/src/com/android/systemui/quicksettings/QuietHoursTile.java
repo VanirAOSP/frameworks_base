@@ -27,6 +27,7 @@ public class QuietHoursTile extends QuickSettingsTile {
                         mEnabled ? 0 : 1, UserHandle.USER_CURRENT);
                 if (isFlipTilesEnabled()) {
                     flipTile(0);
+                }
             }
         };
         mOnLongClick = new View.OnLongClickListener() {
