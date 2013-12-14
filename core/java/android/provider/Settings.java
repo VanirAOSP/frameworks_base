@@ -3148,17 +3148,6 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
 
-        /**
-         * Expanded desktop on/off state
-         * @hide
-         */
-        public static final String EXPANDED_DESKTOP_STATE = "expanded_desktop_state";
-
-        /**
-         * Expanded desktop style (with status bar or without status bar)
-         * @hide
-         */
-        public static final String EXPANDED_DESKTOP_STYLE = "expanded_desktop_style";
 
         /**
          * Show the pending notification counts as overlays on the status bar
@@ -3183,12 +3172,6 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_MENU_SCREENSHOT_ENABLED = "power_menu_screenshot_enabled";
-
-        /**
-         * Whether power menu expanded desktop is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_EXPANDED_DESKTOP_ENABLED = "power_menu_expanded_desktop_enabled";
 
         /**
          * Whether power menu profiles switcher is enabled
@@ -3250,6 +3233,19 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_MENU_AIRPLANE_ENABLED = "power_menu_airplane_enabled";
+
+
+        /**
+         * When to show Shutdown in Powermenu
+         * @hide
+         */
+        public static final String POWERMENU_IMMERSIVE_PREFS = "powermenu_immersive_prefs";
+
+        /**
+         * User disable/enable immersive mode in power menu
+         * @hide
+         */
+        public static final String POWER_MENU_IMMERSIVE = "power_menu_immersive";
 
         /**
          * Whether power menu user switcher is enabled
@@ -3491,7 +3487,7 @@ public final class Settings {
          * Global immersive mode style (with status bar or without status bar)
          * @hide
          */
-        public static final String GLOBAL_IMMERSIVE_MODE_STYLE = "global_immersive_mode_style";        
+        public static final String GLOBAL_IMMERSIVE_MODE_STYLE = "global_immersive_mode_style";
 
         /**
          * @hide
