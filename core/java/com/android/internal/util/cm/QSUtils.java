@@ -55,8 +55,8 @@ public class QSUtils {
         }
 
         public static boolean expandedDesktopEnabled(ContentResolver resolver) {
-            return Settings.System.getIntForUser(resolver, Settings.System.EXPANDED_DESKTOP_STYLE,
-                    0, UserHandle.USER_CURRENT_OR_SELF) != 0;
+            /*return (Settings.System.getIntForUser(resolver, Settings.System.EXPANDED_DESKTOP_STYLE, 0,
+                    UserHandle.USER_CURRENT_OR_SELF) != 0);*/ return false;
         }
 
         public static boolean deviceSupportsNfc(Context ctx) {
