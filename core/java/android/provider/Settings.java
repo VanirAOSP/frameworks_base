@@ -2787,6 +2787,13 @@ public final class Settings {
          */
         public static final String EGG_MODE = "egg_mode";
 
+       /**
+         * Animate-flip Quick Settings Panel Tiles on click
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_TILES_FLIP = "quick_settings_tiles_flip";
+
         /**
          * Quick Settings Panel Tiles to Use
          *
@@ -3148,17 +3155,6 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
 
-        /**
-         * Expanded desktop on/off state
-         * @hide
-         */
-        public static final String EXPANDED_DESKTOP_STATE = "expanded_desktop_state";
-
-        /**
-         * Expanded desktop style (with status bar or without status bar)
-         * @hide
-         */
-        public static final String EXPANDED_DESKTOP_STYLE = "expanded_desktop_style";
 
         /**
          * Show the pending notification counts as overlays on the status bar
@@ -3183,12 +3179,6 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_MENU_SCREENSHOT_ENABLED = "power_menu_screenshot_enabled";
-
-        /**
-         * Whether power menu expanded desktop is enabled
-         * @hide
-         */
-        public static final String POWER_MENU_EXPANDED_DESKTOP_ENABLED = "power_menu_expanded_desktop_enabled";
 
         /**
          * Whether power menu profiles switcher is enabled
@@ -3250,6 +3240,19 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_MENU_AIRPLANE_ENABLED = "power_menu_airplane_enabled";
+
+
+        /**
+         * When to show Shutdown in Powermenu
+         * @hide
+         */
+        public static final String POWERMENU_IMMERSIVE_PREFS = "powermenu_immersive_prefs";
+
+        /**
+         * User disable/enable immersive mode in power menu
+         * @hide
+         */
+        public static final String POWER_MENU_IMMERSIVE = "power_menu_immersive";
 
         /**
          * Whether power menu user switcher is enabled
@@ -3483,12 +3486,19 @@ public final class Settings {
          * Global immersive mode style (with status bar or without status bar)
          * @hide
          */
-        public static final String GLOBAL_IMMERSIVE_MODE_STYLE = "global_immersive_mode_style";        
+        public static final String GLOBAL_IMMERSIVE_MODE_STYLE = "global_immersive_mode_style";
 
         /**
          * @hide
          */
         public static final String SYSTEMUI_RECENTS_MEM_DISPLAY = "vanir_interface_recents_mem_display";        
+
+        /**
+         * Should the non-intrsive incall ui be used
+         *
+         * @hide
+         */
+        public static final String NON_INTRUSIVE_INCALL = "non_intrusive_incall";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
