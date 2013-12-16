@@ -26,16 +26,10 @@
     <!-- Height of the sliding KeyguardSecurityContainer with hidden widget (includes 2x keyguard_security_view_margin) -->
     <dimen name="keyguard_security_no_widget_height">400dp</dimen>
 
-<<<<<<< HEAD
-=======
     <!-- Left padding of num pad key on keyguard -->
     <dimen name="kg_num_pad_key_padding_left">20dp</dimen>
 
->>>>>>> 9c9c6d1... keyguard: fix-fix layout for sw320dp devices
     <!-- The bottom margin for the GlowPadView container -->
     <dimen name="glowpadcontainer_bottom_margin">-48dp</dimen>
-
-    <!-- Left padding of num pad key on keyguard -->
-    <dimen name="kg_num_pad_key_padding_left">20dp</dimen>
 
 </resources>
