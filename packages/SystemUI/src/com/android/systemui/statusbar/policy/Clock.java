@@ -50,7 +50,7 @@ import java.util.TimeZone;
 
 import libcore.icu.LocaleData;
 
-import com.android.internal.R;
+import com.android.systemui.R;
 
 /**
  * Digital clock for the status bar.
@@ -83,9 +83,9 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
 
     private static int mClockStyle = STYLE_CLOCK_RIGHT;
     private static int mAmPmStyle;
-    protected static int mClockColor = com.android.internal.R.color.holo_blue_light;
-    protected static int mExpandedClockColor = com.android.internal.R.color.white;
-    protected static int defaultColor, defaultExpandedColor;
+    protected static int mClockColor = R.color.status_bar_clock_color;
+    protected static int mExpandedClockColor = R.color.status_bar_clock_color;
+    protected static int defaultColor = R.color.status_bar_clock_color, defaultExpandedColor = R.color.status_bar_clock_color;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -415,7 +415,7 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         collapseStartActivity(intent);
 
-        // rue;
+        return true;
     }
 
     @Override
