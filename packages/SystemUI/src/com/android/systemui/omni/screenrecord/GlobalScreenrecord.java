@@ -215,18 +215,18 @@ class GlobalScreenrecord {
             mCaptureThread = null;
 
             String fileName = "SCR_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".mp4";
-            File pictures = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File screenshots = new File(pictures, "Screenshots");
+            File movies = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+            File screenrecords = new File(movies, "ScreenRecordings");
 
-            if (!screenshots.exists()) {
-                if (!screenshots.mkdir()) {
-                    Log.e(TAG, "Cannot create screenshots directory");
+            if (!screenrecords.exists()) {
+                if (!screenrecords.mkdir()) {
+                    Log.e(TAG, "Cannot create screenrecords directory");
                     return;
                 }
             }
 
             File input = new File(TMP_PATH);
-            final File output = new File(screenshots, fileName);
+            final File output = new File(screenrecords, fileName);
 
             Log.d(TAG, "Copying file to " + output.getAbsolutePath());
 
