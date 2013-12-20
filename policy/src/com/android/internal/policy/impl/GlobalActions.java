@@ -380,7 +380,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 0, UserHandle.USER_CURRENT) != 0;
         boolean powerMenuImmersiveMode =
                 Settings.System.getIntForUser(cr,
-                        Settings.System.POWER_MENU_IMMERSIVE, 0, UserHandle.USER_CURRENT) == 0;
+                        Settings.System.POWER_MENU_IMMERSIVE, 0, UserHandle.USER_CURRENT) == 1;
 
         if (showGlobalImmersiveMode && !USER_MODE && powerMenuImmersiveMode) {
             Integer showImmersiveMode = Settings.System.getInt(mContext.getContentResolver(),
