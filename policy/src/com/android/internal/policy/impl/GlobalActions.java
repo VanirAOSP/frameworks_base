@@ -126,6 +126,21 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private final boolean mShowSilentToggle;
     private final boolean mShowScreenRecord;
 
+    // power reboot dialog
+    private boolean STOCK_MODE = false;
+    private boolean showBugReport;
+    private boolean showScreenshot;
+    private boolean showGlobalImmersiveMode;
+    private boolean powerMenuImmersiveMode;
+    private boolean showProfiles;
+    private boolean showReboot;
+    private boolean showAirplaneMode;
+    private boolean airplaneModeOn;
+    private boolean showUsers;
+    private boolean showSoundMode;
+    private boolean mScreenRecordRebootDialog;
+    private int showImmersiveMode;
+
     /**
      * @param context everything needs a context :(
      */
@@ -142,6 +157,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED);
         context.registerReceiver(mBroadcastReceiver, filter);
+
+        IntentFilter zYXWVUTS = new IntentFilter("com.android.powermenu.ACTION_UPDATE_REBOOT_DIALOG");
+        context.registerReceiver(mRebootDialogReceiver, zYXWVUTS);
 
         ThemeUtils.registerThemeChangeReceiver(context, mThemeChangeReceiver);
 
@@ -163,6 +181,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mShowScreenRecord = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_enableScreenrecordChord);
+        updateRebootDialog();
     }
 
     /**
@@ -293,11 +312,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         };
         onAirplaneModeChanged();
 
-        final ContentResolver cr = mContext.getContentResolver();
         mItems = new ArrayList<Action>();
-
-        final boolean USER_MODE = Settings.Secure.getInt(cr,
-                Settings.Secure.STOCK_MODE, 1) == 1;
 
         // first: power off
         mItems.add(
@@ -321,9 +336,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: reboot
         // only shown if enabled, enabled by default
-        boolean showReboot = Settings.System.getIntForUser(cr,
-                Settings.System.POWER_MENU_REBOOT_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        if (showReboot || USER_MODE) {
+        if (showReboot) {
             mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
                     public void onPress() {
@@ -347,12 +360,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: profile
         // only shown if both system profiles and the menu item is enabled, enabled by default
-        boolean showProfiles =
-                Settings.System.getIntForUser(cr,
-                        Settings.System.SYSTEM_PROFILES_ENABLED, 1, UserHandle.USER_CURRENT) == 1
-                && Settings.System.getIntForUser(cr,
-                        Settings.System.POWER_MENU_PROFILES_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        if (showProfiles && !USER_MODE) {
+        if (showProfiles) {
             mItems.add(
                 new ProfileChooseAction() {
                     public void onPress() {
@@ -375,16 +383,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: global immersive mode toggle
         // only shown if enabled and global immersive mode is enabled, disabled by default
-        boolean showGlobalImmersiveMode =
-                Settings.System.getIntForUser(cr,
-                        Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 0, UserHandle.USER_CURRENT) != 0;
-        boolean powerMenuImmersiveMode =
-                Settings.System.getIntForUser(cr,
-                        Settings.System.POWER_MENU_IMMERSIVE, 0, UserHandle.USER_CURRENT) == 1;
-
-        if (showGlobalImmersiveMode && !USER_MODE && powerMenuImmersiveMode) {
-            Integer showImmersiveMode = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.POWERMENU_IMMERSIVE_PREFS, 2);
+        if (showGlobalImmersiveMode && powerMenuImmersiveMode) {
             if ((showImmersiveMode == 2) || (showImmersiveMode == 1 && mKeyguardLocked == false)) { 		
                     mItems.add(mGlobalImmersiveModeOn);
             }
@@ -392,9 +391,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: screenshot
         // only shown if enabled, disabled by default
-        boolean showScreenshot = Settings.System.getIntForUser(cr,
-                Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
-        if (showScreenshot && !USER_MODE) {
+        if (showScreenshot) {
             mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
                     public void onPress() {
@@ -413,8 +410,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: screen record, if enabled
         if (mShowScreenRecord) {
-            if (Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.SCREENRECORD_IN_POWER_MENU, 0) != 0) {
+            if (mScreenRecordRebootDialog) {
                 mItems.add(
                     new SinglePressAction(com.android.internal.R.drawable.ic_lock_screen_record,
                             R.string.global_action_screenrecord) {
@@ -439,15 +435,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         // next: airplane mode
-        boolean showAirplaneMode = Settings.System.getIntForUser(cr,
-                Settings.System.POWER_MENU_AIRPLANE_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        if (showAirplaneMode || USER_MODE) {
+        if (showAirplaneMode) {
             mItems.add(mAirplaneModeOn);
         }
 
         // next: bug report, if enabled
-        boolean showBugReport = (Settings.Global.getInt(cr,
-                Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0 && isCurrentUserOwner());
         if (showBugReport) {
             mItems.add(
                 new SinglePressAction(com.android.internal.R.drawable.stat_sys_adb,
@@ -496,16 +488,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         // next: optionally add a list of users to switch to
-        boolean showUsers = Settings.System.getIntForUser(cr,
-                Settings.System.POWER_MENU_USER_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
         if (showUsers) {
             addUsersToMenu(mItems);
         }
 
         // last: silent mode
-        boolean showSoundMode = SHOW_SILENT_TOGGLE && Settings.System.getIntForUser(cr,
-                Settings.System.POWER_MENU_SOUND_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        if (showSoundMode || USER_MODE) {
+        if (showSoundMode) {
             mItems.add(mSilentModeAction);
         }
 
@@ -1245,7 +1233,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
     }
 
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
@@ -1266,7 +1254,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
     };
 
-    private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mRebootDialogReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            updateRebootDialog();
+        }
+    };
+
+    private final BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             mUiContext = null;
         }
@@ -1282,7 +1276,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
     };
 
-    private BroadcastReceiver mRingerModeReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mRingerModeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(AudioManager.RINGER_MODE_CHANGED_ACTION)) {
@@ -1297,6 +1291,54 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             onAirplaneModeChanged();
         }
     };
+
+    private void updateRebootDialog() {
+        final ContentResolver cr = mContext.getContentResolver();
+
+        STOCK_MODE = Settings.Secure.getInt(cr,
+                Settings.Secure.STOCK_MODE, 1) == 1;
+        showBugReport = (Settings.Global.getInt(cr,
+                Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0 && isCurrentUserOwner());
+
+        if (!STOCK_MODE) {
+            showScreenshot = Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
+            showGlobalImmersiveMode =
+                Settings.System.getIntForUser(cr,
+                        Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 0, UserHandle.USER_CURRENT) != 0;
+            powerMenuImmersiveMode =
+                Settings.System.getIntForUser(cr,
+                        Settings.System.POWER_MENU_IMMERSIVE, 0, UserHandle.USER_CURRENT) == 1;
+            showProfiles =
+                Settings.System.getIntForUser(cr,
+                        Settings.System.SYSTEM_PROFILES_ENABLED, 1, UserHandle.USER_CURRENT) == 1
+                && Settings.System.getIntForUser(cr,
+                        Settings.System.POWER_MENU_PROFILES_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
+            showReboot = Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_REBOOT_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
+            showAirplaneMode = Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_AIRPLANE_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
+            showUsers = Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_USER_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
+            showSoundMode = SHOW_SILENT_TOGGLE && Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_SOUND_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
+            mScreenRecordRebootDialog = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.SCREENRECORD_IN_POWER_MENU, 0) != 0;
+        } else {
+            showScreenshot = false;
+            showGlobalImmersiveMode = false;
+            powerMenuImmersiveMode = false;
+            showProfiles = false;
+            showUsers = false;
+            mScreenRecordRebootDialog = false;
+            showReboot = true;
+            showAirplaneMode = true;
+            showSoundMode = true;
+        }
+
+        showImmersiveMode = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWERMENU_IMMERSIVE_PREFS, 2);
+    }
 
     private static final int MESSAGE_DISMISS = 0;
     private static final int MESSAGE_REFRESH = 1;
@@ -1331,10 +1373,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // Let the service state callbacks handle the state.
         if (mHasTelephony) return;
 
-        boolean airplaneModeOn = Settings.Global.getInt(
-                mContext.getContentResolver(),
-                Settings.Global.AIRPLANE_MODE_ON,
-                0) == 1;
+        airplaneModeOn = Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.AIRPLANE_MODE_ON, 0) == 1;
+
+
         mAirplaneState = airplaneModeOn ? ToggleAction.State.On : ToggleAction.State.Off;
         mAirplaneModeOn.updateState(mAirplaneState);
     }
