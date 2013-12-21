@@ -153,6 +153,8 @@ public final class BatteryService extends IBatteryService.Stub {
     private int mBatteryFullARGB;
     private boolean mMultiColorLed;
 
+    private SettingsObserver mObserver
+
     private boolean mSentLowBatteryBroadcast = false;
 
     private BatteryListener mBatteryPropertiesListener;
@@ -194,8 +196,8 @@ public final class BatteryService extends IBatteryService.Stub {
             // Should never happen.
         }
 
-        SettingsObserver observer = new SettingsObserver(new Handler());
-        observer.observe();
+        mObserver = new SettingsObserver(new Handler());
+        mObserver.observe();
 
     }
 
