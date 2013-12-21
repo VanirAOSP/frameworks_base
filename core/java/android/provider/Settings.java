@@ -3565,6 +3565,13 @@ public final class Settings {
          */
         public static final String SYSTEM_POWER_CRT_MODE = "system_power_crt_mode";
 
+       /**
+         * Whether to enable swiping your finger across the statusbar to change the brightness.
+         * Boolean value. Defaults to true.
+         * @hide
+         */
+        public static final String STATUSBAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
@@ -3891,15 +3898,6 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
-
-        /**
-         * Boolean value whether to allow the statusbar to be used as a
-         * brightness slider when collapsed
-         *
-         * @hide
-         */
-        public static final String STATUSBAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
-
     }
 
     /**
