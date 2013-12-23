@@ -2886,6 +2886,12 @@ public final class Settings {
          */
         public static final String QS_COLLAPSE_PANEL = "qs_collapse_panel";
 
+       /**
+         * HALO enabled, should default to 0 (HALO is disabled)
+         * @hide
+         */
+        public static final String HALO_ENABLED = "halo_enabled";
+
         /**
          * Quick Settings Quick access ribbon
          *
@@ -3430,7 +3436,107 @@ public final class Settings {
          public static final String KEY_APP_SWITCH_ACTION = "key_app_switch_action";
 
         /**
-         * Weather to minimize lockscreen challenge on screen turned on
+         * HALO, should default to 0 (no, do not show)
+         * @hide
+         */
+        public static final String HALO_ACTIVE = "halo_active";
+
+        /**
+         * HALO reversed?, should default to 1 (yes, reverse)
+         * @hide
+         */
+        public static final String HALO_REVERSED = "halo_reversed";
+
+        /**
+         * HALO hide?, should default to 0 (no, do not hide)
+         * @hide
+         */
+        public static final String HALO_HIDE = "halo_hide";
+
+        /**
+         * HALO ninja?, should default to 0 (no, do not disappear when empty)
+         * @hide
+         */
+        public static final String HALO_NINJA = "halo_ninja";
+
+        /**
+         * HALO message box?, should default to 1 (yes, show message box on incoming notification)
+         * @hide
+         */
+        public static final String HALO_MSGBOX = "halo_msgbox";
+
+        /**
+         * HALO notificatoin count?, should default to 4 (both)
+         * @hide
+         */
+        public static final String HALO_NOTIFY_COUNT = "halo_notify_count";
+
+        /**
+         * HALO message box animation?, should default to 2 (flip animation)
+         * @hide
+         */
+        public static final String HALO_MSGBOX_ANIMATION = "halo_msgbox_animation";
+
+        /**
+         * HALO unlock ping?, should default to 0 (no, do not ping on unlock)
+         * @hide
+         */
+        public static final String HALO_UNLOCK_PING = "halo_unlock_ping";
+
+
+        /**
+         * HALO size fraction, default is 1.0f (normal)
+         * @hide
+         */
+        public static final String HALO_SIZE = "halo_size";
+
+        /**
+         * HALO pause activities?, defaults to 0 (no, do not pause) on devices which isLargeRAM() == true
+         * otherwise it defaults to 1 (yes, do pause)
+         * @hide
+         */
+        public static final String HALO_PAUSE = "halo_pause";
+
+        /**
+         * Enable custom HALO Colors
+         * @hide
+         **/
+        public static final String HALO_COLOR = "halo_color";
+
+        /**
+         * HALO Circle Color
+         * @hide
+         **/
+        public static final String HALO_CIRCLE_COLOR = "halo_circle_color";
+
+        /**
+         * HALO Effect Color
+         **/
+        public static final String HALO_EFFECT_COLOR = "halo_effect_color";
+        
+        /**
+         * HALO Notification Title Color
+         * @hide
+         **/
+        public static final String HALO_NOTIFICATION_TITLE_COLOR = "halo_notification_title_color";
+
+        /**
+         * HALO Notification Description Color
+         **/
+        public static final String HALO_NOTIFICATION_DESC_COLOR = "halo_notification_desc_color";
+        
+        /**
+         * HALO Speech Bubble Color
+         **/
+        public static final String HALO_SPEECH_BUBBLE_COLOR = "halo_speech_bubble_color";
+        
+        /**
+         * HALO Text Color
+         **/
+        public static final String HALO_TEXT_COLOR = "halo_text_color";
+
+        /**
+         * Weather to minimize lockscreen widgets on screen turned on
          * @hide
          */
         public static final String LOCKSCREEN_MAXIMIZE_WIDGETS = "lockscreen_maximize_widgets";
