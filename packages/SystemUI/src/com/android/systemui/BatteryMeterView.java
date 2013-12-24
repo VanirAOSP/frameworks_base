@@ -176,7 +176,11 @@ public class BatteryMeterView extends View implements DemoMode {
         super.onDetachedFromWindow();
 
         mAttached = false;
-        getContext().unregisterReceiver(mTracker);
+
+        try{
+            getContext().unregisterReceiver(mTracker);
+        } catch (IllegalArgumentException ohnoez) {
+        }
     }
 
     public BatteryMeterView(Context context) {
