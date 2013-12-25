@@ -127,7 +127,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private final boolean mShowScreenRecord;
 
     // power reboot dialog
-    private boolean STOCK_MODE = false;
+    private boolean mStockMode = false;
     private boolean showBugReport;
     private boolean showScreenshot;
     private boolean showGlobalImmersiveMode;
@@ -1295,12 +1295,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private void updateRebootDialog() {
         final ContentResolver cr = mContext.getContentResolver();
 
-        STOCK_MODE = Settings.Secure.getInt(cr,
-                Settings.Secure.STOCK_MODE, 1) == 1;
+        mStockMode = Settings.Secure.getInt(cr,
+                Settings.Secure.STOCK_MODE, 0) == 1;
         showBugReport = (Settings.Global.getInt(cr,
                 Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0 && isCurrentUserOwner());
 
-        if (!STOCK_MODE) {
+        if (!mStockMode) {
             showScreenshot = Settings.System.getIntForUser(cr,
                 Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
             showGlobalImmersiveMode =
