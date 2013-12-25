@@ -143,14 +143,16 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
     };
 
-    /** ContentObserver to determine the next alarm */
-    private class NextAlarmObserver extends ContentObserver {
-        public NextAlarmObserver(Handler handler) {
+    /** Generic ContentObserver for quicksettings*/
+    private class SettingsObserver extends ContentObserver {
+        public SettingsObserver(Handler handler) {
             super(handler);
         }
 
         @Override public void onChange(boolean selfChange) {
             onNextAlarmChanged();
+            onBugreportChanged();
+            onBrightnessLevelChanged();
         }
 
         public void startObserving() {
@@ -158,40 +160,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             cr.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NEXT_ALARM_FORMATTED), false, this,
                     UserHandle.USER_ALL);
-        }
-    }
-
-    /** ContentObserver to watch adb */
-    private class BugreportObserver extends ContentObserver {
-        public BugreportObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override public void onChange(boolean selfChange) {
-            onBugreportChanged();
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
             cr.registerContentObserver(
                     Settings.Global.getUriFor(Settings.Global.BUGREPORT_IN_POWER_MENU), false, this);
-        }
-    }
-
-    /** ContentObserver to watch brightness **/
-    private class BrightnessObserver extends ContentObserver {
-        public BrightnessObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onBrightnessLevelChanged();
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
-            cr.unregisterContentObserver(this);
             cr.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE),
                     false, this, mUserTracker.getCurrentUserId());
@@ -228,9 +198,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private final Context mContext;
     private final Handler mHandler;
     private final CurrentUserTracker mUserTracker;
-    private final NextAlarmObserver mNextAlarmObserver;
-    private final BugreportObserver mBugreportObserver;
-    private final BrightnessObserver mBrightnessObserver;
+    private final SettingsObserver mSettingsObserver;
 
     private final MediaRouter mMediaRouter;
     private final RemoteDisplayRouteCallback mRemoteDisplayRouteCallback;
@@ -309,7 +277,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mUserTracker = new CurrentUserTracker(mContext) {
             @Override
             public void onUserSwitched(int newUserId) {
-                mBrightnessObserver.startObserving();
                 refreshRotationLockTile();
                 onBrightnessLevelChanged();
                 onNextAlarmChanged();
@@ -318,12 +285,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             }
         };
 
-        mNextAlarmObserver = new NextAlarmObserver(mHandler);
-        mNextAlarmObserver.startObserving();
-        mBugreportObserver = new BugreportObserver(mHandler);
-        mBugreportObserver.startObserving();
-        mBrightnessObserver = new BrightnessObserver(mHandler);
-        mBrightnessObserver.startObserving();
+        mSettingsObserver = new SettingsObserver(mHandler);
+        mSettingsObserver.startObserving();
 
         mMediaRouter = (MediaRouter)context.getSystemService(Context.MEDIA_ROUTER_SERVICE);
         rebindMediaRouterAsCurrentUser();
@@ -399,7 +362,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         // When switching users, this is the only clue we're going to get about whether the
         // alarm is actually set, since we won't get the ACTION_ALARM_CHANGED broadcast
         mAlarmState.enabled = ! TextUtils.isEmpty(alarmText);
-
         mAlarmCallback.refreshView(mAlarmTile, mAlarmState);
     }
 
