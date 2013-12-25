@@ -15,4 +15,4 @@
 -->
 
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@drawable/stat_sys_download_anim0" />
+    android:src="@drawable/stat_sys_vanir_download_anim0" />
