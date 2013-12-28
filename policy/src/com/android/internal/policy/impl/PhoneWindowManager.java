@@ -119,6 +119,7 @@ import com.android.internal.policy.PolicyManager;
 import com.android.internal.policy.impl.keyguard.KeyguardServiceDelegate;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.telephony.ITelephony;
+import com.android.internal.util.cm.TorchConstants;
 import com.android.internal.widget.PointerLocationView;
 
 import java.io.File;
@@ -363,6 +364,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Behavior of volbtn music controls
     boolean mVolBtnMusicControls;
     boolean mIsLongPress;
+
+    // fast torch
+    boolean mFastTorchOn; // local state of torch
+    boolean mFastTorchStatus; // reported state of torch
+    boolean mEnableFastTorch; // System.Setting
 
     private boolean mAnimatingWindows;
     private boolean mNeedUpdateSettings;
@@ -671,8 +677,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this,
                     UserHandle.USER_ALL);
-          resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_FAST_TORCH), false, this,
                     UserHandle.USER_ALL);
             updateSettings();
         }
@@ -1211,6 +1220,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         filter = new IntentFilter(Intent.ACTION_USER_SWITCHED);
         context.registerReceiver(mMultiuserReceiver, filter);
 
+        // register for Torch updates
+        filter = new IntentFilter();
+        filter.addAction(TorchConstants.ACTION_STATE_CHANGED);
+        context.registerReceiver(mTorchReceiver, filter);        
+
         // monitor for system gestures
         mSystemGestures = new SystemGesturesPointerEventListener(context,
                 new SystemGesturesPointerEventListener.Callbacks() {
@@ -1576,6 +1590,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (mImmersiveModeConfirmation != null) {
                 mImmersiveModeConfirmation.loadSetting();
             }
+
+            mEnableFastTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH, 0) == 1;
         }
 
         if (updateRotation) {
@@ -4409,6 +4425,34 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
+    Runnable mTorchToggle = new Runnable() {
+        public void run() {
+            Intent i = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
+            mContext.sendBroadcast(i);
+        };
+    };
+
+    BroadcastReceiver mTorchReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mFastTorchStatus = intent.getIntExtra(TorchConstants.EXTRA_CURRENT_STATE, 0) != 0;
+            if (mFastTorchOn && !mFastTorchStatus) {
+                handleChangeTorchState(mFastTorchOn);
+            }
+        }
+    };
+
+    void handleChangeTorchState(boolean on) {
+        mHandler.removeCallbacks(mTorchToggle);
+        if (on && !mFastTorchStatus) {
+            mHandler.postDelayed(mTorchToggle, ViewConfiguration.getLongPressTimeout());
+            mFastTorchOn = on;
+        } else if (!on && mFastTorchStatus && mFastTorchOn) {
+            mHandler.post(mTorchToggle);
+            mFastTorchOn = on;
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public int interceptKeyBeforeQueueing(KeyEvent event, int policyFlags, boolean isScreenOn) {
@@ -4648,6 +4692,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
                 result &= ~ACTION_PASS_TO_USER;
                 if (down) {
+                    if(!isScreenOn && mEnableFastTorch) {
+                        handleChangeTorchState(true);
+                    }
                     if (mGlobalImmersiveModeStyle == 0) {
                         mImmersiveModeConfirmation.onPowerKeyDown(isScreenOn, event.getDownTime(),
                                 isImmersiveMode(mLastSystemUiFlags));
@@ -4683,6 +4730,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     interceptPowerKeyDown(!isScreenOn || hungUp
                             || mVolumeDownKeyTriggered || mVolumeUpKeyTriggered);
                 } else {
+                    if (mEnableFastTorch) {
+                        handleChangeTorchState(false);
+                    }
                     mPowerKeyTriggered = false;
                     cancelPendingScreenshotChordAction();
                     cancelPendingScreenrecordChordAction();
