@@ -507,4 +507,10 @@
          linebreak to position it correctly.  [CHAR LIMIT=45] -->
     <string name="ssl_ca_cert_warning">Network may\nbe monitored</string>
 
+    <string name="quick_settings_quick_record_nofile">Long-press</string>
+    <string name="quick_settings_quick_record_def">Quick Record</string>
+    <string name="quick_settings_quick_record_rec">Recording...</string>
+    <string name="quick_settings_quick_record_save">Saved</string>
+    <string name="quick_settings_quick_record_play">Playing...</string>
+
 </resources>
