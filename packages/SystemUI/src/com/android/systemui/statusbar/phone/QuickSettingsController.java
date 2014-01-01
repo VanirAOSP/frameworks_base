@@ -131,13 +131,7 @@ public class QuickSettingsController {
     private final boolean mRibbonMode;
     private static boolean _firstShot = true;
 
-    private boolean mDynamicAlarm;
-    private boolean mDynamicBugreport;
-    private boolean mDynamicIME;
-    private boolean mDynamicUSBTeth;
     private boolean mPerformanceTileSupport;
-    private boolean mProfilesEnabled;
-    private boolean mAdbEnabled;
     private boolean cameraSupported;
     private boolean bluetoothSupported;
     private boolean mobileDataSupported;
@@ -182,6 +176,26 @@ public class QuickSettingsController {
         mIMETile = null;
 
         getOptionsEnabled();
+        boolean mDynamicAlarm;
+        boolean mDynamicBugreport;
+        boolean mDynamicIME;
+        boolean mDynamicUSBTeth;
+        boolean mProfilesEnabled;
+        boolean mAdbEnabled;
+
+        mTileStatusUris.add(Settings.System.getUriFor(Settings.System.SYSTEM_PROFILES_ENABLED));
+        mTileStatusUris.add(Settings.Global.getUriFor(Settings.Global.ADB_ENABLED));
+        mProfilesEnabled = QSUtils.systemProfilesEnabled(resolver);
+        mAdbEnabled = QSUtils.adbEnabled(resolver);
+
+        mDynamicAlarm = Settings.System.getIntForUser(resolver,
+                Settings.System.QS_DYNAMIC_ALARM, 1, UserHandle.USER_CURRENT) == 1;
+        mDynamicBugreport = Settings.System.getIntForUser(resolver,
+                    Settings.System.QS_DYNAMIC_BUGREPORT, 1, UserHandle.USER_CURRENT) == 1;
+        mDynamicIME = Settings.System.getIntForUser(resolver,
+                    Settings.System.QS_DYNAMIC_IME, 1, UserHandle.USER_CURRENT) == 1;
+        mDynamicUSBTeth = Settings.System.getIntForUser(resolver,
+                    Settings.System.QS_DYNAMIC_USBTETHER, 1, UserHandle.USER_CURRENT) == 1;
 
         if (!bluetoothSupported) {
             TILES_DEFAULT.remove(TILE_BLUETOOTH);
@@ -352,24 +366,9 @@ public class QuickSettingsController {
             torchSupported = QSUtils.deviceSupportsTorch(mContext);
             mSupportsIME = QSUtils.deviceSupportsImeSwitcher(mContext);
             mSupportsUSBTeth = QSUtils.deviceSupportsUsbTether(mContext);
+            mPerformanceTileSupport = QSUtils.deviceSupportsPerformanceProfiles(mContext);
             _firstShot = false;
         }
-
-        // filter device options
-        mTileStatusUris.add(Settings.System.getUriFor(Settings.System.SYSTEM_PROFILES_ENABLED));
-        mTileStatusUris.add(Settings.Global.getUriFor(Settings.Global.ADB_ENABLED));
-        mPerformanceTileSupport = QSUtils.deviceSupportsPerformanceProfiles(mContext);
-        mProfilesEnabled = QSUtils.systemProfilesEnabled(resolver);
-        mAdbEnabled = QSUtils.adbEnabled(resolver);
-
-        mDynamicAlarm = Settings.System.getIntForUser(resolver,
-                Settings.System.QS_DYNAMIC_ALARM, 1, UserHandle.USER_CURRENT) == 1;
-        mDynamicBugreport = Settings.System.getIntForUser(resolver,
-                    Settings.System.QS_DYNAMIC_BUGREPORT, 1, UserHandle.USER_CURRENT) == 1;
-        mDynamicIME = Settings.System.getIntForUser(resolver,
-                    Settings.System.QS_DYNAMIC_IME, 1, UserHandle.USER_CURRENT) == 1;
-        mDynamicUSBTeth = Settings.System.getIntForUser(resolver,
-                    Settings.System.QS_DYNAMIC_USBTETHER, 1, UserHandle.USER_CURRENT) == 1;
     }
 
     private void loadDockBatteryTile(final ContentResolver resolver,
