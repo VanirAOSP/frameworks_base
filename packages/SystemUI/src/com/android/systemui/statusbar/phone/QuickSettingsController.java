@@ -176,6 +176,7 @@ public class QuickSettingsController {
         mIMETile = null;
 
         getOptionsEnabled();
+        final ContentResolver resolver = mContext.getContentResolver();
         boolean mDynamicAlarm;
         boolean mDynamicBugreport;
         boolean mDynamicIME;
@@ -354,9 +355,8 @@ public class QuickSettingsController {
     }
 
     private void getOptionsEnabled() {
-        final ContentResolver resolver = mContext.getContentResolver();
-
         if (_firstShot) {
+            final ContentResolver resolver = mContext.getContentResolver();
             // Filter items not compatible with device
             cameraSupported = QSUtils.deviceSupportsCamera();
             bluetoothSupported = QSUtils.deviceSupportsBluetooth();
