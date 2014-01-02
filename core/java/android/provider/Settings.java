@@ -3224,6 +3224,12 @@ public final class Settings {
         public static final String POWER_MENU_REBOOT_ENABLED = "power_menu_reboot_enabled";
 
         /**
+         * Power menu quick camera
+         * @hide
+         */
+        public static final String POWER_MENU_QUICKCAM = "power_menu_quickcam";
+
+        /**
          * Show ScreenRecord in Power Menu
          * @hide
          */

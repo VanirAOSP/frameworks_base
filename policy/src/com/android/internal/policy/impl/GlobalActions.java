@@ -26,6 +26,7 @@ import com.android.internal.R;
 import android.app.ActivityManagerNative;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.KeyguardManager;
 import android.app.Profile;
 import android.app.ProfileManager;
 import android.content.BroadcastReceiver;
@@ -34,6 +35,8 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.UserInfo;
 import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
@@ -49,6 +52,7 @@ import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.service.dreams.DreamService;
 import android.service.dreams.IDreamManager;
@@ -61,6 +65,7 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -126,6 +131,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private final boolean mShowSilentToggle;
     private final boolean mShowScreenRecord;
 
+    // Quick Camera
+    private boolean mQuickCam;
+    private KeyguardManager KM;
+
     // power reboot dialog
     private boolean mStockMode = false;
     private boolean showBugReport;
@@ -189,6 +198,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      * @param keyguardLocked True if keyguard is locked
      */
     public void showDialog(boolean keyguardLocked, boolean isDeviceProvisioned) {
+
         mKeyguardLocked = keyguardLocked;
         mDeviceProvisioned = isDeviceProvisioned;
         if (mDialog != null) {
@@ -197,9 +207,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
             mDialog.dismiss();
             mDialog = null;
-            mDialog = createDialog();
-            // Show delayed, so that the dismiss of the previous dialog completes
-            mHandler.sendEmptyMessage(MESSAGE_SHOW);
+            if (mQuickCam && !isKeyguardEnabled()) {
+                launchCameraAssistant();
+            }
         } else {
             mDialog = createDialog();
             handleShow();
@@ -216,6 +226,30 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 // we tried
             }
         }
+    }
+
+    private void launchCameraAssistant() {
+        Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            PackageManager pm = mContext.getPackageManager();
+
+            final ResolveInfo mInfo = pm.resolveActivity(i, 0);
+
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName(mInfo.activityInfo.packageName, mInfo.activityInfo.name));
+            intent.setAction(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            mContext.startActivity(intent); 
+        } catch (Exception e){ Log.i(TAG, "Unable to launch camera: " + e);
+        }
+    }
+
+    private boolean isKeyguardEnabled() {
+        KM = (KeyguardManager)mContext.getSystemService(Context.KEYGUARD_SERVICE);
+        if(KM == null) return false;
+        return KM.isKeyguardLocked();
     }
 
     private void handleShow() {
@@ -791,6 +825,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Log.w(TAG, ie);
             }
         }
+        mDialog = null;
     }
 
     /** {@inheritDoc} */
@@ -1299,6 +1334,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.Secure.STOCK_MODE, 0) == 1;
         showBugReport = (Settings.Global.getInt(cr,
                 Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0 && isCurrentUserOwner());
+        mQuickCam = Settings.System.getIntForUser(cr, Settings.System.POWER_MENU_QUICKCAM, 1,
+                UserHandle.USER_CURRENT) == 1;
 
         if (!mStockMode) {
             showScreenshot = Settings.System.getIntForUser(cr,
