@@ -216,7 +216,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
     Clock mCenterClock;
     LinearLayout mCenterClockLayout;
     Clock mClock;
-    int mClockMode;
     boolean mShowClock = true;
 
     // expanded notifications
@@ -608,8 +607,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
         mCenterClock = (Clock)mStatusBarView.findViewById(R.id.center_clock);
         mCenterClockLayout = (LinearLayout)mStatusBarView.findViewById(R.id.center_clock_layout);
         mTickerView = mStatusBarView.findViewById(R.id.ticker);
-
-        mClockMode = Settings.System.getInt(mContext.getContentResolver(), Settings.System.STATUS_BAR_CLOCK, 1);
 
         mPile = (NotificationRowLayout)mStatusBarWindow.findViewById(R.id.latestItems);
         mPile.setLayoutTransitionsEnabled(false);
@@ -1412,13 +1409,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
     }
 
     public void showClock() {
-        mClockMode = Settings.System.getInt(mContext.getContentResolver(), Settings.System.STATUS_BAR_CLOCK, 1);
-        if (mClock != null) {
-            mClock.setVisibility(mClockMode == 1 && mShowClock ? View.VISIBLE : View.GONE);
-        }
-        if (mCenterClock != null) {
-            mCenterClock.setVisibility(mClockMode == 2 && mShowClock ? View.VISIBLE : View.GONE);
-        }
+        mClock.updateClockVisibility(mShowClock);
+        mCenterClock.updateClockVisibility(mShowClock);
     }
 
     /**

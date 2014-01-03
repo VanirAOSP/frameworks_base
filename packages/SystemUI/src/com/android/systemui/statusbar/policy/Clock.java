@@ -65,6 +65,12 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
     private static SimpleDateFormat mExpandedClockFormat;
     private SettingsObserver settingsObserver;
     private Handler mHandler;
+    private boolean mShowClock = true;
+
+    //for memoization
+    private boolean mIsShade;
+    private boolean mIsCenter;
+    private boolean mTagChecked;
 
     private boolean mDemoMode;
 
@@ -373,16 +379,28 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
         updateClock();
     }
 
+    private void CheckTag()
+    {
+        final Object o = getTag();
+        mIsCenter = (o != null && o.toString().equals("center"));
+        mIsShade = (o != null && o.toString().equals("expanded"));
+        mTagChecked = true;
+    }
+
     public boolean IsCenter()
     {
-        Object o = getTag();
-        return (o != null && o.toString().equals("center"));
+        if (!mTagChecked) {
+            CheckTag();
+        }
+        return mIsCenter;
     }
   
     public boolean IsShade()
     {
-        Object o = getTag();
-        return (o != null && o.toString().equals("expanded"));
+        if (!mTagChecked) {
+            CheckTag();
+        }
+        return mIsShade;
     }
 
     private void collapseStartActivity(Intent what) {
@@ -448,11 +466,23 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
         }
     }
 
+    /*
+     * @hide
+     */
     protected void updateClockVisibility() {
         boolean c = IsCenter();
-        if (mClockStyle == STYLE_CLOCK_RIGHT && !c || mClockStyle == STYLE_CLOCK_CENTER && c || IsShade())
+        if (mShowClock && mClockStyle == STYLE_CLOCK_RIGHT && !c || mShowClock && mClockStyle == STYLE_CLOCK_CENTER && c || IsShade())
             setVisibility(View.VISIBLE);
         else
             setVisibility(View.GONE);
+    }
+
+    /*
+     * Updates this specific instance of clock's visibility for the current clock mode
+     * @hide
+     */
+    public void updateClockVisibility(boolean showClockFlag) {
+        mShowClock = showClockFlag;
+        updateClockVisibility();
     }
 }
