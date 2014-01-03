@@ -1674,8 +1674,8 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             mShowOngoingImeSwitcherForPhones = Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.STATUS_BAR_IME_SWITCHER) == 1;
         } catch (SettingNotFoundException e) {
-        //    mShowOngoingImeSwitcherForPhones = mRes.getBoolean(
-        //    com.android.internal.R.bool.config_show_cmIMESwitcher);
+            mShowOngoingImeSwitcherForPhones = mRes.getBoolean(
+            com.android.internal.R.bool.config_show_cmIMESwitcher);
         }
     }
 
