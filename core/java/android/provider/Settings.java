@@ -3039,6 +3039,14 @@ public final class Settings {
         public static final String STATUS_BAR_CLOCK = "status_bar_show_clock";
 
         /**
+         *
+         * Whether to force using the default color resource
+         *
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_CUSTOM_COLORS = "statusbar_clock_custom_colors";
+
+        /**
          * Setting for clock color
          * @hide
          */

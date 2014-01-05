@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.AlarmClock;
@@ -66,6 +67,7 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
     private SettingsObserver settingsObserver;
     private Handler mHandler;
     private boolean mShowClock = true;
+    private boolean mColorsEnabled;
 
     //for memoization
     private boolean mIsShade;
@@ -89,9 +91,8 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
 
     private static int mClockStyle = STYLE_CLOCK_RIGHT;
     private static int mAmPmStyle;
-    protected static int mClockColor = R.color.status_bar_clock_color;
-    protected static int mExpandedClockColor = R.color.status_bar_clock_color;
-    protected static int defaultColor = R.color.status_bar_clock_color, defaultExpandedColor = R.color.status_bar_clock_color;
+    protected static int mClockColor = Color.WHITE;
+    protected static int mExpandedClockColor = Color.WHITE;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -104,6 +105,8 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
                     Settings.System.STATUS_BAR_AM_PM), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CLOCK), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_CLOCK_CUSTOM_COLORS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_CLOCK_COLOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -355,24 +358,25 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
             mClockFormatString = "";
         }
 
-        if (IsShade()) {
-            defaultExpandedColor = getCurrentTextColor();
-            mExpandedClockColor = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_EXPANDED_CLOCK_COLOR, defaultExpandedColor);
-            if (mExpandedClockColor == Integer.MIN_VALUE) {
-                // flag to reset the color
-                mExpandedClockColor = defaultExpandedColor;
+        mColorsEnabled = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_CLOCK_CUSTOM_COLORS, 0) == 1;
+
+        if (mColorsEnabled) {
+            if (IsShade()) {
+                mExpandedClockColor = Settings.System.getInt(resolver,
+                    Settings.System.STATUSBAR_EXPANDED_CLOCK_COLOR, Color.WHITE);
+                setTextColor(mExpandedClockColor);
+            } else {
+                mClockColor = Settings.System.getInt(resolver,
+                    Settings.System.STATUSBAR_CLOCK_COLOR, getResources().getColor(R.color.status_bar_clock_color));
+                setTextColor(mClockColor);
             }
-            setTextColor(mExpandedClockColor);
         } else {
-            defaultColor = getCurrentTextColor();
-            mClockColor = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_CLOCK_COLOR, defaultColor);
-            if (mClockColor == Integer.MIN_VALUE) {
-                // flag to reset the color
-                mClockColor = defaultColor;
+            if (IsShade()) {
+                setTextColor(Color.WHITE);
+            } else {
+                setTextColor(getResources().getColor(R.color.status_bar_clock_color));
             }
-            setTextColor(mClockColor);
         }
 
         updateClockVisibility();
