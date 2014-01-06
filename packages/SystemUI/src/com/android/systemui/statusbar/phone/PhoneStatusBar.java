@@ -1237,9 +1237,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
 
     private void loadNotificationShade() {
         if (mPile == null) return;
-        float notifAlpha = Settings.System.getFloatForUser(
-            mContext.getContentResolver(), Settings.System.NOTIFICATION_ALPHA,
-            0.0f, UserHandle.USER_CURRENT);
 
         int N = mNotificationData.size();
 
@@ -1266,9 +1263,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
             mPile.removeView(remove);
         }
 
-        if (notifAlpha > 0.0)
-            setNotificationAlpha();
-
+        setNotificationAlpha();
         for (int i=0; i<toShow.size(); i++) {
             View v = toShow.get(i);
             if (v.getParent() == null) {
