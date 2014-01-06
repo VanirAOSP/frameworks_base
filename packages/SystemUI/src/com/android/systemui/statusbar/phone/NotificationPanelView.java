@@ -78,7 +78,6 @@ public class NotificationPanelView extends PanelView {
 
     private int pantyPullDown;
     private SettingsObserver mObserver;
-    private Display mDisplay;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -331,9 +330,9 @@ public class NotificationPanelView extends PanelView {
             return;
         }
         boolean isLandscape = false;
-        mDisplay = ((WindowManager) getContext()
+        Display display = ((WindowManager) getContext()
                 .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int orientation = mDisplay.getRotation();
+        int orientation = display.getRotation();
         switch(orientation) {
             case Surface.ROTATION_90:
             case Surface.ROTATION_270:
@@ -388,16 +387,9 @@ public class NotificationPanelView extends PanelView {
         } else {
             File f = new File(Uri.parse(notifiBack).getPath());
             if (f !=  null) {
-                Bitmap backgroundBitmap = null;
-                try {
-                    backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-                    mBackgroundDrawable =
-                            new BitmapDrawable(getContext().getResources(), backgroundBitmap);
-                } finally {
-                    if (backgroundBitmap != null) {
-                        backgroundBitmap.recycle();
-                    }
-                }
+                Bitmap backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+                mBackgroundDrawable =
+                    new BitmapDrawable(getContext().getResources(), backgroundBitmap);
             }
         }
         if (mBackgroundDrawable != null) {
@@ -414,16 +406,9 @@ public class NotificationPanelView extends PanelView {
         if (notifiBack != null) {
             File f = new File(Uri.parse(notifiBack).getPath());
             if (f !=  null) {
-                Bitmap backgroundBitmap = null;
-                try {
-                    backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-                    mBackgroundDrawableLandscape =
-                           new BitmapDrawable(getContext().getResources(), backgroundBitmap);
-                } finally {
-                    if (backgroundBitmap != null) {
-                        backgroundBitmap.recycle();
-                    }
-                }
+                Bitmap backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+                mBackgroundDrawableLandscape =
+                    new BitmapDrawable(getContext().getResources(), backgroundBitmap);
             }
         }
         if (mBackgroundDrawableLandscape != null) {

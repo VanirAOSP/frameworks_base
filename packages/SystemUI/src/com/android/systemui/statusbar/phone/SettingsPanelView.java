@@ -213,19 +213,11 @@ public class SettingsPanelView extends PanelView {
         } else {
             File f = new File(Uri.parse(notifiBack).getPath());
             if (f !=  null) {
-                Bitmap backgroundBitmap = null;
-                try {
-                    backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-                    mBackgroundDrawable =
-                            new BitmapDrawable(getContext().getResources(), backgroundBitmap);
-                } finally {
-                    if (backgroundBitmap != null) {
-                        backgroundBitmap.recycle();
-                    }
-                }
+                Bitmap backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+                mBackgroundDrawable =
+                    new BitmapDrawable(getContext().getResources(), backgroundBitmap);
             }
         }
-
         if (mBackgroundDrawable != null) {
             setBackgroundResource(com.android.internal.R.color.transparent);
             mBackgroundDrawable.setAlpha(backgroundAlpha);
