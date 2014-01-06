@@ -64,10 +64,12 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
     private static String mExpandedClockFormatString;
     private static SimpleDateFormat mClockFormat;
     private static SimpleDateFormat mExpandedClockFormat;
-    private SettingsObserver settingsObserver;
-    private Handler mHandler;
-    private boolean mShowClock = true;
-    private boolean mColorsEnabled;
+    private static SettingsObserver settingsObserver;
+    private static Handler mHandler;
+    private static boolean mShowClock = true;
+    private static boolean mColorsEnabled;
+
+    private static Clock mRightClock, mCenterClock, mExpandedClock;
 
     //for memoization
     private boolean mIsShade;
@@ -138,6 +140,13 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
             setOnClickListener(this);
             setOnLongClickListener(this);
         }
+        if (IsShade()) {
+            mExpandedClock = this;
+        } else if (IsCenter()) {
+            mCenterClock = this;
+        } else {
+            mRightClock = this;
+        }
     }
 
     @Override
@@ -170,8 +179,9 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
             mHandler = new Handler();
             settingsObserver = new SettingsObserver(mHandler);
             settingsObserver.observe();
+        } else {
+            applySettings(IsShade() ? mExpandedClockColor : mClockColor);
         }
-        updateSettings();
     }
 
     @Override
@@ -182,7 +192,7 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
             mAttached = false;
         }
 
-        if (settingsObserver != null)
+        if (settingsObserver != null && !mRightClock.mAttached && !mCenterClock.mAttached && !mExpandedClock.mAttached)
         {
             settingsObserver.unobserve();
             settingsObserver = null;
@@ -212,7 +222,7 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
     };
 
     final void updateClock() {
-        if (mDemoMode) return;
+        if (mDemoMode || mCalendar == null) return;
         mCalendar.setTimeInMillis(System.currentTimeMillis());
         setText(getSmallTime());
     }
@@ -341,7 +351,11 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
 
     }
 
-    private void updateSettings(){
+    private void updateSettings() {
+        updateSettings(mContext);
+    }
+
+    private static void updateSettings(Context mContext){
         ContentResolver resolver = mContext.getContentResolver();
 
         mAmPmStyle = (Settings.System.getInt(resolver,
@@ -362,23 +376,28 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
                 Settings.System.STATUSBAR_CLOCK_CUSTOM_COLORS, 0) == 1;
 
         if (mColorsEnabled) {
-            if (IsShade()) {
-                mExpandedClockColor = Settings.System.getInt(resolver,
+            mExpandedClockColor = Settings.System.getInt(resolver,
                     Settings.System.STATUSBAR_EXPANDED_CLOCK_COLOR, Color.WHITE);
-                setTextColor(mExpandedClockColor);
-            } else {
-                mClockColor = Settings.System.getInt(resolver,
-                    Settings.System.STATUSBAR_CLOCK_COLOR, getResources().getColor(R.color.status_bar_clock_color));
-                setTextColor(mClockColor);
-            }
+            mClockColor = Settings.System.getInt(resolver,
+                    Settings.System.STATUSBAR_CLOCK_COLOR, mContext.getResources().getColor(R.color.status_bar_clock_color));
         } else {
-            if (IsShade()) {
-                setTextColor(Color.WHITE);
-            } else {
-                setTextColor(getResources().getColor(R.color.status_bar_clock_color));
-            }
+            mExpandedClockColor = Color.WHITE;
+            mClockColor = mContext.getResources().getColor(R.color.status_bar_clock_color);
         }
 
+        if (mExpandedClock != null) {
+            mExpandedClock.applySettings(mExpandedClockColor);
+        }
+        if (mCenterClock != null) {
+            mCenterClock.applySettings(mClockColor);
+        }
+        if (mRightClock != null) {
+            mRightClock.applySettings(mClockColor);
+        }
+    }
+
+    private void applySettings(int color) {
+        setTextColor(color);
         updateClockVisibility();
         updateClock();
     }
