@@ -50,7 +50,6 @@ extern "C" {
 
 namespace android {
 
-<<<<<<< HEAD
 #if HAVE_QC_TIME_SERVICES
 int setTimeServicesTime(time_bases_type base, int64_t millis)
 {
