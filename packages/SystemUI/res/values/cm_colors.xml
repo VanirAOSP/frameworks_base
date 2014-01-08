@@ -17,5 +17,4 @@
 
     <!-- Color for the "No recent apps" text in the recent apps list. -->
     <color name="no_recent_apps">#bebebe</color>
-
 </resources>
