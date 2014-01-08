@@ -62,6 +62,27 @@ public class GlowPadView extends View {
     private static final int STATE_SNAP = 4;
     private static final int STATE_FINISH = 5;
 
+     /**
+      * @hide
+      */
+     public final static String ICON_RESOURCE = "icon_resource";
+
+     /**
+      * @hide
+      */
+     public final static String ICON_PACKAGE = "icon_package";
+
+     /**
+      * @hide
+      */
+     public final static String ICON_FILE = "icon_file";
+
+     /**
+      *
+      * @hide
+      */
+     public final static String EMPTY_TARGET = "empty";
+
     // Animation properties.
     private static final float SNAP_MARGIN_DEFAULT = 20.0f; // distance to ring before we snap to it
 
@@ -71,6 +92,7 @@ public class GlowPadView extends View {
         public void onGrabbed(View v, int handle);
         public void onReleased(View v, int handle);
         public void onTrigger(View v, int target);
+        public void onTargetChange(View v, int target);
         public void onGrabbedStateChange(View v, int handle);
         public void onFinishFinalAnimation();
     }
@@ -122,6 +144,7 @@ public class GlowPadView extends View {
     private boolean mMagneticTargets = false;
     private boolean mDragging;
     private int mNewTargetResources;
+
     private ArrayList<TargetDrawable> mNewTargetDrawables;
 
     private class AnimationBundle extends ArrayList<Tweener> {
@@ -433,6 +456,9 @@ public class GlowPadView extends View {
             target.setState(TargetDrawable.STATE_INACTIVE);
         }
         mActiveTarget = -1;
+        if (mOnTriggerListener != null) {
+             mOnTriggerListener.onTargetChange(this, mActiveTarget);
+        }
     }
 
     /**
@@ -652,6 +678,10 @@ public class GlowPadView extends View {
         }
     }
 
+    public ArrayList<TargetDrawable> getTargetDrawables() {
+        return mTargetDrawables;
+    }
+
     public void setTargetResources(ArrayList<TargetDrawable> drawList) {
         if (mAnimatingTargets) {
             // postpone this change until we return to the initial state
@@ -663,10 +693,6 @@ public class GlowPadView extends View {
 
     public int getTargetResourceId() {
         return mTargetResourceId;
-    }
-
-    public ArrayList<TargetDrawable> getTargetDrawables() {
-        return mTargetDrawables;
     }
 
     /**
@@ -882,7 +908,7 @@ public class GlowPadView extends View {
         if (DEBUG && mDragging) Log.v(TAG, "** Handle CANCEL");
 
         // Drop the active target if canceled.
-        mActiveTarget = -1; 
+        mActiveTarget = -1;
 
         int actionIndex = event.findPointerIndex(mPointerId);
         actionIndex = actionIndex == -1 ? 0 : actionIndex;
@@ -977,6 +1003,7 @@ public class GlowPadView extends View {
                 TargetDrawable target = targets.get(activeTarget);
                 if (target.hasState(TargetDrawable.STATE_FOCUSED)) {
                     target.setState(TargetDrawable.STATE_FOCUSED);
+                    vibrate();
                 }
                 if (mMagneticTargets) {
                     updateTargetPosition(activeTarget, mWaveCenterX, mWaveCenterY, activeAngle);
@@ -988,6 +1015,9 @@ public class GlowPadView extends View {
             }
         }
         mActiveTarget = activeTarget;
+        if (mOnTriggerListener !=null) {
+            mOnTriggerListener.onTargetChange(this, mActiveTarget);
+        }
     }
 
     @Override
@@ -1298,7 +1328,7 @@ public class GlowPadView extends View {
         if (mTargetDescriptionsResourceId == 0) {
             return null;
         }
-        if (mTargetDescriptions == null || mTargetDescriptions.isEmpty()) {
+        if (mTargetDescriptions == null || mTargetDescriptions.isEmpty() || index >= mTargetDescriptions.size()) {
             mTargetDescriptions = loadDescriptions(mTargetDescriptionsResourceId);
             if (mTargetDrawables.size() != mTargetDescriptions.size()) {
                 if (DEBUG) Log.v(TAG, "The number of target drawables must be"
@@ -1313,7 +1343,7 @@ public class GlowPadView extends View {
         if (mDirectionDescriptionsResourceId == 0) {
             return null;
         }
-        if (mDirectionDescriptions == null || mDirectionDescriptions.isEmpty()) {
+        if (mDirectionDescriptions == null || mDirectionDescriptions.isEmpty() || index >= mTargetDescriptions.size()) {
             mDirectionDescriptions = loadDescriptions(mDirectionDescriptionsResourceId);
             if (mTargetDrawables.size() != mDirectionDescriptions.size()) {
                 if (DEBUG) Log.v(TAG, "The number of target drawables must be"

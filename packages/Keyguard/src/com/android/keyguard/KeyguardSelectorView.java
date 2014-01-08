@@ -24,10 +24,12 @@ import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
@@ -78,6 +80,8 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private String[] mStoredTargets;
     private int mTargetOffset;
     private boolean mIsScreenLarge;
+
+    private IntentFilter mUnlockFilter;
 
     OnTriggerListener mOnTriggerListener = new OnTriggerListener() {
 
@@ -146,6 +150,10 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         }
 
         public void onFinishFinalAnimation() {
+
+        }
+
+        public void onTargetChange(View v, final int target) {
 
         }
 
