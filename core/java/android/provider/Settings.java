@@ -3764,6 +3764,13 @@ public final class Settings {
          */
         public static final String SYSTEM_POWER_CRT_MODE = "system_power_crt_mode";
 
+       /**
+         * Whether to enable swiping your finger across the statusbar to change the brightness.
+         * Boolean value. Defaults to true.
+         * @hide
+         */
+        public static final String STATUSBAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
+
         /**
          * Whether to unlock the screen with the home key.  The value is boolean (1 or 0).
          * @hide
