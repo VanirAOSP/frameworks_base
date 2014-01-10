@@ -4053,12 +4053,11 @@ public final class Settings {
          */
         public static final String SYSTEMUI_RECENTS_MEM_DISPLAY = "vanir_interface_recents_mem_display";        
 
-        /**
-         * Should the non-intrsive incall ui be used
-         *
-         * @hide
-         */
-        public static final String NON_INTRUSIVE_INCALL = "non_intrusive_incall";
+       /**
+        * Whether incomming call UI stays in background
+        * @hide
+        */
+        public static final String CALL_UI_IN_BACKGROUND = "call_ui_in_background";
 
        /**
         * Sets the portrait background of notification drawer
