@@ -657,8 +657,10 @@ public class NavigationBarView extends LinearLayout {
 
                 // add the button last so it hangs on the edge
                 addButton(navButtons, menuButton, landscape);
+                addLightsOutButton(lightsOut, menuButton, landscape, true);
             } else {
                 addButton(navButtons, menuButton, landscape);
+                addLightsOutButton(lightsOut, menuButton, landscape, true);
             }
         }
         invalidate();
