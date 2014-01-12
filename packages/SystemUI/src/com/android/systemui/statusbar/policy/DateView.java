@@ -143,7 +143,11 @@ public class DateView extends TextView implements OnClickListener, OnLongClickLi
 
         // start activity
         what.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mContext.startActivity(what);
+        try {
+            mContext.startActivity(what);
+        } catch (Exception e) {
+            // INSTALL A CALENDAR FFS
+        }
     }
 
     @Override
