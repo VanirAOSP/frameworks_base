@@ -716,10 +716,13 @@ public class ActiveDisplayView extends FrameLayout {
                         mNotification.getId());
             } catch (RemoteException e) {
             } catch (NullPointerException npe) {
+            } finally {
+                if (mRemoteView != null) mRemoteViewLayout.removeView(mRemoteView);
             }
             mNotification = getNextAvailableNotification();
             if (mNotification != null) {
                 setActiveNotification(mNotification, true);
+                inflateRemoteView(mNotification);
                 invalidate();
                 mGlowPadView.ping();
                 isUserActivity();
@@ -1174,6 +1177,7 @@ public class ActiveDisplayView extends FrameLayout {
                                 mNotification = getNextAvailableNotification();
                             }
                             showNotification(mNotification, true);
+                            turnScreenOn();
                         }
                     }
                 } else {
