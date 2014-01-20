@@ -59,6 +59,7 @@ import android.service.notification.StatusBarNotification;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -134,6 +135,7 @@ public class ActiveDisplayView extends FrameLayout {
     private SensorManager mSensorManager;
     private Sensor mProximitySensor;
     private boolean mProximityIsFar = true;
+    private boolean mWakedByPocketMode = false;
     private LinearLayout mOverflowNotifications;
     private LayoutParams mRemoteViewLayoutParams;
     private int mIconSize;
@@ -158,8 +160,6 @@ public class ActiveDisplayView extends FrameLayout {
     private Set<String> mExcludedApps = new HashSet<String>();
     private long mDisplayTimeout = 8000L;
     private long mProximityThreshold = 5000L;
-    private boolean mDistanceFar = true;
-    private boolean mWaitPeriod = true;
 
     /**
      * Simple class that listens to changes in notifications
@@ -167,6 +167,9 @@ public class ActiveDisplayView extends FrameLayout {
     private class INotificationListenerWrapper extends INotificationListener.Stub {
         @Override
         public void onNotificationPosted(final StatusBarNotification sbn) {
+            if (!mProximityIsFar) {
+                return;
+            }
             if (inQuietHours() && mQuietTime) return;
             if (shouldShowNotification() && isValidNotification(sbn)) {
                 // need to make sure either the screen is off or the user is currently
@@ -197,6 +200,7 @@ public class ActiveDisplayView extends FrameLayout {
 
         public void onTrigger(final View v, final int target) {
             if (target == UNLOCK_TARGET) {
+                mWakedByPocketMode = false;
                 disableProximitySensor();
                 mNotification = null;
                 hideNotificationView();
@@ -205,6 +209,7 @@ public class ActiveDisplayView extends FrameLayout {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
             } else if (target == OPEN_APP_TARGET) {
+                mWakedByPocketMode = false;
                 disableProximitySensor();
                 hideNotificationView();
                 unlockKeyguardActivity();
@@ -223,7 +228,6 @@ public class ActiveDisplayView extends FrameLayout {
         }
 
         public void onReleased(final View v, final int handle) {
-            initWaitPeriod();
             doTransition(mOverflowNotifications, 1.0f, 0);
             if (!privacyMode) {
                 if (mRemoteView != null) {
@@ -236,7 +240,6 @@ public class ActiveDisplayView extends FrameLayout {
         }
 
         public void onGrabbed(final View v, final int handle) {
-            mWaitPeriod = true;
             // prevent the ActiveDisplayView from turning off while user is interacting with it
             cancelTimeoutTimer();
             restoreBrightness();
@@ -570,7 +573,9 @@ public class ActiveDisplayView extends FrameLayout {
                     i.send();
                     KeyguardTouchDelegate.getInstance(mContext).dismiss();
                 } catch (CanceledException ex) {
+                    Log.e(TAG, "intent canceled!");
                 } catch (RemoteException ex) {
+                    Log.e(TAG, "failed to dimiss keyguard!");
                 }
             }
             if (mNotification.isClearable()) {
@@ -674,6 +679,7 @@ public class ActiveDisplayView extends FrameLayout {
         mHandler.removeCallbacks(runSystemUiVisibilty);
         setVisibility(View.GONE);
         restoreBrightness();
+        mWakedByPocketMode = false;
         cancelTimeoutTimer();
         if (isLockScreenDisabled()) {
             adjustStatusBarLocked(0);
@@ -686,6 +692,7 @@ public class ActiveDisplayView extends FrameLayout {
         mHandler.removeCallbacks(runSystemUiVisibilty);
         setVisibility(View.GONE);
         restoreBrightness();
+        mWakedByPocketMode = false;
         cancelTimeoutTimer();
         adjustStatusBarLocked(0);
     }
@@ -731,6 +738,7 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     private void onScreenTurnedOff() {
+        mWakedByPocketMode = false;
         hideNotificationView();
         cancelTimeoutTimer();
         if (mRedisplayTimeout > 0) updateRedisplayTimer();
@@ -739,6 +747,8 @@ public class ActiveDisplayView extends FrameLayout {
 
     private void turnScreenOff() {
         mHandler.removeCallbacks(runWakeDevice);
+        mWakedByPocketMode = false;
+        Log.i(TAG, "ActiveDisplay: turn screen off");
         try {
             mPM.goToSleep(SystemClock.uptimeMillis(), 0);
         } catch (RemoteException e) {
@@ -746,25 +756,11 @@ public class ActiveDisplayView extends FrameLayout {
     }
 
     private void turnScreenOn() {
-        initWaitPeriod();
         // to avoid flicker and showing any other screen than the ActiveDisplayView
         // we use a runnable posted with a 250ms delay to turn wake the device
         mHandler.removeCallbacks(runWakeDevice);
         mHandler.postDelayed(runWakeDevice, 250);
     }
-
-    private void initWaitPeriod() {
-        mWaitPeriod = true;
-        // delay proximitiy events by 2 seconds
-        mHandler.removeCallbacks(setWaitPeriod);
-        mHandler.postDelayed(setWaitPeriod, 2250);
-    }
-
-    private final Runnable setWaitPeriod = new Runnable() {
-        public void run() {
-            mWaitPeriod = false;
-        }
-    };
 
     private final Runnable runWakeDevice = new Runnable() {
         public void run() {
@@ -791,17 +787,18 @@ public class ActiveDisplayView extends FrameLayout {
         }
 
         if (check && mDisplayNotifications) {
+            Log.i(TAG, "ActiveDisplay: enable ProximitySensor");
+            mProximityIsFar = true;
             mPocketTime = 0;
             registerSensorListener(mProximitySensor);
         }
-        mDistanceFar = false;
     }
 
     private void disableProximitySensor() {
         if (mProximitySensor != null) {
+            Log.i(TAG, "ActiveDisplay: disable ProximitySensor");
             unregisterSensorListener(mProximitySensor);
         }
-        mDistanceFar = true;
     }
 
     private void setBrightness(float brightness) {
@@ -863,6 +860,7 @@ public class ActiveDisplayView extends FrameLayout {
         try {
             mNM.registerListener(mNotificationListener, cn, UserHandle.USER_ALL);
         } catch (RemoteException e) {
+            Log.e(TAG, "registerNotificationListener()", e);
         }
     }
 
@@ -871,14 +869,14 @@ public class ActiveDisplayView extends FrameLayout {
             try {
                 mNM.unregisterListener(mNotificationListener, UserHandle.USER_ALL);
             } catch (RemoteException e) {
+                Log.e(TAG, "registerNotificationListener()", e);
             }
         }
     }
 
     private void registerSensorListener(Sensor sensor) {
         if (sensor != null)
-            mSensorManager.registerListener(mSensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL);
-        mWaitPeriod = false;
+            mSensorManager.registerListener(mSensorListener, sensor, SensorManager.SENSOR_DELAY_UI);
     }
 
     private void unregisterSensorListener(Sensor sensor) {
@@ -888,6 +886,7 @@ public class ActiveDisplayView extends FrameLayout {
 
     private void registerCallbacks() {
         if (!mCallbacksRegistered) {
+            Log.i(TAG, "ActiveDisplay: register callbacks");
             registerBroadcastReceiver();
             registerNotificationListener();
             mCallbacksRegistered = true;
@@ -896,6 +895,7 @@ public class ActiveDisplayView extends FrameLayout {
 
     private void unregisterCallbacks() {
         if (mCallbacksRegistered) {
+            Log.i(TAG, "ActiveDisplay: unregister callbacks");
             unregisterBroadcastReceiver();
             unregisterNotificationListener();
             mCallbacksRegistered = false;
@@ -1035,12 +1035,7 @@ public class ActiveDisplayView extends FrameLayout {
      * @return True if we should show this view.
      */
     private boolean shouldShowNotification() {
-        if (mPocketMode != 2) return true;
-
-        if (mDistanceFar) {
-            return true;
-        }
-        return false;
+        return mProximityIsFar;
     }
 
     /**
@@ -1051,6 +1046,7 @@ public class ActiveDisplayView extends FrameLayout {
             mPM.wakeUp(SystemClock.uptimeMillis());
         } catch (RemoteException e) {
         }
+        Log.i(TAG, "ActiveDisplay: Wake device");
         updateTimeoutTimer();
     }
 
@@ -1153,36 +1149,45 @@ public class ActiveDisplayView extends FrameLayout {
         return stateListDrawable;
     }
 
+    private void updateWakedByPocketMode() {
+        if (mDisplayNotifications) {
+            mWakedByPocketMode = true;
+            Log.i(TAG, "ActiveDisplay: waked by Pocketmode");
+        }
+    }
+
     private SensorEventListener mSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            if (mPocketMode == 2 && mDisplayNotifications) {
-                // continue
+            float value = event.values[0];
+            boolean check = false;
+            if (mPocketMode == 2) {
+                check = true;
             } else {
                 return;
             }
-            if (mWaitPeriod) return;
-            if (inQuietHours() && mQuietTime || isOnCall()) return;
-
-            float value = event.values[0];
+            if (inQuietHours() && mQuietTime) return;
             if (event.sensor.equals(mProximitySensor)) {
-                if (value >= mProximitySensor.getMaximumRange()) {
-                    mDistanceFar = true;
-                    if (!isScreenOn()) {
-                        if (System.currentTimeMillis() >= (mPocketTime + mProximityThreshold)){
+                boolean isFar = value >= mProximitySensor.getMaximumRange();
+                if (isFar) {
+                    mProximityIsFar = true;
+                    if (check && !isScreenOn() && !isOnCall() && mDisplayNotifications) {
+                        if (System.currentTimeMillis() >= (mPocketTime + mProximityThreshold) && mPocketTime != 0){
                             if (mNotification == null) {
                                 mNotification = getNextAvailableNotification();
                             }
                             showNotification(mNotification, true);
-                            mPocketTime = 0;
                             turnScreenOn();
                         }
                     }
-                } else if (value <= 1.5) {
-                    mPocketTime = System.currentTimeMillis();
-                    mDistanceFar = false;
-
-                    if (isScreenOn() && System.currentTimeMillis() > mProximityThreshold) {
+                } else {
+                    if (mProximityIsFar) {
+                        mPocketTime = System.currentTimeMillis();
+                        mProximityIsFar = false;
+                    }
+                    if (isScreenOn() && check && !isOnCall() && mWakedByPocketMode) {
+                        mWakedByPocketMode = false;
+                        Log.i(TAG, "ActiveDisplay: sent to sleep by Pocketmode");
                         restoreBrightness();
                         cancelTimeoutTimer();
                         turnScreenOff();
