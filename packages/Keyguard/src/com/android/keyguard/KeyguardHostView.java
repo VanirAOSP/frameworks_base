@@ -94,6 +94,8 @@ public class KeyguardHostView extends KeyguardViewBase {
 
     private View mExpandChallengeView;
 
+    private boolean mDefaultAppWidgetAttached;
+
     protected OnDismissAction mDismissAction;
 
     protected int mFailedAttempts;
@@ -441,7 +443,8 @@ public class KeyguardHostView extends KeyguardViewBase {
 
         // Don't let the user drag the challenge down if widgets are disabled.
         if (mSlidingChallengeLayout != null) {
-            mSlidingChallengeLayout.setEnableChallengeDragging(!widgetsDisabled());
+            mSlidingChallengeLayout.setEnableChallengeDragging(
+                    !widgetsDisabled() || mDefaultAppWidgetAttached);
         }
 
         // Select the appropriate page
@@ -1372,13 +1375,13 @@ public class KeyguardHostView extends KeyguardViewBase {
 
             final boolean userAddedWidgetsEnabled = !widgetsDisabled();
 
-            boolean addedDefaultAppWidget = false;
+            mDefaultAppWidgetAttached = false;
 
             if (!mSafeModeEnabled) {
                 if (userAddedWidgetsEnabled) {
                     int appWidgetId = allocateIdForDefaultAppWidget();
                     if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-                        addedDefaultAppWidget = addWidget(appWidgetId, insertPageIndex, true);
+                        mDefaultAppWidgetAttached = addWidget(appWidgetId, insertPageIndex, true);
                     }
                 } else {
                     // note: even if widgetsDisabledByDpm() returns true, we still bind/create
@@ -1391,8 +1394,8 @@ public class KeyguardHostView extends KeyguardViewBase {
                         }
                     }
                     if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-                        addedDefaultAppWidget = addWidget(appWidgetId, insertPageIndex, false);
-                        if (!addedDefaultAppWidget) {
+                        mDefaultAppWidgetAttached = addWidget(appWidgetId, insertPageIndex, false);
+                        if (!mDefaultAppWidgetAttached) {
                             mAppWidgetHost.deleteAppWidgetId(appWidgetId);
                             mLockPatternUtils.writeFallbackAppWidgetId(
                                     AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -1402,7 +1405,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             }
 
             // Use the built-in status/clock view if we can't inflate the default widget
-            if (!addedDefaultAppWidget) {
+            if (!mDefaultAppWidgetAttached) {
                 addDefaultStatusWidget(insertPageIndex);
             }
 
