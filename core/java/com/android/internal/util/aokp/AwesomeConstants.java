@@ -51,19 +51,14 @@ public class AwesomeConstants {
         ACTION_WIDGETS       { @Override public String value() { return "**widgets**";}},
         ACTION_APP_WINDOW    { @Override public String value() { return "**app_window**";}},
         ACTION_NOTIFICATIONS { @Override public String value() { return "**notifications**";}},
-        ACTION_CLOCKOPTIONS  { @Override public String value() { return "**clockoptions**";}},
         ACTION_VOICEASSIST   { @Override public String value() { return "**voiceassist**";}},
         ACTION_LAST_APP      { @Override public String value() { return "**lastapp**";}},
-        ACTION_RECENTS_GB    { @Override public String value() { return "**recentsgb**";}},
         ACTION_TORCH         { @Override public String value() { return "**torch**";}},
         ACTION_IME           { @Override public String value() { return "**ime**";}},
         ACTION_KILL          { @Override public String value() { return "**kill**";}},
         ACTION_SILENT        { @Override public String value() { return "**ring_silent**";}},
         ACTION_VIB           { @Override public String value() { return "**ring_vib**";}},
         ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
-        ACTION_EVENT         { @Override public String value() { return "**event**";}},
-        ACTION_TODAY         { @Override public String value() { return "**today**";}},
-        ACTION_ALARM         { @Override public String value() { return "**alarm**";}},
         ACTION_UNLOCK        { @Override public String value() { return "**unlock**";}},
         ACTION_CAMERA        { @Override public String value() { return "**camera**";}},
         ACTION_NULL          { @Override public String value() { return "**null**";}},
@@ -141,9 +136,6 @@ public class AwesomeConstants {
             case ACTION_RECENTS:
                 value = res.getString(com.android.internal.R.string.action_recents);
                 break;
-            case ACTION_RECENTS_GB:
-                value = res.getString(com.android.internal.R.string.action_recents_gb);
-                break;
             case ACTION_SEARCH:
                 value = res.getString(com.android.internal.R.string.action_search);
                 break;
@@ -177,9 +169,6 @@ public class AwesomeConstants {
             case ACTION_ASSIST:
                 value = res.getString(com.android.internal.R.string.action_assist);
                 break;
-            case ACTION_CLOCKOPTIONS:
-                value = res.getString(com.android.internal.R.string.action_clockoptions);
-                break;
             case ACTION_VOICEASSIST:
                 value = res.getString(com.android.internal.R.string.action_voiceassist);
                 break;
@@ -195,20 +184,8 @@ public class AwesomeConstants {
             case ACTION_SILENT_VIB:
                 value = res.getString(com.android.internal.R.string.action_silent_vib);
                 break;
-            case ACTION_EVENT:
-                value = res.getString(com.android.internal.R.string.action_event);
-                break;
-            case ACTION_TODAY:
-                value = res.getString(com.android.internal.R.string.action_today);
-                break;
-            case ACTION_ALARM:
-                value = res.getString(com.android.internal.R.string.action_alarm);
-                break;
             case ACTION_UNLOCK:
                 value = res.getString(com.android.internal.R.string.action_unlock);
-                break;
-            case ACTION_CAMERA:
-                value = res.getString(com.android.internal.R.string.action_camera);
                 break;
             case ACTION_APP:
                 value = res.getString(com.android.internal.R.string.action_app);
@@ -235,9 +212,6 @@ public class AwesomeConstants {
                 break;
             case ACTION_RECENTS:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_recent");
-                break;
-            case ACTION_RECENTS_GB:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_recent_gb");
                 break;
             case ACTION_SEARCH:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_search");
@@ -272,9 +246,6 @@ public class AwesomeConstants {
             case ACTION_ASSIST:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_assist");
                 break;
-            case ACTION_CLOCKOPTIONS:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_clockoptions");
-                break;
             case ACTION_VOICEASSIST:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_voiceassist");
                 break;
@@ -290,20 +261,8 @@ public class AwesomeConstants {
             case ACTION_SILENT_VIB:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_silent_vib");
                 break;
-            case ACTION_EVENT:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_event");
-                break;
-            case ACTION_TODAY:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_today");
-                break;
-            case ACTION_ALARM:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_alarm");
-                break;
             case ACTION_UNLOCK:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_lockscreen_unlock");
-                break;
-            case ACTION_CAMERA:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_lockscreen_camera");
                 break;
             case ACTION_APP: // APP doesn't really have an icon - it should look up
                         //the package icon - we'll return the 'null' on just in case
