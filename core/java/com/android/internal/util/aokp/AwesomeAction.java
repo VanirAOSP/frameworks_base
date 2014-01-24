@@ -50,6 +50,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import com.android.internal.util.cm.TorchConstants;
 import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 import static com.android.internal.util.aokp.AwesomeConstants.fromString;
 
@@ -131,7 +132,15 @@ public class AwesomeAction {
                             }
                         }
                         break;
-                    case ACTION_SILENT:
+                    case ACTION_SCREENSHOT:
+                        Intent intentSHOT = new Intent(Intent.ACTION_SCREENSHOT);
+                        mContext.sendBroadcast(intentSHOT);
+                        break;
+           /*         case ACTION_SCREENRECORD:
+                        Intent intentCORD = new Intent(Intent.ACTION_SCREENRECORD);
+                        mContext.sendBroadcast(intentCORD);
+                        break;
+          */          case ACTION_SILENT:
                         am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                         if (am != null) {
                             if (am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
@@ -178,12 +187,8 @@ public class AwesomeAction {
                                 "android.settings.SHOW_INPUT_METHOD_PICKER"));
                         break;
                     case ACTION_TORCH:
-                        Intent intentTorch = new Intent("android.intent.action.MAIN");
-                        intentTorch.setComponent(ComponentName
-                                .unflattenFromString("com.aokp.Torch/.TorchActivity"));
-                        intentTorch.addCategory("android.intent.category.LAUNCHER");
-                        intentTorch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intentTorch);
+                       Intent intentTorch = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
+                        mContext.sendBroadcast(intentTorch);
                         break;
                     case ACTION_VOICEASSIST:
                         Intent intentVoice = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
@@ -224,6 +229,11 @@ public class AwesomeAction {
                             }
                         }
                         break;
+                    case ACTION_ROBOCOP:
+                        Intent robocop = new Intent("android.intent.action.REBOOTMENU");
+                        robocop.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.sendBroadcast(robocop);
+                        break;
                     case ACTION_APP:
                         try {
                             Intent intentapp = Intent.parseUri(action, 0);
@@ -236,7 +246,6 @@ public class AwesomeAction {
                         }
                         break;
                 }
-
 /*            }
         }).start();*/
 

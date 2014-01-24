@@ -61,11 +61,9 @@ public class NavRingHelpers {
     // These items will be subtracted from NavRing Actions when RC requests list of
     // Available Actions
     private static final AwesomeConstant[] EXCLUDED_FROM_NAVRING = {
-            AwesomeConstant.ACTION_UNLOCK,
             // these can be removed as the features are added back
             AwesomeConstant.ACTION_WIDGETS,
             AwesomeConstant.ACTION_APP_WINDOW,
-            AwesomeConstant.ACTION_TORCH,
     };
 
     private NavRingHelpers() {
