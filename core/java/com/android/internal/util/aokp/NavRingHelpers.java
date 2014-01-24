@@ -62,17 +62,10 @@ public class NavRingHelpers {
     // Available Actions
     private static final AwesomeConstant[] EXCLUDED_FROM_NAVRING = {
             AwesomeConstant.ACTION_UNLOCK,
-            AwesomeConstant.ACTION_CAMERA,
-            AwesomeConstant.ACTION_CLOCKOPTIONS,
-            AwesomeConstant.ACTION_EVENT,
-            AwesomeConstant.ACTION_TODAY,
             // these can be removed as the features are added back
             AwesomeConstant.ACTION_WIDGETS,
             AwesomeConstant.ACTION_APP_WINDOW,
             AwesomeConstant.ACTION_TORCH,
-            AwesomeConstant.ACTION_RECENTS_GB,
-            //----------------------------------------
-            AwesomeConstant.ACTION_ALARM
     };
 
     private NavRingHelpers() {

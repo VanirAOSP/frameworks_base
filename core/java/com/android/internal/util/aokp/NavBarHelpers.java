@@ -35,14 +35,9 @@ public class NavBarHelpers {
     // Available Actions
     private static final AwesomeConstant[] EXCLUDED_FROM_NAVBAR = {
             AwesomeConstant.ACTION_UNLOCK,
-            AwesomeConstant.ACTION_CAMERA,
-            AwesomeConstant.ACTION_CLOCKOPTIONS,
             AwesomeConstant.ACTION_SILENT,
             AwesomeConstant.ACTION_VIB,
             AwesomeConstant.ACTION_SILENT_VIB,
-            AwesomeConstant.ACTION_EVENT,
-            AwesomeConstant.ACTION_TODAY,
-            AwesomeConstant.ACTION_ALARM,
             /* these are just not implemented yet: */
             AwesomeConstant.ACTION_TORCH,
             AwesomeConstant.ACTION_WIDGETS
