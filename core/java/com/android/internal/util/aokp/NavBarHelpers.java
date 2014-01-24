@@ -34,12 +34,10 @@ public class NavBarHelpers {
     // These items will be subtracted from NavBar Actions when RC requests list of
     // Available Actions
     private static final AwesomeConstant[] EXCLUDED_FROM_NAVBAR = {
-            AwesomeConstant.ACTION_UNLOCK,
             AwesomeConstant.ACTION_SILENT,
             AwesomeConstant.ACTION_VIB,
             AwesomeConstant.ACTION_SILENT_VIB,
             /* these are just not implemented yet: */
-            AwesomeConstant.ACTION_TORCH,
             AwesomeConstant.ACTION_WIDGETS
     };
 
