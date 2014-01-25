@@ -3930,6 +3930,12 @@ public final class Settings {
         public static final String CAMERA_UNLOCK_SCREEN = "camera_unlock_screen";
 
         /**
+         * Force dual panel for settings
+         * @hide
+         */
+        public static final String FORCE_DUAL_PANEL = "force_dual_panel"; 
+
+        /**
          * Whether the lockscreen vibrate should be enabled.
          * @hide
          */
