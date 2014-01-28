@@ -31,6 +31,7 @@ import android.opengl.EGLSurface;
 import android.opengl.GLES10;
 import android.opengl.GLES11Ext;
 import android.os.Looper;
+import android.os.SystemProperties;
 import android.util.FloatMath;
 import android.util.Slog;
 import android.view.Display;

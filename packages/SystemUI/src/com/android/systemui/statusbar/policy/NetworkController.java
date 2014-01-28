@@ -168,6 +168,8 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
 
     boolean mDataAndWifiStacked = false;
 
+    private UpdateUIListener mUpdateUIListener = null;
+
     public interface SignalCluster {
         void setWifiIndicators(boolean visible, int strengthIcon, int activityIcon,
                 String contentDescription);
@@ -1440,6 +1442,11 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
                 v.setVisibility(View.VISIBLE);
             }
         }
+
+        // Update the dependency UI
+        if (mUpdateUIListener != null) {
+            mUpdateUIListener.onUpdateUI();
+        }
     }
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
@@ -1670,5 +1677,16 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
                 }
             }
         }
+    }
+
+    /**
+     * Let others listen for UI updates in NetworkController.
+     */
+    public static interface UpdateUIListener {
+        void onUpdateUI();
+    }
+
+    public void setListener(UpdateUIListener listener) {
+        mUpdateUIListener = listener;
     }
 }
