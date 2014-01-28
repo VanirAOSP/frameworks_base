@@ -219,7 +219,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     LinearLayout mLeftClockLayout;
     Clock mClock;
     boolean mShowClock = true;
-    int mClockStyle = 1;
 
     // expanded notifications
     NotificationPanelView mNotificationPanel; // the sliding/resizing panel within the notification window
@@ -351,8 +350,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_BATTERY), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_BATTERY_SHOW_PERCENT), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CLOCK), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_BACKGROUND), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -533,7 +530,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     protected PhoneStatusBarView makeStatusBarView() {
         final Context context = mContext;
         final Resources res = context.getResources();
-
         updateDisplaySize(); // populates mDisplayMetrics
         loadDimens();
 
@@ -2920,8 +2916,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-
-        showClock();
 
         int batteryStyle = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_BATTERY, 0, mCurrentUserId);
