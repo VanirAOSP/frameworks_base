@@ -69,11 +69,12 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
     private static boolean mShowClock = true;
     private static boolean mColorsEnabled;
 
-    private static Clock mRightClock, mCenterClock, mExpandedClock;
+    private static Clock mRightClock, mCenterClock, mLeftClock, mExpandedClock;
 
     //for memoization
     private boolean mIsShade;
     private boolean mIsCenter;
+    private boolean mIsLeft;
     private boolean mTagChecked;
 
     private boolean mDemoMode;
@@ -90,6 +91,7 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
     public static final int STYLE_HIDE_CLOCK    = 0;
     public static final int STYLE_CLOCK_RIGHT   = 1;
     public static final int STYLE_CLOCK_CENTER  = 2;
+    public static final int STYLE_CLOCK_LEFT    = 3;
 
     private static int mClockStyle = STYLE_CLOCK_RIGHT;
     private static int mAmPmStyle;
@@ -144,6 +146,8 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
             mExpandedClock = this;
         } else if (IsCenter()) {
             mCenterClock = this;
+        } else if (IsLeft()) {
+            mLeftClock = this;
         } else {
             mRightClock = this;
         }
@@ -192,7 +196,7 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
             mAttached = false;
         }
 
-        if (settingsObserver != null && !mRightClock.mAttached && !mCenterClock.mAttached && !mExpandedClock.mAttached)
+        if (settingsObserver != null && !mRightClock.mAttached && !mLeftClock.mAttached && !mCenterClock.mAttached && !mExpandedClock.mAttached)
         {
             settingsObserver.unobserve();
             settingsObserver = null;
@@ -391,6 +395,9 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
         if (mCenterClock != null) {
             mCenterClock.applySettings(mClockColor);
         }
+        if (mLeftClock != null) {
+            mLeftClock.applySettings(mClockColor);
+        }
         if (mRightClock != null) {
             mRightClock.applySettings(mClockColor);
         }
@@ -406,6 +413,7 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
     {
         final Object o = getTag();
         mIsCenter = (o != null && o.toString().equals("center"));
+        mIsLeft = (o != null && o.toString().equals("left"));
         mIsShade = (o != null && o.toString().equals("expanded"));
         mTagChecked = true;
     }
@@ -416,6 +424,14 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
             CheckTag();
         }
         return mIsCenter;
+    }
+
+    public boolean IsLeft()
+    {
+        if (!mTagChecked) {
+            CheckTag();
+        }
+        return mIsLeft;
     }
   
     public boolean IsShade()
@@ -489,15 +505,35 @@ public class Clock extends TextView implements DemoMode, OnClickListener, OnLong
         }
     }
 
+    private boolean shouldShow()
+    {
+        if (!mShowClock) {
+            return false;
+        } else if (IsShade()) {
+            return true;
+        }
+        switch(mClockStyle) {
+                // ROCK N ROLL CLOWN!
+            case STYLE_CLOCK_RIGHT:
+                return !IsCenter() && !IsLeft();
+            case STYLE_CLOCK_CENTER:
+                return IsCenter() && !IsLeft();
+            case STYLE_CLOCK_LEFT:
+                return !IsCenter() && IsLeft();
+                // K-K-K-K-K-K-YEAH!!
+        }
+        return false;
+    }
+
     /*
      * @hide
      */
     protected void updateClockVisibility() {
-        boolean c = IsCenter();
-        if (mShowClock && mClockStyle == STYLE_CLOCK_RIGHT && !c || mShowClock && mClockStyle == STYLE_CLOCK_CENTER && c || IsShade())
+        if (shouldShow()) {
             setVisibility(View.VISIBLE);
-        else
+        } else {
             setVisibility(View.GONE);
+        }
     }
 
     /*

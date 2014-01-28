@@ -72,6 +72,24 @@
             android:layout_weight="1"
             android:orientation="horizontal"
             >
+
+            <LinearLayout
+                android:id="@+id/left_clock_layout"
+                android:gravity="left"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:paddingEnd="6dip" >
+                <com.android.systemui.statusbar.policy.Clock
+                    android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+                    android:gravity="center"
+                    android:id="@+id/left_clock"
+                    android:tag="left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:singleLine="true" />
+            </LinearLayout>
+            
             <com.android.systemui.statusbar.StatusBarIconView android:id="@+id/moreIcon"
                 android:layout_width="@dimen/status_bar_icon_size"
                 android:layout_height="match_parent"
