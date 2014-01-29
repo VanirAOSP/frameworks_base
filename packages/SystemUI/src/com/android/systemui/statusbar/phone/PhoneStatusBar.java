@@ -3410,6 +3410,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     false, this, UserHandle.USER_ALL);
 
             cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QUICK_TILES_BG_COLOR),
+                    false, this, UserHandle.USER_ALL);
+
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QUICK_TILES_BG_PRESSED_COLOR),
+                    false, this, UserHandle.USER_ALL);
+
+            cr.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.QS_DYNAMIC_ALARM),
                     false, this, UserHandle.USER_ALL);
 

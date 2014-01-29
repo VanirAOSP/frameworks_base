@@ -2948,6 +2948,20 @@ public final class Settings {
                 "quick_tiles_per_row_duplicate_landscape";
 
         /**
+         * qs tiles background color
+         *
+         * @hide
+         */
+        public static final String QUICK_TILES_BG_COLOR = "quick_tiles_bg_color";
+
+        /**
+         * qs tiles background color on pressed
+         *
+         * @hide
+         */
+        public static final String QUICK_TILES_BG_PRESSED_COLOR = "quick_tiles_bg_pressed_color";
+
+        /**
          * Quick Settings Panel Dynamic Tiles
          *
          * @hide
