@@ -3816,11 +3816,6 @@ public final class Settings {
          */
          public static final String LISTVIEW_INTERPOLATOR = "listview_interpolator"; 
 
-        /** Weather to allow headsethook to launch voice commands
-         * @hide
-         */
-        public static final String HEADSETHOOK_LAUNCH_VOICE = "headsethook_launch_voice";
-
         /**
          * Setting for animation controls
          *
