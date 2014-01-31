@@ -129,7 +129,7 @@ public class QuickSettingsController {
     public PhoneStatusBar mStatusBarService;
     private final String mSettingsKey;
     private final boolean mRibbonMode;
-    private static boolean _firstShot = true;
+    private boolean _firstShot = true;
 
     private boolean mPerformanceTileSupport;
     private boolean cameraSupported;
