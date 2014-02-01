@@ -129,17 +129,17 @@ public class QuickSettingsController {
     public PhoneStatusBar mStatusBarService;
     private final String mSettingsKey;
     private final boolean mRibbonMode;
-    private boolean _firstShot = true;
+    private static boolean _firstShot = true;
 
-    private boolean mPerformanceTileSupport;
-    private boolean cameraSupported;
-    private boolean bluetoothSupported;
-    private boolean mobileDataSupported;
-    private boolean lteSupported;
-    private boolean gpsSupported;
-    private boolean torchSupported;
-    private boolean mSupportsIME;
-    private boolean mSupportsUSBTeth;
+    private static boolean mPerformanceTileSupport;
+    private static boolean cameraSupported;
+    private static boolean bluetoothSupported;
+    private static boolean mobileDataSupported;
+    private static boolean lteSupported;
+    private static boolean gpsSupported;
+    private static boolean torchSupported;
+    private static boolean mSupportsIME;
+    private static boolean mSupportsUSBTeth;
 
     private InputMethodTile mIMETile;
 
