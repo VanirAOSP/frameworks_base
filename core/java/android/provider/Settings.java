@@ -3046,6 +3046,12 @@ public final class Settings {
         public static final String HALO_ENABLED = "halo_enabled";
 
         /**
+         * Set a custom notification background color
+         * @hide
+         */
+        public static final String LOCKSCREEN_NOTIFICATIONS_COLOR = "lockscreen_notifications_color";
+
+        /**
          * Quick Settings Quick access ribbon
          *
          * @hide
