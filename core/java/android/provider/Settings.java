@@ -4123,6 +4123,13 @@ public final class Settings {
         };
 
         /**
+         * location of the clear all rectents button
+         * @hide
+         */
+        public static final String CLEAR_RECENTS_BUTTON_LOCATION = "clear_recents_button_location";
+
+        /**
+         *
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";

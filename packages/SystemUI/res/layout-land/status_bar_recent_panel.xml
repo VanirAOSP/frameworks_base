@@ -73,14 +73,14 @@
                   android:layout_marginRight="5dp"
                   android:layout_marginLeft="5dp" />
 
-        <ImageView
+    <ImageView
             android:id="@+id/recents_clear"
             android:clickable="true"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:scaleType="center"
             android:layout_gravity="top|right"
-            android:src="@drawable/ic_recents_clear" />
+            android:src="@drawable/ic_notify_clear" />
 
     </FrameLayout>
 
