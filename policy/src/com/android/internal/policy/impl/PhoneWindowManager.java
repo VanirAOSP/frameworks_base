@@ -4501,8 +4501,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     Runnable mTorchToggle = new Runnable() {
         public void run() {
-            Intent i = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
-            mContext.sendBroadcast(i);
+            if (mFastTorchOn != mFastTorchStatus) {
+                Log.v("QuickTorch", "Trying to toggle torch "+mFastTorchOn);
+                Intent i = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
+                mContext.sendBroadcast(i);
+            } else {
+                Log.v("QuickTorch", "Toggle requested, but already in target state");
+            }
         };
     };
 
@@ -4510,7 +4515,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         @Override
         public void onReceive(Context context, Intent intent) {
             mFastTorchStatus = intent.getIntExtra(TorchConstants.EXTRA_CURRENT_STATE, 0) != 0;
+            Log.v("QuickTorch", "Word on the street is that torch is now "+mFastTorchStatus);
             if (mFastTorchOn && !mFastTorchStatus) {
+                Log.v("QuickTorch", "Trying to force torch to be "+mFastTorchOn);
                 handleChangeTorchState(mFastTorchOn);
             }
         }
@@ -4518,12 +4525,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     void handleChangeTorchState(boolean on) {
         mHandler.removeCallbacks(mTorchToggle);
-        if (on && !mFastTorchStatus) {
+        if (on && !mFastTorchStatus && !mFastTorchOn) {
+            Log.v("QuickTorch", "Posting delayed ENABLE because requested="+mFastTorchOn+" and state="+mFastTorchStatus);
+            mFastTorchOn = on;
             mHandler.postDelayed(mTorchToggle, ViewConfiguration.getLongPressTimeout());
-            mFastTorchOn = on;
         } else if (!on && mFastTorchStatus && mFastTorchOn) {
-            mHandler.post(mTorchToggle);
+            Log.v("QuickTorch", "Posting DISABLE because requested="+mFastTorchOn+" and state="+mFastTorchStatus);
             mFastTorchOn = on;
+            mHandler.post(mTorchToggle);
         }
     }
 
