@@ -1257,10 +1257,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // can be assigned using AwesomeAction
         if (mDeviceHardwareKeys != 0) {
             updateKeyAssignments();
-        } else {
-            mNavbarActionReceiver = new NavbarActionReceiver(context);
-            mNavbarActionReceiver.register();
         }
+
+        mNavbarActionReceiver = new NavbarActionReceiver(context);
+        mNavbarActionReceiver.register();
 
         // register for dock events
         IntentFilter filter = new IntentFilter();

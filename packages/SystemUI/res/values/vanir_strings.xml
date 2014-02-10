@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2013 The OmniROM Project
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 2 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
--->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
    <!-- battery saver mode -->
     <string name="battery_saver_start">Battery Saver Enabled</string>
     <string name="battery_saver_stop">Battery Saver Disabled</string>
@@ -23,5 +9,22 @@
     <string name="battery_saver_network">Network restored</string>
     <string name="battery_saver_wifi">Wifi restored</string>
     <string name="battery_saver_all">All configuration restored</string>
+
+    <!-- vanir actions and utilities -->
+    <string name="shortcut_label">Actions &amp; Utilities</string>
+    <string name="action_robocop">Reboot menu</string>
+    <string name="action_screenshot">Screenshot</string>
+    <string name="action_screenrecord">Screenrecord</string>
+    <string name="toggle_active_notifications">Active notifications</string>
+    <string name="toggle_torch">Torch</string>
+    <string name="toggle_flushmemory">Free memory</string>
+    <string name="toggle_immersive">Immersive mode</string>
+    <string name="toggle_ring_vib">Ring/Vib - toggle</string>
+    <string name="toggle_ring_silent">Ring/Silent - toggle</string>
+    <string name="toggle_ring_vib_silent">Ring/Vib/Silent - toggle</string>
+    <string name="toggle_immersive_toast">Set an immersive mode style first</string>
+    <string name="active_notifications_on_toast">Active notifications on</string>
+    <string name="active_notifications_off_toast">Active notifications off</string>
+    <string name="active_notifications_wtf_toast">Notification styles are both disabled</string>
 
 </resources>

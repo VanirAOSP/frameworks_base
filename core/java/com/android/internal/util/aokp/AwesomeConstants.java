@@ -55,15 +55,12 @@ public class AwesomeConstants {
         ACTION_LAST_APP      { @Override public String value() { return "**lastapp**";}},
         ACTION_TORCH         { @Override public String value() { return "**torch**";}},
         ACTION_IME           { @Override public String value() { return "**ime**";}},
-        ACTION_SCREENSHOT    { @Override public String value() { return "**screenshot**";}},
-  //      ACTION_SCREENRECORD{ @Override public String value() { return "**screenrecord**";}},
         ACTION_KILL          { @Override public String value() { return "**kill**";}},
         ACTION_SILENT        { @Override public String value() { return "**ring_silent**";}},
         ACTION_VIB           { @Override public String value() { return "**ring_vib**";}},
         ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
         ACTION_NULL          { @Override public String value() { return "**null**";}},
-        ACTION_APP           { @Override public String value() { return "**app**";}},
-        ACTION_ROBOCOP       { @Override public String value() { return "**robocop**";}};
+        ACTION_APP           { @Override public String value() { return "**app**";}};
         public String value() { return this.value(); }
     }
 
@@ -140,13 +137,7 @@ public class AwesomeConstants {
             case ACTION_SEARCH:
                 value = res.getString(com.android.internal.R.string.action_search);
                 break;
-            case ACTION_SCREENSHOT:
-                value = res.getString(com.android.internal.R.string.action_screenshot);
-                break;
-      /*      case ACTION_SCREENRECORD:
-                value = res.getString(com.android.internal.R.string.action_screenrecord);
-                break;
-      */      case ACTION_MENU:
+            case ACTION_MENU:
                 value = res.getString(com.android.internal.R.string.action_menu);
                 break;
             case ACTION_IME:
@@ -191,9 +182,6 @@ public class AwesomeConstants {
             case ACTION_APP:
                 value = res.getString(com.android.internal.R.string.action_app);
                 break;
-            case ACTION_ROBOCOP:
-                value = res.getString(com.android.internal.R.string.action_robocop);
-                break;
             case ACTION_NULL:
             default:
                 value = res.getString(com.android.internal.R.string.action_null);
@@ -220,13 +208,7 @@ public class AwesomeConstants {
             case ACTION_SEARCH:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_search");
                 break;
-            case ACTION_SCREENSHOT:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_screenshot");
-                break;
-       /*     case ACTION_SCREENRECORD:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_screenrecord");
-                break;
-      */      case ACTION_MENU:
+            case ACTION_MENU:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_menu_big");
                 break;
             case ACTION_IME:
@@ -267,9 +249,6 @@ public class AwesomeConstants {
                 break;
             case ACTION_SILENT_VIB:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_silent_vib");
-                break;
-            case ACTION_ROBOCOP:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_reboot");
                 break;
             case ACTION_APP: // APP doesn't really have an icon - it should look up
                         //the package icon - we'll return the 'null' on just in case
