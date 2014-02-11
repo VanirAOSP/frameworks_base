@@ -1981,4 +1981,10 @@
     <java-symbol type="string" name="action_widgets"/>
     <java-symbol type="string" name="action_app_window"/>
     <java-symbol type="string" name="app_killed_message"/>
+  
+  <!-- EdgeGesture service -->
+  <java-symbol type="dimen" name="edge_gesture_trigger_distance" />
+  <java-symbol type="dimen" name="edge_gesture_perpendicular_distance" />
+  <java-symbol type="dimen" name="edge_gesture_trigger_thickness" />
+
 </resources>
