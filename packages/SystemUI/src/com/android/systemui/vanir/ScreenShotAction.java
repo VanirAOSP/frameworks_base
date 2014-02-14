@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 AOKP by Mike Wilson - Zaphod-Beeblebrox
+ * Copyright 2013 VanirAOSP && the Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package com.android.systemui.aokp;
+package com.android.systemui.vanir;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 
-/*
- * Toggle QuietHours On/Off
- */
+import com.android.systemui.R;
 
-public class QuietHoursShortcut extends Activity  {
-
-    public QuietHoursShortcut() {
+public class ScreenShotAction extends Activity {
+    public ScreenShotAction() {
+        super();
     }
 
     /** Called when the activity is first created. */
@@ -39,11 +36,8 @@ public class QuietHoursShortcut extends Activity  {
     @Override
     public void onResume() {
         super.onResume();
-        int quietHoursEnabled = Settings.System.getInt(getContentResolver(),
-                Settings.System.QUIET_HOURS_ENABLED, 0);
-        Settings.System.putInt(getContentResolver(),
-                Settings.System.QUIET_HOURS_ENABLED, (quietHoursEnabled == 0) ? 1 : 0);
+            Intent intent = new Intent(Intent.ACTION_SCREENSHOT);
+            sendBroadcast(intent);
         this.finish();
     }
-
 }
