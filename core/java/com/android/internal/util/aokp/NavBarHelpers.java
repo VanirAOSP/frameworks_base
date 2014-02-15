@@ -37,6 +37,7 @@ public class NavBarHelpers {
             AwesomeConstant.ACTION_SILENT,
             AwesomeConstant.ACTION_VIB,
             AwesomeConstant.ACTION_SILENT_VIB,
+            AwesomeConstant.ACTION_NULL,
             /* these are just not implemented yet: */
             AwesomeConstant.ACTION_WIDGETS
     };

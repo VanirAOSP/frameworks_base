@@ -169,6 +169,8 @@ public class AwesomeAction {
                     appWindow.setAction("com.android.systemui.ACTION_SHOW_APP_WINDOW");
                     mContext.sendBroadcast(appWindow);
                 break;
+                case ACTION_BLANK:
+                break;
                 case ACTION_VIB:
                     am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                     if (am != null) {

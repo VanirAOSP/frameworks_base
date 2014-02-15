@@ -64,6 +64,8 @@ public class NavRingHelpers {
             // these can be removed as the features are added back
             AwesomeConstant.ACTION_WIDGETS,
             AwesomeConstant.ACTION_APP_WINDOW,
+            AwesomeConstant.ACTION_BLANK,
+            AwesomeConstant.ACTION_NULL,
     };
 
     private NavRingHelpers() {
