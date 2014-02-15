@@ -56,6 +56,7 @@ public class AwesomeConstants {
         ACTION_TORCH         { @Override public String value() { return "**torch**";}},
         ACTION_IME           { @Override public String value() { return "**ime**";}},
         ACTION_KILL          { @Override public String value() { return "**kill**";}},
+        ACTION_BLANK         { @Override public String value() { return "**blank**";}},
         ACTION_SILENT        { @Override public String value() { return "**ring_silent**";}},
         ACTION_VIB           { @Override public String value() { return "**ring_vib**";}},
         ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
@@ -173,6 +174,9 @@ public class AwesomeConstants {
             case ACTION_SILENT:
                 value = res.getString(com.android.internal.R.string.action_silent);
                 break;
+            case ACTION_BLANK:
+                value = res.getString(com.android.internal.R.string.action_blank);
+                break;
             case ACTION_VIB:
                 value = res.getString(com.android.internal.R.string.action_vib);
                 break;
@@ -243,6 +247,9 @@ public class AwesomeConstants {
                 break;
             case ACTION_SILENT:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_silent");
+                break;
+            case ACTION_BLANK:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_blank");
                 break;
             case ACTION_VIB:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_vib");

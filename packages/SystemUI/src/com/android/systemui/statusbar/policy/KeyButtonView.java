@@ -72,7 +72,7 @@ public class KeyButtonView extends ImageView {
 
     boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
 
-    Runnable mCheckLongPress = new Runnable() {
+    private Runnable mCheckLongPress = new Runnable() {
         public void run() {
             if (isPressed()) {
                 removeCallbacks(mSingleTap);
@@ -264,8 +264,18 @@ public class KeyButtonView extends ImageView {
         super.setPressed(pressed);
     }
 
+    public boolean blankTarget() {
+        boolean blank;
+        if (mActions.singleAction == null) return true;
+
+        blank = mActions.singleAction.equals(AwesomeConstant.ACTION_BLANK.value()) ||
+                mActions.singleAction.equals(AwesomeConstant.ACTION_NULL.value());
+
+        return blank;
+    }
 
     public boolean onTouchEvent(MotionEvent ev) {
+        if (blankTarget()) return true;
         final int action = ev.getAction();
         int x, y;
 

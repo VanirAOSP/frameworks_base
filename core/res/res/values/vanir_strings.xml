@@ -54,6 +54,7 @@
     <string name="action_kill">Kill task</string>
     <string name="action_lastapp">Last app</string>
     <string name="action_power">Power</string>
+    <string name="action_blank">Empty spacer</string>
     <string name="action_notifications">Notifications</string>
     <string name="action_assist">Search (Google Now)</string>
     <string name="action_robocop">Reboot menu</string>
