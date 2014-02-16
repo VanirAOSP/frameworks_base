@@ -98,15 +98,19 @@ public class BatterySaverService extends Service implements NetworkSignalChanged
     private boolean mUsbConnected = false;
     private String[] mUsbRegexs;
 
+    // For filtering ACTION_POWER_DISCONNECTED on boot
+    private boolean mIgnoreFirstPowerEvent = true;
+    private boolean mPowerConnected = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = this;
         mResources = mContext.getResources();
         mHandler = new Handler();
-        mCM = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        mTM = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        mWM = (WifiManager) getSystemService(WIFI_SERVICE);
+        mCM = (ConnectivityManager) this.getSystemService(CONNECTIVITY_SERVICE);
+        mTM = (TelephonyManager) this.getSystemService(TELEPHONY_SERVICE);
+        mWM = (WifiManager) this.getSystemService(WIFI_SERVICE);
         mPM = IPowerManager.Stub.asInterface(ServiceManager.getService(Context.POWER_SERVICE));
 
         mBatteryController = new BatteryController(this);
@@ -127,6 +131,8 @@ public class BatterySaverService extends Service implements NetworkSignalChanged
         // Register for Intent broadcasts for...
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.ACTION_TETHER_STATE_CHANGED);
+        filter.addAction(Intent.ACTION_POWER_CONNECTED);
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_USER_PRESENT);
@@ -134,6 +140,11 @@ public class BatterySaverService extends Service implements NetworkSignalChanged
         registerReceiver(mBroadcastReceiver, filter);
 
         Toast.makeText(mContext, mResources.getString(R.string.battery_saver_start), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
     }
 
     @Override
@@ -249,7 +260,7 @@ public class BatterySaverService extends Service implements NetworkSignalChanged
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_SCREEN_OFF)) {
-                if (mPowerSaveWhenScreenOff) {
+                if (mPowerSaveWhenScreenOff && !mPowerConnected) {
                     switchToState(State.POWER_SAVING, true);
                 }
                 mIsScreenOff = true;
@@ -263,6 +274,18 @@ public class BatterySaverService extends Service implements NetworkSignalChanged
             } else if (action.equals(Intent.ACTION_USER_PRESENT)) {
                 if (mIgnoreWhileLocked && !isWifiConnected() && !mBatteryLowEvent) {
                     switchToState(State.NORMAL);
+                }
+            } else if (action.equals(Intent.ACTION_POWER_CONNECTED)) {
+                if (mIgnoreFirstPowerEvent) {
+                    mIgnoreFirstPowerEvent = false;
+                } else {
+                    mPowerConnected = true;
+                }
+            } else if (action.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+                if (mIgnoreFirstPowerEvent) {
+                    mIgnoreFirstPowerEvent = false;
+                } else {
+                    mPowerConnected = false;
                 }
             } else if (action.equals(UsbManager.ACTION_USB_STATE)) {
                 mUsbConnected = intent.getBooleanExtra(UsbManager.USB_CONNECTED, false);
@@ -287,6 +310,7 @@ public class BatterySaverService extends Service implements NetworkSignalChanged
     @Override
     public void onBatteryLevelChanged(boolean present, int level, boolean pluggedIn, int status) {
         if (!mBatterySaverEnabled) return;
+        mPowerConnected = pluggedIn;
         if (!pluggedIn && (level < mLowBatteryLevel)) {
             mBatteryLowEvent = true;
             if (!mIsScreenOff && !isWifiConnected() && mSmartBatteryEnabled) {
@@ -294,7 +318,7 @@ public class BatterySaverService extends Service implements NetworkSignalChanged
             }
         } else if ((pluggedIn || (level > mLowBatteryLevel))) {
             mBatteryLowEvent = false;
-            if (!mIsScreenOff && !isWifiConnected() && mSmartBatteryEnabled) {
+            if (!mIgnoreWhileLocked && !mIsScreenOff && !isWifiConnected() && mSmartBatteryEnabled) {
                 switchToState(State.NORMAL);
             }
         }
@@ -315,7 +339,7 @@ public class BatterySaverService extends Service implements NetworkSignalChanged
         if (mIsWifiDisabledByService) {
             mIsWifiEnabledByUser = isWifiEnabled();
         }
-        if (!mBatteryLowEvent && isWifiConnected()) {
+        if (!mBatteryLowEvent && isWifiConnected() && !mPowerConnected) {
             switchToState(State.POWER_SAVING);
         } else if (!mBatteryLowEvent && !isWifiConnected() && !(mIsScreenOff && mPowerSaveWhenScreenOff)) {
             switchToState(State.NORMAL);
