@@ -3899,6 +3899,18 @@ public final class Settings {
         public static final String GLOBAL_IMMERSIVE_MODE_STATE = "global_immersive_mode_state";
 
         /**
+         * Expanded desktop
+         * @hide
+         */
+        public static final String EXPANDED_DESKTOP = "expanded_desktop";
+
+        /**
+         * immersive mode: low profile
+         * @hide
+         */
+        public static final String IMMERSIVE_LOL_PROFILE = "immersive_lol_profile";
+
+        /**
          * Global immersive mode style (with status bar or without status bar)
          * @hide
          */

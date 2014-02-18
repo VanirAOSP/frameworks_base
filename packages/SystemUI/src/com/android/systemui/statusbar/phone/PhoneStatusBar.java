@@ -234,6 +234,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     float mNotificationPanelMinHeightFrac;
     boolean mNotificationPanelIsFullScreenWidth;
     TextView mNotificationPanelDebugText;
+    boolean immersive;
 
     // settings
     QuickSettingsController mQS;
@@ -368,6 +369,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.NOTIFICATION_ALPHA), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this);
             updateSettings();
         }
 
@@ -1464,22 +1467,30 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         final View nlo = mStatusBarView.findViewById(R.id.notification_lights_out);
         final boolean showDot = (any&&!areLightsOn());
-        if (showDot != (nlo.getAlpha() == 1.0f)) {
-            if (showDot) {
-                nlo.setAlpha(0f);
-                nlo.setVisibility(View.VISIBLE);
-            }
-            nlo.animate()
-                .alpha(showDot?1:0)
-                .setDuration(showDot?750:250)
-                .setInterpolator(new AccelerateInterpolator(2.0f))
-                .setListener(showDot ? null : new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator _a) {
-                        nlo.setVisibility(View.GONE);
+        final boolean leftClock = (mLeftClock.getVisibility() == View.VISIBLE);
+
+        if (showDot) {
+            if (leftClock) {
+                nlo.setVisibility(View.GONE);
+            } else {
+                if (showDot != (nlo.getAlpha() == 1.0f)) {
+                    if (showDot) {
+                        nlo.setAlpha(0f);
+                        nlo.setVisibility(View.VISIBLE);
                     }
-                })
-                .start();
+                    nlo.animate()
+                        .alpha(showDot?1:0)
+                        .setDuration(showDot?750:250)
+                        .setInterpolator(new AccelerateInterpolator(2.0f))
+                        .setListener(showDot ? null : new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator _a) {
+                                nlo.setVisibility(View.GONE);
+                            }
+                        })
+                        .start();
+                }
+            }
         }
 
         updateCarrierLabelVisibility(false);
@@ -2285,8 +2296,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             // update low profile
             if ((diff & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) {
                 final boolean lightsOut = (vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0;
-                if (lightsOut) {
-                    animateCollapsePanels();
+                if (lightsOut && !immersive) {
+                   // animateCollapsePanels();
                     if (mTicking) {
                         haltTicker();
                     }
@@ -3030,6 +3041,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 SignalClusterView.STYLE_NORMAL, mCurrentUserId);
         mSignalClusterView.setStyle(signalStyle);
         mSignalTextView.setStyle(signalStyle);
+
+        immersive = Settings.System.getIntForUser(resolver,
+                    Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0,
+                    UserHandle.USER_CURRENT) == 1;
     }
 
     private void resetUserSetupObserver() {

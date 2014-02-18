@@ -284,7 +284,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mNavigationBarHeightLandscape;
     int mNavigationBarWidth;
 
-    private int mExpandedDesktopMode;
     private boolean mClearedBecauseOfForceShow;
 
     WindowState mKeyguard = null;
@@ -373,6 +372,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mVolBtnMusicControls;
     boolean mIsLongPress;
     boolean mCameraKeyPressable = false;
+
+    // immersive desktop
+    int mGlobalImmersiveModeStyle = -1;
+    int immersiveModeStyle;
+    boolean expanded;
+    boolean LOLprofile;
 
     // fast torch
     boolean mFastTorchOn; // local state of torch
@@ -464,8 +469,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mHideLockScreen;
     boolean mForcingShowNavBar;
     int mForcingShowNavBarLayer;
-
-    int mGlobalImmersiveModeStyle = -1;
 
     // States of keyguard dismiss.
     private static final int DISMISS_KEYGUARD_NONE = 0; // Keyguard not being dismissed.
@@ -737,6 +740,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.EXPANDED_DESKTOP), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.IMMERSIVE_LOL_PROFILE), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_FAST_TORCH), false, this,
@@ -1681,6 +1690,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mCameraMusicControls = ((Settings.System.getIntForUser(resolver,
                     Settings.System.CAMERA_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) == 1)
                     && !mCameraWakeScreen);
+            LOLprofile = Settings.System.getIntForUser(resolver,
+                    Settings.System.IMMERSIVE_LOL_PROFILE, 0, UserHandle.USER_CURRENT) == 1;
+            expanded = Settings.System.getIntForUser(resolver,
+                    Settings.System.EXPANDED_DESKTOP, 0, UserHandle.USER_CURRENT) == 1;
 
             if (mDeviceHardwareKeys != 0) {
                 updateKeyAssignments();
@@ -1699,10 +1712,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 resetScreenHelper();
             }
 
-            int immersiveModeStyle = Settings.System.getIntForUser(resolver,
+            boolean immersiveState = Settings.System.getIntForUser(resolver,
+                        Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
+            immersiveModeStyle = Settings.System.getIntForUser(resolver,
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 0, UserHandle.USER_CURRENT);
-            if (Settings.System.getIntForUser(resolver,
-                        Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 0) {
+            if (!immersiveState) {
                 immersiveModeStyle = 0;
             }
 
@@ -6196,7 +6210,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 immersiveModeHidesNavigationBar();
 
         boolean transientStatusBarAllowed =
-                mStatusBar != null && (
+                mStatusBar != null && !expanded && (
                 hideStatusBarWM
                 || (hideStatusBarSysui && immersiveSticky)
                 || statusBarHasFocus);
@@ -6482,20 +6496,39 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     private boolean immersiveModeHidesStatusBar() {
-        return mGlobalImmersiveModeStyle == 2;
+        return mGlobalImmersiveModeStyle >= 2;
     }
 
     private boolean immersiveModeHidesNavigationBar() {
-        return mGlobalImmersiveModeStyle != 0;
+        return mGlobalImmersiveModeStyle != 3 && mGlobalImmersiveModeStyle != 0;
     }
 
     private int updateImmersiveModeVisibility(int vis) {
-        if (immersiveModeHidesStatusBar()) {
-            vis |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+        
+        switch (immersiveModeStyle) {
+            case 1:
+                vis |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                break;
+            case 2:
+                vis |= View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                break;
+            case 3:
+                vis |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+                break;
+            case 0:
+                break;
         }
 
-        if (immersiveModeHidesNavigationBar()) {
-            vis |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        if (expanded) {
+            vis |= View.SYSTEM_UI_FLAG_IMMERSIVE;
+        } else {
+            vis |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        }
+
+        // low profile mode
+        if (LOLprofile) {
+            vis |= View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            if (!expanded) vis |= View.SYSTEM_UI_FLAG_IMMERSIVE;
         }
 
         return vis;
