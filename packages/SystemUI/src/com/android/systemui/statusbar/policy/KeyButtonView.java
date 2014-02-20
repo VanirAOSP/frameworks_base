@@ -131,7 +131,7 @@ public class KeyButtonView extends ImageView {
         mHasSingleAction = mActions != null && mActions.singleAction != null;
         mHasLongAction = mActions != null && mActions.longPressAction != null;
         mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
-        mIsBlankAction = (mHasSingleAction || mHasLongAction || mHasDoubleAction);
+        mIsBlankAction = !(mHasSingleAction || mHasLongAction || mHasDoubleAction);
         setLongClickable(mHasLongAction);
         Log.e("ROMAN", "hasLongAction: " + mHasLongAction);
     }
