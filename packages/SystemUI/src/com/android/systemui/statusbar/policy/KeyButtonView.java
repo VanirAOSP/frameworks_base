@@ -70,7 +70,7 @@ public class KeyButtonView extends ImageView {
 
     AwesomeButtonInfo mActions;
 
-    boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
+    boolean mIsBlankAction = true, mHasSingleAction, mHasDoubleAction, mHasLongAction;
 
     private Runnable mCheckLongPress = new Runnable() {
         public void run() {
@@ -128,9 +128,10 @@ public class KeyButtonView extends ImageView {
             setImageResource(R.drawable.ic_sysbar_null);
         }
 
-        mHasSingleAction = mActions != null && (mActions.singleAction != null);
+        mHasSingleAction = mActions != null && mActions.singleAction != null;
         mHasLongAction = mActions != null && mActions.longPressAction != null;
         mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
+        mIsBlankAction = (mHasSingleAction || mHasLongAction || mHasDoubleAction);
         setLongClickable(mHasLongAction);
         Log.e("ROMAN", "hasLongAction: " + mHasLongAction);
     }
@@ -264,15 +265,8 @@ public class KeyButtonView extends ImageView {
         super.setPressed(pressed);
     }
 
-    public boolean blankTarget() {
-        if (mActions == null || mActions.singleAction == null) return true;
-
-        return mActions.singleAction.equals(AwesomeConstant.ACTION_BLANK.value()) ||
-                mActions.singleAction.equals(AwesomeConstant.ACTION_NULL.value())
-    }
-
     public boolean onTouchEvent(MotionEvent ev) {
-        if (blankTarget()) return true;
+        if (mIsBlankAction) return true;
         final int action = ev.getAction();
         int x, y;
 
@@ -280,20 +274,20 @@ public class KeyButtonView extends ImageView {
             case MotionEvent.ACTION_DOWN:
                 mDownTime = SystemClock.uptimeMillis();
                 setPressed(true);
-                if (hasSingleTapAction()) {
+                if (mHasSingleAction) {
                     removeCallbacks(mSingleTap);
                 }
                 performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 long diff = mDownTime - mUpTime; // difference between last up and now
-                if (hasDoubleTapAction() && diff <= mDoubleTapTimeout) {
+                if (mHasDoubleAction && diff <= mDoubleTapTimeout) {
                     doDoubleTap();
                 } else {
-                    if (hasLongTapAction()) {
+                    if (mHasLongAction) {
                         removeCallbacks(mCheckLongPress);
                         postDelayed(mCheckLongPress, mLongPressTimeout);
                     }
 
-                    if (hasSingleTapAction()) {
+                    if (mHasSingleAction) {
                         postDelayed(mSingleTap, mSinglePressTimeout);
                     }
                 }
@@ -308,10 +302,10 @@ public class KeyButtonView extends ImageView {
                 break;
             case MotionEvent.ACTION_CANCEL:
                 setPressed(false);
-                if (hasSingleTapAction()) {
+                if (mHasSingleAction) {
                     removeCallbacks(mSingleTap);
                 }
-                if (hasLongTapAction()) {
+                if (mHasLongAction) {
                     removeCallbacks(mCheckLongPress);
 
                 }
@@ -319,7 +313,7 @@ public class KeyButtonView extends ImageView {
             case MotionEvent.ACTION_UP:
                 mUpTime = SystemClock.uptimeMillis();
 
-                if (hasLongTapAction()) {
+                if (mHasLongAction) {
                     removeCallbacks(mCheckLongPress);
                 }
                 final boolean doIt = isPressed();
@@ -328,7 +322,7 @@ public class KeyButtonView extends ImageView {
                     playSoundEffect(SoundEffectConstants.CLICK);
                 }
 
-                if (!hasDoubleTapAction() && !hasLongTapAction()) {
+                if (!mHasDoubleAction && !mHasLongAction) {
                     // a little optimization here
                     removeCallbacks(mSingleTap);
                     doSinglePress();
@@ -337,18 +331,6 @@ public class KeyButtonView extends ImageView {
                 break;
         }
         return true;
-    }
-
-    private boolean hasLongTapAction() {
-        return mHasLongAction;
-    }
-
-    private boolean hasDoubleTapAction() {
-        return mHasDoubleAction;
-    }
-
-    private boolean hasSingleTapAction() {
-        return mHasSingleAction;
     }
 
     private void doSinglePress() {
@@ -364,14 +346,14 @@ public class KeyButtonView extends ImageView {
     }
 
     private void doDoubleTap() {
-        if (hasDoubleTapAction()) {
+        if (mHasDoubleAction) {
             removeCallbacks(mSingleTap);
             AwesomeAction.launchAction(getContext(), mActions.doubleTapAction);
         }
     }
 
     private void doLongPress() {
-        if (hasLongTapAction()) {
+        if (mHasLongAction) {
             removeCallbacks(mSingleTap);
             AwesomeAction.launchAction(getContext(), mActions.longPressAction);
             performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
