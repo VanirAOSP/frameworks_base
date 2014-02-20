@@ -265,13 +265,10 @@ public class KeyButtonView extends ImageView {
     }
 
     public boolean blankTarget() {
-        boolean blank;
-        if (mActions.singleAction == null) return true;
+        if (mActions == null || mActions.singleAction == null) return true;
 
-        blank = mActions.singleAction.equals(AwesomeConstant.ACTION_BLANK.value()) ||
-                mActions.singleAction.equals(AwesomeConstant.ACTION_NULL.value());
-
-        return blank;
+        return mActions.singleAction.equals(AwesomeConstant.ACTION_BLANK.value()) ||
+                mActions.singleAction.equals(AwesomeConstant.ACTION_NULL.value())
     }
 
     public boolean onTouchEvent(MotionEvent ev) {
