@@ -72,7 +72,7 @@ public class AOKPSearchPanelView extends FrameLayout implements
     private static final int SEARCH_PANEL_HOLD_DURATION = 0;
     static final String TAG = "SearchPanelView";
     static final boolean DEBUG = PhoneStatusBar.DEBUG || false;
-    public static final boolean DEBUG_GESTURES = true;
+    public static final boolean DEBUG_GESTURES = false;
 
     private final Context mContext;
     private BaseStatusBar mBar;
