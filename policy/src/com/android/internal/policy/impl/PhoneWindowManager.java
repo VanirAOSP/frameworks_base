@@ -1715,7 +1715,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             boolean immersiveState = Settings.System.getIntForUser(resolver,
                         Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
             immersiveModeStyle = Settings.System.getIntForUser(resolver,
-                    Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 0, UserHandle.USER_CURRENT);
+                    Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
             if (!immersiveState) {
                 immersiveModeStyle = 0;
             }
