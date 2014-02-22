@@ -3122,6 +3122,12 @@ public final class Settings {
         public static final String NAV_BUTTONS = "nav_buttons";
 
         /**
+         * Whether to enable the navbar for hw key devices
+         * @hide
+         */
+        public static final String ENABLE_NAVIGATION_BAR = "enable_navigation_bar";
+
+        /**
         * Notification Power Widget - Custom Brightness Mode
         * @hide
         */

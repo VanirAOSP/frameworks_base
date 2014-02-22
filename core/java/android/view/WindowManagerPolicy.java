@@ -1148,6 +1148,11 @@ public interface WindowManagerPolicy {
     public boolean hasMenuKeyEnabled();
 
     /**
+     * Specifies whether the device wants an on-screen navigation bar(because it has hardware keys)
+     */
+    public boolean wantsNavigationBar();
+
+    /**
      * Lock the device now.
      */
     public void lockNow(Bundle options);
