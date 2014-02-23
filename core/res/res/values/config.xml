@@ -2096,7 +2096,6 @@
     <bool name="config_stylusGestures">false</bool>
 
     <integer name="config_panelAutoBrightnessValue">1</integer>
-    <bool name="config_enableScreenrecordChord">false</bool>
 
     <!-- The list of components which should be automatically disabled. -->
     <string-array name="config_disabledComponents" translatable="false">
@@ -2121,4 +2120,6 @@
     <string-array name="config_auto_perf_activities" translatable="false">
     </string-array>
 
+    <!-- If this is true, key chords can be used to take a screen record on the device. -->
+    <bool name="config_enableScreenrecordChord">true</bool>
 </resources>
