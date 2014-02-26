@@ -70,9 +70,9 @@ public class KeyButtonView extends ImageView {
 
     AwesomeButtonInfo mActions;
 
-    boolean mIsBlankAction = true, mHasSingleAction, mHasDoubleAction, mHasLongAction;
+    boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
 
-    private Runnable mCheckLongPress = new Runnable() {
+    Runnable mCheckLongPress = new Runnable() {
         public void run() {
             if (isPressed()) {
                 removeCallbacks(mSingleTap);
@@ -128,10 +128,9 @@ public class KeyButtonView extends ImageView {
             setImageResource(R.drawable.ic_sysbar_null);
         }
 
-        mHasSingleAction = mActions != null && mActions.singleAction != null;
+        mHasSingleAction = mActions != null && (mActions.singleAction != null);
         mHasLongAction = mActions != null && mActions.longPressAction != null;
         mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
-        mIsBlankAction = !(mHasSingleAction || mHasLongAction || mHasDoubleAction);
         setLongClickable(mHasLongAction);
         Log.e("ROMAN", "hasLongAction: " + mHasLongAction);
     }
@@ -265,10 +264,17 @@ public class KeyButtonView extends ImageView {
         super.setPressed(pressed);
     }
 
+    public boolean blankTarget() {
+        if (mActions == null || mActions.singleAction == null) return false;
+
+        return mActions.singleAction.equals(AwesomeConstant.ACTION_BLANK.value()) ||
+                mActions.singleAction.equals(AwesomeConstant.ACTION_NULL.value());
+    }
+
     public boolean onTouchEvent(MotionEvent ev) {
-        if (mIsBlankAction) return true;
         final int action = ev.getAction();
         int x, y;
+        if (blankTarget()) return true;
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
