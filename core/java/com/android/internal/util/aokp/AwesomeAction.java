@@ -53,7 +53,6 @@ import com.android.internal.statusbar.IStatusBarService;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import com.android.internal.util.cm.TorchConstants;
 import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 import static com.android.internal.util.aokp.AwesomeConstants.fromString;
 
@@ -114,10 +113,6 @@ public class AwesomeAction {
                     break;
                 case ACTION_POWER:
                     injectKeyDelayed(KeyEvent.KEYCODE_POWER);
-                    break;
-                case ACTION_TORCH:
-                    Intent intentTorch = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
-                    mContext.sendBroadcast(intentTorch);
                     break;
                 case ACTION_LAST_APP:
                     toggleLastApp(mContext);

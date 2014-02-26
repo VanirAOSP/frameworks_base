@@ -358,7 +358,7 @@
         <activity
             android:name="com.android.systemui.vanir.Torch"
             android:label="@string/toggle_torch"
-            android:icon="@drawable/ic_qs_torch_on"
+            android:icon="@drawable/ic_sysbar_torch"
             android:theme="@android:style/Theme.Holo.Panel"
             android:excludeFromRecents="true"
             android:launchMode="singleTop" >

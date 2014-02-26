@@ -53,7 +53,6 @@ public class AwesomeConstants {
         ACTION_NOTIFICATIONS { @Override public String value() { return "**notifications**";}},
         ACTION_VOICEASSIST   { @Override public String value() { return "**voiceassist**";}},
         ACTION_LAST_APP      { @Override public String value() { return "**lastapp**";}},
-        ACTION_TORCH         { @Override public String value() { return "**torch**";}},
         ACTION_IME           { @Override public String value() { return "**ime**";}},
         ACTION_KILL          { @Override public String value() { return "**kill**";}},
         ACTION_BLANK         { @Override public String value() { return "**blank**";}},
@@ -168,9 +167,6 @@ public class AwesomeConstants {
             case ACTION_VOICEASSIST:
                 value = res.getString(com.android.internal.R.string.action_voiceassist);
                 break;
-            case ACTION_TORCH:
-                value = res.getString(com.android.internal.R.string.action_torch);
-                break;
             case ACTION_SILENT:
                 value = res.getString(com.android.internal.R.string.action_silent);
                 break;
@@ -241,9 +237,6 @@ public class AwesomeConstants {
                 break;
             case ACTION_VOICEASSIST:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_voiceassist");
-                break;
-            case ACTION_TORCH:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_torch");
                 break;
             case ACTION_SILENT:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_silent");
