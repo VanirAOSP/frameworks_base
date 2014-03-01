@@ -6221,7 +6221,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 immersiveModeHidesNavigationBar();
 
         boolean transientStatusBarAllowed =
-                mStatusBar != null && !expanded && (
+                mStatusBar != null && (
                 hideStatusBarWM
                 || (hideStatusBarSysui && immersiveSticky)
                 || statusBarHasFocus);
@@ -6239,6 +6239,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             clearClearableFlagsLw();
         }
 
+        if (expanded) transientStatusBarAllowed = false;
         vis = mStatusBarController.updateVisibilityLw(transientStatusBarAllowed, oldVis, vis);
 
         // update navigation bar
@@ -6549,7 +6550,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // low profile mode
         if (LOLprofile) {
             vis |= View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            if (!expanded) vis |= View.SYSTEM_UI_FLAG_IMMERSIVE;
         }
 
         return vis;
