@@ -78,10 +78,13 @@
 
   <!-- Expanded Desktop -->
   <java-symbol type="string" name="global_actions_toggle_global_immersive_mode" />
+  <java-symbol type="string" name="global_actions_toggle_global_expanded_mode" />
   <java-symbol type="string" name="global_actions_global_immersive_mode_off_status" />
   <java-symbol type="string" name="global_actions_global_immersive_mode_on_status" />
   <java-symbol type="drawable" name="ic_lock_immersive_mode_on" />
   <java-symbol type="drawable" name="ic_lock_immersive_mode_off" />
+  <java-symbol type="drawable" name="ic_lock_expanded_desktop" />
+  <java-symbol type="drawable" name="ic_lock_expanded_desktop_off" />
 
   <!--  Awesome Action -->
   <java-symbol type="string" name="action_home"/>
