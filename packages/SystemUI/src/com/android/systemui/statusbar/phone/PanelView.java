@@ -890,6 +890,6 @@ public class PanelView extends FrameLayout {
 
     private void updateUseSlider() {
         mStatusBarSliderEnabled = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_BRIGHTNESS_SLIDER, 1) != 0;
+                Settings.System.STATUSBAR_BRIGHTNESS_SLIDER, 0) != 0;
     }
 }

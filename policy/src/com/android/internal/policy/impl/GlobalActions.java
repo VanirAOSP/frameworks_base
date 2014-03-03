@@ -1336,7 +1336,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.Secure.STOCK_MODE, 0) == 1;
         showBugReport = (Settings.Global.getInt(cr,
                 Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0 && isCurrentUserOwner());
-        mQuickCam = Settings.System.getIntForUser(cr, Settings.System.POWER_MENU_QUICKCAM, 1,
+        mQuickCam = Settings.System.getIntForUser(cr, Settings.System.POWER_MENU_QUICKCAM, 0,
                 UserHandle.USER_CURRENT) == 1;
 
         if (!mStockMode) {
