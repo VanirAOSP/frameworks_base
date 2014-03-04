@@ -148,6 +148,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean showUsers;
     private boolean showSoundMode;
     private boolean mScreenRecordRebootDialog;
+    private boolean expanded;
     private int showImmersiveMode;
 
     /**
@@ -284,25 +285,47 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mSilentModeAction = new SilentModeTriStateAction(mContext, mAudioManager, mHandler);
         }
 
-        mGlobalImmersiveModeOn = new ToggleAction(
-                R.drawable.ic_lock_immersive_mode_on,
-                R.drawable.ic_lock_immersive_mode_off,
-                R.string.global_actions_toggle_global_immersive_mode,
-                R.string.global_actions_global_immersive_mode_on_status,
-                R.string.global_actions_global_immersive_mode_off_status) {
+        if (!expanded) {
+            mGlobalImmersiveModeOn = new ToggleAction(
+                    R.drawable.ic_lock_immersive_mode_on,
+                    R.drawable.ic_lock_immersive_mode_off,
+                    R.string.global_actions_toggle_global_immersive_mode,
+                    R.string.global_actions_global_immersive_mode_on_status,
+                    R.string.global_actions_global_immersive_mode_off_status) {
 
-            void onToggle(boolean on) {
-                changeImmersiveModeSystemSetting(on);
-            }
+                void onToggle(boolean on) {
+                    changeImmersiveModeSystemSetting(on);
+                }
 
-            public boolean showDuringKeyguard() {
-                return true;
-            }
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
 
-            public boolean showBeforeProvisioning() {
-                return true;
-            }
-        };
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            };
+        } else {
+            mGlobalImmersiveModeOn = new ToggleAction(
+                    R.drawable.ic_lock_expanded_desktop,
+                    R.drawable.ic_lock_expanded_desktop_off,
+                    R.string.global_actions_toggle_global_expanded_mode,
+                    R.string.global_actions_global_immersive_mode_on_status,
+                    R.string.global_actions_global_immersive_mode_off_status) {
+
+                void onToggle(boolean on) {
+                    changeImmersiveModeSystemSetting(on);
+                }
+
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
+
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+            };
+        }
         onImmersiveModeChanged();
 
         mAirplaneModeOn = new ToggleAction(
@@ -1338,6 +1361,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0 && isCurrentUserOwner());
         mQuickCam = Settings.System.getIntForUser(cr, Settings.System.POWER_MENU_QUICKCAM, 0,
                 UserHandle.USER_CURRENT) == 1;
+        expanded = Settings.System.getIntForUser(cr, Settings.System.EXPANDED_DESKTOP, 0,
+                UserHandle.USER_CURRENT) == 1;
 
         if (!mStockMode) {
             showScreenshot = Settings.System.getIntForUser(cr,
@@ -1352,7 +1377,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.getIntForUser(cr,
                         Settings.System.SYSTEM_PROFILES_ENABLED, 1, UserHandle.USER_CURRENT) == 1
                 && Settings.System.getIntForUser(cr,
-                        Settings.System.POWER_MENU_PROFILES_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
+                        Settings.System.POWER_MENU_PROFILES_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
             showReboot = Settings.System.getIntForUser(cr,
                 Settings.System.POWER_MENU_REBOOT_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
             showAirplaneMode = Settings.System.getIntForUser(cr,
