@@ -29,4 +29,9 @@
     <string name="active_notifications_off_toast">Active notifications off</string>
     <string name="active_notifications_wtf_toast">Notification styles are both disabled</string>
 
+    <!-- Title shown in recents popup for locking an app from being cleared -->
+    <string name="status_bar_recent_lock_item_title">Lock</string>
+    <!-- Title shown in recents popup for unlocking an app from being cleared -->
+    <string name="status_bar_recent_unlock_item_title">Unlock</string>
+
 </resources>
