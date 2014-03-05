@@ -1,18 +1,22 @@
 package com.android.systemui.quicksettings;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.content.Intent;
 import android.view.View;
 
 import com.android.systemui.R;
-import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.phone.QuickSettingsController;
 
-public class PreferencesTile extends QuickSettingsTile{
+public class PreferencesTile extends QuickSettingsTile {
+
+    private Context mContext;
 
     public PreferencesTile(Context context, QuickSettingsController qsc) {
         super(context, qsc);
 
+        mContext = context;
         mOnClick = new View.OnClickListener() {
 
             @Override
@@ -20,6 +24,26 @@ public class PreferencesTile extends QuickSettingsTile{
                 startSettingsActivity(android.provider.Settings.ACTION_SETTINGS);
             }
         };
+    }
+
+    @Override
+    public void onFlingRight() {
+        super.onFlingRight();
+        Intent intent = new Intent();
+                intent.setComponent(new ComponentName(
+                        "com.android.settings",
+                        "com.android.settings.Settings$SystemSettingsActivity"));
+                startSettingsActivity(intent);
+    }
+
+    @Override
+    public void onFlingLeft() {
+        super.onFlingLeft();
+        Intent intent = new Intent();
+                intent.setComponent(new ComponentName(
+                        "com.android.settings",
+                        "com.android.settings.Settings$QuickSettingsConfigActivity"));
+                startSettingsActivity(intent);
     }
 
     @Override
