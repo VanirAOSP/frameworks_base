@@ -4674,14 +4674,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     void handleChangeTorchState(boolean on) {
         mHandler.removeCallbacks(mTorchToggle);
-        if (on && !mFastTorchStatus && !mFastTorchOn) {
-            Log.v("QuickTorch", "Posting delayed ENABLE because requested="+mFastTorchOn+" and state="+mFastTorchStatus);
+        if (on && !mFastTorchStatus) {
             mFastTorchOn = on;
+            Log.v("QuickTorch", "Posting delayed ENABLE because requested="+mFastTorchOn+" and state="+mFastTorchStatus);
             mHandler.postDelayed(mTorchToggle, ViewConfiguration.getLongPressTimeout());
         } else if (!on && mFastTorchStatus && mFastTorchOn) {
-            Log.v("QuickTorch", "Posting DISABLE because requested="+mFastTorchOn+" and state="+mFastTorchStatus);
             mFastTorchOn = on;
+            Log.v("QuickTorch", "Posting DISABLE because requested="+mFastTorchOn+" and state="+mFastTorchStatus);
             mHandler.post(mTorchToggle);
+        } else {
+            Log.v("QuickTorch", "handleChangeTorchState("+on+"): mFastTorchStatus="+mFastTorchStatus+" mFastTorchOn="+mFastTorchOn);
         }
     }
 
@@ -4968,6 +4970,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 if (down) {
                     if(!isScreenOn && mEnableFastTorch) {
                         handleChangeTorchState(true);
+                    } else if (mEnableFastTorch) {
+                        Log.v("QuickTorch", "Ignoring power press while screen on");
                     }
                     if (mGlobalImmersiveModeStyle == 0) {
                         mImmersiveModeConfirmation.onPowerKeyDown(isScreenOn, event.getDownTime(),
