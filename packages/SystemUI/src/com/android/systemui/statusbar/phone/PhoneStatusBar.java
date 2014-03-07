@@ -368,6 +368,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_BATTERY), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_ACTIVE_DISPLAY), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_BATTERY_SHOW_PERCENT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_BACKGROUND), false, this);
@@ -407,9 +409,25 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR))) {
                 updateNavigationBarState();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.ENABLE_ACTIVE_DISPLAY))) {
+                updateActiveDisplayViewState();
             } else {
                 updateSettings();
             }
+        }
+    }
+
+    private void updateActiveDisplayViewState() {
+        final ContentResolver resolver = mContext.getContentResolver();
+
+        boolean enabled = Settings.System.getInt(
+                    resolver, Settings.System.ENABLE_ACTIVE_DISPLAY, 0) == 1;
+
+        if (enabled) {
+            addActiveDisplayView();
+        } else {
+            removeActiveDisplayView();
         }
     }
 
@@ -691,7 +709,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         if (mRecreating) {
         } else {
-            addActiveDisplayView();
+            updateActiveDisplayViewState()
         }
 
         // figure out which pixel-format to use for the status bar.
