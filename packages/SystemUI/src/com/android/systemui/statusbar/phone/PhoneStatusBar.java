@@ -709,7 +709,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         if (mRecreating) {
         } else {
-            updateActiveDisplayViewState()
+            updateActiveDisplayViewState();
         }
 
         // figure out which pixel-format to use for the status bar.
