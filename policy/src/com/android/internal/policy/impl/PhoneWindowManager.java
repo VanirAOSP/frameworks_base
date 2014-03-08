@@ -377,7 +377,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // immersive desktop
     int mGlobalImmersiveModeStyle = -1;
     int immersiveModeStyle;
-    boolean expanded;
+    boolean expanded = false;
     boolean LOLprofile;
 
     // fast torch
@@ -6204,6 +6204,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         vis = mStatusBarController.applyTranslucentFlagLw(transWin, vis, oldVis);
         vis = mNavigationBarController.applyTranslucentFlagLw(transWin, vis, oldVis);
 
+        // low profile mode
+        if (LOLprofile) {
+            vis |= View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        }
+
         // prevent status bar interaction from clearing certain flags
         boolean statusBarHasFocus = win.getAttrs().type == TYPE_STATUS_BAR;
         if (statusBarHasFocus) {
@@ -6255,7 +6260,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             clearClearableFlagsLw();
         }
 
-        if (expanded) transientStatusBarAllowed = false;
+      //  if (expanded) transientStatusBarAllowed = false;
         vis = mStatusBarController.updateVisibilityLw(transientStatusBarAllowed, oldVis, vis);
 
         // update navigation bar
@@ -6557,15 +6562,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 break;
         }
 
-        if (expanded) {
-            vis |= View.SYSTEM_UI_FLAG_IMMERSIVE;
-        } else {
-            vis |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        }
-
-        // low profile mode
-        if (LOLprofile) {
-            vis |= View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        if (immersiveModeStyle != 0) {
+            if (expanded) {
+                vis |= View.SYSTEM_UI_FLAG_IMMERSIVE;
+            } else {
+                vis |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            }
         }
 
         return vis;
