@@ -32,7 +32,6 @@ import android.graphics.PorterDuff.Mode;
 import android.net.Uri;
 import android.os.UserHandle;
 import android.provider.Settings;
-import android.provider.Settings.SettingNotFoundException;
 import android.util.AttributeSet;
 import android.util.EventLog;
 import android.view.MotionEvent;
@@ -76,27 +75,70 @@ public class NotificationPanelView extends PanelView {
     private boolean mTrackingSwipe;
     private boolean mSwipeTriggered;
 
-    private int pantyPullDown;
+    private int mPullDown;
     private SettingsObserver mObserver;
+    private float mAlpha;
+    private String notifiBack;
+    private String notifiBackLand;
 
     class SettingsObserver extends ContentObserver {
+
+        private Uri mPullDownUri;
+        private Uri mAlphaUri;
+        private Uri mBackgroundUri;
+        private Uri mBackgroundLandscapeUri;
+
         SettingsObserver(Handler handler) {
             super(handler);
+            mPullDownUri = Settings.System.getUriFor(Settings.System.QS_QUICK_PULLDOWN);
+            mAlphaUri = Settings.System.getUriFor(Settings.System.NOTIFICATION_BACKGROUND_ALPHA);
+            mBackgroundUri = Settings.System.getUriFor(Settings.System.NOTIFICATION_BACKGROUND);
+            mBackgroundLandscapeUri = Settings.System.getUriFor(Settings.System.NOTIFICATION_BACKGROUND_LANDSCAPE);
         }
 
         private void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.QS_QUICK_PULLDOWN), false, this);
-            updateSettings();
+            mContext.getContentResolver().registerContentObserver(mPullDownUri, false, this);
+            mContext.getContentResolver().registerContentObserver(mAlphaUri, false, this);
+            mContext.getContentResolver().registerContentObserver(mBackgroundUri, false, this);
+            mContext.getContentResolver().registerContentObserver(mBackgroundLandscapeUri, false, this);
         }
+
         private void unobserve() {
             mContext.getContentResolver().unregisterContentObserver(this);
         }
 
         @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
+        public void onChange(boolean selfChange, Uri uri) {
+            if (uri.compareTo(mPullDownUri)==0) {
+                mPullDown = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.QS_QUICK_PULLDOWN, 0, UserHandle.USER_CURRENT);
+
+            } else if (uri.compareTo(mAlphaUri)==0) {
+                // update portrait and landscape
+                mAlpha = Settings.System.getFloatForUser(
+                        mContext.getContentResolver(),
+                        Settings.System.NOTIFICATION_BACKGROUND_ALPHA, 0.1f,
+                        UserHandle.USER_CURRENT);
+                setBackgroundDrawables();
+
+            } else if (uri.compareTo(mBackgroundUri)==0) {
+                // just update portrait
+                notifiBack = Settings.System.getStringForUser(
+                        mContext.getContentResolver(),
+                        Settings.System.NOTIFICATION_BACKGROUND,
+                        UserHandle.USER_CURRENT);
+                setBackgroundDrawable();
+                setNotificationWallpaper();
+
+            } else if (uri.compareTo(mBackgroundLandscapeUri)==0) {
+                // just update landscape
+                notifiBackLand = Settings.System.getStringForUser(
+                        mContext.getContentResolver(),
+                        Settings.System.NOTIFICATION_BACKGROUND_LANDSCAPE,
+                        UserHandle.USER_CURRENT);
+                setBackgroundLandscapeDrawable();
+                setNotificationWallpaper();
+            }
         }
     }
 
@@ -197,11 +239,8 @@ public class NotificationPanelView extends PanelView {
                     mGestureStartY = event.getY(0);
                     mTrackingSwipe = isFullyExpanded();
                     mOkToFlip = getExpandedHeight() == 0;
-                    if (event.getX(0) > getWidth() * (1.0f - STATUS_BAR_SETTINGS_RIGHT_PERCENTAGE) &&
-                            (pantyPullDown == 1)) {
-                        flip = true;
-                    } else if (event.getX(0) < getWidth() * (1.0f - STATUS_BAR_SETTINGS_LEFT_PERCENTAGE) &&
-                            (pantyPullDown == 2)) {
+                    if (mPullDown==1 && event.getX(0) > getWidth() * (1.0f - STATUS_BAR_SETTINGS_RIGHT_PERCENTAGE) ||
+                        mPullDown==2 && event.getX(0) < getWidth() * (1.0f - STATUS_BAR_SETTINGS_LEFT_PERCENTAGE)) {
                         flip = true;
                     }
                     break;
@@ -314,23 +353,12 @@ public class NotificationPanelView extends PanelView {
         return result;
     }
 
-    private void updateSettings() {
-        try {
-            pantyPullDown = Settings.System.getIntForUser(getContext().getContentResolver(),
-                                    Settings.System.QS_QUICK_PULLDOWN, UserHandle.USER_CURRENT);
-        } catch (SettingNotFoundException e) {
-        }
-    }
-
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
             setNotificationWallpaper();
     }
 
     private void setNotificationWallpaper() {
-        if (mBackgroundDrawable == null) {
-            return;
-        }
         boolean isLandscape = false;
         Display display = ((WindowManager) getContext()
                 .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -342,10 +370,8 @@ public class NotificationPanelView extends PanelView {
                 break;
         }
 
-        if (mBackgroundDrawableLandscape != null && isLandscape) {
-            mBackground.setImageDrawable(mBackgroundDrawableLandscape);
-        } else {
-            mBackground.setImageDrawable(mBackgroundDrawable);
+        if (!isLandscape && mBackgroundDrawable != null || isLandscape && mBackgroundDrawableLandscape != null) {
+            mBackground.setImageDrawable(isLandscape ? mBackgroundDrawable : mBackgroundDrawableLandscape);
         }
     }
 
@@ -363,16 +389,13 @@ public class NotificationPanelView extends PanelView {
     }
 
     protected void setBackgroundDrawables() {
-        float alpha = Settings.System.getFloatForUser(
-                mContext.getContentResolver(),
-                Settings.System.NOTIFICATION_BACKGROUND_ALPHA, 0.1f,
-                UserHandle.USER_CURRENT);
-        int backgroundAlpha = (int) ((1 - alpha) * 255);
+        setBackgroundDrawable();
+        setBackgroundLandscapeDrawable();
+        setNotificationWallpaper();
+    }
 
-        String notifiBack = Settings.System.getStringForUser(
-                mContext.getContentResolver(),
-                Settings.System.NOTIFICATION_BACKGROUND,
-                UserHandle.USER_CURRENT);
+    private void setBackgroundDrawable() {
+        final int backgroundAlpha = (int) ((1 - mAlpha) * 255);
 
         if (notifiBack == null) {
             setDefaultBackground(R.drawable.notification_panel_bg, -2, backgroundAlpha);
@@ -398,14 +421,13 @@ public class NotificationPanelView extends PanelView {
             setBackgroundResource(com.android.internal.R.color.transparent);
             mBackgroundDrawable.setAlpha(backgroundAlpha);
         }
+    }
 
-        notifiBack = Settings.System.getStringForUser(
-                mContext.getContentResolver(),
-                Settings.System.NOTIFICATION_BACKGROUND_LANDSCAPE,
-                UserHandle.USER_CURRENT);
+    private void setBackgroundLandscapeDrawable() {
+        final int backgroundAlpha = (int) ((1 - mAlpha) * 255);
 
         mBackgroundDrawableLandscape = null;
-        if (notifiBack != null) {
+        if (notifiBackLand != null) {
             File f = new File(Uri.parse(notifiBack).getPath());
             if (f !=  null) {
                 Bitmap backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
@@ -416,7 +438,5 @@ public class NotificationPanelView extends PanelView {
         if (mBackgroundDrawableLandscape != null) {
             mBackgroundDrawableLandscape.setAlpha(backgroundAlpha);
         }
-
-        setNotificationWallpaper();
     }
 }
