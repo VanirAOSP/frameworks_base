@@ -66,6 +66,7 @@ public class NotificationPanelView extends PanelView {
     boolean mOkToFlip;
     Drawable mBackgroundDrawable;
     Drawable mBackgroundDrawableLandscape;
+    int mBackgroundColor;
     ImageView mBackground;
 
     private float mGestureStartX;
@@ -78,6 +79,7 @@ public class NotificationPanelView extends PanelView {
     private int mPullDown;
     private SettingsObserver mObserver;
     private float mAlpha;
+    private int backgroundAlpha;
     private String notifiBack;
     private String notifiBackLand;
 
@@ -109,36 +111,35 @@ public class NotificationPanelView extends PanelView {
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-            if (uri.compareTo(mPullDownUri)==0) {
+            if (uri == null || uri.compareTo(mPullDownUri)==0) {
                 mPullDown = Settings.System.getIntForUser(mContext.getContentResolver(),
                         Settings.System.QS_QUICK_PULLDOWN, 0, UserHandle.USER_CURRENT);
-
-            } else if (uri.compareTo(mAlphaUri)==0) {
-                // update portrait and landscape
+                if (uri != null) return;
+            }
+            if (uri == null || uri.compareTo(mAlphaUri)==0) {
                 mAlpha = Settings.System.getFloatForUser(
                         mContext.getContentResolver(),
                         Settings.System.NOTIFICATION_BACKGROUND_ALPHA, 0.1f,
                         UserHandle.USER_CURRENT);
-                setBackgroundDrawables();
-
-            } else if (uri.compareTo(mBackgroundUri)==0) {
-                // just update portrait
+                backgroundAlpha = (int) ((1 - mAlpha) * 255);
+                setNotificationWallpaper();
+                if (uri != null) return;
+            }
+            if (uri == null || uri.compareTo(mBackgroundUri)==0) {
                 notifiBack = Settings.System.getStringForUser(
                         mContext.getContentResolver(),
                         Settings.System.NOTIFICATION_BACKGROUND,
                         UserHandle.USER_CURRENT);
                 setBackgroundDrawable();
-                setNotificationWallpaper();
-
-            } else if (uri.compareTo(mBackgroundLandscapeUri)==0) {
-                // just update landscape
-                notifiBackLand = Settings.System.getStringForUser(
-                        mContext.getContentResolver(),
-                        Settings.System.NOTIFICATION_BACKGROUND_LANDSCAPE,
-                        UserHandle.USER_CURRENT);
-                setBackgroundLandscapeDrawable();
-                setNotificationWallpaper();
             }
+            if (uri == null || uri.compareTo(mBackgroundLandscapeUri)==0) {
+                notifiBackLand = Settings.System.getStringForUser(
+                    mContext.getContentResolver(),
+                    Settings.System.NOTIFICATION_BACKGROUND_LANDSCAPE,
+                    UserHandle.USER_CURRENT);
+                setBackgroundLandscapeDrawable();
+            }
+            setNotificationWallpaper();
         }
     }
 
@@ -160,7 +161,7 @@ public class NotificationPanelView extends PanelView {
         mHandleBarHeight = resources.getDimensionPixelSize(R.dimen.close_handle_height);
         mHandleView = findViewById(R.id.handle);
         mBackground = (ImageView) findViewById(R.id.notification_wallpaper);
-        setBackgroundDrawables();
+        mObserver.onChange(true, null);
     }
 
     @Override
@@ -355,7 +356,7 @@ public class NotificationPanelView extends PanelView {
 
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-            setNotificationWallpaper();
+        setNotificationWallpaper();
     }
 
     private void setNotificationWallpaper() {
@@ -370,22 +371,26 @@ public class NotificationPanelView extends PanelView {
                 break;
         }
 
-        if (!isLandscape && mBackgroundDrawable != null || isLandscape && mBackgroundDrawableLandscape != null) {
-            mBackground.setImageDrawable(isLandscape ? mBackgroundDrawable : mBackgroundDrawableLandscape);
-        }
-    }
-
-    private void setDefaultBackground(int resource, int color, int alpha) {
-        setBackgroundResource(resource);
-        if (color != -2) {
-            getBackground().setColorFilter(color, Mode.SRC_ATOP);
+        if (mBackgroundColor != -2) {
+            // handle color background -- color main == both get color... otherwise landscape would never be colored
+            mBackgroundDrawable = null;
+            mBackgroundDrawableLandscape = null;
+            setBackgroundResource(R.drawable.notification_panel_bg);
+            getBackground().setAlpha(backgroundAlpha);
+            getBackground().setColorFilter(mBackgroundColor, Mode.SRC_ATOP);
+            mBackground.setImageDrawable(null);
         } else {
+            // this handles all other combinations of portrait/landscape default/custom cases
             getBackground().setColorFilter(null);
+            final Drawable d = (!isLandscape ? mBackgroundDrawable : mBackgroundDrawableLandscape);
+            if (d!=null) {
+                setBackgroundResource(com.android.internal.R.color.transparent);
+                d.setAlpha(backgroundAlpha);
+            } else {
+                setBackgroundResource(R.drawable.notification_panel_bg);
+            }
+            mBackground.setImageDrawable(d);
         }
-        getBackground().setAlpha(alpha);
-        mBackgroundDrawableLandscape = null;
-        mBackgroundDrawable = null;
-        mBackground.setImageDrawable(null);
     }
 
     protected void setBackgroundDrawables() {
@@ -395,21 +400,22 @@ public class NotificationPanelView extends PanelView {
     }
 
     private void setBackgroundDrawable() {
-        final int backgroundAlpha = (int) ((1 - mAlpha) * 255);
-
         if (notifiBack == null) {
-            setDefaultBackground(R.drawable.notification_panel_bg, -2, backgroundAlpha);
             return;
         }
 
         if (notifiBack.startsWith("color=")) {
-            notifiBack = notifiBack.substring("color=".length());
+            final String tmp = notifiBack.substring("color=".length());
             try {
-                setDefaultBackground(R.drawable.notification_panel_bg,
-                        Color.parseColor(notifiBack), backgroundAlpha);
+                mBackgroundColor = Color.parseColor(tmp);
             } catch(NumberFormatException e) {
             }
         } else {
+            if (mBackgroundColor !=-2) {
+                //if we had a color before RIGHT NOW, then we need to reload the landscape image too.
+                mBackgroundColor = -2;
+                setBackgroundLandscapeDrawable();
+            }
             File f = new File(Uri.parse(notifiBack).getPath());
             if (f !=  null) {
                 Bitmap backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
@@ -417,26 +423,16 @@ public class NotificationPanelView extends PanelView {
                         new BitmapDrawable(getContext().getResources(), backgroundBitmap);
             }
         }
-        if (mBackgroundDrawable != null) {
-            setBackgroundResource(com.android.internal.R.color.transparent);
-            mBackgroundDrawable.setAlpha(backgroundAlpha);
-        }
     }
 
     private void setBackgroundLandscapeDrawable() {
-        final int backgroundAlpha = (int) ((1 - mAlpha) * 255);
-
-        mBackgroundDrawableLandscape = null;
-        if (notifiBackLand != null) {
-            File f = new File(Uri.parse(notifiBack).getPath());
+        if (mBackgroundColor == -2 && notifiBackLand != null) {
+            File f = new File(Uri.parse(notifiBackLand).getPath());
             if (f !=  null) {
                 Bitmap backgroundBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
                 mBackgroundDrawableLandscape =
                         new BitmapDrawable(getContext().getResources(), backgroundBitmap);
             }
-        }
-        if (mBackgroundDrawableLandscape != null) {
-            mBackgroundDrawableLandscape.setAlpha(backgroundAlpha);
         }
     }
 }
