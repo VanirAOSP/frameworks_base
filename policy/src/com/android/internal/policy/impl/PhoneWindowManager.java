@@ -1575,46 +1575,35 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mStatusBarHeight =
                 res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
 
-        final int defaultHeight = res.getDimensionPixelSize(com.android.internal.R.dimen.navigation_bar_height);
-        final int defaultHeightLandscape = res.getDimensionPixelSize(com.android.internal.R.dimen.navigation_bar_height_landscape);
-        final int defaultWidth = res.getDimensionPixelSize(com.android.internal.R.dimen.navigation_bar_width);
-
-        final ContentResolver cr = mContext.getContentResolver();
-
-        int lNavbarHeight = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_HEIGHT, defaultHeight);
-        int lNavbarHeightLandscape = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE, defaultHeightLandscape);
-        int lNavbarWidth = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_WIDTH, defaultWidth);
-
-        // TODO: get rid of this when it's no longer needed.
-        // make sure the navbar heights aren't unreasonably high, and fix them if they are
-        if (lNavbarHeight > longSize / 2) {
-            lNavbarHeight = defaultHeight;
-            Settings.System.putInt(cr, Settings.System.NAVIGATION_BAR_HEIGHT, lNavbarHeight);
-            Log.e(TAG, "NavbarHeight is more than 50% screen height. Setting to a more reasonable value to fix a programmatic error in the navbar settings.");
-        }
-        if (lNavbarHeightLandscape > longSize / 2) {
-            lNavbarHeightLandscape = defaultHeightLandscape;
-            Settings.System.putInt(cr, Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE, lNavbarHeightLandscape);
-            Log.e(TAG, "NavbarHeightLandscape is more than 50% screen height. Setting to a more reasonable value to fix a programmatic error in the navbar settings.");
-        }
-        if (lNavbarWidth > shortSize) {
-            lNavbarWidth = defaultWidth;
-            Settings.System.putInt(cr, Settings.System.NAVIGATION_BAR_WIDTH, lNavbarWidth);
-            Log.e(TAG, "NavbarWidth is more than 50% screen height. Setting to a more reasonable value to fix a programmatic error in the navbar settings.");
-        }
-
         // Height of the navigation bar when presented horizontally at bottom
         mNavigationBarHeightForRotation[mPortraitRotation] =
-                mNavigationBarHeightForRotation[mUpsideDownRotation] = lNavbarHeight;
-
+        mNavigationBarHeightForRotation[mUpsideDownRotation] =
+                Settings.System.getInt(
+                        mContext.getContentResolver(),
+                        Settings.System.NAVIGATION_BAR_HEIGHT,
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        com.android.internal.R.dimen.navigation_bar_height));
         mNavigationBarHeightForRotation[mLandscapeRotation] =
-                mNavigationBarHeightForRotation[mSeascapeRotation] = lNavbarHeightLandscape;
+        mNavigationBarHeightForRotation[mSeascapeRotation] =
+                Settings.System.getInt(
+                        mContext.getContentResolver(),
+                        Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE,
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        com.android.internal.R.dimen.navigation_bar_height_landscape));
 
         // Width of the navigation bar when presented vertically along one side
         mNavigationBarWidthForRotation[mPortraitRotation] =
-                mNavigationBarWidthForRotation[mUpsideDownRotation] =
-                mNavigationBarWidthForRotation[mLandscapeRotation] =
-                mNavigationBarWidthForRotation[mSeascapeRotation] = lNavbarWidth;
+        mNavigationBarWidthForRotation[mUpsideDownRotation] =
+        mNavigationBarWidthForRotation[mLandscapeRotation] =
+        mNavigationBarWidthForRotation[mSeascapeRotation] =
+                Settings.System.getInt(
+                        mContext.getContentResolver(),
+                        Settings.System.NAVIGATION_BAR_WIDTH,
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        com.android.internal.R.dimen.navigation_bar_width));
 
         // SystemUI (status bar) layout policy
         int shortSizeDp = shortSize * DisplayMetrics.DENSITY_DEFAULT / density;
