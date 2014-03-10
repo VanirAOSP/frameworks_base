@@ -334,6 +334,7 @@ public class KeyguardViewManager {
 
     public void setBackgroundBitmap(Bitmap bmp) {
     	if (mBlurEnabled) {
+            if (mBlurRadius == 0) mBlurRadius = 1;
     		bmp = blurBitmap(bmp, mBlurRadius);
     	}
         mIsCoverflow = false;
