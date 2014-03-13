@@ -1556,7 +1556,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             } else if (action.equals(Intent.ACTION_USER_PRESENT)) {
                 // turn off LED when user passes through lock screen
                 if (!mDreaming) {
-                    if (mLedNotification == null || !isLedNotificationForcedOn(mLedNotification)) {
+                    if (mLedNotification == null || !isLedNotificationForcedOn(mLedNotification) && !ScreenOnNotificationLed) {
                         mNotificationLight.turnOff();
                     }
                 }
@@ -1570,6 +1570,8 @@ public class NotificationManagerService extends INotificationManager.Stub
     class LEDSettingsObserver extends ContentObserver {
         private final Uri NOTIFICATION_LIGHT_PULSE_URI
                 = Settings.System.getUriFor(Settings.System.NOTIFICATION_LIGHT_PULSE);
+        private final Uri Settings.System.SCREEN_ON_NOTIFICATION_LED_URI
+                = Settings.System.getUrifor(Settings.System.SCREEN_ON_NOTIFICATION_LED);
         private final Uri ENABLED_NOTIFICATION_LISTENERS_URI
                 = Settings.Secure.getUriFor(Settings.Secure.ENABLED_NOTIFICATION_LISTENERS);
 
@@ -1581,6 +1583,8 @@ public class NotificationManagerService extends INotificationManager.Stub
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
                     NOTIFICATION_LIGHT_PULSE_URI, false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(
+                    Settings.System.SCREEN_ON_NOTIFICATION_LED_URI, false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(
                     ENABLED_NOTIFICATION_LISTENERS_URI, false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -1615,6 +1619,10 @@ public class NotificationManagerService extends INotificationManager.Stub
             // LED enabled
             mNotificationPulseEnabled = Settings.System.getIntForUser(resolver,
                     Settings.System.NOTIFICATION_LIGHT_PULSE, 0, UserHandle.USER_CURRENT) != 0;
+
+            // Screen ON LED 
+            mScreenOnNotificationLed = Settings.System.getIntForUser(resolver,
+                    Settings.System.SCREEN_ON_NOTIFICATION_LED, 0, UserHandle.USER_CURRENT) != 0;
 
             // LED default color
             mDefaultNotificationColor = Settings.System.getIntForUser(resolver,
@@ -2711,6 +2719,8 @@ public class NotificationManagerService extends INotificationManager.Stub
 
     // lock on mNotificationList
     private void updateLightsLocked() {
+
+
         // handle notification lights
         if (mLedNotification == null) {
             // use most recent light with highest score
@@ -2731,7 +2741,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             enableLed = false;
         } else if (isLedNotificationForcedOn(mLedNotification)) {
             enableLed = true;
-        } else if (mInCall || (mScreenOn && !mDreaming)) {
+        } else if (mInCall || (mScreenOn && !ScreenOnNotificationLed && !mDreaming)) {
             enableLed = false;
         } else if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.QUIET_HOURS_DIM, 0) == 2) {
             enableLed = false;
