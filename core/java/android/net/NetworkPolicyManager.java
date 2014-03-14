@@ -168,24 +168,24 @@ public class NetworkPolicyManager {
         final Time cycle = new Time(now);
         cycle.hour = cycle.minute = cycle.second = 0;
         snapToCycleDay(cycle, policy.cycleDay, policy.cycleLength);
-        
+
         if (Time.compare(cycle, now) >= 0) {
-        	// cycle boundary is beyond now, use last cycle boundary; start by
+            // cycle boundary is beyond now, use last cycle boundary; start by
             // pushing ourselves squarely into last month, week or day
-        	final Time last = new Time(now);
+            final Time last = new Time(now);
             last.hour = last.minute = last.second = 0;
-        	
-        	if (policy.cycleLength == CYCLE_MONTHLY) {
-	            last.monthDay = 1;
-	            last.month -= 1;
-        	} else if (policy.cycleLength == CYCLE_WEEKLY) {
-        		last.monthDay -= 7;
-        	} else if (policy.cycleLength == CYCLE_DAILY) {
-        		last.monthDay -= 1;
-        	}
-        	
-        	last.normalize(true);
-        	
+
+            if (policy.cycleLength == CYCLE_MONTHLY) {
+                last.monthDay = 1;
+                last.month -= 1;
+            } else if (policy.cycleLength == CYCLE_WEEKLY) {
+                last.monthDay -= 7;
+            } else if (policy.cycleLength == CYCLE_DAILY) {
+                last.monthDay -= 1;
+            }
+
+            last.normalize(true);
+
             cycle.set(last);
             snapToCycleDay(cycle, policy.cycleDay, policy.cycleLength);
         }
@@ -208,22 +208,22 @@ public class NetworkPolicyManager {
         snapToCycleDay(cycle, policy.cycleDay, policy.cycleLength);
 
         if (Time.compare(cycle, now) <= 0) {
-        	// cycle boundary is before now, use next cycle boundary; start by
+            // cycle boundary is before now, use next cycle boundary; start by
             // pushing ourselves squarely into next month, week or day
-        	final Time next = new Time(now);
-        	next.hour = next.minute = next.second = 0;
-            
-        	if (policy.cycleLength == CYCLE_MONTHLY) {
-        		next.monthDay = 1;
-        		next.month += 1;
-        	} else if (policy.cycleLength == CYCLE_WEEKLY) {
-        		next.monthDay += 7;
-        	} else if (policy.cycleLength == CYCLE_DAILY) {
-        		next.monthDay += 1;
-        	}
-        	
-        	next.normalize(true);
-        	
+            final Time next = new Time(now);
+            next.hour = next.minute = next.second = 0;
+
+            if (policy.cycleLength == CYCLE_MONTHLY) {
+                next.monthDay = 1;
+                next.month += 1;
+            } else if (policy.cycleLength == CYCLE_WEEKLY) {
+                next.monthDay += 7;
+            } else if (policy.cycleLength == CYCLE_DAILY) {
+                next.monthDay += 1;
+            }
+
+            next.normalize(true);
+
             cycle.set(next);
             snapToCycleDay(cycle, policy.cycleDay, policy.cycleLength);
         }
@@ -232,25 +232,35 @@ public class NetworkPolicyManager {
     }
 
     /**
+     * Snap to the cycle day for the current month given; when cycle day doesn't
+     * exist, it snaps to last second of current month.
+     *
+     * @hide
+     */
+    public static void snapToCycleDay(Time time, int cycleDay) {
+        if (cycleDay > time.getActualMaximum(MONTH_DAY)) {
+            // cycle day isn't valid this month; snap to last second of month
+            time.month += 1;
+            time.monthDay = 1;
+            time.second = -1;
+        } else {
+            time.monthDay = cycleDay;
+        }
+        time.normalize(true);
+    }
+
+    /**
      * Snap to the cycle day for the current cycle length
      *
      * @hide
      */
     public static void snapToCycleDay(Time time, int cycleDay, int cycleLength) {
-    	if (cycleLength == CYCLE_MONTHLY) {
-    		// when cycle day doesn't exist, it snaps to last second of current month
-    		if (cycleDay > time.getActualMaximum(MONTH_DAY)) {
-                // cycle day isn't valid this month; snap to last second of month
-                time.month += 1;
-                time.monthDay = 1;
-                time.second = -1;
-            } else {
-            	time.monthDay = cycleDay;
-            }
-    	} else if (cycleLength == CYCLE_WEEKLY) {
-    		time.monthDay += (cycleDay - time.weekDay);
-    	}
-        time.normalize(true);
+        if (cycleLength == CYCLE_MONTHLY) {
+            snapToCycleDay(time, cycleDay);
+        } else if (cycleLength == CYCLE_WEEKLY) {
+            time.monthDay += (cycleDay - time.weekDay);
+            time.normalize(true);
+        }
     }
 
     /**

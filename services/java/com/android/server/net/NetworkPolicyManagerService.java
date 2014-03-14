@@ -184,7 +184,8 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     private static final int VERSION_SWITCH_APP_ID = 8;
     private static final int VERSION_ADDED_NETWORK_ID = 9;
     private static final int VERSION_SWITCH_UID = 10;
-    private static final int VERSION_LATEST = VERSION_SWITCH_UID;
+    private static final int VERSION_ADDED_DATA_USAGE_CYCLE_LENGTH = 11;
+    private static final int VERSION_LATEST = VERSION_ADDED_DATA_USAGE_CYCLE_LENGTH;
 
     @VisibleForTesting
     public static final int TYPE_WARNING = 0x1;
@@ -587,9 +588,6 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                 if (policy == null && meteredHint) {
                     // policy doesn't exist, and AP is hinting that it's
                     // metered: create an inferred policy.
-                    policy = new NetworkPolicy(template, CYCLE_NONE, CYCLE_MONTHLY, Time.TIMEZONE_UTC,
-                            WARNING_DISABLED, LIMIT_DISABLED, SNOOZE_NEVER, SNOOZE_NEVER,
-                            meteredHint, true);
                     addNetworkPolicyLocked(policy);
 
                 } else if (policy != null && policy.inferred) {
@@ -1132,8 +1130,8 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
 
             final NetworkTemplate template = buildTemplateMobileAll(subscriberId);
             final NetworkPolicy policy = new NetworkPolicy(template, cycleDay, cycleLength, 
-            		cycleTimezone, warningBytes, LIMIT_DISABLED, SNOOZE_NEVER, SNOOZE_NEVER, 
-            		true, true);
+                    cycleTimezone, warningBytes, LIMIT_DISABLED, SNOOZE_NEVER, SNOOZE_NEVER, 
+                    true, true);
             addNetworkPolicyLocked(policy);
         }
     }
@@ -1175,7 +1173,12 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                             networkId = null;
                         }
                         final int cycleDay = readIntAttribute(in, ATTR_CYCLE_DAY);
-                        final int cycleLength = readIntAttribute(in, ATTR_CYCLE_LENGTH);
+                        final int cycleLength;
+                        if (version >= VERSION_ADDED_DATA_USAGE_CYCLE_LENGTH) {
+                            cycleLength = readIntAttribute(in, ATTR_CYCLE_LENGTH);
+                        } else {
+                            cycleLength = CYCLE_MONTHLY;
+                        }
                         final String cycleTimezone;
                         if (version >= VERSION_ADDED_TIMEZONE) {
                             cycleTimezone = in.getAttributeValue(null, ATTR_CYCLE_TIMEZONE);
@@ -1307,7 +1310,7 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                     out.attribute(null, ATTR_NETWORK_ID, networkId);
                 }
                 writeIntAttribute(out, ATTR_CYCLE_DAY, policy.cycleDay);
-                writeIntAttribute(out, ATTR_CYCLE_LENGTH, policy.cycleLength); 
+                writeIntAttribute(out, ATTR_CYCLE_LENGTH, policy.cycleLength);
                 out.attribute(null, ATTR_CYCLE_TIMEZONE, policy.cycleTimezone);
                 writeLongAttribute(out, ATTR_WARNING_BYTES, policy.warningBytes);
                 writeLongAttribute(out, ATTR_LIMIT_BYTES, policy.limitBytes);
