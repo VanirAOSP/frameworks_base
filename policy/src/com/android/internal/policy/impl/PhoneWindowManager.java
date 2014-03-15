@@ -132,6 +132,8 @@ import static android.view.WindowManagerPolicy.WindowManagerFuncs.LID_ABSENT;
 import static android.view.WindowManagerPolicy.WindowManagerFuncs.LID_OPEN;
 import static android.view.WindowManagerPolicy.WindowManagerFuncs.LID_CLOSED;
 
+import com.vanir.torch.DelayedStickyTorch;
+
 /**
  * WindowManagerPolicy implementation for the Android phone UI.  This
  * introduces a new method suffix, Lp, for an internal lock of the
@@ -381,9 +383,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean LOLprofile;
 
     // fast torch
-    boolean mFastTorchOn; // local state of torch
-    boolean mFastTorchStatus; // reported state of torch
     boolean mEnableFastTorch; // System.Setting
+    DelayedStickyTorch mQuickTorch;
 
     private boolean mAnimatingWindows;
     private boolean mNeedUpdateSettings;
@@ -1368,10 +1369,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         filter = new IntentFilter(Intent.ACTION_USER_SWITCHED);
         context.registerReceiver(mMultiuserReceiver, filter);
 
-        // register for Torch updates
-        filter = new IntentFilter();
-        filter.addAction(TorchConstants.ACTION_STATE_CHANGED);
-        context.registerReceiver(mTorchReceiver, filter);        
+        mQuickTorch = new DelayedStickyTorch(context);
 
         // monitor for system gestures
         mSystemGestures = new SystemGesturesPointerEventListener(context,
@@ -4648,45 +4646,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    Runnable mTorchToggle = new Runnable() {
-        public void run() {
-            if (mFastTorchOn != mFastTorchStatus) {
-                Log.v("QuickTorch", "Trying to toggle torch "+mFastTorchOn);
-                Intent i = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
-                mContext.sendBroadcast(i);
-            } else {
-                Log.v("QuickTorch", "Toggle requested, but already in target state");
-            }
-        };
-    };
-
-    BroadcastReceiver mTorchReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mFastTorchStatus = intent.getIntExtra(TorchConstants.EXTRA_CURRENT_STATE, 0) != 0;
-            Log.v("QuickTorch", "Word on the street is that torch is now "+mFastTorchStatus);
-            if (mFastTorchOn && !mFastTorchStatus) {
-                Log.v("QuickTorch", "Trying to force torch to be "+mFastTorchOn);
-                handleChangeTorchState(mFastTorchOn);
-            }
-        }
-    };
-
-    void handleChangeTorchState(boolean on) {
-        mHandler.removeCallbacks(mTorchToggle);
-        if (on && !mFastTorchStatus) {
-            mFastTorchOn = on;
-            Log.v("QuickTorch", "Posting delayed ENABLE because requested="+mFastTorchOn+" and state="+mFastTorchStatus);
-            mHandler.postDelayed(mTorchToggle, ViewConfiguration.getLongPressTimeout());
-        } else if (!on && mFastTorchStatus && mFastTorchOn) {
-            mFastTorchOn = on;
-            Log.v("QuickTorch", "Posting DISABLE because requested="+mFastTorchOn+" and state="+mFastTorchStatus);
-            mHandler.post(mTorchToggle);
-        } else {
-            Log.v("QuickTorch", "handleChangeTorchState("+on+"): mFastTorchStatus="+mFastTorchStatus+" mFastTorchOn="+mFastTorchOn);
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public int interceptKeyBeforeQueueing(KeyEvent event, int policyFlags, boolean isScreenOn) {
@@ -4969,7 +4928,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 result &= ~ACTION_PASS_TO_USER;
                 if (down) {
                     if(!isScreenOn && mEnableFastTorch) {
-                        handleChangeTorchState(true);
+                        mQuickTorch.changeTorchState(mContext, true);
                     } else if (mEnableFastTorch) {
                         Log.v("QuickTorch", "Ignoring power press while screen on");
                     }
@@ -5009,7 +4968,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             || mVolumeDownKeyTriggered || mVolumeUpKeyTriggered);
                 } else {
                     if (mEnableFastTorch) {
-                        handleChangeTorchState(false);
+                        mQuickTorch.changeTorchState(mContext, false);
                     }
                     mPowerKeyTriggered = false;
                     cancelPendingScreenshotChordAction();
