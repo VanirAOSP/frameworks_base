@@ -21,7 +21,7 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
 
     ContentResolver mContentResolver;
     private LocationController mLocationController;
-    private int mCurrentMode;
+    private boolean mLocationEnabled;
 
     public GPSTile(Context context, QuickSettingsController qsc) {
         super(context, qsc);
@@ -33,7 +33,7 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
         mOnClick = new OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeLocationMode();
+                mLocationController.setLocationEnabled(!mLocationEnabled);
             }
         };
 
@@ -44,32 +44,6 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
                 return true;
             }
         };
-    }
-
-    private void changeLocationMode(){
-        int newMode;
-
-        switch(mCurrentMode){
-        case Settings.Secure.LOCATION_MODE_BATTERY_SAVING:
-            newMode = Settings.Secure.LOCATION_MODE_HIGH_ACCURACY;
-            break;
-        case Settings.Secure.LOCATION_MODE_HIGH_ACCURACY:
-            newMode = Settings.Secure.LOCATION_MODE_BATTERY_SAVING;
-            break;
-        case Settings.Secure.LOCATION_MODE_OFF:
-            newMode = Settings.Secure.LOCATION_MODE_SENSORS_ONLY;
-            break;
-        case Settings.Secure.LOCATION_MODE_SENSORS_ONLY:
-            newMode = Settings.Secure.LOCATION_MODE_OFF;
-            break;
-        default:
-            newMode = Settings.Secure.LOCATION_MODE_OFF;
-            break;
-        }
-
-        Settings.Secure.putInt(mContext.getContentResolver(),
-                Settings.Secure.LOCATION_MODE,
-                newMode);
     }
 
     @Override
@@ -85,32 +59,16 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
     }
 
     private synchronized void updateTile() {
-        int textResId;
-        switch(mCurrentMode) {
-        case Settings.Secure.LOCATION_MODE_SENSORS_ONLY:
-            textResId = R.string.location_mode_sensors_only_title;
-            mDrawable = R.drawable.ic_qs_location_on;
-            break;
-        case Settings.Secure.LOCATION_MODE_BATTERY_SAVING:
-            textResId = R.string.location_mode_battery_saving_title;
-            mDrawable = R.drawable.ic_qs_location_lowpower;
-            break;
-        case Settings.Secure.LOCATION_MODE_HIGH_ACCURACY:
-            textResId = R.string.location_mode_high_accuracy_title;
-            mDrawable = R.drawable.ic_qs_location_on;
-            break;
-        default:
-            textResId = R.string.quick_settings_location_off_label;
-            mDrawable = R.drawable.ic_qs_location_off;
-            break;
-        }
+        int textResId = mLocationEnabled ? R.string.quick_settings_location_label
+                : R.string.quick_settings_location_off_label;
         mLabel = mContext.getText(textResId).toString();
+        mDrawable = mLocationEnabled
+                ? R.drawable.ic_qs_location_on : R.drawable.ic_qs_location_off;
     }
 
     @Override
     public void onLocationSettingsChanged(boolean locationEnabled) {
-        mCurrentMode = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF);
+        mLocationEnabled = locationEnabled;
         updateResources();
     }
 }
