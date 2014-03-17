@@ -79,6 +79,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.internal.app.ThemeUtils;
+import com.android.internal.util.nameless.NamelessActions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,6 +145,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean showProfiles;
     private boolean showReboot;
     private boolean showAirplaneMode;
+    private boolean showOnTheGo;
     private boolean airplaneModeOn;
     private boolean showUsers;
     private boolean showSoundMode;
@@ -493,6 +495,32 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
         }
 
+        // next: On-The-Go, if enabled
+        if (showOnTheGo) {
+            mItems.add(
+                new SinglePressAction(com.android.internal.R.drawable.ic_lock_onthego,
+                        R.string.global_action_onthego) {
+
+                        public void onPress() {
+                            NamelessActions.processAction(mContext,
+                                    NamelessActions.ACTION_ONTHEGO_TOGGLE);
+                        }
+
+                        public boolean onLongPress() {
+                            return false;
+                        }
+
+                        public boolean showDuringKeyguard() {
+                            return true;
+                        }
+
+                        public boolean showBeforeProvisioning() {
+                            return true;
+                        }
+                    }
+            );
+        }
+
         // next: airplane mode
         if (showAirplaneMode) {
             mItems.add(mAirplaneModeOn);
@@ -815,6 +843,15 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mHandler.postDelayed(mScreenrecordTimeout, 31 * 60 * 1000);
             }
         }
+    }
+
+    private void startOnTheGo() {
+        final ComponentName cn = new ComponentName("com.android.systemui",
+                "com.android.systemui.nameless.onthego.OnTheGoService");
+        final Intent startIntent = new Intent();
+        startIntent.setComponent(cn);
+        startIntent.setAction("start");
+        mContext.startService(startIntent);
     }
 
     private void prepareDialog() {
@@ -1388,6 +1425,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.System.POWER_MENU_SOUND_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
             mScreenRecordRebootDialog = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.SCREENRECORD_IN_POWER_MENU, 0) != 0;
+            showOnTheGo = Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_ONTHEGO_ENABLED, false);
         } else {
             showScreenshot = false;
             showGlobalImmersiveMode = false;
@@ -1395,6 +1434,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             showProfiles = false;
             showUsers = false;
             mScreenRecordRebootDialog = false;
+            showOnTheGo = false;
             showReboot = true;
             showAirplaneMode = true;
             showSoundMode = true;

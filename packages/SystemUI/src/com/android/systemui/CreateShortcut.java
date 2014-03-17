@@ -64,6 +64,8 @@ public class CreateShortcut extends LauncherActivity {
             return R.drawable.vanir_flush_memory;
         } else if (c.equals ("Reboot")) {
             return R.drawable.ic_sysbar_reboot;
+        } else if (c.equals("OnTheGoActivity")) {
+            return R.drawable.ic_onthego;
         } else if (c.equals ("ImmersiveToggleActivity")) {
             return R.drawable.ic_sysbar_expanded_desktop;
         } else if (c.equals("ActiveNotificationsToggleActivity")) {

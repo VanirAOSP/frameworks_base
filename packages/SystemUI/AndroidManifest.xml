@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.REBOOT" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INJECT_EVENTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.DUMP" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
@@ -130,6 +131,12 @@
             android:exported="false" />
         <receiver android:name=".screenshot.DeleteScreenshot"
                 android:exported="true" />
+
+        <!-- started from PhoneWindowManager
+             TODO: Should have an android:permission attribute -->
+        <service android:name=".nameless.onthego.OnTheGoService"
+            android:process=":onthego"
+            android:exported="false" />
 
         <service android:name=".LoadAverageService"
                 android:exported="true" />
@@ -397,6 +404,19 @@
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="com.android.systemui.INTENT_IMMERSIVE_TOGGLE" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.android.systemui.vanir.OnTheGoActivity"
+            android:label="@string/onthego_activity"
+            android:icon="@drawable/ic_onthego"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="com.android.systemui.INTENT_ONTHEGO_TOGGLE" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.android.systemui.SHORTCUT" />
             </intent-filter>
