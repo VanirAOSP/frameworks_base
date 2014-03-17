@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-permission android:name="android.permission.INJECT_EVENTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.DUMP" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
@@ -146,6 +147,12 @@
 
         <receiver android:name=".screenshot.DeleteScreenshot"
                 android:exported="true" />
+
+        <!-- started from PhoneWindowManager
+             TODO: Should have an android:permission attribute -->
+        <service android:name=".nameless.onthego.OnTheGoService"
+            android:process=":onthego"
+            android:exported="false" />
 
         <service android:name=".LoadAverageService"
                 android:exported="true" />
@@ -347,7 +354,22 @@
             </intent-filter>
         </activity>
 
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
+            </intent-filter>
+        </activity>
         <activity
+            android:name="com.android.systemui.vanir.OnTheGoActivity"
+            android:label="@string/onthego_activity"
+            android:icon="@drawable/ic_onthego"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="com.android.systemui.INTENT_ONTHEGO_TOGGLE" />
+        </activity>
+
+            <activity
             android:name=".settings.BrightnessDialog"
             android:label="@string/quick_settings_brightness_dialog_title"
             android:theme="@android:style/Theme.DeviceDefault.Dialog"

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+**
+** Copyright 2006, The Android Open Source Project
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- Animation Strings -->
+    <string name="animation_fade">Fade</string>
+    <string name="animation_slide_right">Slide in right</string>
+    <string name="animation_slide_left">Slide in left</string>
+    <string name="animation_slide_right_no_fade">Slide in right (No fade)</string>
+    <string name="animation_slide_left_no_fade">Slide in left (No fade)</string>
+    <string name="animation_slide_up">Slide in bottom</string>
+    <string name="animation_slide_down">Slide in top</string>
+    <string name="animation_default">Default</string>
+    <string name="animation_translucent">Translucent</string>
+    <string name="animation_grow_shrink">Grow in (Top)</string>
+    <string name="animation_grow_shrink_center">Grow in (Center)</string>
+    <string name="animation_grow_shrink_bottom">Grow in (Bottom)</string>
+    <string name="animation_grow_shrink_left">Grow in (Left)</string>
+    <string name="animation_grow_shrink_right">Grow in (Right)</string>
+    <string name="action_null">Blank</string>
+
+    <!-- label for item that toggles global immersive desktop modes -->
+    <string name="global_actions_toggle_global_immersive_mode">Immersive mode</string>
+    <string name="global_actions_toggle_global_expanded_mode">Expanded desktop</string>
+    <!-- status message in phone options dialog for when expand desktop mode is on -->
+    <string name="global_actions_global_immersive_mode_on_status">Enabled</string>
+    <!-- status message in phone options dialog for when expand desktop mode is off -->
+    <string name="global_actions_global_immersive_mode_off_status">Disabled</string>
+
+    <!-- Awesome Action Stuff-->
+    <string name="action_home">Home</string>
+    <string name="action_back">Back</string>
+    <string name="action_recents">Recents</string>
+    <string name="action_search">Search</string>
+    <string name="action_screenshot">Screenshot</string>
+    <string name="action_menu">Menu</string>
+    <string name="action_ime">Open IME Switcher</string>
+    <string name="action_kill">Kill task</string>
+    <string name="action_lastapp">Last app</string>
+    <string name="action_power">Power</string>
+    <string name="action_blank">Empty spacer</string>
+    <string name="action_notifications">Notifications</string>
+    <string name="action_assist">Search (Google Now)</string>
+    <string name="action_robocop">Reboot menu</string>
+    <string name="action_voiceassist">Voice search</string>
+    <string name="action_torch">Torch</string>
+    <string name="action_silent">Ring/Silent</string>
+    <string name="action_vib">Ring/Vibrate</string>
+    <string name="action_silent_vib">Ring/Vibrate/Silent</string>
+    <string name="action_widgets">Nav Widgets</string>
+    <string name="action_app_window">App Window</string>
+    <string name="action_ribbon">Ribbon</string>
+    <string name="action_app">Custom App/Vanir action</string>
+
+    <!-- Title of an application permission that lets an application view/edit revoked permissions. -->
+    <string name="permlab_revokePermissions">Allows view and edit of revoked permissions. Not for use by normal applications.</string>
+    <!-- Description of an application permission that lets lets an application view/edit revoked permissions. -->
+    <string name="permdesc_revokePermissions">Allows read and write for revoked permissions. Not for use by normal applications.</string>
+
+    <!-- Title of an application permission that lets an application access the ThemeManagerService. -->
+    <string name="permlab_accessThemeService">Allows accessing the theme manager service. Not for use by normal applications.</string>
+    <!-- Description of an application permission that lets lets an application access the ThemeManagerService -->
+    <string name="permdesc_accessThemeService">Allows an application to set/reset themes. Not for use by normal applications.</string>
+
+    <!-- label for item that takes On-The-Go in the phone options dialog -->
+    <string name="global_action_onthego">On-The-Go Mode</string>
+
+</resources>
