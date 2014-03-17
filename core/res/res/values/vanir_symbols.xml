@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/* Copyright 2012, The Android Open Source Project
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
+-->
+<resources>
+
+  <!--  Animations -->
+  <java-symbol type="string" name="action_null"/>
+  <java-symbol type="string" name="animation_fade"/>
+  <java-symbol type="string" name="animation_slide_left"/>
+  <java-symbol type="string" name="animation_slide_right"/>
+  <java-symbol type="string" name="animation_slide_left_no_fade"/>
+  <java-symbol type="string" name="animation_slide_right_no_fade"/>
+  <java-symbol type="string" name="animation_slide_up"/>
+  <java-symbol type="string" name="animation_slide_down"/>
+  <java-symbol type="string" name="animation_default"/>
+  <java-symbol type="string" name="animation_translucent"/>
+  <java-symbol type="string" name="animation_grow_shrink"/>
+  <java-symbol type="string" name="animation_grow_shrink_center"/>
+  <java-symbol type="string" name="animation_grow_shrink_bottom"/>
+  <java-symbol type="string" name="animation_grow_shrink_left"/>
+  <java-symbol type="string" name="animation_grow_shrink_right"/>
+  <java-symbol type="anim" name="shrink_fade_out_ribbon" />
+  <java-symbol type="anim" name="shrink_fade_out_center_ribbon" />
+  <java-symbol type="anim" name="shrink_fade_out_right_ribbon" />
+  <java-symbol type="anim" name="shrink_fade_out_left_ribbon" />
+  <java-symbol type="anim" name="shrink_fade_out_from_bottom_ribbon" />
+  <java-symbol type="anim" name="grow_fade_in_ribbon" />
+  <java-symbol type="anim" name="grow_fade_in_center_ribbon" />
+  <java-symbol type="anim" name="grow_fade_in_left_ribbon" />
+  <java-symbol type="anim" name="grow_fade_in_right_ribbon" />
+  <java-symbol type="anim" name="grow_fade_in_from_bottom_ribbon" />
+  <java-symbol type="anim" name="translucent_enter_ribbon" />
+  <java-symbol type="anim" name="translucent_exit_ribbon" />
+  <java-symbol type="anim" name="slide_in_down" />
+  <java-symbol type="anim" name="slide_out_up" />
+  <java-symbol type="anim" name="slide_in_right_ribbon" />
+  <java-symbol type="anim" name="slide_out_right_ribbon" />
+  <java-symbol type="anim" name="slide_in_left_ribbon" />
+  <java-symbol type="anim" name="slide_out_left_ribbon" />
+  <java-symbol type="anim" name="slow_fade_in" />
+  <java-symbol type="anim" name="slow_fade_out" />
+  <java-symbol type="anim" name="slide_in_up_ribbon" />
+  <java-symbol type="anim" name="slide_out_down_ribbon" />
+  <java-symbol type="anim" name="slide_in_right_no_fade" />
+  <java-symbol type="anim" name="slide_out_left_no_fade" />
+  <java-symbol type="anim" name="slide_in_left_no_fade" />
+  <java-symbol type="anim" name="slide_out_right_no_fade" />
+
+  <!-- Toast Animation -->
+  <java-symbol type="style" name="Animation.Toast.Fade" />
+  <java-symbol type="style" name="Animation.Toast.SlideRight" />
+  <java-symbol type="style" name="Animation.Toast.SlideLeft" />
+  <java-symbol type="style" name="Animation.Toast.Xylon" />
+  <java-symbol type="style" name="Animation.Toast.Toko" />
+  <java-symbol type="style" name="Animation.Toast.Tn" />
+  <java-symbol type="style" name="Animation.Toast.Honami" />
+  <java-symbol type="style" name="Animation.Toast.FastFade" />
+  <java-symbol type="style" name="Animation.Toast.GrowFade" />
+  <java-symbol type="style" name="Animation.Toast.GrowFadeCenter" />
+  <java-symbol type="style" name="Animation.Toast.GrowFadeBottom" />
+  <java-symbol type="style" name="Animation.Toast.Translucent" />
+  <java-symbol type="style" name="Animation.Toast.SlideRightLeft" />
+  <java-symbol type="style" name="Animation.Toast.SlideLeftRight" />
+
+  <!-- Progress Bar -->
+  <java-symbol type="dimen" name="spb_default_stroke_width" />
+  <java-symbol type="dimen" name="spb_default_stroke_separator_length" />
+  <java-symbol type="bool" name="spb_default_reversed" />
+  <java-symbol type="string" name="spb_default_speed" />
+  <java-symbol type="color" name="spb_default_color" />
+  <java-symbol type="integer" name="spb_default_sections_count" />
+  <java-symbol type="integer" name="spb_default_interpolator" />
+  <java-symbol type="bool" name="spb_default_mirror_mode" />
+  <java-symbol type="attr" name="spbStyle" />
+  <java-symbol type="array" name="pgcolors" />
+  <java-symbol type="array" name="gplus_colors" />
+  <java-symbol type="color" name="gplus_color_1" />
+  <java-symbol type="color" name="gplus_color_2" />
+  <java-symbol type="color" name="gplus_color_3" />
+  <java-symbol type="color" name="gplus_color_4" />
+  <java-symbol type="color" name="holo_blue_dark" />
+  <java-symbol type="color" name="holo_yellow_dark" />
+  <java-symbol type="color" name="holo_green_dark" />
+  <java-symbol type="color" name="holo_purple_dark" />
+  <java-symbol type="color" name="holo_red_dark" />
+
+  <!-- Expanded Desktop -->
+  <java-symbol type="string" name="global_actions_toggle_global_immersive_mode" />
+  <java-symbol type="string" name="global_actions_toggle_global_expanded_mode" />
+  <java-symbol type="string" name="global_actions_global_immersive_mode_off_status" />
+  <java-symbol type="string" name="global_actions_global_immersive_mode_on_status" />
+  <java-symbol type="drawable" name="ic_lock_immersive_mode_on" />
+  <java-symbol type="drawable" name="ic_lock_immersive_mode_off" />
+  <java-symbol type="drawable" name="ic_lock_expanded_desktop" />
+  <java-symbol type="drawable" name="ic_lock_expanded_desktop_off" />
+
+  <!--  Awesome Action -->
+  <java-symbol type="string" name="action_home"/>
+  <java-symbol type="string" name="action_back"/>
+  <java-symbol type="string" name="action_recents"/>
+  <java-symbol type="string" name="action_search"/>
+  <java-symbol type="string" name="action_screenshot"/>
+  <java-symbol type="string" name="action_menu"/>
+  <java-symbol type="string" name="action_ime"/>
+  <java-symbol type="string" name="action_kill"/>
+  <java-symbol type="string" name="action_lastapp"/>
+  <java-symbol type="string" name="action_power"/>
+  <java-symbol type="string" name="action_notifications"/>
+  <java-symbol type="string" name="action_assist"/>
+  <java-symbol type="string" name="action_voiceassist"/>
+  <java-symbol type="string" name="action_torch"/>
+  <java-symbol type="string" name="action_blank"/>
+  <java-symbol type="string" name="action_silent"/>
+  <java-symbol type="string" name="action_vib"/>
+  <java-symbol type="string" name="action_silent_vib"/>
+  <java-symbol type="string" name="action_robocop" />
+  <java-symbol type="string" name="action_null"/>
+  <java-symbol type="string" name="action_app"/>
+  <java-symbol type="string" name="action_ribbon"/>
+  <java-symbol type="string" name="action_widgets"/>
+  <java-symbol type="string" name="action_app_window"/>
+  <java-symbol type="string" name="app_killed_message"/>
+
+  <!-- On-The-Go -->
+  <java-symbol type="string" name="global_action_onthego" />
+  <java-symbol type="drawable" name="ic_lock_onthego" />
+
+</resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+   <!-- battery saver mode -->
+    <string name="battery_saver_start">Battery Saver Enabled</string>
+    <string name="battery_saver_stop">Battery Saver Disabled</string>
+    <string name="battery_saver_change">Battery Saver Change network to</string>
+    <string name="battery_saver_network">Network restored</string>
+    <string name="battery_saver_data">Mobile data restored</string>
+    <string name="battery_saver_wifi">Wi-Fi restored</string>
+    <string name="battery_saver_all">All configuration restored</string>
+    <string name="battery_saver_no_changes">No configuration restored</string>
+    <string name="battery_saver_enable_ticker">Battery saver mode running...</string>
+    <string name="battery_saver_enable_title">Battery saver mode</string>
+    <string name="battery_saver_airplane_ticker">Airplane mode enabled by battery saver</string>
+    <string name="battery_saver_airplane_text">Airplane mode enabled by battery saver because there is no signal after 5 minutes</string>
+    <string name="battery_saver_disable">Disable</string>
+
+    <!-- vanir actions and utilities -->
+    <string name="shortcut_label">Actions &amp; Utilities</string>
+    <string name="action_robocop">Reboot menu</string>
+    <string name="action_screenshot">Screenshot</string>
+    <string name="action_screenrecord">Screenrecord</string>
+    <string name="toggle_active_notifications">Active notifications</string>
+    <string name="toggle_torch">Torch</string>
+    <string name="toggle_flushmemory">Free memory</string>
+    <string name="toggle_immersive">Immersive mode</string>
+    <string name="toggle_ring_vib">Ring/Vib - toggle</string>
+    <string name="toggle_ring_silent">Ring/Silent - toggle</string>
+    <string name="toggle_ring_vib_silent">Ring/Vib/Silent - toggle</string>
+    <string name="toggle_immersive_toast">Set an immersive mode style first</string>
+    <string name="active_notifications_on_toast">Active notifications on</string>
+    <string name="active_notifications_off_toast">Active notifications off</string>
+    <string name="active_notifications_wtf_toast">Notification styles are both disabled</string>
+
+    <!-- Title shown in recents popup for locking an app from being cleared -->
+    <string name="status_bar_recent_lock_item_title">Lock</string>
+    <!-- Title shown in recents popup for unlocking an app from being cleared -->
+    <string name="status_bar_recent_unlock_item_title">Unlock</string>
+
+    <!-- On The Go -->
+    <string name="onthego_activity">On-the-go mode</string>
+    <string name="onthego_notif_ticker">On-The-Go activated</string>
+    <string name="onthego_notif_title">On-The-Go is active</string>
+    <string name="onthego_notif_stop">Stop</string>
+    <string name="onthego_notif_options">Options</string>
+    <string name="onthego_notif_error">Unable to start On-The-Go</string>
+    <string name="onthego_transparency">Transparency</string>
+    <string name="quick_settings_onthego_back">Rear Camera</string>
+    <string name="quick_settings_onthego_front">Front Camera</string>
+        <string name="onthego_notif_restart">Restart On-The-Go</string>
+    <string name="onthego_notif_camera_changed">Camera mode changed</string>
+    <string name="onthego_front_camera">Use front camera</string>
+    <string name="onthego_service_toggle">Automatically restart service</string>
+</resources>
