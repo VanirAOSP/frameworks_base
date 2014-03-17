@@ -735,7 +735,6 @@
     <string name="zen_alarm_information_day_time">Your next alarm is <xliff:g id="alarm_day_and_time" example="Fri 5:00 PM">%s</xliff:g></string>
 
     <!-- Zen mode: Next alarm warning. [CHAR LIMIT=40] -->
-    <string name="zen_alarm_warning">You won\'t hear your alarm at <xliff:g id="alarm_time" example="5:00 PM">%s</xliff:g></string>
 
     <!-- Text for overflow card on Keyguard when there is not enough space for all notifications on Keyguard. [CHAR LIMIT=1] -->
     <string name="keyguard_more_overflow_text">+<xliff:g id="number_of_notifications" example="5">%d</xliff:g></string>
