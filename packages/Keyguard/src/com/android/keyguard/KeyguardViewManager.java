@@ -142,15 +142,9 @@ public class KeyguardViewManager {
         public void onSetBackground(Bitmap bmp) {
             mIsCoverflow = (bmp != null);
             mKeyguardHost.setCustomBackground(bmp != null ?
-//<<<<<<< HEAD
-                    new BitmapDrawable(mContext.getResources(), bmp) : mCustomBackground);
-            updateShowWallpaper(bmp == null);
-        }
-//=======
-//                    new BitmapDrawable(mContext.getResources(), bmp) : null);
-//             updateShowWallpaper(bmp == null);
-//         }
-//>>>>>>> e27878b... Lockscreen custom wallpaper [1/2]
+                    new BitmapDrawable(mContext.getResources(), bmp) : null);
+             updateShowWallpaper(bmp == null);
+         }
     };
 
     public interface ShowListener {
