@@ -49,6 +49,7 @@ import static com.android.internal.util.cm.QSConstants.TILE_WIFI;
 import static com.android.internal.util.cm.QSConstants.TILE_WIFIAP;
 import static com.android.internal.util.cm.QSConstants.TILE_WIMAX;
 import static com.android.internal.util.cm.QSConstants.TILE_ONTHEGO;
+import static com.android.internal.util.cm.QSConstants.TILE_POWERMENU;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -67,43 +68,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 
 import com.android.internal.util.cm.QSUtils;
-import com.android.systemui.quicksettings.AirplaneModeTile;
-import com.android.systemui.quicksettings.AlarmTile;
-import com.android.systemui.quicksettings.AutoRotateTile;
-import com.android.systemui.quicksettings.BatteryTile;
-import com.android.systemui.quicksettings.BluetoothTile;
-import com.android.systemui.quicksettings.BrightnessTile;
-import com.android.systemui.quicksettings.BugReportTile;
-import com.android.systemui.quicksettings.CameraTile;
-import com.android.systemui.quicksettings.DockBatteryTile;
-//import com.android.systemui.quicksettings.ExpandedDesktopTile;
-import com.android.systemui.quicksettings.GPSTile;
-import com.android.systemui.quicksettings.InputMethodTile;
-import com.android.systemui.quicksettings.LteTile;
-import com.android.systemui.quicksettings.MobileNetworkTile;
-import com.android.systemui.quicksettings.MobileNetworkTypeTile;
-import com.android.systemui.quicksettings.MusicTile;
-import com.android.systemui.quicksettings.NetworkAdbTile;
-import com.android.systemui.quicksettings.NfcTile;
-import com.android.systemui.quicksettings.PerformanceProfileTile;
-import com.android.systemui.quicksettings.PreferencesTile;
-import com.android.systemui.quicksettings.ProfileTile;
-import com.android.systemui.quicksettings.QuickSettingsTile;
-import com.android.systemui.quicksettings.QuickRecordTile;
-import com.android.systemui.quicksettings.QuietHoursTile;
-import com.android.systemui.quicksettings.RingerModeTile;
-import com.android.systemui.quicksettings.ScreenTimeoutTile;
-import com.android.systemui.quicksettings.SleepScreenTile;
-import com.android.systemui.quicksettings.SyncTile;
-import com.android.systemui.quicksettings.ToggleLockscreenTile;
-import com.android.systemui.quicksettings.TorchTile;
-import com.android.systemui.quicksettings.UsbTetherTile;
-import com.android.systemui.quicksettings.UserTile;
-import com.android.systemui.quicksettings.VolumeTile;
-import com.android.systemui.quicksettings.RemoteDisplayTile;
-import com.android.systemui.quicksettings.WiFiTile;
-import com.android.systemui.quicksettings.WifiAPTile;
-import com.android.systemui.quicksettings.OnTheGoTile;
+import com.android.systemui.quicksettings.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -246,6 +211,8 @@ public class QuickSettingsController {
                 qs = new WifiAPTile(mContext, this);
             } else if (tile.equals(TILE_SCREENTIMEOUT)) {
                 qs = new ScreenTimeoutTile(mContext, this);
+            } else if (tile.equals(TILE_POWERMENU)) {
+                qs = new PowerMenuTile(mContext, this);
             } else if (tile.equals(TILE_MOBILEDATA) && mobileDataSupported) {
                 if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
                     qs = new MobileNetworkTile(mContext, this, mStatusBarService.mMSimNetworkController);
