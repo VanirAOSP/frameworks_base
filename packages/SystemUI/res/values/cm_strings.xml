@@ -84,8 +84,10 @@
     <string name="location_mode_location_off_title">Location off</string>
 
     <!-- Expanded desktop strings break the rules a bit - the icon identifies the feature, the string indicates current state -->
-    <string name="quick_settings_expanded_desktop">Expanded</string>
-    <string name="quick_settings_expanded_desktop_off">Normal</string>
+    <string name="quick_settings_immersive_desktop">Immersive on</string>
+    <string name="quick_settings_expanded_desktop">Expanded on</string>
+    <string name="quick_settings_immersive_desktop_off">Immersive off</string>
+    <string name="quick_settings_expanded_desktop_off">Expanded off</string>
 
     <!-- Camera tile toasts -->
     <string name="quick_settings_camera_error_connect">Can\'t connect to camera</string>

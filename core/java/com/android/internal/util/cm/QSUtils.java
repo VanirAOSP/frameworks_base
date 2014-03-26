@@ -54,10 +54,11 @@ public class QSUtils {
             return !TextUtils.isEmpty(perfProfileProp);
         }
 
-        public static boolean expandedDesktopEnabled(ContentResolver resolver) {
-            /*return (Settings.System.getIntForUser(resolver, Settings.System.EXPANDED_DESKTOP_STYLE, 0,
-                    UserHandle.USER_CURRENT_OR_SELF) != 0);*/ return false;
-        }
+//        Disabled until a method to dynamically remove tiles is implemented instead of redoing the entire QS
+//        public static int immersiveDesktopEnabled(ContentResolver resolver) {
+//            return (Settings.System.getIntForUser(resolver, Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2,
+//                    UserHandle.USER_CURRENT_OR_SELF));
+//        }
 
         public static boolean deviceSupportsNfc(Context ctx) {
             return NfcAdapter.getDefaultAdapter(ctx) != null;
