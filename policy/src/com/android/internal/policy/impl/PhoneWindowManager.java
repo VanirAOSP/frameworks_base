@@ -6208,7 +6208,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             clearClearableFlagsLw();
         }
 
-      //  if (expanded) transientStatusBarAllowed = false;
+        if (expanded) transientStatusBarAllowed = false;
         vis = mStatusBarController.updateVisibilityLw(transientStatusBarAllowed, oldVis, vis);
 
         // update navigation bar
