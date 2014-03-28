@@ -425,7 +425,9 @@ public class NavigationBarView extends LinearLayout {
             }
         }
 
-        final boolean showSearch = disableHome && !disableSearch;
+        final boolean showSearch = disableHome && !disableSearch &&
+                Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
         final boolean showCamera = showSearch && !mCameraDisabledByDpm
                 && mLockUtils.getCameraEnabled();
         setVisibleOrGone(getSearchLight(), showSearch);

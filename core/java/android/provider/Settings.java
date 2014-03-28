@@ -3131,6 +3131,12 @@ public final class Settings {
         public static final String ENABLE_NAVIGATION_BAR = "enable_navigation_bar";
 
         /**
+         * Whether or not to enable the navring
+         * @hide
+         */
+        public static final String ENABLE_NAVIGATION_RING = "enable_navigation_ring";
+
+        /**
         * Notification Power Widget - Custom Brightness Mode
         * @hide
         */

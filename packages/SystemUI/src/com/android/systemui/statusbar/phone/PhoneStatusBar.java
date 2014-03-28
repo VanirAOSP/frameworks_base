@@ -251,6 +251,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     int mSettingsPanelGravity;
     private TilesChangedObserver mTilesChangedObserver;
     private SettingsObserver mSettingsObserver;
+    boolean mSearchPanelAllowed = true;
 
     // Ribbon settings
     private boolean mHasQuickAccessSettings;
@@ -381,6 +382,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_NAVIGATION_RING), false, this);
             updateSettings();
         }
 
@@ -455,15 +458,17 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
                 mNavigationBarView = null;
             }
-            if (mSearchPanelSwipeView == null) {
-                mSearchPanelSwipeView = new SearchPanelSwipeView(mContext, this);
+            if (mSearchPanelAllowed) {
+                if (mSearchPanelSwipeView == null) {
+                    mSearchPanelSwipeView = new SearchPanelSwipeView(mContext, this);
+                }
+                try {
+                    mWindowManager.addView(mSearchPanelSwipeView, mSearchPanelSwipeView.getGesturePanelLayoutParams());
+                } catch (java.lang.IllegalStateException ex) {
+                    // get over it
+                }
+                updateSearchPanel();
             }
-            try {
-                mWindowManager.addView(mSearchPanelSwipeView, mSearchPanelSwipeView.getGesturePanelLayoutParams());
-            } catch (java.lang.IllegalStateException ex) {
-                // get over it
-            }
-            updateSearchPanel();
         }
     }
 
@@ -3174,6 +3179,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mSignalTextView.setStyle(signalStyle);
         }
 
+        final boolean nextSearchEnabledState = Settings.System.getIntForUser(resolver,
+                Settings.System.ENABLE_NAVIGATION_RING, 1,
+                UserHandle.USER_CURRENT) == 1;
+        if (nextSearchEnabledState != mSearchPanelAllowed) {
+            mSearchPanelAllowed = nextSearchEnabledState;
+            updateNavigationBarState();
+        }
+
         immersive = Settings.System.getIntForUser(resolver,
                 Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0,
                 UserHandle.USER_CURRENT) == 1;
@@ -3411,6 +3424,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     @Override
     protected boolean shouldDisableNavbarGestures() {
+        if (!mSearchPanelAllowed) return true;
         return !isDeviceProvisioned()
                 || mExpandedVisible
                 || (mDisabled & StatusBarManager.DISABLE_SEARCH) != 0;
