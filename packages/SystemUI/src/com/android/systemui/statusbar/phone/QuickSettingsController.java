@@ -172,6 +172,8 @@ public class QuickSettingsController {
                 qs = new CameraTile(mContext, this, mHandler);
             } else if (tile.equals(TILE_RINGER)) {
                 qs = new RingerModeTile(mContext, this);
+            } else if (tile.equals(TILE_UPDATE)) {
+                qs = new UpdateTile(mContext, this);
             } else if (tile.equals(TILE_SYNC)) {
                 qs = new SyncTile(mContext, this);
             } else if (tile.equals(TILE_WIFIAP) && mobileDataSupported) {

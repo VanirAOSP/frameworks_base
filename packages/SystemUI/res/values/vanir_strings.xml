@@ -39,6 +39,10 @@
     <!-- Title shown in recents popup for unlocking an app from being cleared -->
     <string name="status_bar_recent_unlock_item_title">Unlock</string>
 
+    <!-- update tile toast -->
+    <string name="title_tile_update">Vanir Updater</string>
+    <string name="update_check_failed">A data connection is required.</string>
+
     <!-- On The Go -->
     <string name="onthego_activity">On-the-go mode</string>
     <string name="onthego_notif_ticker">On-The-Go activated</string>
@@ -49,7 +53,7 @@
     <string name="onthego_transparency">Transparency</string>
     <string name="quick_settings_onthego_back">Rear Camera</string>
     <string name="quick_settings_onthego_front">Front Camera</string>
-        <string name="onthego_notif_restart">Restart On-The-Go</string>
+    <string name="onthego_notif_restart">Restart On-The-Go</string>
     <string name="onthego_notif_camera_changed">Camera mode changed</string>
     <string name="onthego_front_camera">Use front camera</string>
     <string name="onthego_service_toggle">Automatically restart service</string>

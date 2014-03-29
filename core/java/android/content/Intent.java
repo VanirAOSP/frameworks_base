@@ -3260,6 +3260,10 @@ public class Intent implements Parcelable, Cloneable {
     public static final String METADATA_DOCK_HOME = "android.dock_home";
 
     /**
+     */
+    public static final String ACTION_CHECK_FOR_UPDATES = "android.intent.CHECK_FOR_UPDATES";
+
+    /**
      * Used as a parcelable extra field in {@link #ACTION_APP_ERROR}, containing
      * the bug report.
      */
