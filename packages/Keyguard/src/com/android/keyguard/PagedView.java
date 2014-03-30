@@ -490,7 +490,6 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
     protected void pageBeginMoving() {
         if (DEBUG_WARP) Log.v(TAG, "pageBeginMoving(" + mIsPageMoving + ")");
-        
         if (!mIsPageMoving) {
             mIsPageMoving = true;
             if (isWarping()) {

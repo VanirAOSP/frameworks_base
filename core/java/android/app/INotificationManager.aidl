@@ -49,9 +49,6 @@ interface INotificationManager
 
     StatusBarNotification[] getActiveNotificationsFromListener(in INotificationListener token);
 
-    StatusBarNotification[] getActiveNotificationsFromSystemListener(in INotificationListener token);
-    void cancelNotificationFromSystemListener(in INotificationListener token, String pkg, String tag, int id);
-
     void setHaloPolicyBlack(boolean state);
     void setHaloStatus(String pkg, boolean status);
     void setHaloBlacklistStatus(String pkg, boolean status);

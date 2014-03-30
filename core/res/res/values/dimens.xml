@@ -358,7 +358,6 @@
 
     <!-- width of ImmersiveModeConfirmation (-1 for match_parent) -->
     <dimen name="immersive_mode_cling_width">-1px</dimen>
-
     <!-- EdgeGesture service: Distance a swipe must travel to be recognized as swipe. -->
     <dimen name="edge_gesture_trigger_distance">12dp</dimen>
 
