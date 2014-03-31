@@ -298,6 +298,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private NavigationBarView mNavigationBarView = null;
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
 
+    // member to store notification alpha
+    private int mAlpha = 255;
+
     // the tracker view
     int mTrackingPosition; // the position of the top of the tracking view.
 
@@ -404,6 +407,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_ALPHA))) {
+                mAlpha = (int)(255.0*(1.0 - Settings.System.getFloatForUser(
+                    mContext.getContentResolver(), Settings.System.NOTIFICATION_ALPHA,
+                    0.0f, UserHandle.USER_CURRENT)));
                 setNotificationAlpha();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR))) {
@@ -3539,30 +3545,37 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
+    private final Runnable setNotificationAlphaRunnable = new Runnable() {
+        public void run() {
+            if (mNotificationData == null) return;
+            try {
+                final int dataSize = mNotificationData.size();
+                for (int i = 0; i < dataSize; i++) {
+                    final Entry ent = mNotificationData.get(dataSize - i - 1);
+                    final View expanded = ent.expanded;
+                    if (expanded !=null && expanded.getBackground() != null) {
+                        expanded.getBackground().setAlpha(mAlpha);
+                    }
+                    final View expandedBig = ent.getBigContentView();
+                    if (expandedBig != null && expandedBig.getBackground() != null) {
+                        expandedBig.getBackground().setAlpha(mAlpha);
+                    }
+                    final StatusBarIconView icon = ent.icon;
+                    if (icon !=null && icon.getBackground() != null) {
+                        icon.getBackground().setAlpha(mAlpha);
+                    }
+                }
+            } catch (Exception ex) {
+                Log.e(TAG, "Exception occured while setting notification alpha: "+ex);
+            }
+        }
+    };
+
     private void setNotificationAlpha() {
         if (mPile == null || mNotificationData == null) {
             return;
         }
-        float notifAlpha = Settings.System.getFloatForUser(
-            mContext.getContentResolver(), Settings.System.NOTIFICATION_ALPHA,
-            0.0f, UserHandle.USER_CURRENT);
-        int alpha = (int) ((1 - notifAlpha) * 255);
-        int dataSize = mNotificationData.size();
-        for (int i = 0; i < dataSize; i++) {
-            Entry ent = mNotificationData.get(dataSize - i - 1);
-            View expanded = ent.expanded;
-            if (expanded !=null && expanded.getBackground() != null) {
-                expanded.getBackground().setAlpha(alpha);
-            }
-            View expandedBig = ent.getBigContentView();
-            if (expandedBig != null && expandedBig.getBackground() != null) {
-                expandedBig.getBackground().setAlpha(alpha);
-            }
-            StatusBarIconView icon = ent.icon;
-            if (icon !=null && icon.getBackground() != null) {
-                icon.getBackground().setAlpha(alpha);
-            }
-        }
+        mHandler.post(setNotificationAlphaRunnable);
     }
 
     /**
