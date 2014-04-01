@@ -18,6 +18,7 @@ package android.app;
 
 import android.util.ArrayMap;
 import android.util.SuperNotCalledException;
+
 import com.android.internal.app.ActionBarImpl;
 import com.android.internal.policy.PolicyManager;
 
@@ -5259,7 +5260,7 @@ public class Activity extends ContextThemeWrapper
             mWindow.mIsFloatingWindow = true;
             mWindow.setCloseOnTouchOutsideIfNotSet(true);
             mWindow.setGravity(Gravity.CENTER);
-
+            
             if (this instanceof LayerActivity || android.os.Process.myUid() == android.os.Process.SYSTEM_UID) {
                 mWindow.setFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND,
                         WindowManager.LayoutParams.FLAG_DIM_BEHIND);
