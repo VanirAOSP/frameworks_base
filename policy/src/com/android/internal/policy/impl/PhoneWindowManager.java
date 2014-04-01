@@ -775,6 +775,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR), false, this,
                     UserHandle.USER_ALL);
+
             updateSettings();
         }
 
@@ -2157,7 +2158,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     public int getNonDecorDisplayWidth(int fullWidth, int fullHeight, int rotation) {
-        if (mHasNavigationBar && !immersiveModeHidesNavigationBar()) {
+        if (hasNavigationBar() && !immersiveModeHidesNavigationBar()) {
             // For a basic navigation bar, when we are in landscape mode we place
             // the navigation bar to the side.
             if (mNavigationBarCanMove && fullWidth > fullHeight) {
@@ -2168,7 +2169,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     public int getNonDecorDisplayHeight(int fullWidth, int fullHeight, int rotation) {
-        if (mHasNavigationBar && !immersiveModeHidesNavigationBar()) {
+        if (hasNavigationBar() && !immersiveModeHidesNavigationBar()) {
             // For a basic navigation bar, when we are in portrait mode we place
             // the navigation bar to the bottom.
             if (!mNavigationBarCanMove || fullWidth < fullHeight) {
@@ -4721,6 +4722,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         final boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
         final boolean canceled = event.isCanceled();
         int keyCode = event.getKeyCode();
+        int scanCode = event.getScanCode();
 
         if (SystemProperties.getInt("sys.quickboot.enable", 0) == 1) {
 
@@ -6341,17 +6343,18 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // overridden by qemu.hw.mainkeys in the emulator.
     @Override
     public boolean hasNavigationBar() {
-        synchronized(mLock) {
-            return mHasNavigationBar;
-        }
+        return mHasNavigationBar || mWantsNavigationBar;
     }
 
     // Use this method to check if device wants a navigation bar
     @Override
     public boolean wantsNavigationBar() {
-        synchronized(mLock) {
-            return mWantsNavigationBar;
-        }
+        return mWantsNavigationBar;
+    }
+
+    @Override
+    public boolean needsNavigationBar() {
+        return mHasNavigationBar;
     }
 
     @Override

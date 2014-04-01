@@ -86,6 +86,7 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.WindowManagerGlobal;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
@@ -423,58 +424,43 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private void updateNavigationBarState() {
         boolean showNav = true;
         try {
-              showNav = mWindowManagerService.hasNavigationBar()
-                                  || mWindowManagerService.wantsNavigationBar();
+              showNav = mWindowManagerService.hasNavigationBar();
         } catch(RemoteException ex) {
             Log.e("NavBar", "Exception while checking NavigationBar stuff via WindowManagerStuff", ex);
         }
 
         if (DEBUG) Log.v(TAG, "hasNavigationBar=" + showNav);
         if (showNav) {
-            if (!mRecreating) {
-                if (mNavigationBarView == null) {
-                    mNavigationBarView = (NavigationBarView) View.inflate(mContext, R.layout.navigation_bar, null);
-                }
-                mNavigationBarView.setDisabledFlags(mDisabled);
-                mNavigationBarView.setBar(this);
-                mNavigationBarView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        checkUserAutohide(v, event);
-                        return false;
-                    }
-                });
-                addNavigationBar();
-            }
-            if (mSearchPanelSwipeView != null) {
-                try {
-                    mWindowManager.removeView(mSearchPanelSwipeView);
-                } catch (java.lang.IllegalStateException ex) {
-                    // get over it
-                }
-                mSearchPanelSwipeView = null;
-            }
+            forceAddNavigationBar();
         } else {
-            if (mNavigationBarView != null) {
-                mNavigationBarView.setOnTouchListener(null);
-                try {
-                    mWindowManager.removeView(mNavigationBarView);
-                } catch (java.lang.IllegalStateException ex) {
-                    // get over it
-                }
-                mNavigationBarView = null;
+            removeNavigationBar();
+        }
+    }
+
+    private void forceAddNavigationBar() {
+        // If we have no Navbar view and we should have one, create it
+        if (!mRecreating) {
+            if (mNavigationBarView == null) {
+                mNavigationBarView = (NavigationBarView) View.inflate(mContext, R.layout.navigation_bar, null);
             }
-            if (mSearchPanelAllowed) {
-                if (mSearchPanelSwipeView == null) {
-                    mSearchPanelSwipeView = new SearchPanelSwipeView(mContext, this);
+            mNavigationBarView.setDisabledFlags(mDisabled);
+            mNavigationBarView.setBar(this);
+            mNavigationBarView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    checkUserAutohide(v, event);
+                    return false;
                 }
-                try {
-                    mWindowManager.addView(mSearchPanelSwipeView, mSearchPanelSwipeView.getGesturePanelLayoutParams());
-                } catch (java.lang.IllegalStateException ex) {
-                    // get over it
-                }
-                updateSearchPanel();
+            });
+            addNavigationBar();
+        }
+        if (mSearchPanelSwipeView != null) {
+            try {
+                mWindowManager.removeView(mSearchPanelSwipeView);
+            } catch (java.lang.IllegalStateException ex) {
+                // get over it
             }
+            mSearchPanelSwipeView = null;
         }
     }
 
@@ -1182,6 +1168,30 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mWindowManager.addView(mNavigationBarView, getNavigationBarLayoutParams());
         } catch (java.lang.IllegalStateException ex) {
             // looks like we're fashionably late to this party... get over it.
+        }
+    }
+
+    private void removeNavigationBar() {
+        if (DEBUG) Log.d(TAG, "removeNavigationBar: about to remove " + mNavigationBarView);
+        if (mNavigationBarView != null) {
+            mNavigationBarView.setOnTouchListener(null);
+            try {
+                mWindowManager.removeView(mNavigationBarView);
+            } catch (java.lang.IllegalStateException ex) {
+                // get over it
+            }
+            mNavigationBarView = null;
+        }
+        if (mSearchPanelAllowed) {
+            if (mSearchPanelSwipeView == null) {
+                mSearchPanelSwipeView = new SearchPanelSwipeView(mContext, this);
+            }
+            try {
+                mWindowManager.addView(mSearchPanelSwipeView, mSearchPanelSwipeView.getGesturePanelLayoutParams());
+            } catch (java.lang.IllegalStateException ex) {
+                // get over it
+            }
+            updateSearchPanel();
         }
     }
 

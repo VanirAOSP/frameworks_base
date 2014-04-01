@@ -1143,14 +1143,19 @@ public interface WindowManagerPolicy {
     public boolean hasNavigationBar();
 
     /**
-     * Specifies whether device can generate KEY_ACTION_MENU keypress
+     * Specifies whether the device needs a navigation bar (because it has no hardware buttons)
      */
-    public boolean hasMenuKeyEnabled();
+    public boolean needsNavigationBar();
 
     /**
      * Specifies whether the device wants an on-screen navigation bar(because it has hardware keys)
      */
     public boolean wantsNavigationBar();
+
+    /**
+     * Specifies whether device can generate KEY_ACTION_MENU keypress
+     */
+    public boolean hasMenuKeyEnabled();
 
     /**
      * Lock the device now.

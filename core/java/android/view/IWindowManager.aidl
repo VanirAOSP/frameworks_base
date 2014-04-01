@@ -226,14 +226,19 @@ interface IWindowManager
     boolean hasNavigationBar();
 
     /**
-     * Device can generate KEY_ACTION_MENU keypress
+     * Device needs a software navigation bar (because it has no hardware keys).
      */
-    boolean hasMenuKeyEnabled();
+    boolean needsNavigationBar();
 
     /**
      * Device wants a navigation bar (becuase it has hardware keys)
      */
     boolean wantsNavigationBar();
+
+    /**
+     * Device can generate KEY_ACTION_MENU keypress
+     */
+    boolean hasMenuKeyEnabled();
 
     /**
      * Lock the device immediately with the specified options (can be null).
