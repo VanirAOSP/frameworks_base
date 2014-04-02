@@ -16,6 +16,7 @@
 
 package com.android.systemui.quicksettings;
 
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +26,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
-import com.android.internal.util.nameless.NamelessActions;
 import com.android.systemui.R;
 import com.android.systemui.nameless.onthego.OnTheGoDialog;
 import com.android.systemui.statusbar.phone.QuickSettingsController;
@@ -42,7 +42,12 @@ public class OnTheGoTile extends QuickSettingsTile {
         mOnClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NamelessActions.processAction(mContext, NamelessActions.ACTION_ONTHEGO_TOGGLE);
+                final ComponentName cn = new ComponentName("com.android.systemui",
+                        "com.android.systemui.nameless.onthego.OnTheGoService");
+                final Intent startIntent = new Intent();
+                startIntent.setComponent(cn);
+                startIntent.setAction("start");
+                context.startService(startIntent);
             }
         };
 
@@ -68,26 +73,6 @@ public class OnTheGoTile extends QuickSettingsTile {
     public void updateResources() {
         updateTile();
         super.updateResources();
-    }
-
-    private void toggleCamera() {
-        final ContentResolver resolver = mContext.getContentResolver();
-        final int camera = Settings.System.getInt(resolver,
-                Settings.System.ON_THE_GO_CAMERA,
-                0);
-
-        int newValue;
-        if (camera == 0) {
-            newValue = 1;
-        } else {
-            newValue = 0;
-        }
-
-        Settings.System.putInt(resolver,
-                Settings.System.ON_THE_GO_CAMERA,
-                newValue);
-
-        updateResources();
     }
 
     @Override

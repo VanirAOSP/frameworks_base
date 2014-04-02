@@ -31,6 +31,7 @@ import android.app.Profile;
 import android.app.ProfileManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
@@ -81,7 +82,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.internal.app.ThemeUtils;
-import com.android.internal.util.nameless.NamelessActions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -529,8 +529,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         R.string.global_action_onthego) {
 
                         public void onPress() {
-                            NamelessActions.processAction(mContext,
-                                    NamelessActions.ACTION_ONTHEGO_TOGGLE);
+                            final ComponentName cn = new ComponentName("com.android.systemui",
+                                    "com.android.systemui.nameless.onthego.OnTheGoService");
+                            final Intent startIntent = new Intent();
+                            startIntent.setComponent(cn);
+                            startIntent.setAction("start");
+                            mContext.startService(startIntent);
                         }
 
                         public boolean onLongPress() {
