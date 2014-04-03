@@ -476,7 +476,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
         if (mSearchPanelSwipeView != null) {
             try {
-                mWindowManager.removeView(mSearchPanelSwipeView);
+                mWindowManager.removeViewImmediate(mSearchPanelSwipeView);
             } catch (java.lang.IllegalStateException ex) {
                 // get over it
             }
@@ -1201,7 +1201,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (mNavigationBarView != null) {
             mNavigationBarView.setOnTouchListener(null);
             try {
-                mWindowManager.removeView(mNavigationBarView);
+                mWindowManager.removeViewImmediate(mNavigationBarView);
             } catch (java.lang.IllegalStateException ex) {
                 // get over it
             }
