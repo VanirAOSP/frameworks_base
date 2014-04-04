@@ -55,11 +55,11 @@ import java.util.List;
 
 import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 import static com.android.internal.util.aokp.AwesomeConstants.fromString;
+import com.vanir.util.TaskUtils;
 
 public class AwesomeAction {
 
     public final static String TAG = "AwesomeAction";
-    private final static String SysUIPackage = "com.android.systemui";
 
     private static boolean wtf = true;
     private static boolean ftw;
@@ -115,7 +115,7 @@ public class AwesomeAction {
                     injectKeyDelayed(KeyEvent.KEYCODE_POWER);
                     break;
                 case ACTION_LAST_APP:
-                    toggleLastApp(mContext);
+                    TaskUtils.toggleLastApp(mContext);
                     break;
                 case ACTION_NOTIFICATIONS:
                     if (wtf) {
@@ -234,6 +234,36 @@ public class AwesomeAction {
         return true;
     }
 
+    public static class KillTask implements Runnable {
+        private final static String SysUIPackage = "com.android.systemui";
+        private Context mContext;
+
+        public KillTask(Context context) {
+            this.mContext = context;
+        }
+
+        public void run() {
+            final Intent intent = new Intent(Intent.ACTION_MAIN);
+            final ActivityManager am = (ActivityManager) mContext
+                    .getSystemService(Activity.ACTIVITY_SERVICE);
+            String defaultHomePackage = "com.android.launcher";
+            intent.addCategory(Intent.CATEGORY_HOME);
+            final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
+
+            if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
+                defaultHomePackage = res.activityInfo.packageName;
+            }
+
+            RunningTaskInfo info = am.getRunningTasks(1).get(0);
+            String packageName = info.topActivity.getPackageName();
+
+            if (SysUIPackage.equals(packageName)) return; // don't kill SystemUI
+            if (!defaultHomePackage.equals(packageName)) {
+                am.removeTask(info.id, ActivityManager.REMOVE_TASK_KILL_PROCESS);
+            }
+        }
+    }
+
     public static boolean isIntentAvailable(Context context, Intent intent) {
         PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
@@ -282,66 +312,6 @@ public class AwesomeAction {
                     KeyEvent.FLAG_FROM_SYSTEM, InputDevice.SOURCE_KEYBOARD);
             InputManager.getInstance().injectInputEvent(ev,
                     InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
-        }
-    }
-
-    public static class KillTask implements Runnable {
-        private Context mContext;
-
-        public KillTask(Context context) {
-            this.mContext = context;
-        }
-
-        public void run() {
-            final Intent intent = new Intent(Intent.ACTION_MAIN);
-            final ActivityManager am = (ActivityManager) mContext
-                    .getSystemService(Activity.ACTIVITY_SERVICE);
-            String defaultHomePackage = "com.android.launcher";
-            intent.addCategory(Intent.CATEGORY_HOME);
-            final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
-            if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
-                defaultHomePackage = res.activityInfo.packageName;
-            }
-            RunningTaskInfo info = am.getRunningTasks(1).get(0);
-            String packageName = info.topActivity.getPackageName();
-            if (SysUIPackage.equals(packageName))
-                return; // don't kill SystemUI
-            if (!defaultHomePackage.equals(packageName)) {
-                // am.forceStopPackage(packageName);
-                am.removeTask(info.id, ActivityManager.REMOVE_TASK_KILL_PROCESS);
-                // Toast.makeText(mContext,
-                // com.android.internal.R.string.app_killed_message,
-                // Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private static void toggleLastApp(Context mContext) {
-        int lastAppId = 0;
-        int looper = 1;
-        String packageName;
-        final Intent intent = new Intent(Intent.ACTION_MAIN);
-        final ActivityManager am = (ActivityManager) mContext
-                .getSystemService(Activity.ACTIVITY_SERVICE);
-        String defaultHomePackage = "com.android.launcher";
-        intent.addCategory(Intent.CATEGORY_HOME);
-        final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
-        if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
-            defaultHomePackage = res.activityInfo.packageName;
-        }
-        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(5);
-        // lets get enough tasks to find something to switch to
-        // Note, we'll only get as many as the system currently has - up to 5
-        while ((lastAppId == 0) && (looper < tasks.size())) {
-            packageName = tasks.get(looper).topActivity.getPackageName();
-            if (!packageName.equals(defaultHomePackage)
-                    && !packageName.equals("com.android.systemui")) {
-                lastAppId = tasks.get(looper).id;
-            }
-            looper++;
-        }
-        if (lastAppId != 0) {
-            am.moveTaskToFront(lastAppId, am.MOVE_TASK_NO_USER_ACTION);
         }
     }
 

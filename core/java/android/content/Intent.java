@@ -715,6 +715,13 @@ public class Intent implements Parcelable, Cloneable {
      */
     public static final String ACTION_SCREENRECORD = "android.intent.action.SCREENRECORD";
     /**
+     * PhoneWindowManager: register updates to hardware key rebinding
+     *  <p>Input: nothing
+     *  <p>Output: nothing
+     * @hide
+     */
+    public static final String ACTION_UPDATE_KEYS = "android.intent.action.UPDATE_KEY_ASSIGNMENTS";
+    /**
      * PhoneWindowManager: Take Screenshot via takeScreenshot()
      *  <p>Input: nothing
      *  <p>Output: nothing

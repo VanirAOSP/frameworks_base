@@ -3744,7 +3744,37 @@ public final class Settings {
         public static final String VOLUME_KEYS_CONTROL_RING_STREAM = "volume_keys_control_ring_stream";
 
         /**
-         * Action to perform when the home key is long-pressed.
+         * On/off for back key
+         * @hide
+         */
+        public static final String KEY_BACK_ENABLED = "key_back_enabled";
+
+        /**
+         * On/off for home key
+         * @hide
+         */
+        public static final String KEY_HOME_ENABLED = "key_home_enabled";
+
+        /**
+         * On/off for menu key
+         * @hide
+         */
+        public static final String KEY_MENU_ENABLED = "key_menu_enabled";
+
+        /**
+         * On/off for assist key
+         * @hide
+         */
+        public static final String KEY_ASSIST_ENABLED = "key_assist_enabled";
+
+        /**
+         * On/off for app switch key
+         * @hide
+         */
+        public static final String KEY_APPSWITCH_ENABLED = "key_appswitch_enabled";
+
+        /**
+         * Action to perform when the home key is pressed.
          * (Default can be configured via config_longPressOnHomeBehavior)
          * 0 - Nothing
          * 1 - Menu
@@ -3753,6 +3783,20 @@ public final class Settings {
          * 4 - Voice search
          * 5 - In-app search
          * 6 - Launch Camera
+         * 7 - Kill target
+         * 8 - IME switcher
+         * 9 - Power menu
+         * 10 - Enable navigation bar
+         * 11 - Navigate home
+         * 12 - Navigate back
+         * 13 - Lastapp
+         * @hide
+         */
+        public static final String KEY_HOME_ACTION = "key_home_action";
+
+        /**
+         * Action to perform when the home key is long-pressed. (Default is 6)
+         * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
          * @hide
          */
         public static final String KEY_HOME_LONG_PRESS_ACTION = "key_home_long_press_action";
@@ -3779,6 +3823,18 @@ public final class Settings {
          * @hide
          */
         public static final String KEY_MENU_LONG_PRESS_ACTION = "key_menu_long_press_action";
+
+        /**
+         * Action to perform for back
+         * @hide
+         */
+        public static final String KEY_BACK_ACTION = "key_back_action";
+
+        /**
+         * Action to perform for longpress back
+         * @hide
+         */
+        public static final String KEY_BACK_LONG_PRESS_ACTION = "key_back_long_press_action";
 
         /**
          * Action to perform when the assistant (search) key is pressed. (Default is 3)
@@ -6494,12 +6550,6 @@ public final class Settings {
          * @hide
          */
         public static final String PAYMENT_SERVICE_SEARCH_URI = "payment_service_search_uri";
-
-        /**
-         * Whether to allow killing of the foreground app by long-pressing the Back button
-         * @hide
-         */
-        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
          * Whether to include options in power menu for rebooting into recovery or bootloader
