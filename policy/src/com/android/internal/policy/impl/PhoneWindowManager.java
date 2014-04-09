@@ -6355,18 +6355,24 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // overridden by qemu.hw.mainkeys in the emulator.
     @Override
     public boolean hasNavigationBar() {
-        return mHasNavigationBar || mWantsNavigationBar;
+        synchronized (mLock) {
+            return mHasNavigationBar || mWantsNavigationBar;
+        }
     }
 
     // Use this method to check if device wants a navigation bar
     @Override
     public boolean wantsNavigationBar() {
-        return mWantsNavigationBar;
+        synchronized (mLock) {
+            return mWantsNavigationBar;
+        }
     }
 
     @Override
     public boolean needsNavigationBar() {
-        return mHasNavigationBar;
+        synchronized (mLock) {
+            return mHasNavigationBar;
+        }
     }
 
     @Override
