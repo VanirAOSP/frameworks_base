@@ -22,11 +22,11 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
     private boolean mLocationEnabled;
     private int mLocationMode;
 
-    public GPSTile(Context context, QuickSettingsController qsc) {
+    public GPSTile(Context context, QuickSettingsController qsc, LocationController lc) {
         super(context, qsc);
 
         mQsc = qsc;
-        mLocationController = new LocationController(mContext);
+        mLocationController = lc;
         mLocationController.addSettingsChangedCallback(this);
 
         mLocationMode = mLocationController.getLocationMode();
@@ -70,6 +70,12 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
     void onPostCreate() {
         updateTile();
         super.onPostCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mLocationController.removeSettingsChangedCallback(this);
     }
 
     @Override
