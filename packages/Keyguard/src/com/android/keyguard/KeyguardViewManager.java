@@ -392,14 +392,6 @@ public class KeyguardViewManager {
             super(context);
             setBackground(mBackgroundDrawable);
             mLastConfiguration = new Configuration(context.getResources().getConfiguration());
-
-            context.registerReceiver(new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    cacheUserImage();
-                }
-            }, new IntentFilter(Intent.ACTION_KEYGUARD_WALLPAPER_CHANGED),
-                    android.Manifest.permission.CONTROL_KEYGUARD, null);
         }
 
         public void drawToCanvas(Canvas canvas, Drawable drawable) {
