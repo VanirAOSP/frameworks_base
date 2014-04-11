@@ -6355,6 +6355,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // overridden by qemu.hw.mainkeys in the emulator.
     @Override
     public boolean hasNavigationBar() {
+        // if device really has navbar, we don't need to worry about the runtime
+        // navbar enable race condition
+        if (mHasNavigationBar) {
+            return true;
+        }
+
         synchronized (mLock) {
             return mHasNavigationBar || mWantsNavigationBar;
         }
@@ -6363,6 +6369,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Use this method to check if device wants a navigation bar
     @Override
     public boolean wantsNavigationBar() {
+        // if device really has navbar, we don't need to worry about the runtime
+        // navbar enable race condition
+        if (mHasNavigationBar) {
+            return true;
+        }
+
+        // lock the same mutex used by input events
         synchronized (mLock) {
             return mWantsNavigationBar;
         }
@@ -6370,9 +6383,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     @Override
     public boolean needsNavigationBar() {
-        synchronized (mLock) {
-            return mHasNavigationBar;
-        }
+        // this is set based on resources+properties ONCE, so no mutex issues
+        return mHasNavigationBar;
     }
 
     @Override
