@@ -1164,6 +1164,12 @@ public interface WindowManagerPolicy {
     public boolean wantsNavigationBar();
 
     /**
+     * Updates the rotation state if Immersive is set to be orientation dependent.
+     * @hide
+     */
+    public void updateRotationStateForImmersive();
+
+    /**
      * Specifies whether device can generate KEY_ACTION_MENU keypress
      */
     public boolean hasMenuKeyEnabled();

@@ -50,6 +50,7 @@ import android.media.AudioSystem;
 import android.media.IAudioService;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.FactoryTest;
 import android.os.Handler;
@@ -385,9 +386,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     // immersive desktop
     int mGlobalImmersiveModeStyle = -1;
-    int immersiveModeStyle;
+    int immersiveModeBehavior;
     boolean expanded = false;
+    boolean immersiveState = false;
     boolean LOLprofile;
+    int orientationImmersiveState;
 
     // fast torch
     boolean mEnableFastTorch; // System.Setting
@@ -719,6 +722,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.IMMERSIVE_MODE_CONFIRMATIONS), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.IMMERSIVE_ORIENTATION), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -777,11 +783,21 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     UserHandle.USER_ALL);
 
             updateSettings();
+            updateImmersiveSettings();
         }
 
-        @Override public void onChange(boolean selfChange) {
-            updateSettings();
-            updateRotation(false);
+        public void onChange(boolean selfChange, Uri uri) {
+            super.onChange(selfChange, uri);
+            if (uri.equals(Settings.System.getUriFor(Settings.System.GLOBAL_IMMERSIVE_MODE_STATE)) ||
+                uri.equals(Settings.System.getUriFor(Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE)) ||
+                uri.equals(Settings.System.getUriFor(Settings.System.IMMERSIVE_ORIENTATION)) ||
+                uri.equals(Settings.System.getUriFor(Settings.System.EXPANDED_DESKTOP)) ||
+                uri.equals(Settings.Secure.getUriFor(Settings.Secure.IMMERSIVE_MODE_CONFIRMATIONS))) {
+                updateImmersiveSettings();
+            } else {
+                updateSettings();
+                updateRotation(false);
+            }
         }
     }
 
@@ -1675,9 +1691,37 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
+    public void updateImmersiveSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+        synchronized (mLock) {
+            // Immersive desktop preferences
+            immersiveState = Settings.System.getIntForUser(resolver,
+                        Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
+            expanded = Settings.System.getIntForUser(resolver,
+                    Settings.System.EXPANDED_DESKTOP, 0, UserHandle.USER_CURRENT) == 1;
+
+            orientationImmersiveState = Settings.System.getInt(resolver,
+                    Settings.System.IMMERSIVE_ORIENTATION, 0);
+
+            if (!immersiveState || orientationImmersiveState == 1) {
+                immersiveModeBehavior = 0;
+            } else {
+                immersiveModeBehavior = Settings.System.getIntForUser(resolver,
+                        Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
+            }
+
+            if (mGlobalImmersiveModeStyle != immersiveModeBehavior) {
+                mGlobalImmersiveModeStyle = immersiveModeBehavior;
+            }
+            if (mImmersiveModeConfirmation != null) {
+                mImmersiveModeConfirmation.loadSetting();
+            }
+        }
+    }
+
     public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-        boolean updateRotation = false, updateVisibility = false;
+        boolean updateRotation = false;
         synchronized (mLock) {
             mEndcallBehavior = Settings.System.getIntForUser(resolver,
                     Settings.System.END_BUTTON_BEHAVIOR,
@@ -1705,10 +1749,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mCameraMusicControls = ((Settings.System.getIntForUser(resolver,
                     Settings.System.CAMERA_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) == 1)
                     && !mCameraWakeScreen);
-            LOLprofile = Settings.System.getIntForUser(resolver,
-                    Settings.System.IMMERSIVE_LOL_PROFILE, 0, UserHandle.USER_CURRENT) == 1;
-            expanded = Settings.System.getIntForUser(resolver,
-                    Settings.System.EXPANDED_DESKTOP, 0, UserHandle.USER_CURRENT) == 1;
+            LOLprofile = Settings.System.getInt(resolver,
+                    Settings.System.IMMERSIVE_LOL_PROFILE, 0) == 1;
 
             if (mDeviceHardwareKeys != 0) {
                 updateKeyAssignments();
@@ -1726,19 +1768,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mUserNavBarWidth = NavWidth;
                 resetScreenHelper();
             }
-
-            boolean immersiveState = Settings.System.getIntForUser(resolver,
-                        Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
-            immersiveModeStyle = Settings.System.getIntForUser(resolver,
-                    Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
-            if (!immersiveState) {
-                immersiveModeStyle = 0;
-            }
-
-            if (mGlobalImmersiveModeStyle != immersiveModeStyle) {
-                mGlobalImmersiveModeStyle = immersiveModeStyle;
-                updateVisibility = true;
-            }            
 
             final boolean useEdgeService = Settings.System.getIntForUser(resolver,
                     Settings.System.USE_EDGE_SERVICE_FOR_GESTURES, 1, UserHandle.USER_CURRENT) == 1;
@@ -1798,9 +1827,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mHasSoftInput = hasSoftInput;
                 updateRotation = true;
             }
-            if (mImmersiveModeConfirmation != null) {
-                mImmersiveModeConfirmation.loadSetting();
-            }
 
             mEnableFastTorch = Settings.System.getInt(resolver, Settings.System.ENABLE_FAST_TORCH, 0) == 1;
         }
@@ -1808,6 +1834,58 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (updateRotation) {
             updateRotation(true);
         }
+    }
+
+    @Override
+    public void updateRotationStateForImmersive() {
+
+        int orientation = mContext.getResources().getConfiguration().orientation;
+        boolean shouldEnable = false;
+
+        /**
+         * Boolean orientationImmersiveState:
+         * 0 - Both
+         * 1 - Landscape only
+         * 2 - Portrait only
+         */
+        switch (orientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                if (orientationImmersiveState == 1) {
+                    shouldEnable = true;
+                }
+                if (orientationImmersiveState == 2) {
+                    shouldEnable = false;
+                }
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                if (orientationImmersiveState == 2) {
+                    shouldEnable = true;
+                }
+                if (orientationImmersiveState == 1) {
+                    shouldEnable = false;
+                }
+                break;
+        }
+        forceUpdateImmersive(shouldEnable);
+    }
+
+    private void forceUpdateImmersive(boolean override) {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        if (!immersiveState || !override) {
+            immersiveModeBehavior = 0;
+        } else {
+            immersiveModeBehavior = Settings.System.getIntForUser(resolver,
+                    Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
+        }
+
+        if (mGlobalImmersiveModeStyle != immersiveModeBehavior) {
+            mGlobalImmersiveModeStyle = immersiveModeBehavior;
+        }
+        if (mImmersiveModeConfirmation != null) {
+            mImmersiveModeConfirmation.loadSetting();
+        }
+        resetScreenHelper();
     }
 
     private void resetScreenHelper() {
@@ -6604,7 +6682,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private int updateImmersiveModeVisibility(int vis) {
         
-        switch (immersiveModeStyle) {
+        switch (immersiveModeBehavior) {
             case 1:
                 vis |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
                 break;
@@ -6618,7 +6696,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 break;
         }
 
-        if (immersiveModeStyle != 0) {
+        if (immersiveModeBehavior != 0) {
             if (expanded) {
                 vis |= View.SYSTEM_UI_FLAG_IMMERSIVE;
             } else {

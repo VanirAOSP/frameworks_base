@@ -243,7 +243,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     float mNotificationPanelMinHeightFrac;
     boolean mNotificationPanelIsFullScreenWidth;
     TextView mNotificationPanelDebugText;
-    boolean immersive;
+
+    // immersive booleans for onConfigurationChange
+    private boolean immersive = false;
+    private int orientationDependentImmersive;
 
     // settings
     QuickSettingsController mQS;
@@ -388,6 +391,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.IMMERSIVE_ORIENTATION), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -3153,6 +3158,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (DEBUG) {
             Log.v(TAG, "configuration changed: " + mContext.getResources().getConfiguration());
         }
+        if (immersive && orientationDependentImmersive != 0) {
+            updateRotationState();
+        }
         updateDisplaySize(); // populates mDisplayMetrics
 
         updateResources();
@@ -3231,9 +3239,20 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             updateNavigationBarState();
         }
 
+        orientationDependentImmersive = Settings.System.getIntForUser(resolver,
+                Settings.System.IMMERSIVE_ORIENTATION, 0,
+                UserHandle.USER_CURRENT);
+
         immersive = Settings.System.getIntForUser(resolver,
                 Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0,
                 UserHandle.USER_CURRENT) == 1;
+    }
+
+    private void updateRotationState() {
+        try {
+            mWindowManagerService.updateRotationStateForImmersive();
+        } catch (android.os.RemoteException ex) {
+        }
     }
 
     private void resetUserSetupObserver() {

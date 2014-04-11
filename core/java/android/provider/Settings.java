@@ -4042,6 +4042,15 @@ public final class Settings {
         public static final String GLOBAL_IMMERSIVE_MODE_STATE = "global_immersive_mode_state";
 
         /**
+         * For rotation dependency
+         * 0 - Disabled
+         * 1 - Landscape
+         * 2 - Portrait
+         * @hide
+         */
+        public static final String IMMERSIVE_ORIENTATION = "immersive_orientation";
+
+        /**
          * Expanded desktop
          * @hide
          */
