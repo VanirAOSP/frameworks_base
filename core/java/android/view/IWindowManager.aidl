@@ -226,6 +226,12 @@ interface IWindowManager
     boolean hasNavigationBar();
 
     /**
+     * Updates the rotation state if Immersive is set to be orientation dependent.
+     * @hide
+     */
+    oneway void updateRotationStateForImmersive();
+
+    /**
      * Device needs a software navigation bar (because it has no hardware keys).
      */
     boolean needsNavigationBar();
