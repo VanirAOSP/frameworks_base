@@ -399,9 +399,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             updateSettings();
         }
 
+        @Override
         public void onChange(boolean selfChange, Uri uri) {
-            super.onChange(selfChange, uri);
-
             if (uri.equals(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_BACKGROUND))
                 || uri.equals(Settings.System.getUriFor(
