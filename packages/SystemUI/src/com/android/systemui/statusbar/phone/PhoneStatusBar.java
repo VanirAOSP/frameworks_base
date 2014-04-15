@@ -3601,37 +3601,30 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-    private final Runnable setNotificationAlphaRunnable = new Runnable() {
-        public void run() {
-            if (mNotificationData == null) return;
-            try {
-                final int dataSize = mNotificationData.size();
-                for (int i = 0; i < dataSize; i++) {
-                    final Entry ent = mNotificationData.get(dataSize - i - 1);
-                    final View expanded = ent.expanded;
-                    if (expanded !=null && expanded.getBackground() != null) {
-                        expanded.getBackground().setAlpha(mAlpha);
-                    }
-                    final View expandedBig = ent.getBigContentView();
-                    if (expandedBig != null && expandedBig.getBackground() != null) {
-                        expandedBig.getBackground().setAlpha(mAlpha);
-                    }
-                    final StatusBarIconView icon = ent.icon;
-                    if (icon !=null && icon.getBackground() != null) {
-                        icon.getBackground().setAlpha(mAlpha);
-                    }
-                }
-            } catch (Exception ex) {
-                Log.e(TAG, "Exception occured while setting notification alpha: "+ex);
-            }
-        }
-    };
-
     private void setNotificationAlpha() {
         if (mPile == null || mNotificationData == null) {
             return;
         }
-        mHandler.post(setNotificationAlphaRunnable);
+        try {
+            final int dataSize = mNotificationData.size();
+            for (int i = 0; i < dataSize; i++) {
+                final Entry ent = mNotificationData.get(dataSize - i - 1);
+                final View expanded = ent.expanded;
+                if (expanded !=null && expanded.getBackground() != null) {
+                    expanded.getBackground().setAlpha(mAlpha);
+                }
+                final View expandedBig = ent.getBigContentView();
+                if (expandedBig != null && expandedBig.getBackground() != null) {
+                    expandedBig.getBackground().setAlpha(mAlpha);
+                }
+                final StatusBarIconView icon = ent.icon;
+                if (icon !=null && icon.getBackground() != null) {
+                    icon.getBackground().setAlpha(mAlpha);
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "Exception occured while setting notification alpha: "+ex);
+        }
     }
 
     /**
