@@ -953,7 +953,6 @@ public class NavigationBarView extends LinearLayout {
                 : R.drawable.ic_sysbar_lights_out_dot_small);
         addMe.setScaleType(ImageView.ScaleType.CENTER);
         addMe.setVisibility(empty ? View.INVISIBLE : View.VISIBLE);
-
         if (landscape && !mTablet)
             root.addView(addMe, 0);
         else
@@ -974,5 +973,4 @@ public class NavigationBarView extends LinearLayout {
         boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
         return (xlarge || large);
     }
-
 }
