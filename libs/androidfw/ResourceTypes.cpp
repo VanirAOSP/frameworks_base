@@ -5211,6 +5211,7 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
             group->basePackage = package;
 
             mPackageMap[id] = (uint8_t)idx;
+            group->overlayPkgId = pkg->id;
         } else {
             group = mPackageGroups.itemAt(idx-1);
             if (group == NULL) {
@@ -5224,7 +5225,9 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
         if (idmap_id != 0) {
             // we need to add our overlay's package ID to this group so resources that
             // only exist in the overlay are accessed from the overlay correctly
-            mPackageMap[pkg->id] = (uint8_t)idx;
+            if (mPackageMap[pkg->id] == 0) {
+                mPackageMap[pkg->id] = (uint8_t)idx;
+            }
             group->overlayPkgId = pkg->id;
         }
     } else {
