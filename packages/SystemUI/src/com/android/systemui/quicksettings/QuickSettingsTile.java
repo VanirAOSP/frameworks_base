@@ -316,7 +316,7 @@ public class QuickSettingsTile implements OnClickListener {
             mQsc.mBar.collapseAllPanels(true);
         }
 
-        flipTile(0, FLIP_DOWN);
+        flipTile(0, FLIP_RIGHT);
     }
 
     public void onFlingRight() {
