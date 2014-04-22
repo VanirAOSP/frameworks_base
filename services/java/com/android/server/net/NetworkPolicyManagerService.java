@@ -588,6 +588,9 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                 if (policy == null && meteredHint) {
                     // policy doesn't exist, and AP is hinting that it's
                     // metered: create an inferred policy.
+                    policy = new NetworkPolicy(template, CYCLE_NONE, CYCLE_MONTHLY,
+                            Time.TIMEZONE_UTC, WARNING_DISABLED, LIMIT_DISABLED, SNOOZE_NEVER,
+                            SNOOZE_NEVER, meteredHint, true);
                     addNetworkPolicyLocked(policy);
 
                 } else if (policy != null && policy.inferred) {
