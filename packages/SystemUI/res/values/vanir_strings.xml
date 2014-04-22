@@ -57,4 +57,9 @@
     <string name="onthego_notif_camera_changed">Camera mode changed</string>
     <string name="onthego_front_camera">Use front camera</string>
     <string name="onthego_service_toggle">Automatically restart service</string>
+
+    <!-- Navbar QS -->
+    <string name="quick_settings_navbar_on">Navbar on</string>
+    <string name="quick_settings_navbar_off">Navbar off</string>
+
 </resources>

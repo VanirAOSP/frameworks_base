@@ -244,6 +244,8 @@ public class QuickSettingsController {
                 qs = new QuickRecordTile(mContext, this);
             } else if (tile.contains(TILE_ONTHEGO)) {
                 qs = new OnTheGoTile(mContext, this);
+            } else if (tile.equals(TILE_NAVBAR)) {
+                qs = new NavbarTile(mContext, this);
             }
 
             if (qs != null) {
