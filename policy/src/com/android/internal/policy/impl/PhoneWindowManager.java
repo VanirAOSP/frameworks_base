@@ -5904,9 +5904,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             return true;
                         }
                     };
+
                     // the limit of Android as AOSP goes to heavy metal is Vanir
                     mBootMsgDialog.setIcon(R.drawable.vanir_welcomes_your_soullll);
-                    mBootMsgDialog.setTitle(R.string.android_upgrading_title);
+                    mBootMsgDialog.setTitle(" ");
                     mBootMsgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                     mBootMsgDialog.setIndeterminate(true);
                     mBootMsgDialog.getWindow().setType(
