@@ -91,10 +91,7 @@ public class QuickSettingsTile implements OnClickListener {
         if (tv != null) {
             tv.setText(mLabel);
             tv.setTextSize(mTileTextSize);
-            int dpi = mContext.getResources().getDisplayMetrics().densityDpi;
-            if (dpi > DisplayMetrics.DENSITY_HIGH) {
-                tv.setPadding(0, mTileTextPadding, 0, 0);
-            }
+            tv.setPadding(0, mTileTextPadding, 0, 0);
         }
         View image = mTile.findViewById(R.id.image);
         if (image != null) {
@@ -125,10 +122,7 @@ public class QuickSettingsTile implements OnClickListener {
         if (tv != null) {
             tv.setText(mLabel);
             tv.setTextSize(mTileTextSize);
-            int dpi = mContext.getResources().getDisplayMetrics().densityDpi;
-            if (dpi > DisplayMetrics.DENSITY_HIGH) {
-                tv.setPadding(0, mTileTextPadding, 0, 0);
-            }
+            tv.setPadding(0, mTileTextPadding, 0, 0);
         }
         View image = mTile.findViewById(R.id.image);
         if (image != null && image instanceof ImageView) {
