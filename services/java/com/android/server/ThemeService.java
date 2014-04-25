@@ -46,7 +46,6 @@ import android.os.Message;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.SystemProperties;
-import android.provider.Settings;
 import android.provider.ThemesContract;
 import android.text.TextUtils;
 import android.util.Log;
@@ -404,6 +403,37 @@ public class ThemeService extends IThemeService.Stub {
     }
 
     private boolean updateLockscreen() {
+        boolean success = false;
+        if ("default".equals(mPkgName)) {
+            WallpaperManager.getInstance(mContext).clearKeyguardWallpaper();
+            success = true;
+        } else {
+            success = setCustomLockScreenWallpaper();
+        }
+
+        if (success) {
+            mContext.sendBroadcast(new Intent(Intent.ACTION_KEYGUARD_WALLPAPER_CHANGED));
+        }
+        return success;
+    }
+
+    private boolean setCustomLockScreenWallpaper() {
+        try {
+            //Get input WP stream from the theme
+            Context themeCtx = mContext.createPackageContext(mPkgName, Context.CONTEXT_IGNORE_SECURITY);
+            AssetManager assetManager = themeCtx.getAssets();
+            String wpPath = ThemeUtils.getLockscreenWallpaperPath(assetManager);
+            if (wpPath == null) {
+                Log.w(TAG, "Not setting lockscreen wp because wallpaper file was not found.");
+                return false;
+            }
+            InputStream is = ThemeUtils.getInputStreamFromAsset(themeCtx, "file:///android_asset/" + wpPath);
+
+            WallpaperManager.getInstance(mContext).setKeyguardStream(is);
+        } catch (Exception e) {
+            Log.e(TAG, "There was an error setting lockscreen wp for pkg " + mPkgName, e);
+            return false;
+        }
         return true;
     }
 

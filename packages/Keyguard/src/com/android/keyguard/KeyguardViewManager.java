@@ -550,6 +550,35 @@ public class KeyguardViewManager {
             }
             return super.dispatchKeyEvent(event);
         }
+
+        private void cacheUserImage() {
+            WallpaperManager wm = WallpaperManager.getInstance(mContext);
+            Bitmap bitmap = wm.getKeyguardBitmap();
+            if (bitmap != null) {
+                mUserBackground = new BitmapDrawable(mContext.getResources(), bitmap);
+            } else {
+                mUserBackground = null;
+            }
+            setCustomBackground(null);
+        }
+
+        public boolean shouldShowWallpaper(boolean hiding) {
+            if (hiding) {
+                if (mCustomBackground != null) {
+                    return false;
+                }
+                WallpaperManager wm = WallpaperManager.getInstance(mContext);
+                boolean liveWallpaperActive = wm != null && wm.getWallpaperInfo() != null;
+                if (liveWallpaperActive) {
+                    return false;
+                }
+            }
+            return shouldShowWallpaper();
+        }
+
+        public boolean shouldShowWallpaper() {
+            return mUserBackground == null;
+        }
     }
 
     public boolean handleKeyDown(int keyCode, KeyEvent event) {
