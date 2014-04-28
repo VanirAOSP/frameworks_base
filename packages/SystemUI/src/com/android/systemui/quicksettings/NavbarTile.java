@@ -2,6 +2,7 @@ package com.android.systemui.quicksettings;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -29,6 +30,17 @@ public class NavbarTile extends QuickSettingsTile {
                 boolean next = !getWantsNavbar();
                 Settings.System.putInt(mContext.getContentResolver(),
                     Settings.System.ENABLE_NAVIGATION_BAR, next ? 1 : 0);
+            }
+        };
+
+        mOnLongClick = new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent();
+                intent.setClassName("com.android.settings",
+                        "com.android.settings.Settings$NavbarSettingsActivity");
+                startSettingsActivity(intent);
+                return true;
             }
         };
 
