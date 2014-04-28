@@ -597,14 +597,6 @@ const char16_t* ResStringPool::stringAt(size_t idx, size_t* u16len) const
                     AutoMutex lock(mDecodeLock);
 
                     if (mCache == NULL) {
-#ifdef HAVE_ANDROID_OS
-                        STRING_POOL_NOISY(ALOGI("CREATING STRING CACHE OF %d bytes",
-                                mHeader->stringCount*sizeof(char16_t**)));
-#else
-                        // We do not want to be in this case when actually running Android.
-                        ALOGW("CREATING STRING CACHE OF %d bytes",
-                                mHeader->stringCount*sizeof(char16_t**));
-#endif
                         mCache = (char16_t**)calloc(mHeader->stringCount, sizeof(char16_t**));
                         if (mCache == NULL) {
                             ALOGW("No memory trying to allocate decode cache table of %d bytes\n",
