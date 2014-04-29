@@ -38,7 +38,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.provider.Settings;
-import android.provider.Settings.SettingNotFoundException;
 
 public class TakeScreenrecordService extends Service {
     private static final String TAG = "TakeScreenrecordService";
@@ -78,12 +77,11 @@ public class TakeScreenrecordService extends Service {
         } else if (intent.getAction().equals(ACTION_STOP)) {
             stopScreenrecord();
         } else if (intent.getAction().equals(ACTION_TOGGLE_POINTER)) {
-            try {
-                int currentStatus = Settings.System.getInt(getContentResolver(), Settings.System.SHOW_TOUCHES);
-                Settings.System.putInt(getContentResolver(), Settings.System.SHOW_TOUCHES, 1 - currentStatus);
-            } catch (SettingNotFoundException ignore) {
-                // ignored
-            }
+            int currentStatus = Settings.System.getInt(getContentResolver(),
+                        Settings.System.SHOW_TOUCHES, 0);
+            Settings.System.putInt(getContentResolver(), Settings.System.SHOW_TOUCHES,
+                        1 - currentStatus);
+            mScreenrecord.updateNotification();
         }
 
         return super.onStartCommand(intent, flags, startId);
