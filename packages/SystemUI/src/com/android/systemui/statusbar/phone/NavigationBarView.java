@@ -541,8 +541,13 @@ public class NavigationBarView extends LinearLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if (mSettingsObserver == null) {
+        final String keyguardPackage = mContext.getString(
+                com.android.internal.R.string.config_keyguardPackage);
+        final Bundle keyguard_metadata = NavigationBarView
+                .getApplicationMetadata(mContext, keyguardPackage);
 
+
+        if (mSettingsObserver == null) {
             mSettingsObserver = new ContentObserver(new Handler()) {
                 @Override
                 public void onChange(boolean selfChange) {
