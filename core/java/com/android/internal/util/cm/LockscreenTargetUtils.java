@@ -121,11 +121,8 @@ public final class LockscreenTargetUtils {
         InsetDrawable[] inactivelayer = new InsetDrawable[2];
         InsetDrawable[] activelayer = new InsetDrawable[2];
 
-        final String keyguardPackage = context.getString(
-                com.android.internal.R.string.config_keyguardPackage);
-
         inactivelayer[0] = new InsetDrawable(getDrawableFromResources(context,
-                keyguardPackage, "ic_lockscreen_lock_pressed", false), 0, 0, 0, 0);
+            "com.android.keyguard", "ic_lockscreen_lock_pressed", false), 0, 0, 0, 0);
         inactivelayer[1] = new InsetDrawable(front, inset, inset, inset, inset);
 
         activelayer[0] = new InsetDrawable(back, 0, 0, 0, 0);
@@ -185,21 +182,18 @@ public final class LockscreenTargetUtils {
 
         int inset = 0;
 
-        final String keyguardPackage = context.getString(
-                com.android.internal.R.string.config_keyguardPackage);
-
         try {
-            Context packageContext = context.createPackageContext(keyguardPackage, 0);
+            Context packageContext = context.createPackageContext("com.android.keyguard", 0);
             Resources res = packageContext.getResources();
-            int targetInsetIdentifier = res.getIdentifier("lockscreen_target_inset", "dimen", keyguardPackage);
+            int targetInsetIdentifier = res.getIdentifier("lockscreen_target_inset", "dimen", "com.android.keyguard");
             inset = res.getDimensionPixelSize(targetInsetIdentifier);
             if (TextUtils.equals(type, ICON_FILE)) {
                 int targetIconFileInsetIdentifier = res.getIdentifier(
-                    "lockscreen_target_icon_file_inset", "dimen", keyguardPackage);
+                    "lockscreen_target_icon_file_inset", "dimen", "com.android.keyguard");
                 inset += res.getDimensionPixelSize(targetIconFileInsetIdentifier);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.w(TAG, "Could not fetch icons from " + keyguardPackage);
+            Log.w(TAG, "Could not fetch icons from com.android.keyguard");
         } catch (Resources.NotFoundException e) {
             Log.w(TAG, "Could not resolve lockscreen_target_inset", e);
         }
@@ -212,9 +206,7 @@ public final class LockscreenTargetUtils {
         Resources res;
 
         if (TextUtils.isEmpty(packageName)) {
-            final String keyguardPackage = context.getString(
-                    com.android.internal.R.string.config_keyguardPackage);
-            packageName = keyguardPackage;
+            packageName = "com.android.keyguard";
         }
 
         try {
