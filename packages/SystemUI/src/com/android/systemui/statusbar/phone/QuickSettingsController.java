@@ -36,6 +36,7 @@ import android.view.LayoutInflater;
 
 import com.android.internal.util.cm.QSUtils;
 import com.android.systemui.quicksettings.*;
+import com.android.systemui.quicksettings.EqualizerTile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -297,6 +298,12 @@ public class QuickSettingsController {
         if (mSupportsUSBTeth && Settings.System.getIntForUser(resolver,
                     Settings.System.QS_DYNAMIC_USBTETHER, 1, UserHandle.USER_CURRENT) == 1) {
             QuickSettingsTile qs = new UsbTetherTile(mContext, this);
+            qs.setupQuickSettingsTile(inflater, mContainerView);
+            mQuickSettingsTiles.add(qs);
+        }
+        if (Settings.System.getIntForUser(resolver,
+                Settings.System.QS_DYNAMIC_EQUALIZER, 1, UserHandle.USER_CURRENT) == 1) {
+            QuickSettingsTile qs = new EqualizerTile(mContext, this);
             qs.setupQuickSettingsTile(inflater, mContainerView);
             mQuickSettingsTiles.add(qs);
         }
