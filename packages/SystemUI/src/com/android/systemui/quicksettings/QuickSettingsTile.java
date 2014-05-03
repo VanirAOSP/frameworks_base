@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class QuickSettingsTile implements OnClickListener {
     protected PhoneStatusBar mStatusbarService;
     protected QuickSettingsController mQsc;
     private final Handler mHandler;
+    private static Vibrator mVibrator;
 
     private static SettingsObserver mObserver;
 
@@ -74,22 +76,27 @@ public class QuickSettingsTile implements OnClickListener {
 
         public boolean getFlip() { return mFlip; }
         public boolean getCollapse() { return shouldCollapse; }
+        public boolean getVibrate() { return mVibrate }
 
         public SettingsObserver(Context context, Handler handler) {
             super(handler);
             mResolver = context.getContentResolver();
             mFlipUri = Settings.System.getUriFor(Settings.System.QUICK_SETTINGS_TILES_FLIP);
             mCollapseUri = Settings.System.getUriFor(Settings.System.QS_COLLAPSE_PANEL);
+            mVibrateUri = Settings.System.getUriFor(Settings.System.QUICK_SETTINGS_TILES_VIBRATE);
         }
 
         private void observe() {
             mResolver.registerContentObserver(mFlipUri, false, this);
             mResolver.registerContentObserver(mCollapseUri, false, this);
+            mResolver.registerContentObserver(mVibrateUri, false, this);
 
             mFlip = Settings.System.getInt(mResolver,
                 Settings.System.QUICK_SETTINGS_TILES_FLIP, 0) == 1;
             shouldCollapse = Settings.System.getIntForUser(mResolver,
                 Settings.System.QS_COLLAPSE_PANEL, 0, UserHandle.USER_CURRENT) == 1;
+            mVibrate = Settings.System.getInt(mResolver,
+                Settings.System.QUICK_SETTINGS_TILES_VIBRATE, 0) == 1;
         }
 
         private void unobserve() {
@@ -101,9 +108,12 @@ public class QuickSettingsTile implements OnClickListener {
             if (uri.equals(mFlipUri)) {
                 mFlip = Settings.System.getInt(mResolver,
                         Settings.System.QUICK_SETTINGS_TILES_FLIP, 0) == 1;
-            } else {
+            } else if {
                 shouldCollapse = Settings.System.getIntForUser(mResolver,
                         Settings.System.QS_COLLAPSE_PANEL, 0, UserHandle.USER_CURRENT) == 1;
+            } else {
+                mVibrate = Settings.System.getInt(mResolver,
+                        Settings.System.QUICK_SETTINGS_TILES_VIBRATE, 0) == 1;
             }
         }
     }
@@ -119,6 +129,7 @@ public class QuickSettingsTile implements OnClickListener {
         mQsc = qsc;
         mTileLayout = layout;
         mHandler = new Handler();
+        mVibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         if (mObserver == null) {
             mObserver = new SettingsObserver(context, mHandler);
         }
@@ -256,5 +267,21 @@ public class QuickSettingsTile implements OnClickListener {
         if (mObserver.getCollapse()) {
             mQsc.mBar.collapseAllPanels(true);
         }
+
+        vibrateTile(30);
+    }
+
+    // tiles can override this where it makes sense
+    protected boolean isVibrationEnabled() {
+        return (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QUICK_SETTINGS_TILES_VIBRATE, 0) == 1);
+    }
+
+    private void vibrateTile(int duration) {
+        if (mVibrator == null
+                || !mVibrator.hasVibrator()
+                || !isVibrationEnabled())
+            return;
+        mVibrator.vibrate(duration);
     }
 }
