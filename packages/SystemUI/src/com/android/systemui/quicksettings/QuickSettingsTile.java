@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class QuickSettingsTile implements OnClickListener {
     protected PhoneStatusBar mStatusbarService;
     protected QuickSettingsController mQsc;
     private final Handler mHandler;
+    protected Vibrator mVibrator;
 
     private static SettingsObserver mObserver;
 
