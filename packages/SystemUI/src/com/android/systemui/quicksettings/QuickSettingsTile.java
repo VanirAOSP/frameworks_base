@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class QuickSettingsTile implements OnClickListener {
     protected PhoneStatusBar mStatusbarService;
     protected QuickSettingsController mQsc;
     private final Handler mHandler;
+    private final Vibrator mVibrator;
 
     private static SettingsObserver mObserver;
 
@@ -119,6 +121,7 @@ public class QuickSettingsTile implements OnClickListener {
         mQsc = qsc;
         mTileLayout = layout;
         mHandler = new Handler();
+        mVibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         if (mObserver == null) {
             mObserver = new SettingsObserver(context, mHandler);
         }
@@ -255,6 +258,24 @@ public class QuickSettingsTile implements OnClickListener {
 
         if (mObserver.getCollapse()) {
             mQsc.mBar.collapseAllPanels(true);
+        }
+
+        vibrateTile(30);
+    }
+
+    // tiles can override this where it makes sense
+    public boolean isVibrationEnabled() {
+        return (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QUICK_SETTINGS_TILES_VIBRATE, 0) == 1);
+    }
+
+    public void vibrateTile(int duration) {
+        if (!isVibrationEnabled()) { return; }
+        if (mVibrator != null
+                || !mVibrator.hasVibrator()
+                || !isVibrationEnabled())
+            return;
+        mVibrator.vibrate(duration);
         }
     }
 }
