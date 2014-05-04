@@ -79,7 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // database gets upgraded properly. At a minimum, please confirm that 'upgradeVersion'
     // is properly propagated through your change.  Not doing so will result in a loss of user
     // settings.
-    private static final int DATABASE_VERSION = 101;
+    private static final int DATABASE_VERSION = 99;
 
     private Context mContext;
     private int mUserHandle;
@@ -1617,27 +1617,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             upgradeVersion = 99;
         }
 
-        if (upgradeVersion == 99) {
-            if (mUserHandle == UserHandle.USER_OWNER) {
-                loadScreenAnimationStyle(db);
-            }
-            upgradeVersion = 100;
-        }
-
-        if (upgradeVersion == 100) {
-            // We're setting some new defaults on these for certain devices, and adding
-            // a default for animator duration. Load them if the user hasn't set them.
-            db.beginTransaction();
-            SQLiteStatement stmt = null;
-            try {
-                stmt = db.compileStatement("INSERT OR IGNORE INTO system(name,value) VALUES(?,?);");
-                loadDefaultAnimationSettings(stmt);
-                    db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
-            upgradeVersion = 101;
-        }
 
         // *** Remember to update DATABASE_VERSION above!
 
@@ -2156,8 +2135,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 R.fraction.def_window_animation_scale, 1);
         loadFractionSetting(stmt, Settings.System.TRANSITION_ANIMATION_SCALE,
                 R.fraction.def_window_transition_scale, 1);
-        loadFractionSetting(stmt, Settings.System.ANIMATOR_DURATION_SCALE,
-                R.fraction.def_animator_duration_scale, 1);
     }
 
     private void loadDefaultHapticSettings(SQLiteStatement stmt) {
