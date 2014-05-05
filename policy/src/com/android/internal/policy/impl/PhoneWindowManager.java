@@ -1885,7 +1885,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mImmersiveModeConfirmation != null) {
             mImmersiveModeConfirmation.loadSetting();
         }
-        resetScreenHelper();
     }
 
     private void resetScreenHelper() {
