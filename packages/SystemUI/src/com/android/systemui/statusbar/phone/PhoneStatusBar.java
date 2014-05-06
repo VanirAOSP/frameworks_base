@@ -452,8 +452,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             Log.e("NavBar", "Exception while checking NavigationBar stuff via WindowManagerStuff", ex);
         }
 
+        boolean userPreference = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.ENABLE_NAVIGATION_BAR, 0) == 1;
+
         if (DEBUG) Log.v(TAG, "hasNavigationBar=" + showNav);
-        if (showNav) {
+        if (showNav || userPreference) {
             forceAddNavigationBar();
         } else {
             removeNavigationBar();
