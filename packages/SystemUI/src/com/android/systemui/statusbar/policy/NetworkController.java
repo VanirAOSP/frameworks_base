@@ -60,7 +60,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     // debug
     static final String TAG = "StatusBar.NetworkController";
     static final boolean DEBUG = false;
-    static final boolean CHATTY = true; // additional diagnostics, but not logspew
+    static final boolean CHATTY = false; // additional diagnostics, but not logspew
 
     private static final int FLIGHT_MODE_ICON = R.drawable.stat_sys_signal_flightmode;
 
@@ -174,6 +174,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     int mLastCombinedSignalIconId = -1;
     int mLastDataTypeIconId = -1;
     String mLastCombinedLabel = "";
+    private String mCustomLabel = "";
 
     protected boolean mHasMobileDataFeature;
 
@@ -269,6 +270,9 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         updateAirplaneMode();
 
         mLastLocale = mContext.getResources().getConfiguration().locale;
+
+        mCustomLabel = Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.CUSTOM_CARRIER_LABEL);
     }
 
     public void unregisterController(Context context) {
@@ -481,6 +485,8 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
             updateConnectivity(intent);
             refreshViews();
         } else if (action.equals("com.android.settings.LABEL_CHANGED")) {
+            mCustomLabel = Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.CUSTOM_CARRIER_LABEL);
             refreshViews(); 
         } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
             refreshLocale();
@@ -1165,8 +1171,6 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         String mobileLabel = "";
         int N;
         final boolean emergencyOnly = isEmergencyOnly();
-        final String customLabel = Settings.System.getString(mContext.getContentResolver(),
-                Settings.System.CUSTOM_CARRIER_LABEL);
 
         if (!mHasMobileDataFeature) {
             mDataSignalIconId = mPhoneSignalIconId = 0;
@@ -1327,12 +1331,12 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
                 mQSDataTypeIconId = TelephonyIcons.QS_DATA_R[mInetCondition];
             }
         }
-        
-        if (customLabel != null && customLabel.length() > 0) {  
-            combinedLabel = customLabel;  
-            mobileLabel = customLabel;  
-            wifiLabel = customLabel;
-    }  
+
+        if (mCustomLabel != null && mCustomLabel.length() > 0) {
+            combinedLabel = mCustomLabel;
+            mobileLabel = mCustomLabel;
+            wifiLabel = mCustomLabel;
+    }
 
         // Cleanup the double quotes
         if (wifiLabel.length() > 0) {

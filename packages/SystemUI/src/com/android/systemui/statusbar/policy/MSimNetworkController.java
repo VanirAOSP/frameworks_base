@@ -34,7 +34,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemProperties;
-import android.provider.Settings;
 import android.provider.Telephony;
 import android.telephony.MSimTelephonyManager;
 import android.telephony.PhoneStateListener;
