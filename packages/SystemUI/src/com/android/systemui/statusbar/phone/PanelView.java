@@ -95,6 +95,7 @@ public class PanelView extends FrameLayout {
     private boolean mRubberbanding;
     private boolean mTracking;
     private int mTrackingPointer;
+    private static boolean mInteracting = false;
 
     private TimeAnimator mTimeAnimator;
     private ObjectAnimator mPeekAnimator;
@@ -425,6 +426,7 @@ public class PanelView extends FrameLayout {
             mHandleView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
+                    mInteracting = true;
                     int pointerIndex = event.findPointerIndex(mTrackingPointer);
                     if (pointerIndex < 0) {
                         pointerIndex = 0;
@@ -498,6 +500,7 @@ public class PanelView extends FrameLayout {
 
                         case MotionEvent.ACTION_UP:
                         case MotionEvent.ACTION_CANCEL:
+                            mInteracting = false;
                             mHandler.removeCallbacks(mChangeBrightnessRunnable);
                             if(!mAutobrightnessEnabled && mStatusBarSliderEnabled && mShouldReactToBrightnessSlider && mTracking) {
                                 postDelayed(mSaveBrightness, 1000);
@@ -563,6 +566,10 @@ public class PanelView extends FrameLayout {
                     return true;
                 }});
         }
+    }
+
+    public static boolean isTouchInteracting() {
+        return mInteracting;
     }
 
     public void fling(float vel, boolean always) {

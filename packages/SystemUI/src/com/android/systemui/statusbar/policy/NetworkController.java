@@ -56,6 +56,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.android.systemui.statusbar.phone.PanelView;
+
 public class NetworkController extends BroadcastReceiver implements DemoMode {
     // debug
     static final String TAG = "StatusBar.NetworkController";
@@ -1164,6 +1166,19 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     // ===== Update the views =======================================================
 
     void refreshViews() {
+
+        // Only update the quicksetting signal icons if we're interacting with the panel bar
+        if (PanelView.isTouchInteracting()) {
+            for (NetworkSignalChangedCallback cb : mSignalsChangedCallbacks) {
+                notifySignalsChangedCallbacks(cb);
+            }
+
+            for (SignalStrengthChangedCallback cb : mSignalStrengthChangedCallbacks) {
+                notifySignalStrengthChangedCallbacks(cb);
+            }
+            return;
+        }
+
         int combinedSignalIconId = 0;
         int combinedActivityIconId = 0;
         String combinedLabel = "";
@@ -1336,7 +1351,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
             combinedLabel = mCustomLabel;
             mobileLabel = mCustomLabel;
             wifiLabel = mCustomLabel;
-    }
+        }
 
         // Cleanup the double quotes
         if (wifiLabel.length() > 0) {

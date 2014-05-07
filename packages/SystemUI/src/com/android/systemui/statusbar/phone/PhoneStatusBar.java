@@ -2698,6 +2698,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // not for you
         if (!notificationIsForCurrentUser(n)) return;
 
+        // nope
+        if (PanelView.isTouchInteracting()) return;
+
         // Show the ticker if one is requested. Also don't do this
         // until status bar window is attached to the window manager,
         // because...  well, what's the point otherwise?  And trying to
