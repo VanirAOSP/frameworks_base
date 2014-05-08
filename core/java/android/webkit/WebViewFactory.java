@@ -122,12 +122,13 @@ public final class WebViewFactory {
     // WebView. This enables us to switch between implementations at runtime.
     private static boolean isClassicWebViewEnabled() {
         String forceProviderName = SystemProperties.get(FORCE_PROVIDER_PROPERTY);
-        if (forceProviderName.isEmpty()) return false;
+        if (forceProviderName.isEmpty()) return true;
 
         Log.i(LOGTAG, String.format("Provider overridden by property: %s=%s",
                 FORCE_PROVIDER_PROPERTY, forceProviderName));
+        if (forceProviderName.equals(FORCE_PROVIDER_PROPERTY_VALUE_CHROMIUM)) return false;
         if (forceProviderName.equals(FORCE_PROVIDER_PROPERTY_VALUE_CLASSIC)) return true;
-        Log.e(LOGTAG, String.format("Defaulting to provider: %s", FORCE_PROVIDER_PROPERTY_VALUE_CHROMIUM));
+        Log.e(LOGTAG, String.format("Unrecognized provider: %s", forceProviderName));
         return true;
     }
 
