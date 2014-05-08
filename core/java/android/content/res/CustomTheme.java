@@ -229,7 +229,7 @@ public final class CustomTheme implements Cloneable, Parcelable, Comparable<Cust
             if (theme == null) return;
             mIconPkgName = theme.mIconPackPkgName;
             mThemePkgName = theme.mThemePackageName;
-            mSystemUiPkgName = theme.mThemePackageName;
+            mSystemUiPkgName = theme.mIconPackPkgName;
             mFontPkgName = theme.mFontPkgName;
         }
 

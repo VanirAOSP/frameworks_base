@@ -502,7 +502,6 @@ public class ThemeService extends IThemeService.Stub {
 
         if (components.contains(ThemesContract.ThemesColumns.MODIFIES_OVERLAYS)) {
             builder.overlay(mPkgName);
-            builder.systemUi(mPkgName);
         }
 
         if (components.contains(ThemesContract.ThemesColumns.MODIFIES_FONTS)) {
