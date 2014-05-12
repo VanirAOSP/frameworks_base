@@ -1644,7 +1644,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         if (leftClock) {
             nlo.setVisibility(View.GONE);
-            updateCarrierLabelVisibility(false);
             return;
         }
 
@@ -1665,8 +1664,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 })
                 .start();
         }
-
-        updateCarrierLabelVisibility(false);
     }
 
     public void showClock() {
@@ -2063,7 +2060,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 ObjectAnimator.ofFloat(mHaloButton, View.ALPHA, 1f)
                     .setDuration(FLIP_DURATION));
         }
-        setAreThereNotifications(); // this will show/hide the clear button as necessary and update the carrier label
+        setAreThereNotifications(); // this will show/hide the clear button as necessary
         mNotificationPanel.postDelayed(new Runnable() {
             public void run() {
                 mAnimatingFlip = false;
@@ -2487,6 +2484,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
 
                 setAreThereNotifications();
+                updateCarrierLabelVisibility(false);
             }
 
             // update status bar mode
