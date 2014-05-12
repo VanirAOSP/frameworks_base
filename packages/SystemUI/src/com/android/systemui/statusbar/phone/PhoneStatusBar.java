@@ -188,6 +188,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private float mFlingGestureMaxOutputVelocityPx; // how fast can it really go? (should be a little
                                                     // faster than mSelfCollapseVelocityPx)
+    private boolean clearable;
 
     PhoneStatusBarPolicy mIconPolicy;
 
@@ -1598,7 +1599,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     @Override
     protected void setAreThereNotifications() {
         final boolean any = mNotificationData.size() > 0;
-        final boolean clearable = any && mNotificationData.hasClearableItems();
+        clearable = any && mNotificationData.hasClearableItems();
 
         if (SPEW) {
             Log.d(TAG, "setAreThereNotifications: N=" + mNotificationData.size()
@@ -1611,32 +1612,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 && mScrollView.getVisibility() != View.VISIBLE) {
             // the flip settings panel is unequivocally showing; we should not be shown
             mClearButton.setVisibility(View.GONE);
-        } else if (mClearButton.isShown()) {
-            if (clearable != (mClearButton.getAlpha() == 1.0f)) {
-                ObjectAnimator clearAnimation = ObjectAnimator.ofFloat(
-                        mClearButton, "alpha", clearable ? 1.0f : 0.0f).setDuration(250);
-                clearAnimation.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (mClearButton.getAlpha() <= 0.0f) {
-                            mClearButton.setVisibility(View.GONE);
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        if (mClearButton.getAlpha() <= 0.0f) {
-                            mClearButton.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
-                clearAnimation.start();
-            }
         } else {
-            mClearButton.setAlpha(clearable ? 1.0f : 0.0f);
             mClearButton.setVisibility(clearable ? View.VISIBLE : View.GONE);
+            mClearButton.setAlpha(clearable ? 1.0f : 0.0f);
+            mClearButton.setEnabled(clearable);
         }
-        mClearButton.setEnabled(clearable);
 
         if (any) {
             final View nlo = mStatusBarView.findViewById(R.id.notification_lights_out);
@@ -2006,6 +1986,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         final boolean halfWayDone = mScrollView.getVisibility() == View.VISIBLE;
         final int zeroOutDelays = halfWayDone ? 0 : 1;
 
+        mHaloButtonVisible = true;
+        updateHaloButton();
+        setAreThereNotifications(); // determine if the clear button is necessary
+
         if (!halfWayDone) {
             mScrollView.setScaleX(0f);
             mFlipSettingsView.setScaleX(1f);
@@ -2055,14 +2039,20 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             ObjectAnimator.ofFloat(mSettingsButton, View.ALPHA, 1f)
                 .setDuration(FLIP_DURATION));
 
+        if (clearable) {
+            mClearButton.setVisibility(View.VISIBLE);
+            mClearButtonAnim = start(
+                ObjectAnimator.ofFloat(mClearButton, View.ALPHA, 1f)
+                    .setDuration(FLIP_DURATION));
+        }
+
         if (mHaloEnabled) {
-            mHaloButtonVisible = true;
-            updateHaloButton();
+            mHaloButton.setVisibility(View.VISIBLE);
             mHaloButtonAnim = start(
                 ObjectAnimator.ofFloat(mHaloButton, View.ALPHA, 1f)
                     .setDuration(FLIP_DURATION));
         }
-        setAreThereNotifications(); // this will show/hide the clear button as necessary
+
         mNotificationPanel.postDelayed(new Runnable() {
             public void run() {
                 mAnimatingFlip = false;
@@ -2152,7 +2142,16 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 mRibbonView.setVisibility(View.VISIBLE);
                 mRibbonView.setScaleX(-progress);
             }
+            if (clearable) {
+                mClearButton.setVisibility(View.VISIBLE);
+                mClearButton.setAlpha(-progress);
+            }
+            if (mHaloEnabled) {
+                mHaloButton.setVisibility(View.VISIBLE);
+                mHaloButton.setAlpha(-progress);
+            }
             mNotificationButton.setVisibility(View.GONE);
+            mAddTileButton.setVisibility(View.GONE);
         } else { // settings side
             mFlipSettingsView.setScaleX(progress);
             mFlipSettingsView.setVisibility(View.VISIBLE);
@@ -2165,10 +2164,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
             mNotificationButton.setVisibility(View.VISIBLE);
             mNotificationButton.setAlpha(progress);
+            mClearButton.setVisibility(View.GONE);
+            mClearButton.setAlpha(progress);
+            mAddTileButton.setVisibility(View.VISIBLE);
+            mAddTileButton.setAlpha(progress);
+            mHaloButton.setVisibility(View.GONE);
         }
-        mAddTileButton.setVisibility(View.GONE);
-        mClearButton.setVisibility(View.GONE);
-        mHaloButton.setVisibility(View.GONE);
 
         mAnimatingFlip = true;
         updateCarrierLabelVisibility(false);
