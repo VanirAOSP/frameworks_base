@@ -1598,7 +1598,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     @Override
     protected void setAreThereNotifications() {
         final boolean any = mNotificationData.size() > 0;
-
         final boolean clearable = any && mNotificationData.hasClearableItems();
 
         if (SPEW) {
@@ -1643,26 +1642,28 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         final boolean showDot = (any&&!areLightsOn());
         final boolean leftClock = (mLeftClock.getVisibility() == View.VISIBLE);
 
+        if (leftClock) {
+            nlo.setVisibility(View.GONE);
+            updateCarrierLabelVisibility(false);
+            return;
+        }
+
         if (showDot != (nlo.getAlpha() == 1.0f)) {
-            if (leftClock) {
-                nlo.setVisibility(View.GONE);
-            } else {
-                if (showDot) {
-                    nlo.setAlpha(0f);
-                    nlo.setVisibility(View.VISIBLE);
-                }
-                nlo.animate()
-                    .alpha(showDot?1:0)
-                    .setDuration(showDot?750:250)
-                    .setInterpolator(new AccelerateInterpolator(2.0f))
-                    .setListener(showDot ? null : new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator _a) {
-                            nlo.setVisibility(View.GONE);
-                        }
-                    })
-                    .start();
+            if (showDot) {
+                nlo.setAlpha(0f);
+                nlo.setVisibility(View.VISIBLE);
             }
+            nlo.animate()
+                .alpha(showDot?1:0)
+                .setDuration(showDot?750:250)
+                .setInterpolator(new AccelerateInterpolator(2.0f))
+                .setListener(showDot ? null : new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator _a) {
+                        nlo.setVisibility(View.GONE);
+                    }
+                })
+                .start();
         }
 
         updateCarrierLabelVisibility(false);
@@ -2019,6 +2020,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     ObjectAnimator.ofFloat(mScrollView, View.SCALE_X, 1f)
                         .setDuration(FLIP_DURATION_IN)
                     )));
+
         if (mRibbonView != null && mHasQuickAccessSettings) {
             mRibbonViewAnim = start(
                 startDelay(FLIP_DURATION_OUT * zeroOutDelays,
@@ -2028,6 +2030,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                                 .setDuration(FLIP_DURATION_IN)),
                         mRibbonView, View.VISIBLE)));
         }
+
         mFlipSettingsViewAnim = start(
             setVisibilityWhenDone(
                 interpolator(mAccelerateInterpolator,
@@ -2035,33 +2038,32 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                         )
                     .setDuration(FLIP_DURATION_OUT),
                 mFlipSettingsView, View.INVISIBLE));
+
         mNotificationButtonAnim = start(
             setVisibilityWhenDone(
                 ObjectAnimator.ofFloat(mNotificationButton, View.ALPHA, 0f)
                     .setDuration(FLIP_DURATION),
                 mNotificationButton, View.INVISIBLE));
+
         mAddTileButtonAnim = start(
             setVisibilityWhenDone(
                 ObjectAnimator.ofFloat(mAddTileButton, View.ALPHA, 0f)
                     .setDuration(FLIP_DURATION),
                 mAddTileButton, View.INVISIBLE));
+
         mSettingsButton.setVisibility(View.VISIBLE);
         mSettingsButtonAnim = start(
             ObjectAnimator.ofFloat(mSettingsButton, View.ALPHA, 1f)
                 .setDuration(FLIP_DURATION));
-        mHaloButtonVisible = true;
-        updateHaloButton();
-        mHaloButtonAnim = start(
-            ObjectAnimator.ofFloat(mHaloButton, View.ALPHA, 1f)
-                .setDuration(FLIP_DURATION));
-//        mEditModeButtonAnim = start(
-//            setVisibilityWhenDone(
-//                ObjectAnimator.ofFloat(mEditModeButton, View.ALPHA, 0f)
-//                    .setDuration(FLIP_DURATION),
-//                mEditModeButton, View.INVISIBLE));
-        mClearButton.setVisibility(View.VISIBLE);
-        mClearButton.setAlpha(0f);
-        setAreThereNotifications(); // this will show/hide the button as necessary
+
+        if (mHaloEnabled) {
+            mHaloButtonVisible = true;
+            updateHaloButton();
+            mHaloButtonAnim = start(
+                ObjectAnimator.ofFloat(mHaloButton, View.ALPHA, 1f)
+                    .setDuration(FLIP_DURATION));
+        }
+        setAreThereNotifications(); // this will show/hide the clear button as necessary and update the carrier label
         mNotificationPanel.postDelayed(new Runnable() {
             public void run() {
                 mAnimatingFlip = false;
@@ -2132,7 +2134,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     public void partialFlip(float progress) {
         if (mFlipSettingsViewAnim != null) mFlipSettingsViewAnim.cancel();
         if (mScrollViewAnim != null) mScrollViewAnim.cancel();
+        if (mRibbonViewAnim != null) mRibbonViewAnim.cancel();
         if (mSettingsButtonAnim != null) mSettingsButtonAnim.cancel();
+        if (mHaloButtonAnim != null) mHaloButtonAnim.cancel();
         if (mNotificationButtonAnim != null) mNotificationButtonAnim.cancel();
         if (mClearButtonAnim != null) mClearButtonAnim.cancel();
         if (mAddTileButtonAnim != null) mAddTileButtonAnim.cancel();
@@ -2150,7 +2154,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 mRibbonView.setScaleX(-progress);
             }
             mNotificationButton.setVisibility(View.GONE);
-            mAddTileButton.setVisibility(View.GONE);
         } else { // settings side
             mFlipSettingsView.setScaleX(progress);
             mFlipSettingsView.setVisibility(View.VISIBLE);
@@ -2163,9 +2166,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
             mNotificationButton.setVisibility(View.VISIBLE);
             mNotificationButton.setAlpha(progress);
-            mAddTileButton.setVisibility(View.VISIBLE);
-            mAddTileButton.setAlpha(progress);
         }
+        mAddTileButton.setVisibility(View.GONE);
         mClearButton.setVisibility(View.GONE);
         mHaloButton.setVisibility(View.GONE);
 
@@ -2205,6 +2207,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     ObjectAnimator.ofFloat(mFlipSettingsView, View.SCALE_X, 1f)
                         .setDuration(FLIP_DURATION_IN)
                     )));
+
         mScrollViewAnim = start(
             setVisibilityWhenDone(
                 interpolator(mAccelerateInterpolator,
@@ -2212,6 +2215,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                         )
                     .setDuration(FLIP_DURATION_OUT),
                 mScrollView, View.INVISIBLE));
+
         if (mRibbonView != null) {
             mRibbonViewAnim = start(
                 setVisibilityWhenDone(
@@ -2221,29 +2225,36 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                         .setDuration(FLIP_DURATION_OUT),
                     mRibbonView, View.GONE));
         }
+
         mSettingsButtonAnim = start(
             setVisibilityWhenDone(
                 ObjectAnimator.ofFloat(mSettingsButton, View.ALPHA, 0f)
                     .setDuration(FLIP_DURATION),
                     mScrollView, View.INVISIBLE));
-         mHaloButtonAnim = start(
-            setVisibilityWhenDone(
-                ObjectAnimator.ofFloat(mHaloButton, View.ALPHA, 0f)
-                    .setDuration(FLIP_DURATION),
-                    mScrollView, View.INVISIBLE));
+        if (mHaloEnabled) {
+            mHaloButtonAnim = start(
+                setVisibilityWhenDone(
+                    ObjectAnimator.ofFloat(mHaloButton, View.ALPHA, 0f)
+                        .setDuration(FLIP_DURATION),
+                        mScrollView, View.INVISIBLE));
+        }
+
         mNotificationButton.setVisibility(View.VISIBLE);
         mNotificationButtonAnim = start(
             ObjectAnimator.ofFloat(mNotificationButton, View.ALPHA, 1f)
                 .setDuration(FLIP_DURATION));
+
         mAddTileButton.setVisibility(View.VISIBLE);
         mAddTileButtonAnim = start(
             ObjectAnimator.ofFloat(mAddTileButton, View.ALPHA, 1f)
                 .setDuration(FLIP_DURATION));
+
         mClearButtonAnim = start(
             setVisibilityWhenDone(
                 ObjectAnimator.ofFloat(mClearButton, View.ALPHA, 0f)
                 .setDuration(FLIP_DURATION),
                 mClearButton, View.INVISIBLE));
+
         mNotificationPanel.postDelayed(new Runnable() {
             public void run() {
                 mAnimatingFlip = false;
