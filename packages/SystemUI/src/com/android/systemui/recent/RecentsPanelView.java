@@ -516,6 +516,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                 @Override
                 public void onClick(View v) {
                     clearAllNonLocked();
+                    mClearRecents.setVisibility(View.INVISIBLE);
                 }
             });
         }
