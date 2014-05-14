@@ -17,6 +17,7 @@
 package com.android.systemui.statusbar.phone;
 
 import static com.android.internal.util.cm.QSConstants.*;
+import static com.android.internal.util.cm.QSConstants.TILE_COMPASS;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -36,6 +37,7 @@ import android.view.LayoutInflater;
 
 import com.android.internal.util.cm.QSUtils;
 import com.android.systemui.quicksettings.*;
+import com.android.systemui.quicksettings.CompassTile;
 import com.android.systemui.quicksettings.EqualizerTile;
 
 import java.util.ArrayList;
@@ -243,6 +245,8 @@ public class QuickSettingsController {
                 }
             } else if (tile.equals(TILE_QUICKRECORD)) {
                 qs = new QuickRecordTile(mContext, this);
+            } else if (tile.equals(TILE_COMPASS)) {
+                qs = new CompassTile(mContext, this);
             } else if (tile.contains(TILE_ONTHEGO)) {
                 qs = new OnTheGoTile(mContext, this);
             } else if (tile.equals(TILE_NAVBAR)) {
