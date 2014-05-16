@@ -2328,11 +2328,12 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
     }
 
     View setAnimation(View view) {
+        // Set the animation to be displayed
         int mAnim = Settings.System.getInt(mContext.getContentResolver(),Settings.System.LISTVIEW_ANIMATIONS, 0);
+        if (mAnim == 0 || view == null) return view;
+
         int scrollY = 0;
         boolean mDown = false;
-        int temp = Settings.System.getInt(mContext.getContentResolver(), Settings.System.LISTVIEW_SCROLL_DURATION, 0);
-        mListViewDuration = temp * 15;
 
         try {
             scrollY = computeVerticalScrollOffset();
@@ -2340,8 +2341,10 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
             scrollY = mvPosition;
         }
 
-        if(mAnim == 0)
-            return view;
+        // Set the scrolling duration
+        int temp = Settings.System.getInt(mContext.getContentResolver(), Settings.System.LISTVIEW_SCROLL_DURATION, 0);
+        mListViewDuration = temp * 15;
+        if (mListViewDuration == 0) return view;
 
         if(mvPosition < scrollY)
         mDown = true;
@@ -2389,9 +2392,9 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                 anim = new RotateAnimation(180, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);  
                 break;
         }
- //       anim.setDuration(325);
         anim.setDuration(mListViewDuration);
 
+        // choose the animation interpolator
         int mInterpolator = Settings.System.getInt(mContext.getContentResolver(),Settings.System.LISTVIEW_INTERPOLATOR, 0);
         switch (mInterpolator) {
             case 1:
@@ -2416,7 +2419,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                 anim.setInterpolator(AnimationUtils.loadInterpolator(mContext, android.R.anim.bounce_interpolator));
                 break;
         } 
-        if ((view != null) && (anim != null)) {
+        if (anim != null) {
             view.startAnimation(anim);
         }
         return view;
