@@ -272,7 +272,7 @@ public class PhoneStatusBarView extends PanelBar {
         }
 
         mBar.animateHeadsUp(mNotificationPanel == panel, mPanelExpandedFractionSum);
-
-        mBar.updateCarrierLabelVisibility(false);
+        // only update the carrier label when the statusbar is fully opened
+        if (frac == 1.0) mBar.updateAnimationState(true);
     }
 }

@@ -189,6 +189,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private float mFlingGestureMaxOutputVelocityPx; // how fast can it really go? (should be a little
                                                     // faster than mSelfCollapseVelocityPx)
     private boolean clearable;
+    private boolean mAllowCarrierLabelUpdates = true;
 
     PhoneStatusBarPolicy mIconPolicy;
 
@@ -1549,11 +1550,20 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
      * Listen for UI updates and refresh layout.
      */
     public void onUpdateUI() {
-        updateCarrierLabelVisibility(true);
+        if (mAllowCarrierLabelUpdates)
+            updateCarrierLabelVisibility(true);
+    }
+
+    protected void updateAnimationState(boolean value) {
+        if (value) {
+            updateCarrierLabelVisibility(false);
+        }
+        // also block carrier label updates from elsewhere
+        mAllowCarrierLabelUpdates = value;
     }
 
     protected void updateCarrierLabelVisibility(boolean force) {
-        if (!mShowCarrierInPanel) return;
+        if (!mShowCarrierInPanel || mCarrierLabel == null) return;
         // The idea here is to only show the carrier label when there is enough room to see it,
         // i.e. when there aren't enough notifications to fill the panel.
         if (SPEW) {
@@ -1621,7 +1631,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mClearButton.setEnabled(clearable);
         }
 
-        if (any) {
+       if (any) {
             final View nlo = mStatusBarView.findViewById(R.id.notification_lights_out);
             final boolean showDot = (any&&!areLightsOn());
             final boolean leftClock = (mLeftClock.getVisibility() == View.VISIBLE);
@@ -1849,8 +1859,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mPile.setLayoutTransitionsEnabled(true);
         if (mNavigationBarView != null)
             mNavigationBarView.setSlippery(true);
-
-        updateCarrierLabelVisibility(true);
 
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
 
@@ -2175,7 +2183,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         mAnimatingFlip = true;
-        updateCarrierLabelVisibility(false);
+        if (progress < 0f) {
+            updateAnimationState(progress == -1f);
+        }
     }
 
     public void flipToSettings() {
@@ -2263,7 +2273,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 mAnimatingFlip = false;
             }
         }, FLIP_DURATION - 150);
-        updateCarrierLabelVisibility(false);
     }
 
     public void flipPanels() {
@@ -2490,7 +2499,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
 
                 setAreThereNotifications();
-                updateCarrierLabelVisibility(false);
             }
 
             // update status bar mode
