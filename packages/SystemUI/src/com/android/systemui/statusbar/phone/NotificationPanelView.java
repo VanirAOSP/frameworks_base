@@ -74,7 +74,7 @@ public class NotificationPanelView extends PanelView {
     private float mFlipOffset;
     private float mSwipeDirection;
     private boolean mTrackingSwipe;
-    private boolean mSwipeTriggered;
+    private static boolean mSwipeTriggered;
 
     private int mPullDown;
     private SettingsObserver mObserver;
@@ -357,6 +357,10 @@ public class NotificationPanelView extends PanelView {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         setNotificationWallpaper();
+    }
+
+    public static boolean isAnimating() {
+        return mSwipeTriggered;
     }
 
     private void setNotificationWallpaper() {
