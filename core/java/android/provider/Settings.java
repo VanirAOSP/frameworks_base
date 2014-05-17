@@ -6605,6 +6605,19 @@ public final class Settings {
          public static final String PRIVACY_GUARD_DEFAULT = "privacy_guard_default";
 
         /**
+         * Default theme to use.  If empty, use holo.
+         * @hide
+         */
+        public static final String DEFAULT_THEME_PACKAGE = "default_theme_package";
+
+        /**
+         * A '|' delimited list of theme components to apply from the default theme on first boot.
+         * Components can be one or more of the "mods_XXXXXXX" found in
+         * {@link ThemesContract$ThemesColumns}.  Leaving this field blank assumes all components
+         * will be applied.
+         *
+         * ex: mods_icons|mods_overlays|mods_homescreen
+         *
          * Performance profile
          * @see config_perf_profile_prop in frameworks/base/core/res/res/values/config.xml
          * @hide
@@ -6616,6 +6629,18 @@ public final class Settings {
          * @hide
          */
         public static final String APP_PERFORMANCE_PROFILES_ENABLED = "app_perf_profiles_enabled";
+
+        /**
+         * @hide
+         */
+        public static final String DEFAULT_THEME_COMPONENTS = "default_theme_components";
+
+        /**
+         * Whether the default theme was applied on the first boot.
+         * @hide
+         */
+        public static final String DEFAULT_THEME_APPLIED_ON_FIRST_BOOT =
+                "default_theme_applied_on_first_boot";
 
         /**
          * This are the settings to be backed up.
