@@ -208,4 +208,8 @@
 
     <!-- Default value of Settings.System.NOISE_SUPPRESSION -->
     <bool name="def_noise_suppression">false</bool>
+
+
+    <!-- Default value of Settings.System.DOUBLE_TAP_SLEEP_GESTURE -->
+    <integer name="def_double_tap_sleep_gesture">1</integer>
 </resources>
