@@ -1444,11 +1444,12 @@ public class LockPatternUtils {
                 || mode == DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC
                 || mode == DevicePolicyManager.PASSWORD_QUALITY_COMPLEX;
 
-        final boolean secure = isPattern && isLockPatternEnabled() && savedPatternExists()
-                || isPassword && savedPasswordExists()
-                || isGesture && isLockGestureEnabled() && savedGestureExists();
-        return secure;
-        }
+        return ((isPattern && isLockPatternEnabled() && savedPatternExists())
+                || (isPassword && savedPasswordExists())
+                || (isGesture && isLockGestureEnabled() && savedGestureExists())) &&
+                getActiveProfileLockMode() == Profile.LockMode.DEFAULT;
+    }
+
     public int getActiveProfileLockMode() {
         // Check device policy
         DevicePolicyManager dpm = (DevicePolicyManager)
