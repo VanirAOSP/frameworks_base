@@ -775,21 +775,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     UserHandle.USER_ALL);
 
             updateSettings();
-            updateImmersiveSettings();
         }
 
         @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            if (uri.equals(Settings.System.getUriFor(Settings.System.GLOBAL_IMMERSIVE_MODE_STATE)) ||
-                uri.equals(Settings.System.getUriFor(Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE)) ||
-                uri.equals(Settings.System.getUriFor(Settings.System.IMMERSIVE_ORIENTATION)) ||
-                uri.equals(Settings.System.getUriFor(Settings.System.EXPANDED_DESKTOP)) ||
-                uri.equals(Settings.Secure.getUriFor(Settings.Secure.IMMERSIVE_MODE_CONFIRMATIONS))) {
-                updateImmersiveSettings();
-            } else {
-                updateSettings();
-                updateRotation(false);
-            }
+        public void onChange(boolean selfChange) {
+            updateSettings();
+            updateRotation(false);
         }
     }
 
@@ -1740,34 +1731,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    public void updateImmersiveSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-        synchronized (mLock) {
-            // Immersive desktop preferences
-            immersiveState = Settings.System.getIntForUser(resolver,
-                        Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
-            expanded = Settings.System.getIntForUser(resolver,
-                    Settings.System.EXPANDED_DESKTOP, 0, UserHandle.USER_CURRENT) == 1;
-
-            orientationImmersiveState = Settings.System.getInt(resolver,
-                    Settings.System.IMMERSIVE_ORIENTATION, 0);
-
-            if (!immersiveState || orientationImmersiveState == 1) {
-                immersiveModeBehavior = 0;
-            } else {
-                immersiveModeBehavior = Settings.System.getIntForUser(resolver,
-                        Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
-            }
-
-            if (mGlobalImmersiveModeStyle != immersiveModeBehavior) {
-                mGlobalImmersiveModeStyle = immersiveModeBehavior;
-            }
-            if (mImmersiveModeConfirmation != null) {
-                mImmersiveModeConfirmation.loadSetting();
-            }
-        }
-    }
-
     public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         boolean updateRotation = false;
@@ -1800,6 +1763,32 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     && !mCameraWakeScreen);
             LOLprofile = Settings.System.getInt(resolver,
                     Settings.System.IMMERSIVE_LOL_PROFILE, 0) == 1;
+
+            // Immersive desktop preferences
+            immersiveState = Settings.System.getIntForUser(resolver,
+                        Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
+            if (immersiveState) {
+                expanded = Settings.System.getIntForUser(resolver,
+                        Settings.System.EXPANDED_DESKTOP, 0, UserHandle.USER_CURRENT) == 1;
+
+                orientationImmersiveState = Settings.System.getInt(resolver,
+                        Settings.System.IMMERSIVE_ORIENTATION, 0);
+
+                if (!immersiveState || orientationImmersiveState == 1) {
+                    immersiveModeBehavior = 0;
+                } else {
+                    immersiveModeBehavior = Settings.System.getIntForUser(resolver,
+                            Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
+                }
+
+                if (mGlobalImmersiveModeStyle != immersiveModeBehavior) {
+                    mGlobalImmersiveModeStyle = immersiveModeBehavior;
+                }
+                if (mImmersiveModeConfirmation != null) {
+                    mImmersiveModeConfirmation.loadSetting();
+                }
+            }
+
             final boolean currentWants = mHasNavigationBar || Settings.System.getInt(resolver, Settings.System.ENABLE_NAVIGATION_BAR, 0) != 0;
 
             int NavHeight = Settings.System.getInt(resolver,
