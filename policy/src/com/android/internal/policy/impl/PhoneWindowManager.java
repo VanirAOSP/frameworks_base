@@ -1542,6 +1542,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mPressOnMenuBehavior = Settings.System.getIntForUser(resolver,
                         Settings.System.KEY_MENU_ACTION,
                         KEY_ACTION_MENU, UserHandle.USER_CURRENT);
+
+                mLongPressOnMenuBehavior = mContext.getResources().getInteger(
+                        com.android.internal.R.integer.config_longPressOnMenuBehavior);
+                if (mLongPressOnMenuBehavior == KEY_ACTION_NOTHING && !hasAssist) {
+                    mLongPressOnMenuBehavior = KEY_ACTION_SEARCH;
+                }
                 mLongPressOnMenuBehavior = Settings.System.getIntForUser(resolver,
                         Settings.System.KEY_MENU_LONG_PRESS_ACTION,
                         mLongPressOnMenuBehavior, UserHandle.USER_CURRENT);
@@ -2948,9 +2954,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     if (mMenuPressed) {
                         mMenuPressed = false;
                         cancelPreloadRecentApps();
+                        performKeyAction(mPressOnMenuBehavior);
                     } else if (mLongPressOnMenuBehavior != KEY_ACTION_NOTHING) {
                         return -1;
                     }
+                } else if (mLongPressOnMenuBehavior != KEY_ACTION_NOTHING) {
+                    return -1;
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_SEARCH) {
