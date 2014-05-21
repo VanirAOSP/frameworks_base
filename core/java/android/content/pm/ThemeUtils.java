@@ -492,6 +492,22 @@ public class ThemeUtils {
         context.registerReceiver(receiver, filter);
     }
 
+    public static String getLockscreenWallpaperPath(AssetManager assetManager) throws IOException {
+        final String WALLPAPER_JPG = "wallpaper.jpg";
+        final String WALLPAPER_PNG = "wallpaper.png";
+
+        String[] assets = assetManager.list("lockscreen");
+        if (assets == null || assets.length == 0) return null;
+        for (String asset : assets) {
+            if (WALLPAPER_JPG.equals(asset)) {
+                return "lockscreen/" + WALLPAPER_JPG;
+            } else if (WALLPAPER_PNG.equals(asset)) {
+                return "lockscreen/" + WALLPAPER_PNG;
+            }
+        }
+        return null;
+    }
+
     public static String getWallpaperPath(AssetManager assetManager) throws IOException {
         String[] assets = assetManager.list("wallpapers");
         if (assets == null || assets.length == 0) return null;
