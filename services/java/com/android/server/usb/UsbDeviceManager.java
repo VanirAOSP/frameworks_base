@@ -127,7 +127,7 @@ public class UsbDeviceManager {
         public void onChange(boolean selfChange) {
             String buildType = System.getProperty("ro.build.type");
             int defInt;
-            if (buildType.equalsIgnoreCase("eng")) {
+            if (buildType != null && buildType.equalsIgnoreCase("eng")) {
                 defInt = 1;
             } else {
                 defInt = 0;
