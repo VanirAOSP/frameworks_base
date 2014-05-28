@@ -1767,26 +1767,25 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // Immersive desktop preferences
             immersiveState = Settings.System.getIntForUser(resolver,
                         Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
-            if (immersiveState) {
-                expanded = Settings.System.getIntForUser(resolver,
-                        Settings.System.EXPANDED_DESKTOP, 0, UserHandle.USER_CURRENT) == 1;
 
-                orientationImmersiveState = Settings.System.getInt(resolver,
-                        Settings.System.IMMERSIVE_ORIENTATION, 0);
+            expanded = Settings.System.getIntForUser(resolver,
+                    Settings.System.EXPANDED_DESKTOP, 0, UserHandle.USER_CURRENT) == 1;
 
-                if (!immersiveState || orientationImmersiveState == 1) {
-                    immersiveModeBehavior = 0;
-                } else {
-                    immersiveModeBehavior = Settings.System.getIntForUser(resolver,
-                            Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
-                }
+            orientationImmersiveState = Settings.System.getInt(resolver,
+                    Settings.System.IMMERSIVE_ORIENTATION, 0);
 
-                if (mGlobalImmersiveModeStyle != immersiveModeBehavior) {
-                    mGlobalImmersiveModeStyle = immersiveModeBehavior;
-                }
-                if (mImmersiveModeConfirmation != null) {
-                    mImmersiveModeConfirmation.loadSetting();
-                }
+            if (!immersiveState || orientationImmersiveState == 1) {
+                immersiveModeBehavior = 0;
+            } else {
+                immersiveModeBehavior = Settings.System.getIntForUser(resolver,
+                        Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
+            }
+
+            if (mGlobalImmersiveModeStyle != immersiveModeBehavior) {
+                mGlobalImmersiveModeStyle = immersiveModeBehavior;
+            }
+            if (mImmersiveModeConfirmation != null) {
+                mImmersiveModeConfirmation.loadSetting();
             }
 
             final boolean currentWants = mHasNavigationBar || Settings.System.getInt(resolver, Settings.System.ENABLE_NAVIGATION_BAR, 0) != 0;
