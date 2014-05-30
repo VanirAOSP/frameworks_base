@@ -252,6 +252,8 @@ public class NavigationBarView extends LinearLayout {
 
         mCameraDisabledByDpm = isCameraDisabledByDpm();
         watchForDevicePolicyChanges();
+
+        mLockPatternUtils = new LockPatternUtils(context);
         updateNavbarDisabledForPrefs();
     }
 
@@ -448,8 +450,8 @@ public class NavigationBarView extends LinearLayout {
         }
 
         final boolean showSearch = disableHome && !disableSearch && mPrefNavring;
-        final boolean showCamera = showSearch && !mCameraDisabledByDpm && mLockPatternUtils.getCameraEnabled();
-        final boolean showNotifs = showSearch && mPrefLockscreen;
+        final boolean showCamera = disableHome && !disableSearch && !mCameraDisabledByDpm && mLockPatternUtils.getCameraEnabled();
+        final boolean showNotifs = disableHome && !disableSearch && mPrefLockscreen;
 
         setVisibleOrGone(getSearchLight(), showSearch);
         setVisibleOrGone(getCameraButton(), showCamera);
