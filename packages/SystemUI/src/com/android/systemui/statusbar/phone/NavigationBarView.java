@@ -447,24 +447,9 @@ public class NavigationBarView extends LinearLayout {
             }
         }
 
-<<<<<<< HEAD
-        final boolean showSearch = disableHome && !disableSearch &&
-                Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
-        final boolean showCamera = showSearch && !mCameraDisabledByDpm
-                && mLockUtils.getCameraEnabled();
-        final boolean showNotifs = disableHome && !disableSearch &&
-            Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.LOCKSCREEN_NOTIFICATIONS, 0) == 1
-            && Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1
-            && Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
-=======
         final boolean showSearch = disableHome && !disableSearch && mPrefNavring;
         final boolean showCamera = showSearch && !mCameraDisabledByDpm && mLockPatternUtils.getCameraEnabled();
         final boolean showNotifs = showSearch && mPrefLockscreen;
->>>>>>> 0ca5399... NavigationBarView: Reduce getInt instances occuring in setDisabledFlags()
 
         setVisibleOrGone(getSearchLight(), showSearch);
         setVisibleOrGone(getCameraButton(), showCamera);
