@@ -444,11 +444,11 @@ public class NavigationBarView extends LinearLayout {
                         Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
         final boolean showCamera = showSearch && !mCameraDisabledByDpm
                 && mLockUtils.getCameraEnabled();
-        final boolean showNotifs = showSearch &&
+        final boolean showNotifs = disableHome && !disableSearch &&
             Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.LOCKSCREEN_NOTIFICATIONS, 1) == 1
+                    Settings.System.LOCKSCREEN_NOTIFICATIONS, 0) == 1
             && Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.ACTIVE_NOTIFICATIONS, 1) == 1
+                    Settings.System.ACTIVE_NOTIFICATIONS, 0) == 1
             && Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
 
