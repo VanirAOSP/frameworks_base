@@ -260,6 +260,9 @@ public class ViewConfiguration {
     private final int mOverflingDistance;
     private final boolean mFadingMarqueeEnabled;
 
+    private boolean sHasPermanentMenuKey;
+    private boolean sHasPermanentMenuKeySet;
+
     static final SparseArray<ViewConfiguration> sConfigurations =
             new SparseArray<ViewConfiguration>(2);
 
