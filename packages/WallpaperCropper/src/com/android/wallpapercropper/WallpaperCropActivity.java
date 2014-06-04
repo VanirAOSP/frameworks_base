@@ -130,6 +130,7 @@ public class WallpaperCropActivity extends Activity {
                     }
                 });
         mSetWallpaperButton = findViewById(R.id.set_wallpaper_button);
+        mSetWallpaperButton.setVisibility(View.VISIBLE);
     }
 
     public boolean enableRotation() {
