@@ -42,9 +42,7 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
         mOnLongClick = new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (mLocationEnabled) {
-                    mLocationController.switchLocationMode(mLocationMode);
-                }
+                startSettingsActivity(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 return true;
             }
         };
