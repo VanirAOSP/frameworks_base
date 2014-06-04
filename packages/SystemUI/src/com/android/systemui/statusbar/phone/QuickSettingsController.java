@@ -65,8 +65,9 @@ public class QuickSettingsController {
     public PhoneStatusBar mStatusBarService;
     private final String mSettingsKey;
     private final boolean mRibbonMode;
-    private static boolean _firstShot = true;
 
+    private static boolean _firstShot = true;
+    private static boolean isMultiSimEnabled;
     private static boolean mPerformanceTileSupport;
     private static boolean cameraSupported;
     private static boolean bluetoothSupported;
@@ -101,6 +102,7 @@ public class QuickSettingsController {
         mQuickSettingsTiles = new ArrayList<QuickSettingsTile>();
         mSettingsKey = settingsKey;
         mRibbonMode = ribbonMode;
+        getOptionsEnabled();
     }
 
     public boolean isRibbonMode() {
@@ -110,8 +112,6 @@ public class QuickSettingsController {
     void loadTiles() {
         // Reset reference tiles
         mIMETile = null;
-
-        getOptionsEnabled();
 
         if (!bluetoothSupported) {
             TILES_DEFAULT.remove(TILE_BLUETOOTH);
@@ -158,7 +158,7 @@ public class QuickSettingsController {
             } else if (tile.equals(TILE_SETTINGS)) {
                 qs = new PreferencesTile(mContext, this);
             } else if (tile.equals(TILE_WIFI)) {
-                if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+                if (isMultiSimEnabled) {
                     qs = new WiFiTile(mContext, this, mStatusBarService.mMSimNetworkController);
                 } else {
                     qs = new WiFiTile(mContext, this, mStatusBarService.mNetworkController);
@@ -184,7 +184,7 @@ public class QuickSettingsController {
             } else if (tile.equals(TILE_POWERMENU)) {
                 qs = new PowerMenuTile(mContext, this);
             } else if (tile.equals(TILE_MOBILEDATA) && mobileDataSupported) {
-                if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+                if (isMultiSimEnabled) {
                     qs = new MobileNetworkTile(mContext, this, mStatusBarService.mMSimNetworkController);
                 } else {
                     qs = new MobileNetworkTile(mContext, this, mStatusBarService.mNetworkController);
@@ -192,7 +192,7 @@ public class QuickSettingsController {
             } else if (tile.equals(TILE_LOCKSCREEN)) {
                 qs = new ToggleLockscreenTile(mContext, this);
             } else if (tile.equals(TILE_NETWORKMODE) && mobileDataSupported) {
-                if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+                if (isMultiSimEnabled) {
                     qs = new MobileNetworkTypeTile(mContext, this, mStatusBarService.mMSimNetworkController);
                 } else {
                     qs = new MobileNetworkTypeTile(mContext, this, mStatusBarService.mNetworkController);
@@ -200,7 +200,7 @@ public class QuickSettingsController {
             } else if (tile.equals(TILE_AUTOROTATE)) {
                 qs = new AutoRotateTile(mContext, this, mHandler);
             } else if (tile.equals(TILE_AIRPLANE)) {
-                if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+                if (isMultiSimEnabled) {
                     qs = new AirplaneModeTile(mContext, this, mStatusBarService.mMSimNetworkController);
                 } else {
                     qs = new AirplaneModeTile(mContext, this, mStatusBarService.mNetworkController);
@@ -312,6 +312,7 @@ public class QuickSettingsController {
     private void getOptionsEnabled() {
         if (_firstShot) {
             final ContentResolver resolver = mContext.getContentResolver();
+            isMultiSimEnabled = MSimTelephonyManager.getDefault().isMultiSimEnabled();
             // Filter items not compatible with device
             cameraSupported = QSUtils.deviceSupportsCamera();
             bluetoothSupported = QSUtils.deviceSupportsBluetooth();
