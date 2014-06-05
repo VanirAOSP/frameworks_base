@@ -32,6 +32,7 @@ import android.telephony.Rlog;
 import android.provider.Settings;
 import android.util.Log;
 import android.provider.Settings.SettingNotFoundException;
+import android.util.Log;
 
 import com.android.internal.telephony.IPhoneSubInfo;
 import com.android.internal.telephony.ITelephony;

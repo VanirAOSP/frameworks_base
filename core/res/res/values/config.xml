@@ -1417,6 +1417,18 @@
 
     <!-- Legacy longpress back timeout.  Note: this is no longer functional but remains
     in symbols.xml for device tree overlay compatibility -->
+    
+    <!-- NOT USED IN CM. see config_deviceHardwareKeys
+         Retaining this entry to preserve config ID sequences
+
+         Override the default detection behavior for the framework method
+         android.view.ViewConfiguration#hasPermanentMenuKey().
+         Valid settings are:
+         0 - No change. Use the default autodetection behavior.
+         1 - The device DOES have a permanent menu key; ignore autodetection.
+         2 - The device DOES NOT have a permanent menu key; ignore autodetection. -->
+    <integer name="config_overrideHasPermanentMenuKey">0</integer>
+
     <integer name="config_backKillTimeout">2000</integer>
 
     <!-- Device has a h/w rotation lock switch -->
@@ -1544,5 +1556,4 @@
          policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
     -->
     <integer name="config_longPressOnMenuBehavior">3</integer>
-
 </resources>

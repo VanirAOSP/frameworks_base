@@ -575,9 +575,7 @@ public:
         if (advances != NULL) {
             env->SetFloatArrayRegion(advances, advancesIndex, count, advancesArray);
         }
-
         delete [] advancesArray;
-
         return totalAdvance;
     }
 

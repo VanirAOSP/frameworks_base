@@ -1115,8 +1115,8 @@
     <string name="editTextMenuTitle" msgid="4909135564941815494">"Операции с текстом"</string>
     <string name="low_internal_storage_view_title" msgid="5576272496365684834">"Недостаточно памяти"</string>
     <string name="low_internal_storage_view_text" msgid="6640505817617414371">"Некоторые функции могут не работать"</string>
-    <string name="app_running_notification_title" msgid="8718335121060787914">"Приложение «<xliff:g id="APP_NAME">%1$s</xliff:g>» выполняется"</string>
-    <string name="app_running_notification_text" msgid="4653586947747330058">"Нажмите, чтобы получить дополнительные сведения или завершить приложение."</string>
+    <string name="app_running_notification_title" msgid="8718335121060787914">"Приложение \"<xliff:g id="APP_NAME">%1$s</xliff:g>\" выполняется"</string>
+    <string name="app_running_notification_text" msgid="4653586947747330058">"Нажмите, чтобы получить дополнительные данные или выключить приложение."</string>
     <string name="ok" msgid="5970060430562524910">"ОК"</string>
     <string name="cancel" msgid="6442560571259935130">"Отмена"</string>
     <string name="yes" msgid="5362982303337969312">"ОК"</string>
