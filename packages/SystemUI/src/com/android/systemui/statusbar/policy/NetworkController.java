@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.android.systemui.statusbar.phone.PanelView;
+import com.android.systemui.statusbar.phone.NotificationPanelView;
 
 public class NetworkController extends BroadcastReceiver implements DemoMode {
     // debug
@@ -1168,6 +1169,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     void refreshViews() {
 
         // Only update the quicksetting signal icons if we're interacting with the panel bar
+        if (NotificationPanelView.isAnimating()) return;
         if (PanelView.isTouchInteracting()) {
             for (NetworkSignalChangedCallback cb : mSignalsChangedCallbacks) {
                 notifySignalsChangedCallbacks(cb);
