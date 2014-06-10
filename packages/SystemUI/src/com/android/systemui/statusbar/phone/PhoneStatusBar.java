@@ -1201,6 +1201,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         prepareNavigationBarView();
+        checkBarModes();
         try {
             mWindowManager.addView(mNavigationBarView, getNavigationBarLayoutParams());
         } catch (java.lang.IllegalStateException ex) {
