@@ -19,6 +19,7 @@ import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -309,7 +310,7 @@ public class QuickSettingsTile implements OnClickListener {
     @Override
     public void onClick(View v) {
         if (mOnClick != null) {
-            mOnClick.onClick(mTile);
+            mOnClick.onClick(v);
         }
 
         if (mObserver.getCollapse()) {
@@ -336,6 +337,7 @@ public class QuickSettingsTile implements OnClickListener {
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             QuickSettingsTile.this.onClick(mTile);
+            mTile.playSoundEffect(SoundEffectConstants.CLICK);
             return false;
         }
 
@@ -343,6 +345,7 @@ public class QuickSettingsTile implements OnClickListener {
         public void onLongPress(MotionEvent e) {
             if (mOnLongClick != null) {
                 mOnLongClick.onLongClick(mTile);
+                mTile.playSoundEffect(SoundEffectConstants.CLICK);
             }
         }
 
