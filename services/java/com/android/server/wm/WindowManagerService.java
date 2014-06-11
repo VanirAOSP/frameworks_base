@@ -10387,6 +10387,11 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     @Override
+    public void sendHomeAction() {
+        mPolicy.sendHomeAction();
+    }
+
+    @Override
     public void lockNow(Bundle options) {
         mPolicy.lockNow(options);
     }

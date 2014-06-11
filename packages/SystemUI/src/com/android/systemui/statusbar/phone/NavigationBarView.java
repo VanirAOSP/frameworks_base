@@ -90,7 +90,7 @@ public class NavigationBarView extends LinearLayout {
     private float mButtonWidth, mMenuButtonWidth;
     private int mMenuButtonId;
 
-    final boolean mTablet = isTablet(getContext());
+    final boolean mTablet = isTablet(mContext);
 
     private ArrayList<AwesomeButtonInfo> mNavButtons = new ArrayList<AwesomeButtonInfo>();
 
@@ -599,7 +599,7 @@ public class NavigationBarView extends LinearLayout {
         }
     }
 
-    private void updateUserConfig() {
+    private void setupNavigationButtons() {
         mNavButtons.clear();
 
         if (mUserButtons == null || mUserButtons.isEmpty()) {
@@ -636,10 +636,7 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
         }
-    }
 
-    private void setupNavigationButtons() {
-        updateUserConfig();
         final boolean stockThreeButtonLayout = mNavButtons.size() == 3;
         int separatorSize = (int) mMenuButtonWidth;
 
@@ -673,7 +670,7 @@ public class NavigationBarView extends LinearLayout {
             for (int j = 0; j < mNavButtons.size(); j++) {
                 // create the button
                 AwesomeButtonInfo info = mNavButtons.get(j);
-                KeyButtonView button = new KeyButtonView(getContext(), null);
+                KeyButtonView button = new KeyButtonView(mContext, null);
                 button.setButtonActions(info);
                 if (mTablet) {
                     if (mNavButtons.size() <= 4) {
@@ -718,7 +715,7 @@ public class NavigationBarView extends LinearLayout {
             // legacy menu button
             AwesomeButtonInfo menuButtonInfo = new AwesomeButtonInfo(AwesomeConstant.ACTION_MENU.value(),
                     null, null, null);
-            KeyButtonView menuButton = new KeyButtonView(getContext(), null);
+            KeyButtonView menuButton = new KeyButtonView(mContext, null);
             menuButton.setButtonActions(menuButtonInfo);
             menuButton.setImageResource(R.drawable.ic_sysbar_menu);
             menuButton.setLayoutParams(getLayoutParams(landscape, mMenuButtonWidth, 0f));

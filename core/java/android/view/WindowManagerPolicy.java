@@ -1170,6 +1170,12 @@ public interface WindowManagerPolicy {
     public void updateRotationStateForImmersive();
 
     /**
+     * sends ACTION_HOME from AwesomeAction
+     * @hide
+     */
+    public void sendHomeAction();
+
+    /**
      * Specifies whether device can generate KEY_ACTION_MENU keypress
      */
     public boolean hasMenuKeyEnabled();

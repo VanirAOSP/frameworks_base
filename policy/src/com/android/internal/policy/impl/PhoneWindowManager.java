@@ -1245,7 +1245,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         "android.settings.SHOW_INPUT_METHOD_PICKER"));
                 break;
             case KEY_ACTION_POWERMENU:
-                mContext.sendBroadcast(new Intent(Intent.ACTION_REBOOTMENU));
+                showGlobalActionsDialog();
             default:
                 break;
         }
@@ -1945,6 +1945,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mImmersiveModeConfirmation != null) {
             mImmersiveModeConfirmation.loadSetting();
         }
+    }
+
+    @Override
+    public void sendHomeAction() {
+        launchHomeFromHotKey();
     }
 
     private void resetScreenHelper() {
@@ -2845,6 +2850,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 if (mDeviceHardwareKeys != 0 && !virtualKey) {
                     performKeyAction(mPressOnHomeBehavior);
                 } else {
+                    Log.i(TAG, "LAUNCHING KEY ACTION FROM PWM.");
                     launchHomeFromHotKey();
                 }
                 return -1;

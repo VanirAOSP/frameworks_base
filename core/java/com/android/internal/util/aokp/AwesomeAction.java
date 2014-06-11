@@ -43,8 +43,10 @@ import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.InputDevice;
+import android.view.IWindowManager;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.WindowManagerGlobal;
 import android.widget.Toast;
 
 import com.android.internal.R;
@@ -60,6 +62,7 @@ import com.vanir.util.TaskUtils;
 public class AwesomeAction {
 
     public final static String TAG = "AwesomeAction";
+    private static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
 
     private static boolean wtf = true;
     private static boolean ftw;
@@ -68,7 +71,7 @@ public class AwesomeAction {
     }
 
     public static boolean launchAction(final Context mContext, final String action) {
-        if (TextUtils.isEmpty(action) || action.equals(AwesomeConstant.ACTION_NULL.value())) {
+        if (TextUtils.isEmpty(action) || action.equals(NULL_ACTION)) {
             return false;
         }
             AwesomeConstant AwesomeEnum = fromString(action);
@@ -80,20 +83,25 @@ public class AwesomeAction {
                                 ServiceManager.getService(mContext.STATUS_BAR_SERVICE))
                                 .toggleRecentApps();
                     } catch (RemoteException e) {
-                        // let it go.
+                        Log.e(TAG, "RECENTS ACTION FAILED");
                     }
                     break;
                 case ACTION_HOME:
-                    injectKeyDelayed(KeyEvent.KEYCODE_HOME);
+                    IWindowManager mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
+                    try {
+                        mWindowManagerService.sendHomeAction();
+                    } catch (RemoteException e) {
+                        Log.e(TAG, "HOME ACTION FAILED");
+                    }
                     break;
                 case ACTION_BACK:
-                    injectKeyDelayed(KeyEvent.KEYCODE_BACK);
+                    triggerVirtualKeypress(KeyEvent.KEYCODE_BACK);
                     break;
                 case ACTION_MENU:
-                    injectKeyDelayed(KeyEvent.KEYCODE_MENU);
+                    triggerVirtualKeypress(KeyEvent.KEYCODE_MENU);
                     break;
                 case ACTION_SEARCH:
-                    injectKeyDelayed(KeyEvent.KEYCODE_SEARCH);
+                    triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH);
                     break;
                 case ACTION_KILL:
                     Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
@@ -112,7 +120,7 @@ public class AwesomeAction {
                     mContext.startActivity(intentVoice);
                     break;
                 case ACTION_POWER:
-                    injectKeyDelayed(KeyEvent.KEYCODE_POWER);
+                    triggerVirtualKeypress(KeyEvent.KEYCODE_POWER);
                     break;
                 case ACTION_LAST_APP:
                     TaskUtils.toggleLastApp(mContext);
@@ -271,48 +279,17 @@ public class AwesomeAction {
         return list.size() > 0;
     }
 
-    private static void injectKeyDelayed(int keycode) {
-        KeyUp onInjectKey_Up = new KeyUp(keycode);
-        KeyDown onInjectKey_Down = new KeyDown(keycode);
-        mHandler.removeCallbacks(onInjectKey_Down);
-        mHandler.removeCallbacks(onInjectKey_Up);
-        mHandler.post(onInjectKey_Down);
-        mHandler.postDelayed(onInjectKey_Up, 10);
-    }
+    private static void triggerVirtualKeypress(final int keyCode) {
+        InputManager im = InputManager.getInstance();
+        long now = SystemClock.uptimeMillis();
 
-    public static class KeyDown implements Runnable {
-        private int mInjectKeyCode;
+        final KeyEvent downEvent = new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
+                keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                KeyEvent.FLAG_FROM_SYSTEM, InputDevice.SOURCE_KEYBOARD);
+        final KeyEvent upEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_UP);
 
-        public KeyDown(int keycode) {
-            this.mInjectKeyCode = keycode;
-        }
-
-        public void run() {
-            final KeyEvent ev = new KeyEvent(SystemClock.uptimeMillis(),
-                    SystemClock.uptimeMillis(),
-                    KeyEvent.ACTION_DOWN, mInjectKeyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD,
-                    0,
-                    KeyEvent.FLAG_FROM_SYSTEM, InputDevice.SOURCE_KEYBOARD);
-            InputManager.getInstance().injectInputEvent(ev,
-                    InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
-        }
-    }
-
-    public static class KeyUp implements Runnable {
-        private int mInjectKeyCode;
-
-        public KeyUp(int keycode) {
-            this.mInjectKeyCode = keycode;
-        }
-
-        public void run() {
-            final KeyEvent ev = new KeyEvent(SystemClock.uptimeMillis(),
-                    SystemClock.uptimeMillis(),
-                    KeyEvent.ACTION_UP, mInjectKeyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
-                    KeyEvent.FLAG_FROM_SYSTEM, InputDevice.SOURCE_KEYBOARD);
-            InputManager.getInstance().injectInputEvent(ev,
-                    InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
-        }
+        im.injectInputEvent(downEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+        im.injectInputEvent(upEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }
 
     private static Handler mHandler = new Handler() {
