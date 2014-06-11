@@ -112,6 +112,10 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mHighEndGfx;
     private ImageView mClearRecents;
 
+    private TextView memText;
+    private ProgressBar memBar;
+    private int totalMem;
+
     private static Set<Integer> sLockedTasks = new HashSet<Integer>();
 
     public static interface RecentsScrollView {
@@ -297,7 +301,10 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
     public RecentsPanelView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        updateValuesFromResources();
+
+        final Resources res = context.getResources();
+        mThumbnailWidth = Math.round(res.getDimension(R.dimen.status_bar_recents_thumbnail_width));
+        mFitThumbnailToXY = res.getBoolean(R.bool.config_recents_thumbnail_image_fits_to_xy);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RecentsPanelView,
                 defStyle, 0);
@@ -306,6 +313,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mRecentTasksLoader = RecentTasksLoader.getInstance(context);
         a.recycle();
 
+        totalMem = getTotalMemory();
         mHighEndGfx = ActivityManager.isHighEndGfx();
     }
 
@@ -358,17 +366,13 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         }
     }
 
-    static void sendCloseSystemWindows(Context context, String reason) {
+    private void showImpl(boolean show) {
         if (ActivityManagerNative.isSystemReady()) {
             try {
-                ActivityManagerNative.getDefault().closeSystemDialogs(reason);
+                ActivityManagerNative.getDefault().closeSystemDialogs(BaseStatusBar.SYSTEM_DIALOG_REASON_RECENT_APPS);
             } catch (RemoteException e) {
             }
         }
-    }
-
-    private void showImpl(boolean show) {
-        sendCloseSystemWindows(mContext, BaseStatusBar.SYSTEM_DIALOG_REASON_RECENT_APPS);
 
         mShowing = show;
 
@@ -379,25 +383,28 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mRecentsNoApps.setAlpha(1f);
             mRecentsNoApps.setVisibility(noApps ? View.VISIBLE : View.INVISIBLE);
 
-            int clearAllButtonLocation = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLEAR_RECENTS_BUTTON_LOCATION, Constants.CLEAR_ALL_BUTTON_BOTTOM_LEFT);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)mClearRecents.getLayoutParams();
+            mClearRecents.setVisibility(noApps ? View.GONE : View.VISIBLE);
+
+            if (!noApps) {
+                int clearAllButtonLocation = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLEAR_RECENTS_BUTTON_LOCATION, Constants.CLEAR_ALL_BUTTON_BOTTOM_LEFT);
+                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mClearRecents.getLayoutParams();
             
-            if (clearAllButtonLocation != 0) {
-                mClearRecents.setVisibility(noApps ? View.GONE : View.VISIBLE);
-                switch (clearAllButtonLocation) {
-                    case Constants.CLEAR_ALL_BUTTON_TOP_RIGHT:
-                    default:
-                        layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
-                        break;
-                    case Constants.CLEAR_ALL_BUTTON_TOP_LEFT:
-                        layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-                        break;
-                    case Constants.CLEAR_ALL_BUTTON_BOTTOM_RIGHT:
-                        layoutParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-                        break;
-                    case Constants.CLEAR_ALL_BUTTON_BOTTOM_LEFT:
-                        layoutParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                        break;
+                if (clearAllButtonLocation != 0) {
+                    switch (clearAllButtonLocation) {
+                        case Constants.CLEAR_ALL_BUTTON_TOP_RIGHT:
+                        default:
+                            layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
+                            break;
+                        case Constants.CLEAR_ALL_BUTTON_TOP_LEFT:
+                            layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+                            break;
+                        case Constants.CLEAR_ALL_BUTTON_BOTTOM_RIGHT:
+                            layoutParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                            break;
+                        case Constants.CLEAR_ALL_BUTTON_BOTTOM_LEFT:
+                            layoutParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                            break;
+                    }
                 }
                 mClearRecents.setLayoutParams(layoutParams);
             } else {
@@ -486,12 +493,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mRecentTasksLoader = loader;
     }
 
-    public void updateValuesFromResources() {
-        final Resources res = mContext.getResources();
-        mThumbnailWidth = Math.round(res.getDimension(R.dimen.status_bar_recents_thumbnail_width));
-        mFitThumbnailToXY = res.getBoolean(R.bool.config_recents_thumbnail_image_fits_to_xy);
-    }
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -509,6 +510,9 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
         mRecentsScrim = findViewById(R.id.recents_bg_protect);
         mRecentsNoApps = findViewById(R.id.recents_no_apps);
+        memText = (TextView) findViewById(R.id.recents_memory_text);
+        memBar = (ProgressBar) findViewById(R.id.recents_memory_bar);
+        memBar.setMax(totalMem);
 
         mClearRecents = (ImageView) findViewById(R.id.recents_clear);
         if (mClearRecents != null){
@@ -996,9 +1000,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
       boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
           Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
 
-      final TextView memText = (TextView) findViewById(R.id.recents_memory_text);
-      final ProgressBar memBar = (ProgressBar) findViewById(R.id.recents_memory_bar);
-
       if (!enableMemDisplay) {
         memText.setVisibility(View.GONE);
         memBar.setVisibility(View.GONE);
@@ -1007,9 +1008,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
       memText.setVisibility(View.VISIBLE);
       memBar.setVisibility(View.VISIBLE);
-
-      int totalMem = getTotalMemory();
-      memBar.setMax(totalMem);
 
       int availMem = Integer.parseInt(getAvailMemory());
       memText.setText("Free RAM: " + String.valueOf(availMem) + "MB");
