@@ -498,4 +498,15 @@ public class IWindowManagerImpl implements IWindowManager {
     @Override
     public void setTouchExplorationEnabled(boolean enabled) {
     }
+
+    @Override
+    public boolean hasMenuKeyEnabled() {
+        return true;
+    }
+
+    /* @hide */
+    @Override
+    public int getSystemUIVisibility() {
+        return 0;
+    }
 }

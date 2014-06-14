@@ -1190,11 +1190,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (mNavigationBarView.getRecentsButton() != null) {
             mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
             mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
+            if(mCustomRecent == 0) mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
         }
         if (mNavigationBarView.getHomeButton() != null) {
             mNavigationBarView.getHomeButton().setOnTouchListener(mHomeSearchActionListener);
         }
-        if (mNavigationBarView.getSearchLight() != null) {
+        if (mNavigationBarView.getSearchLight() != null || mCustomRecent == 1) {
             mNavigationBarView.getSearchLight().setOnTouchListener(mHomeSearchActionListener);
         }
         updateSearchPanel();
@@ -3472,6 +3473,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         makeStatusBarView();
         repositionNavigationBar();
 
+        if (mCustomRecent == 1) rebuildRecentsScreen();
+
         // recreate StatusBarIconViews.
         for (int i = 0; i < nIcons; i++) {
             StatusBarIcon icon = icons.get(i);
@@ -3523,6 +3526,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 (mCurrentTheme == null || !mCurrentTheme.equals(newTheme))) {
             mCurrentTheme = (CustomTheme)newTheme.clone();
             recreateStatusBar();
+            if (mCustomRecent == 1) rebuildRecentsScreen();
         } else {
 
             if (mClearButton instanceof TextView) {
