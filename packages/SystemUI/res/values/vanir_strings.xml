@@ -62,4 +62,7 @@
     <string name="quick_settings_navbar_on">Navbar on</string>
     <string name="quick_settings_navbar_off">Navbar off</string>
 
+    <!-- First time run hover -->
+    <string name="hover_cling_text">Hover is now enabled.\n\nWhen a new notification arrives, an overlay will show allowing you to respond to it without leaving current app.</string>
+
 </resources>

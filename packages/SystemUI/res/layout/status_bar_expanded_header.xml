@@ -78,12 +78,33 @@
         android:padding="0dp"
         />
 
+    <FrameLayout android:id="@+id/customize_button_holder"
+        android:layout_marginStart="0dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        >
+
     <ImageView android:id="@+id/halo_button"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:scaleType="center"
             android:src="@drawable/ic_notify_halo"
-            android:contentDescription="@string/accessibility_halo" />
+            android:background="@drawable/ic_notify_button_bg"
+            android:contentDescription="@string/accessibility_halo"
+            android:visibility="gone"
+            />
+
+    <ImageView android:id="@+id/hover_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_notify_hover_normal"
+            android:background="@drawable/ic_notify_button_bg"
+            android:contentDescription="@string/accessibility_hover"
+            android:visibility="gone"
+            />
+
+    </FrameLayout>
 
     <FrameLayout android:id="@+id/action_button_holder"
         android:layout_marginStart="0dp"

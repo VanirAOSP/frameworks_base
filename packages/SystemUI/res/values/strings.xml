@@ -519,6 +519,7 @@
     <string name="status_bar_recent_floating_item_title">Floating mode</string>
     <!-- Content description of the halo button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_halo">Create notification halo.</string>
+    <string name="accessibility_hover">Turn hover notifications on or off.</string>
 
     <!-- HALO -->
     <string name="halo_dismiss">Dismiss notification</string>

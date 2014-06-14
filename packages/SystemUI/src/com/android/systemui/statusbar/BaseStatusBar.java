@@ -18,6 +18,7 @@ package com.android.systemui.statusbar;
 
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
+import android.app.INotificationManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -88,6 +89,10 @@ import com.android.systemui.RecentsComponent;
 import com.android.systemui.AOKPSearchPanelView;
 import com.android.systemui.SystemUI;
 import com.android.systemui.statusbar.halo.Halo;
+import com.android.systemui.statusbar.notification.Hover;
+import com.android.systemui.statusbar.notification.HoverCling;
+import com.android.systemui.statusbar.notification.NotificationHelper;
+import com.android.systemui.statusbar.phone.Ticker;
 import com.android.systemui.statusbar.phone.KeyguardTouchDelegate;
 import com.android.systemui.statusbar.policy.activedisplay.ActiveDisplayView;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
@@ -127,7 +132,11 @@ public abstract class BaseStatusBar extends SystemUI implements
     private static final int COLLAPSE_AFTER_DISMISS_DELAY = 200;
     private static final int COLLAPSE_AFTER_REMOVE_DELAY = 400;
 
+    public static final int HOVER_DISABLED = 0;
+    public static final int HOVER_ENABLED = 1;
+
     protected CommandQueue mCommandQueue;
+    protected INotificationManager mNotificationManager;
     protected IStatusBarService mBarService;
     protected H mHandler = createHandler();
 
@@ -169,12 +178,24 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected Halo mHalo = null;
     protected Ticker mTicker;
     protected boolean mHaloEnabled;
+    protected boolean mHaloInit = false;
     protected boolean mHaloActive;
     public boolean mHaloTaskerActive = false;
     protected ImageView mHaloButton;
     protected boolean mHaloButtonVisible = true;
 
-    // UI-specific methods
+    // Notification helper
+    protected NotificationHelper mNotificationHelper;
+
+    // Hover
+    protected boolean mHoverInit = false;
+    protected Hover mHover;
+    protected boolean mHoverEnabled;
+    protected int mHoverState;
+    protected ImageView mHoverButton;
+    protected HoverCling mHoverCling;
+
+    private SettingsObserver mSettingsObserver;
 
     /**
      * Create all windows necessary for the status bar (including navigation, overlay panels, etc)
@@ -207,12 +228,28 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected ActiveDisplayView mActiveDisplayView;
 
+    public INotificationManager getNotificationManager() {
+        return mNotificationManager;
+    }
+
     public IStatusBarService getStatusBarService() {
         return mBarService;
     }
 
     public boolean isDeviceProvisioned() {
         return mDeviceProvisioned;
+    }
+
+    public int getNotificationCount() {
+        return mNotificationData.size();
+    }
+
+    public NotificationData getNotifications() {
+        return mNotificationData;
+    }
+
+    public RemoteViews.OnClickHandler getNotificationClickHandler() {
+        return mOnClickHandler;
     }
 
     private ContentObserver mProvisioningObserver = new ContentObserver(mHandler) {
@@ -238,37 +275,59 @@ public abstract class BaseStatusBar extends SystemUI implements
                     Settings.System.STATUS_BAR_COLLAPSE_ON_DISMISS), false, this);
             resolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.System.HALO_ENABLED), false, this);
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.HOVER_ENABLED), false, this);
             update();
         }
 
         @Override
         public void onChange(boolean selfChange) {
-            update();
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+
+            if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.HALO_ENABLED))) {
+
+                mHaloEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.HALO_ENABLED, 0) == 1;
+                if (mHaloEnabled) {
+                    activateHaloListeners();
+                    mHoverEnabled = false;
+                    updateHoverState();
+                } else {
+                    Settings.System.putInt(mContext.getContentResolver(),
+                            Settings.System.HALO_ACTIVE, 0);
+                }
+                updateHalo();
+
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.HOVER_ENABLED))) {
+
+                mHoverEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.HOVER_ENABLED, 0) == 1;
+                updateHoverState();
+
+                if (mHoverEnabled) {
+                    activateHoverListeners();
+                    mHaloEnabled = false;
+                }
+                updateHalo();
+
+            } else {
+                update();
+            }
         }
 
         private void update() {
             final ContentResolver resolver = mContext.getContentResolver();
-            final boolean compare = mHaloEnabled;
-
-            mHaloEnabled = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.HALO_ENABLED, 0) == 1;
+            
             mAutoCollapseBehaviour = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_COLLAPSE_ON_DISMISS,
                     Settings.System.STATUS_BAR_COLLAPSE_IF_NO_CLEARABLE, UserHandle.USER_CURRENT);
-
-            // need a 3-way switch to keep mAutoCollapseBehavior from restarting UI and
-            // to prevent excess observers being registered
-            if (compare != mHaloEnabled) {
-                if (mHaloEnabled) {
-                    updateHalo();
-                } else {
-                    Helpers.restartSystemUI();
-                }
-            }
         }
     };
-
-    private SettingsObserver mSettingsObserver = new SettingsObserver(mHandler);
 
     private RemoteViews.OnClickHandler mOnClickHandler = new RemoteViews.OnClickHandler() {
         @Override
@@ -276,6 +335,12 @@ public abstract class BaseStatusBar extends SystemUI implements
             if (DEBUG) {
                 Log.v(TAG, "Notification click handler invoked for intent: " + pendingIntent);
             }
+
+            // User is clicking a button inside the notification, stop countdowns and
+            // restart override one depending on notification expansion.
+            // We just ignore incoming call case cause is handled differently, as soon as dialer shows, is gone.
+            mHover.processOverridingQueue(mHover.isExpanded());
+
             final boolean isActivity = pendingIntent.isActivity();
             if (isActivity) {
                 try {
@@ -322,13 +387,15 @@ public abstract class BaseStatusBar extends SystemUI implements
         mDreamManager = IDreamManager.Stub.asInterface(
                 ServiceManager.checkService(DreamService.DREAM_SERVICE));
         mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        mNotificationManager = INotificationManager.Stub.asInterface(
+                ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+
+        final ContentResolver resolver = mContext.getContentResolver();
 
         mProvisioningObserver.onChange(false); // set up
-        mContext.getContentResolver().registerContentObserver(
+        resolver.registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.DEVICE_PROVISIONED), true,
                 mProvisioningObserver);
-
-        mSettingsObserver.observe();
 
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
@@ -337,6 +404,12 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         mLocale = mContext.getResources().getConfiguration().locale;
         mLayoutDirection = TextUtils.getLayoutDirectionFromLocale(mLocale);
+
+        mHover = new Hover(this, mContext);
+        mHoverCling = new HoverCling(mContext);
+        mNotificationHelper = new NotificationHelper(this, mContext);
+
+        mHover.setNotificationHelper(mNotificationHelper);
 
         mStatusBarContainer = new FrameLayout(mContext);
 
@@ -355,11 +428,14 @@ public abstract class BaseStatusBar extends SystemUI implements
             // If the system process isn't there we're doomed anyway.
         }
 
-        mHaloEnabled = Settings.System.getInt(mContext.getContentResolver(),
+        mHaloEnabled = Settings.System.getInt(resolver,
                 Settings.System.HALO_ENABLED, 0) == 1;
 
-        mHaloActive = Settings.System.getInt(mContext.getContentResolver(),
+        mHaloActive = Settings.System.getInt(resolver,
                 Settings.System.HALO_ACTIVE, 0) == 1;
+
+        mHoverEnabled = Settings.System.getInt(resolver,
+                Settings.System.HOVER_ENABLED, 0) == 1;
 
         createAndAddWindows();
 
@@ -410,8 +486,27 @@ public abstract class BaseStatusBar extends SystemUI implements
         mContext.registerReceiver(mBroadcastReceiver, filter);
 
         if (mHaloEnabled) {
+            activateHaloListeners();
             updateHalo();
         }
+        if (mHoverEnabled) {
+            activateHoverListeners();
+            updateHoverState();
+        }
+
+        mSettingsObserver = new SettingsObserver(new Handler());
+        mSettingsObserver.observe();
+    }
+
+    public Hover getHoverInstance() {
+        if(mHover == null) mHover = new Hover(this, mContext);
+        return mHover;
+    }
+
+    public PowerManager getPowerManagerInstance() {
+        if(mPowerManager == null) mPowerManager
+                = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        return mPowerManager;
     }
 
     public void setHaloTaskerActive(boolean haloTaskerActive, boolean updateNotificationIcons) {
@@ -421,11 +516,15 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     }
 
-    protected void updateHaloButton() {
+    protected void updateCustomButtons() {
+        // Shared with PhoneStatusBar for button visibility in the notification shade
         if (!mHaloEnabled) {
             mHaloButtonVisible = false;
         } else {
             mHaloButtonVisible = true;
+        }
+        if (mHoverButton != null) {
+            mHoverButton.setVisibility(mHoverEnabled ? View.VISIBLE : View.GONE);
         }
         if (mHaloButton != null) {
             mHaloButton.setVisibility(mHaloButtonVisible && !mHaloActive ? View.VISIBLE : View.GONE);
@@ -439,31 +538,51 @@ public abstract class BaseStatusBar extends SystemUI implements
             mHalo = null;
         }
         updateNotificationIcons();
-        updateHalo();
-    }
-
-    protected void updateHalo() {
-        // Listen for HALO state
-        mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.HALO_ACTIVE), false, new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {
-                updateHalo();
-            }});
-
-        mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.HALO_SIZE), false, new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {
-                restartHalo();
-            }});
 
         mHaloEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.HALO_ENABLED, 0) == 1;
+        updateHalo();
+    }
+
+    protected void activateHaloListeners() {
+        // Listeners for Halo
+        if (!mHaloInit) {
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.HALO_ACTIVE), false, new ContentObserver(new Handler()) {
+                @Override
+                public void onChange(boolean selfChange) {
+                    updateHalo();
+            }});
+
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.HALO_SIZE), false, new ContentObserver(new Handler()) {
+                @Override
+                public void onChange(boolean selfChange) {
+                    restartHalo();
+            }});
+            mHaloInit = true;
+        }
+    }
+
+    protected void activateHoverListeners() {
+        // Listener for hover state
+        if (!mHoverInit) {
+            mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.HOVER_STATE),
+                        false, new ContentObserver(new Handler()) {
+                @Override
+                public void onChange(boolean selfChange) {
+                    updateHoverState();
+                }
+            });
+            mHoverInit = true;
+        }
+    }
+
+    protected void updateHalo() {
+
         mHaloActive = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.HALO_ACTIVE, 0) == 1;
-
-        updateHaloButton();
 
         if (!mHaloEnabled) {
             mHaloActive = false;
@@ -486,6 +605,23 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mHalo = null;
             }
         }
+
+        updateCustomButtons();
+    }
+
+    protected void updateHoverState() {
+        if (mHoverEnabled) {
+            mHoverState = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.HOVER_STATE, HOVER_DISABLED);
+        } else {
+            mHoverState = HOVER_DISABLED;
+        }
+
+        mHoverButton.setImageResource(mHoverState != HOVER_DISABLED
+                ? R.drawable.ic_notify_hover_pressed
+                        : R.drawable.ic_notify_hover_normal);
+
+        mHover.setHoverActive(mHoverState == HOVER_ENABLED);
     }
 
     public void userSwitched(int newUserId) {
@@ -1087,6 +1223,10 @@ public abstract class BaseStatusBar extends SystemUI implements
         updateNotificationIcons();
         maybeCollapseAfterNotificationRemoval(entry.row.isUserDismissed());
 
+        // If a notif is on hover list or currently showed in hover,
+        // remove (hide) it if system does.
+        mHover.removeNotification(entry);
+
         return entry.notification;
     }
 
@@ -1245,13 +1385,24 @@ public abstract class BaseStatusBar extends SystemUI implements
         updateExpansionStates();
         updateNotificationIcons();
         mHandler.removeCallbacks(mPanelCollapseRunnable);
+
+        if (!mPowerManager.isScreenOn()) {
+            mHover.addStatusBarNotification(entry.notification);
+        } else {
+            // screen on - check if hover is enabled
+            if (mNotificationHelper.isHoverEnabled()) {
+                mHover.setNotification(entry, false);
+            } else {
+                mHover.addStatusBarNotification(entry.notification);
+            }
+        }
     }
 
     private void addNotificationViews(IBinder key, StatusBarNotification notification) {
         addNotificationViews(createNotificationViews(key, notification));
     }
 
-    protected void updateExpansionStates() {
+    public void updateExpansionStates() {
         int N = mNotificationData.size();
         for (int i = 0; i < N; i++) {
             NotificationData.Entry entry = mNotificationData.get(i);
@@ -1274,6 +1425,14 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     }
 
+    public void animateStatusBarOut() {
+        // should be overridden
+    }
+
+    public void animateStatusBarIn() {
+        // should be overridden
+    }
+
     protected abstract void haltTicker();
     protected abstract void setAreThereNotifications();
     public abstract void updateNotificationIcons();
@@ -1283,6 +1442,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected abstract boolean isNotificationPanelFullyVisible();
     protected abstract boolean isTrackingNotificationPanel();
     protected abstract boolean shouldDisableNavbarGestures();
+    public abstract boolean isExpandedVisible();
 
     protected boolean isTopNotification(ViewGroup parent, NotificationData.Entry entry) {
         return parent != null && parent.indexOfChild(entry.row) == 0;
@@ -1342,7 +1502,9 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         boolean updateTicker = (notification.getNotification().tickerText != null
                 && !TextUtils.equals(notification.getNotification().tickerText,
-                        oldEntry.notification.getNotification().tickerText)) || mHaloActive;
+                        oldEntry.notification.getNotification().tickerText)) &&
+                        (mHoverState == HOVER_DISABLED) || mHaloActive;
+
         boolean isTopAnyway = isTopNotification(rowParent, oldEntry);
         if (contentsUnchanged && bigContentsUnchanged && (orderUnchanged || isTopAnyway)) {
             if (DEBUG) Log.d(TAG, "reusing notification for key: " + key);
@@ -1440,8 +1602,21 @@ public abstract class BaseStatusBar extends SystemUI implements
             entry.content.setOnClickListener(null);
             entry.floatingIntent = null;
         }
+
         // Update the roundIcon
         prepareHaloNotification(entry, notification, true);
+
+        if (!mPowerManager.isScreenOn()) {
+            mHover.addStatusBarNotification(entry.notification);
+        } else {
+            // screen on - check if hover is enabled
+            if (mNotificationHelper.isHoverEnabled()) {
+                mHover.setNotification(entry, true);
+            } else {
+                // We pass this to hover here only if it doesn't show
+                mHover.addStatusBarNotification(entry.notification);
+            }
+        }
     }
 
     protected void notifyHeadsUpScreenOn(boolean screenOn) {
