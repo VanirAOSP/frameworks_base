@@ -103,6 +103,8 @@ import com.vanir.util.Helpers;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import com.vanir.util.RecentsConstants;
+
 public abstract class BaseStatusBar extends SystemUI implements
         CommandQueue.Callbacks {
     public static final String TAG = "StatusBar";
@@ -199,8 +201,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     private SettingsObserver mSettingsObserver;
 
-    // Slim recents
-    private RecentController cRecents;
     private RecentsComponent mRecents;
 
     /**
@@ -325,28 +325,28 @@ public abstract class BaseStatusBar extends SystemUI implements
 
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.CUSTOM_RECENTS))) {
-                mCustomRecent = Settings.System.getInt(mContext.getContentResolver(),
+                final int newCustomRecent = Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.CUSTOM_RECENTS, 0);
 
-                switch (mCustomRecent) {
+                switch (newCustomRecent) {
                     // Default AOSP recents
-                    case 0:
-                        if (mRecents == null) {
+                    case RecentsConstants.RECENTS_AOSP:
+                        if (mRecents == null || newCustomRecent != mCustomRecent) {
                             mRecents = getComponent(RecentsComponent.class);
-                            cRecents = null;
+                            mCustomRecent = newCustomRecent;
                         }
                         break;
                     // Sidebar recents
-                    case 1:
-                        if (cRecents == null) {
-                            cRecents = new RecentController(mContext, mLayoutDirection);
-                            mRecents = null;
+                    case RecentsConstants.RECENTS_SLIM:
+                        if (mRecents == null || newCustomRecent != mCustomRecent) {
+                            mRecents = (RecentsComponent)new RecentController(mContext, mLayoutDirection);
+                            mCustomRecent = newCustomRecent;
                         }
                         break;
                     // Omniswitch recents
-                    case 2:
+                    case RecentsConstants.RECENTS_OMNI:
                         mRecents = null;
-                        cRecents = null;
+                        mCustomRecent = newCustomRecent;
                         break;
                 }
 
@@ -440,17 +440,16 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         switch (mCustomRecent) {
             // Default recents
-            case 0:
+            case RecentsConstants.RECENTS_AOSP:
                 mRecents = getComponent(RecentsComponent.class);
                 break;
             // Sidebar recents
-            case 1:
-                cRecents = new RecentController(mContext, mLayoutDirection);
+            case RecentsConstants.RECENTS_SLIM:
+                mRecents = new RecentController(mContext, mLayoutDirection);
                 break;
             // Omniswitch
-            case 2:
+            case RecentsConstants.RECENTS_OMNI:
                 mRecents = null;
-                cRecents = null;
                 break;
         }
 
@@ -981,20 +980,15 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected void toggleRecentsActivity() {
 
         switch (mCustomRecent) {
-            // Default recents
-            case 0:
+            // Default or Sidebar recents
+            case RecentsConstants.RECENTS_AOSP:
+            case RecentsConstants.RECENTS_SLIM:
                 if (mRecents != null) {
                     mRecents.toggleRecents(mDisplay, mLayoutDirection, getStatusBarView());
                 }
                 break;
-            // Sidebar recents
-            case 1:
-                if (cRecents != null) {
-                    cRecents.toggleRecents(mDisplay, mLayoutDirection, getStatusBarView());
-                }
-                break;
             // Omniswitch recents
-            case 2:
+            case RecentsConstants.RECENTS_OMNI:
                 Intent showIntent = new Intent(OmniSwitchConstants.ACTION_TOGGLE_OVERLAY);
                 mContext.sendBroadcast(showIntent);
                 break;
@@ -1004,20 +998,15 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected void preloadRecentTasksList() {
 
         switch (mCustomRecent) {
-            // Default recents
-            case 0:
+            // Default or Sidebar recents
+            case RecentsConstants.RECENTS_AOSP:
+            case RecentsConstants.RECENTS_SLIM:
                 if (mRecents != null) {
                     mRecents.preloadRecentTasksList();
                 }
                 break;
-            // Sidebar recents
-            case 1:
-                if (cRecents != null) {
-                    cRecents.preloadRecentTasksList();
-                }
-                break;
-            // Omniswitch recents
-            case 2:
+            // Omniswitch recents == noop
+            default:
                 break;
         }
     }
@@ -1025,40 +1014,30 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected void cancelPreloadingRecentTasksList() {
 
         switch (mCustomRecent) {
-            // Default recents
-            case 0:
+            // Default or Sidebar recents
+            case RecentsConstants.RECENTS_AOSP:
+            case RecentsConstants.RECENTS_SLIM:
                 if (mRecents != null) {
                     mRecents.cancelPreloadingRecentTasksList();
                 }
                 break;
-            // Sidebar recents
-            case 1:
-                if (cRecents != null) {
-                    cRecents.cancelPreloadingRecentTasksList();
-                }
-                break;
-            // Omniswitch recents
-            case 2:
+            // Omniswitch recents == noop
+            default:
                 break;
         }
     }
 
     protected void closeRecents() {
         switch (mCustomRecent) {
-            // Default recents
-            case 0:
+            // Default or Sidebar recents
+            case RecentsConstants.RECENTS_AOSP:
+            case RecentsConstants.RECENTS_SLIM:
                 if (mRecents != null) {
                      mRecents.closeRecents();
                 }
                 break;
-            // Sidebar recents
-            case 1:
-                if (cRecents != null) {
-                    cRecents.closeRecents();
-                }
-                break;
             // Omniswitch recents
-            case 2:
+            case RecentsConstants.RECENTS_OMNI:
                 Intent hideIntent = new Intent(OmniSwitchConstants.ACTION_HIDE_OVERLAY);
                 mContext.sendBroadcast(hideIntent);
                 break;
@@ -1066,8 +1045,14 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     protected void rebuildRecentsScreen() {
-
-        if (cRecents != null) cRecents.rebuildRecentsScreen();
+        if (mCustomRecent == RecentsConstants.RECENTS_SLIM) {
+            try {
+                final RecentController attemptedUpcast = (RecentController)mRecents;
+                attemptedUpcast.rebuildRecentsScreen();
+            } catch(Exception ex) {
+                // merp??
+            }
+        }
     }
 
     public abstract void resetHeadsUpDecayTimer();
