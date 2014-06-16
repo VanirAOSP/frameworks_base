@@ -651,8 +651,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         loadDimens();
 
         mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
+        final boolean isMultiSimEnabled = MSimTelephonyManager.getDefault().isMultiSimEnabled();
 
-        if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+        if (isMultiSimEnabled) {
             mStatusBarWindow = (StatusBarWindowView) View.inflate(context,
                     R.layout.msim_super_status_bar, null);
         } else {
@@ -675,7 +676,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 return mStatusBarWindow.onTouchEvent(event);
             }});
 
-        if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+        if (isMultiSimEnabled) {
             mStatusBarView = (PhoneStatusBarView) mStatusBarWindow.findViewById(
                     R.id.msim_status_bar);
         } else {
@@ -684,7 +685,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mStatusBarView.setBar(this);
 
         PanelHolder holder;
-        if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+        if (isMultiSimEnabled) {
             holder = (PanelHolder) mStatusBarWindow.findViewById(R.id.msim_panel_holder);
         } else {
             holder = (PanelHolder) mStatusBarWindow.findViewById(R.id.panel_holder);
@@ -842,7 +843,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mBatteryView = (BatteryMeterView) mStatusBarView.findViewById(R.id.battery);
         mDockBatteryView = (DockBatteryMeterView) mStatusBarView.findViewById(R.id.dock_battery);
 
-        if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+        if (isMultiSimEnabled) {
             mMSimNetworkController = new MSimNetworkController(mContext);
             mMSimSignalClusterView = (MSimSignalClusterView)
               mStatusBarView.findViewById(R.id.msim_signal_cluster);
@@ -1037,7 +1038,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // listen for USER_SETUP_COMPLETE setting (per-user)
         resetUserSetupObserver();
 
-        if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+        if (isMultiSimEnabled) {
             mMSimNetworkController.setListener(this);
         } else {
             mNetworkController.setListener(this);
