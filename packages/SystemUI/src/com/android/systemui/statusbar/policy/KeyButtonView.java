@@ -133,6 +133,12 @@ public class KeyButtonView extends ImageView {
         setLongClickable(false);
     }
 
+    public void updateResources(Resources res) {
+        if (mGlowBgId != 0) {
+            mGlowBG = res.getDrawable(mGlowBgId);
+        }
+    }
+
     public void setButtonActions(AwesomeButtonInfo actions) {
         this.mActions = actions;
 

@@ -45,6 +45,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.ThemeConfig;
 import android.content.res.Resources;
@@ -733,6 +734,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         updateShowSearchHoldoff();
 
         updateNavigationBarState();
+                mNavigationBarView.updateResources(getNavbarThemedResources());
 
         if (mRecreating) {
         } else {
@@ -3548,6 +3550,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         repositionNavigationBar();
         addHeadsUpView();
         if (mCustomRecent == 1) rebuildRecentsScreen();
+        if (mNavigationBarView != null) {
+            mNavigationBarView.updateResources(getNavbarThemedResources());
+        }
 
         // recreate StatusBarIconViews.
         for (int i = 0; i < nIcons; i++) {
@@ -3601,6 +3606,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // Update the QuickSettings container
         if (mQS != null) mQS.updateResources();
 
+        if (mNavigationBarView != null)  {
+            mNavigationBarView.updateResources(getNavbarThemedResources());
+            updateSearchPanel();
+        }
     }
 
     protected void loadDimens() {

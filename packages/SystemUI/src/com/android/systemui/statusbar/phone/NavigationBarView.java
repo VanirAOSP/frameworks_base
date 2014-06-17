@@ -123,6 +123,8 @@ public class NavigationBarView extends LinearLayout {
     // performs manual animation in sync with layout transitions
     private final NavTransitionListener mTransitionListener = new NavTransitionListener();
 
+    private Resources mThemedResources;
+
     private class NavTransitionListener implements TransitionListener {
         private boolean mBackTransitioning;
         private boolean mHomeAppearing;
@@ -253,6 +255,8 @@ public class NavigationBarView extends LinearLayout {
         mMenuButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_menu_key_width);
 
         mBarTransitions = new NavigationBarTransitions(this);
+        mBarTransitions.updateResources(res);
+
 
         mPrimaryButtons = Settings.System.getString(cr, Settings.System.NAVIGATION_BAR_BUTTONS);
         mSideKeys = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
@@ -347,7 +351,55 @@ public class NavigationBarView extends LinearLayout {
     // used for lockscreen notifications
     public View getNotifsButton() {
         return mCurrentView.findViewById(R.id.show_notifs);
-        mBarTransitions.updateResources(res);
+    }
+
+    public void updateResources(Resources res) {
+        mThemedResources = res;
+        for (int i = 0; i < mRotatedViews.length; i++) {
+            ViewGroup container = (ViewGroup) mRotatedViews[i];
+            if (container != null) {
+                updateKeyButtonViewResources(container);
+                updateLightsOutResources(container);
+            }
+        }
+    }
+
+    private void updateKeyButtonViewResources(ViewGroup container) {
+        if (mCurrentView == null) return;
+        for (final String k : AwesomeConstant.values()) {
+            final View child = mCurrentView.findViewWithTag(k);
+
+            if (child instanceof KeyButtonView) {
+                ((KeyButtonView) child).updateResources(mThemedResources);
+            }
+        }
+        KeyButtonView kbv = (KeyButtonView) findViewById(R.id.one);
+        if (kbv != null) {
+            kbv.updateResources(mThemedResources);
+        }
+        kbv = (KeyButtonView) findViewById(R.id.six);
+        if (kbv != null) {
+            kbv.updateResources(mThemedResources);
+        }
+    }
+
+    private void updateLightsOutResources(ViewGroup container) {
+        ViewGroup lightsOut = (ViewGroup) container.findViewById(R.id.lights_out);
+        if (lightsOut != null) {
+            final int nChildren = lightsOut.getChildCount();
+            for (int i = 0; i < nChildren; i++) {
+                final View child = lightsOut.getChildAt(i);
+                if (child instanceof ImageView) {
+                    final ImageView iv = (ImageView) child;
+                    // clear out the existing drawable, this is required since the
+                    // ImageView keeps track of the resource ID and if it is the same
+                    // it will not update the drawable.
+                    iv.setImageDrawable(null);
+                    iv.setImageDrawable(mThemedResources.getDrawable(
+                            R.drawable.ic_sysbar_lights_out_dot_large));
+                }
+            }
+        }
     }
 
     @Override
