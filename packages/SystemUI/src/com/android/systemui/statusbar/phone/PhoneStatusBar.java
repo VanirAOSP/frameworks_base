@@ -1506,6 +1506,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (mPile == null) return;
 
         int N = mNotificationData.size();
+        boolean provisioned = isDeviceProvisioned();
 
         ArrayList<View> toShow = new ArrayList<View>();
 
@@ -1539,14 +1540,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         if (mHoverButton != null) {
-            mHoverButton.setEnabled(isDeviceProvisioned());
-        }
-
-        if (mSettingsButton != null) {
-            mSettingsButton.setEnabled(isDeviceProvisioned());
+            mHoverButton.setEnabled(provisioned);
         }
         if (mHaloButton != null) {
-            mHaloButton.setEnabled(isDeviceProvisioned());
+            mHaloButton.setEnabled(provisioned);
+        }
+        if (mSettingsButton != null) {
+            mSettingsButton.setEnabled(provisioned);
         }
     }
 
