@@ -594,7 +594,7 @@ public class WallpaperCropActivity extends Activity {
                 try {
                     decoder = BitmapRegionDecoder.newInstance(mInStream, true);
                 } catch (IOException e) {
-                    Log.w(LOGTAG, "cannot open region decoder for file: " + mInUri.toString(), e);
+                    Log.w(LOGTAG, "cannot open region decoder for file: " + (mInUri != null ? mInUri.toString() : "/URI/IS/NULL/ES&D.png"), e);
                 }
 
                 Bitmap crop = null;
