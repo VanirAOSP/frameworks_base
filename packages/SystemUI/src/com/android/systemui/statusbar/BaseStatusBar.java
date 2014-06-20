@@ -200,6 +200,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected int mHoverState;
     protected ImageView mHoverButton;
     protected HoverCling mHoverCling;
+    public boolean mHoverFloating;
 
     private SettingsObserver mSettingsObserver;
 
@@ -292,11 +293,13 @@ public abstract class BaseStatusBar extends SystemUI implements
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_COLLAPSE_ON_DISMISS), false, this);
             resolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.CUSTOM_RECENTS), false, this);
+                    Settings.System.getUriFor(Settings.System.CUSTOM_RECENTS), false, this);
             resolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.HALO_ENABLED), false, this);
+                    Settings.System.getUriFor(Settings.System.HALO_ENABLED), false, this);
             resolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.HOVER_ENABLED), false, this);
+                    Settings.System.getUriFor(Settings.System.HOVER_ENABLED), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.HOVER_FLOATING), false, this);
             update();
         }
 
@@ -330,6 +333,11 @@ public abstract class BaseStatusBar extends SystemUI implements
                     mHaloEnabled = false;
                 }
                 updateHalo();
+
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.HOVER_FLOATING))) {
+                mHoverFloating = Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.HOVER_FLOATING, 0) == 1;
 
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.CUSTOM_RECENTS))) {
@@ -473,10 +481,10 @@ public abstract class BaseStatusBar extends SystemUI implements
         mLocale = mContext.getResources().getConfiguration().locale;
         mLayoutDirection = TextUtils.getLayoutDirectionFromLocale(mLocale);
 
+        // Hover:  to do:  add these conditionally to being enabled...
         mHover = new Hover(this, mContext);
         mHoverCling = new HoverCling(mContext);
         mNotificationHelper = new NotificationHelper(this, mContext);
-
         mHover.setNotificationHelper(mNotificationHelper);
 
         mStatusBarContainer = new FrameLayout(mContext);
@@ -569,12 +577,12 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     public Hover getHoverInstance() {
-        if(mHover == null) mHover = new Hover(this, mContext);
+        if (mHover == null) mHover = new Hover(this, mContext);
         return mHover;
     }
 
     public PowerManager getPowerManagerInstance() {
-        if(mPowerManager == null) mPowerManager
+        if (mPowerManager == null) mPowerManager
                 = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         return mPowerManager;
     }
@@ -1284,7 +1292,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                 int[] pos = new int[2];
                 v.getLocationOnScreen(pos);
                 Intent overlay = new Intent();
-                if (mFloat) overlay.addFlags(Intent.FLAG_FLOATING_WINDOW | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                if (mFloat && mHoverFloating) overlay.addFlags(Intent.FLAG_FLOATING_WINDOW | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 overlay.setSourceBounds(
                         new Rect(pos[0], pos[1], pos[0]+v.getWidth(), pos[1]+v.getHeight()));
                 try {

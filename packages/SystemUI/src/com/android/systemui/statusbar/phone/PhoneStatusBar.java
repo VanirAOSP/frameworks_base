@@ -311,6 +311,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // ticker
     private View mTickerView;
     private boolean mTicking;
+    private boolean mHoverExcludeForeground;
 
     // Tracking finger for opening/closing.
     int mEdgeBorder; // corresponds to R.dimen.status_bar_edge_ignore
@@ -401,6 +402,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.ENABLE_NAVIGATION_RING), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOVER_EXCLUDE_FOREGROUND), false, this);
             updateSettings();
         }
 
@@ -2812,10 +2815,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             if (0 == (mDisabled & (StatusBarManager.DISABLE_NOTIFICATION_ICONS
                             | StatusBarManager.DISABLE_NOTIFICATION_TICKER))) {
                 boolean blacklisted = false;
-                // don't pass notifications that run in Hover to Ticker
+                // don't pass notifications that run in Hover to Ticker unless foreground app exclusion conditions are met
                 if (mHoverState == HOVER_ENABLED) {
                     try {
-                        blacklisted = getNotificationManager().isPackageAllowedForHover(n.getPackageName());
+                        blacklisted = getNotificationManager().isPackageAllowedForHover(n.getPackageName())
+                                || mHoverExcludeForeground
+                                &&  n.getPackageName().equals(mNotificationHelper.getForegroundPackageName());
                     } catch (android.os.RemoteException ex) {
                         // System is dead
                     }
@@ -3409,6 +3414,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mSearchPanelAllowed = nextSearchEnabledState;
             updateNavigationBarState();
         }
+
+        mHoverExcludeForeground = Settings.System.getInt(mContext.getContentResolver(),
+                                        Settings.System.HOVER_EXCLUDE_FOREGROUND, 0) == 1;
 
         mDoubleTapToSleep = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 0) == 1;

@@ -4523,6 +4523,66 @@ public final class Settings {
          */
         public static final String HOVER_ENABLED = "hover_enabled";
 
+        /**
+         * exclude low priority notifications
+         * @hide
+         */
+        public static final String HOVER_LOW_PRIORITY = "hover_low_priority";
+
+        /**
+         * exclude non-clearable notifications
+         * @hide
+         */
+        public static final String HOVER_NON_CLEARABLE = "hover_non_clearable";
+
+        /**
+         * exclude foreground app notifications
+         * @hide
+         */
+        public static final String HOVER_EXCLUDE_FOREGROUND = "hover_exclude_foreground";
+
+        /**
+         * Launch apps in floating mode
+         * @hide
+         */
+        public static final String HOVER_FLOATING = "hover_floating";
+
+        /**
+         * Hover size
+         * @hide
+         */
+        public static final String HOVER_SIZE = "hover_size";
+
+        /**
+         * Excluded app list for settings
+         * @hide
+         */
+        public static final String HOVER_EXCLUDED_APPS = "hover_excluded_apps";
+
+        /**
+         * Hover duration when not expanded
+         * @hide
+         */
+        public static final String HOVER_DURATION = "hover_duration";
+
+        /**
+         * Hover force remove non-clearable notifications
+         * @hide
+         */
+        public static final String HOVER_FORCE_REMOVABLE = "hover_force_removable";
+
+        /**
+         * Hover duration when not expanded
+         * @hide
+         */
+        public static final String HOVER_REQUIRE_FULLSCREEN = "hover_require_fullscreen";
+
+        /**
+         * Hover duration when expanded
+         * @hide
+         */
+        public static final String HOVER_DURATION_LONG = "hover_duration_long";
+
          /**
          * Whether to use the Slims recent screen.
          *

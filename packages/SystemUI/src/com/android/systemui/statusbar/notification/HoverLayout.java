@@ -18,6 +18,7 @@ package com.android.systemui.statusbar.notification;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.RemoteException;
 import android.service.notification.StatusBarNotification;
 import android.util.AttributeSet;
@@ -57,11 +58,15 @@ public class HoverLayout extends RelativeLayout implements ExpandHelper.Callback
     public HoverLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        int minHeight = mContext.getResources().getDimensionPixelSize(R.dimen.hover_height);
-        int maxHeight = mContext.getResources().getDimensionPixelSize(R.dimen.notification_row_max_height);
-        mExpandHelper = new ExpandHelper(mContext, this, minHeight, maxHeight);
-        float densityScale = mContext.getResources().getDisplayMetrics().density;
+
+        final Resources res = mContext.getResources();
+
+        int minHeight = res.getDimensionPixelSize(R.dimen.hover_height);
+        int maxHeight = res.getDimensionPixelSize(R.dimen.notification_row_max_height);
+        float densityScale = res.getDisplayMetrics().density;
         float pagingTouchSlop = ViewConfiguration.get(mContext).getScaledPagingTouchSlop();
+
+        mExpandHelper = new ExpandHelper(mContext, this, minHeight, maxHeight);
         mSwipeHelper = new SwipeHelper(SwipeHelper.X, new SwipeHelperCallbackX(), densityScale, pagingTouchSlop);
     }
 
