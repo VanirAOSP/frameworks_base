@@ -53,10 +53,6 @@
   <string name="global_action_choose_profile">Profiel</string>
   <string name="toast_rotation_unlocked">Scherm wordt automatisch gedraaid</string>
   <string name="toast_rotation_locked">Scherm wordt niet automatisch gedraaid</string>
-    <string name="permlab_fm_radio_receiver">FM-ontvanger beheren</string>
-    <string name="permdesc_fm_radio_receiver">Hiermee kan de app de FM-ontvanger beheren.</string>
-    <string name="permlab_fm_radio_transmitter">FM-zender beheren</string>
-    <string name="permdesc_fm_radio_transmitter">Hiermee kan de app de FM-zender beheren.</string>
   <string name="stylus_app_not_installed">%s is niet geïnstalleerd</string>
   <string name="permlab_changePrivacyGuardState">Privacybescherming in- of uitschakelen</string>
   <string name="permdesc_changePrivacyGuardState">Hiermee kan de app bepalen of een andere app start met Privacybescherming. Als een app start met Privacybescherming, zal het geen toegang hebben tot persoonsgegevens zoals contacten, berichten of gespreksstatistieken.</string>
@@ -78,7 +74,15 @@
   <string name="permlab_changePhoneBlacklist">zwarte lijst aanpassen</string>
   <string name="permdesc_changePhoneBlacklist">Hiermee kan de app telefoonnummers aanpassen waarvan inkomende oproepen of berichten zijn geblokkeerd.</string>
   <string name="permlab_accessThemeService">toegang tot themaservice</string>
-  <string name="permdesc_accessThemeService">Hiermee krijgt de app toegang tot de themaservice. Nooit vereist voor normale apps.</string>
+  <string name="permdesc_accessThemeService">Hiermee kan de app toegang krijgen tot de themaservice. Nooit vereist voor normale apps.</string>
+  <string name="permlab_readThemes">informatie over uw thema\'s lezen</string>
+  <string name="permdesc_readThemesDesc">Hiermee kan de app informatie lezen over uw thema\'s en bepalen welk thema u hebt toegepast.</string>
+  <string name="permlab_writeThemes">uw thema\'s aanpassen</string>
+  <string name="permdesc_writeThemesDesc">Hiermee kan de app nieuwe thema\'s invoegen en wijzigen welk thema u hebt toegepast.</string>
+  <string name="permlab_setKeyguardWallpaper">achtergrond van vergrendelingsscherm instellen</string>
+  <string name="permdesc_setKeyguardWallpaper">Hiermee kan een app de achtergrond van het vergrendelingsscherm aanpassen.</string>
+  <string name="permlab_useHardwareFramework">hardware-framework gebruiken</string>
+  <string name="permdesc_useHardwareFramework">Hiermee kan de app toegang krijgen tot het hardware-framework van CyanogenMod.</string>
   <string name="immersive_mode_confirmation_bottom">Veeg omhoog vanaf de onderkant om het volledige scherm te sluiten.</string>
   <string name="app_ops_access_camera">toegang tot camera</string>
   <string name="app_ops_access_location">toegang tot uw locatie</string>
