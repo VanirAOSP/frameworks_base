@@ -1526,7 +1526,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             mHover.addStatusBarNotification(entry.notification);
         } else {
             // screen on - check if hover is enabled
-            if (mNotificationHelper.isHoverEnabled()) {
+            if (mHoverState == HOVER_ENABLED) {
                 mHover.setNotification(entry, false);
             } else {
                 mHover.addStatusBarNotification(entry.notification);
@@ -1751,7 +1751,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             mHover.addStatusBarNotification(entry.notification);
         } else {
             // screen on - check if hover is enabled
-            if (mNotificationHelper.isHoverEnabled()) {
+            if (mHoverState == HOVER_ENABLED) {
                 mHover.setNotification(entry, true);
             } else {
                 // We pass this to hover here only if it doesn't show
