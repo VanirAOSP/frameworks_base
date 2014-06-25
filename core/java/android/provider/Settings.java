@@ -3071,6 +3071,13 @@ public final class Settings {
         public static final String HEADS_UP_BLACKLIST_VALUES = "heads_up_blacklist_values";
 
         /**
+         * Whether the blacklist list ^ should be interpreted as a whitelist
+         *
+         * @hide
+         */
+        public static final String HEADS_UP_WHITELIST_MODE = "heads_up_blacklist_values";
+
+        /**
          * Quick Settings Panel Dynamic Tiles
          *
          * @hide

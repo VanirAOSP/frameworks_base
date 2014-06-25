@@ -223,6 +223,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     private ArrayList<String> mDndList;
     private ArrayList<String> mBlacklist;
+    private boolean mWhitelistMode;
 
     public Ticker getTicker() {
         return mTicker;
@@ -372,6 +373,8 @@ public abstract class BaseStatusBar extends SystemUI implements
             mAutoCollapseBehaviour = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_COLLAPSE_ON_DISMISS,
                     Settings.System.STATUS_BAR_COLLAPSE_IF_NO_CLEARABLE, UserHandle.USER_CURRENT);
+            mWhitelistMode = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.HEADS_UP_WHITELIST_MODE, 0) != 1;
             final String dndString = Settings.System.getString(mContext.getContentResolver(),
                     Settings.System.HEADS_UP_CUSTOM_VALUES);
             final String blackString = Settings.System.getString(mContext.getContentResolver(),
@@ -1821,7 +1824,9 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     private boolean isPackageBlacklisted(String packageName) {
-        return mBlacklist.contains(packageName);
+        final boolean contains = mBlacklist.contains(packageName);
+        return (!mWhitelistMode && contains) ||
+                (mWhitelistMode && !contains);
     }
 
     private void splitAndAddToArrayList(ArrayList<String> arrayList,
