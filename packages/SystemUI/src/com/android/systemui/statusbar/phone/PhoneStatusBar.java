@@ -248,6 +248,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // immersive booleans for onConfigurationChange
     private boolean immersive = false;
     private int orientationDependentImmersive;
+    private boolean mImmersiveIsExpandedDesktopLike = false;
 
     // settings
     QuickSettingsController mQS;
@@ -397,6 +398,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.IMMERSIVE_ORIENTATION), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.EXPANDED_DESKTOP), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -1412,9 +1415,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
             final boolean sbVisible = (mSystemUiVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0
                     || (mStatusBarMode & View.STATUS_BAR_TRANSIENT) != 0;
-            final boolean userForcedExpandedDesktop =
-                    mExpandedDesktopStyle == 1 || mExpandedDesktopStyle == 2;
-            if (!sbVisible && !userForcedExpandedDesktop) {
+            if (!sbVisible && !(immersive && mImmersiveIsExpandedDesktopLike)) {
                 mHandler.removeMessages(MSG_HIDE_HEADS_UP);
                 mHandler.sendEmptyMessageDelayed(MSG_HIDE_HEADS_UP, 700);
             } else {
@@ -3411,6 +3412,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         immersive = Settings.System.getIntForUser(resolver,
                 Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0,
                 UserHandle.USER_CURRENT) == 1;
+
+        // if immersive is enabled, update the member that indicates whether or not
+        //   immersive mode is expanded-desktop-y
+        if (immersive) {
+            mImmersiveIsExpandedDesktopLike = Settings.System.getIntForUser(
+                    resolver, Settings.System.EXPANDED_DESKTOP, 0,
+                    UserHandle.USER_CURRENT) != 0;
+        }
     }
 
     protected boolean isDoubleTapEnabled() {
