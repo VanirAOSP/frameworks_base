@@ -1507,11 +1507,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (mPile == null) return;
 
         int N = mNotificationData.size();
-        boolean provisioned = isDeviceProvisioned();
+        final boolean provisioned = isDeviceProvisioned();
 
         ArrayList<View> toShow = new ArrayList<View>();
 
-        final boolean provisioned = isDeviceProvisioned();
         // If the device hasn't been through Setup, we only show system notifications
         for (int i=0; i<N; i++) {
             Entry ent = mNotificationData.get(N-i-1);
