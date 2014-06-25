@@ -4343,7 +4343,15 @@ public final class Settings {
         public static final String SHOW_PROFILES = "show_profiles";
 
         /**
+         * Heads Up in Floating Window
+         *
+         * @hide
+         */
+        public static final String HEADS_UP_FLOATING_WINDOW = "heads_up_floating_window";
+
+        /**
          * Hide low priority notifications such as google now weather notifications from lockscreen notifications
+         *
          * @hide
          */
         public static final String ACTIVE_NOTIFICATIONS_HIDE_LOW_PRIORITY = "lockscreen_notifications_hide_low_priority";
