@@ -597,6 +597,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         super.start(); // calls createAndAddWindows()
 
         addNavigationBar();
+        updateCustomButtons();
 
         if (mSettingsObserver == null) {
             mSettingsObserver = new SettingsObserver(mHandler);
