@@ -84,7 +84,7 @@ public class BatteryTile extends QuickSettingsTile implements BatteryStateChange
     }
 
     protected BatteryMeterView getBatteryMeterView() {
-        return (BatteryMeterView) mTile.findViewById(R.id.battery);
+        return (BatteryMeterView) mTile.findViewById(R.id.image);
     }
 
     @Override
