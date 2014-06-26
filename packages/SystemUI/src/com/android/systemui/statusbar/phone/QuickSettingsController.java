@@ -17,8 +17,6 @@
 package com.android.systemui.statusbar.phone;
 
 import static com.android.internal.util.cm.QSConstants.*;
-import static com.android.internal.util.cm.QSConstants.TILE_COMPASS;
-import static com.android.internal.util.cm.QSConstants.TILE_HEADS_UP;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -38,9 +36,6 @@ import android.view.LayoutInflater;
 
 import com.android.internal.util.cm.QSUtils;
 import com.android.systemui.quicksettings.*;
-import com.android.systemui.quicksettings.CompassTile;
-import com.android.systemui.quicksettings.EqualizerTile;
-import com.android.systemui.quicksettings.HeadsUpTile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
