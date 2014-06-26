@@ -301,10 +301,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
 
         @Override
-        public void onChange(boolean selfChange) {
-        }
-
-        @Override
         public void onChange(boolean selfChange, Uri uri) {
 
             if (uri.equals(Settings.System.getUriFor(
