@@ -685,6 +685,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         if (mHoverEnabled) {
             mHoverState = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.HOVER_STATE, HOVER_DISABLED);
+            mHoverButton.setVisibility(View.VISIBLE);
         } else {
             mHoverState = HOVER_DISABLED;
         }
