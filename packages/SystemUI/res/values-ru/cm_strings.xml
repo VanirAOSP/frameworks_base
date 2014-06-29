@@ -59,6 +59,8 @@
   <string name="location_mode_high_accuracy_title">Высокая точность</string>
   <string name="location_mode_battery_saving_title">Экономия батареи</string>
   <string name="location_mode_sensors_only_title">По датчикам устройства</string>
+  <string name="quick_settings_heads_up_on">Всплыв. уведомл.</string>
+  <string name="quick_settings_heads_up_off">Уведомления выкл.</string>
   <string name="location_mode_location_off_title">Геоданные выкл.</string>
   <string name="quick_settings_expanded_desktop">Расширенный</string>
   <string name="quick_settings_expanded_desktop_off">Обычный</string>
