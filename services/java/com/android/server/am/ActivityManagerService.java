@@ -1814,12 +1814,7 @@ public final class ActivityManagerService extends ActivityManagerNative
 
             ServiceManager.addService(Context.ACTIVITY_SERVICE, m, true);
             ServiceManager.addService(ProcessStats.SERVICE_NAME, m.mProcessStats);
-            ServiceManager.addService("meminfo", new MemBinder(m));
-            ServiceManager.addService("gfxinfo", new GraphicsBinder(m));
-            ServiceManager.addService("dbinfo", new DbBinder(m));
-            if (MONITOR_CPU_USAGE) {
-                ServiceManager.addService("cpuinfo", new CpuBinder(m));
-            }
+            ServiceManager.addService("stateinfo", new InfoBinder(m));
             ServiceManager.addService("permission", new PermissionController(m));
 
             ApplicationInfo info =
@@ -1950,9 +1945,9 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
     }
 
-    static class MemBinder extends Binder {
+    static class InfoBinder extends Binder {
         ActivityManagerService mActivityManagerService;
-        MemBinder(ActivityManagerService activityManagerService) {
+        InfoBinder(ActivityManagerService activityManagerService) {
             mActivityManagerService = activityManagerService;
         }
 
@@ -1960,76 +1955,33 @@ public final class ActivityManagerService extends ActivityManagerNative
         protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
             if (mActivityManagerService.checkCallingPermission(android.Manifest.permission.DUMP)
                     != PackageManager.PERMISSION_GRANTED) {
+                if (MONITOR_CPU_USAGE) {
+                    pw.println("Permission Denial: can't dump cpuinfo from from pid="
+                            + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
+                            + " without permission " + android.Manifest.permission.DUMP);
+                }
+                pw.println("Permission Denial: can't dump dbinfo from from pid="
+                        + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
+                        + " without permission " + android.Manifest.permission.DUMP);
+                pw.println("Permission Denial: can't dump gfxinfo from from pid="
+                        + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
+                        + " without permission " + android.Manifest.permission.DUMP);
                 pw.println("Permission Denial: can't dump meminfo from from pid="
                         + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
                         + " without permission " + android.Manifest.permission.DUMP);
                 return;
             }
 
-            mActivityManagerService.dumpApplicationMemoryUsage(fd, pw, "  ", args, false, null);
-        }
-    }
-
-    static class GraphicsBinder extends Binder {
-        ActivityManagerService mActivityManagerService;
-        GraphicsBinder(ActivityManagerService activityManagerService) {
-            mActivityManagerService = activityManagerService;
-        }
-
-        @Override
-        protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
-            if (mActivityManagerService.checkCallingPermission(android.Manifest.permission.DUMP)
-                    != PackageManager.PERMISSION_GRANTED) {
-                pw.println("Permission Denial: can't dump gfxinfo from from pid="
-                        + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
-                        + " without permission " + android.Manifest.permission.DUMP);
-                return;
-            }
-
-            mActivityManagerService.dumpGraphicsHardwareUsage(fd, pw, args);
-        }
-    }
-
-    static class DbBinder extends Binder {
-        ActivityManagerService mActivityManagerService;
-        DbBinder(ActivityManagerService activityManagerService) {
-            mActivityManagerService = activityManagerService;
-        }
-
-        @Override
-        protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
-            if (mActivityManagerService.checkCallingPermission(android.Manifest.permission.DUMP)
-                    != PackageManager.PERMISSION_GRANTED) {
-                pw.println("Permission Denial: can't dump dbinfo from from pid="
-                        + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
-                        + " without permission " + android.Manifest.permission.DUMP);
-                return;
-            }
-
             mActivityManagerService.dumpDbInfo(fd, pw, args);
-        }
-    }
+            mActivityManagerService.dumpGraphicsHardwareUsage(fd, pw, args);
+            mActivityManagerService.dumpApplicationMemoryUsage(fd, pw, "  ", args, false, null);
 
-    static class CpuBinder extends Binder {
-        ActivityManagerService mActivityManagerService;
-        CpuBinder(ActivityManagerService activityManagerService) {
-            mActivityManagerService = activityManagerService;
-        }
-
-        @Override
-        protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
-            if (mActivityManagerService.checkCallingPermission(android.Manifest.permission.DUMP)
-                    != PackageManager.PERMISSION_GRANTED) {
-                pw.println("Permission Denial: can't dump cpuinfo from from pid="
-                        + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
-                        + " without permission " + android.Manifest.permission.DUMP);
-                return;
-            }
-
-            synchronized (mActivityManagerService.mProcessCpuThread) {
-                pw.print(mActivityManagerService.mProcessCpuTracker.printCurrentLoad());
-                pw.print(mActivityManagerService.mProcessCpuTracker.printCurrentState(
-                        SystemClock.uptimeMillis()));
+            if (MONITOR_CPU_USAGE) {
+                synchronized (mActivityManagerService.mProcessCpuThread) {
+                    pw.print(mActivityManagerService.mProcessCpuTracker.printCurrentLoad());
+                    pw.print(mActivityManagerService.mProcessCpuTracker.printCurrentState(
+                            SystemClock.uptimeMillis()));
+                }
             }
         }
     }
