@@ -26,6 +26,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.telephony.MSimTelephonyManager;
 import android.util.Log;
 
@@ -214,12 +216,30 @@ public class PhoneStatusBarPolicy {
         final boolean visible = ringerMode == AudioManager.RINGER_MODE_SILENT ||
                 ringerMode == AudioManager.RINGER_MODE_VIBRATE;
 
+        int quietHoursAuto = Settings.System.getIntForUser(
+                mContext.getContentResolver(), Settings.System.QUIET_HOURS_AUTOMATIC,
+                0, UserHandle.USER_CURRENT);
+
         final int iconId;
         String contentDescription = null;
         if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
+            if (quietHoursAuto == 2) {
+                updateQuietHours(2);
+            } else if (quietHoursAuto == 1) {
+                updateQuietHours(1);
+            }
             iconId = R.drawable.stat_sys_ringer_vibrate;
             contentDescription = mContext.getString(R.string.accessibility_ringer_vibrate);
         } else {
+            if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
+                if (quietHoursAuto == 1 || quietHoursAuto == 2) {
+                    updateQuietHours(2);
+                }
+            } else {
+                if (quietHoursAuto != 0) {
+                    updateQuietHours(1);
+                }
+            }
             iconId =  R.drawable.stat_sys_ringer_silent;
             contentDescription = mContext.getString(R.string.accessibility_ringer_silent);
         }
@@ -274,6 +294,17 @@ public class PhoneStatusBarPolicy {
             // TTY is off
             if (false) Log.v(TAG, "updateTTY: set TTY off");
             mService.setIconVisibility("tty", false);
+        }
+    }
+
+    private final void updateQuietHours(int enabled) {
+        final int quietHours = Settings.System.getIntForUser(
+                mContext.getContentResolver(), Settings.System.QUIET_HOURS_ENABLED,
+                0, UserHandle.USER_CURRENT);
+        if (quietHours != 0 && quietHours != enabled) {
+            Settings.System.putIntForUser(mContext.getContentResolver(),
+                    Settings.System.QUIET_HOURS_ENABLED,
+                    enabled, UserHandle.USER_CURRENT);
         }
     }
 }
