@@ -3514,7 +3514,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         makeStatusBarView();
         repositionNavigationBar();
-
+        addHeadsUpView();
         if (mCustomRecent == 1) rebuildRecentsScreen();
 
         // recreate StatusBarIconViews.
