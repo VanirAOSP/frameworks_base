@@ -25,6 +25,8 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -36,6 +38,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewDebug;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.aokp.AwesomeAction;
 import com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 import com.android.internal.util.aokp.NavBarHelpers;
@@ -54,6 +58,7 @@ public class KeyButtonView extends ImageView {
 
     public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
     public static final String BLANK_ACTION = AwesomeConstant.ACTION_BLANK.value();
+    public static final String RECENTS_ACTION = AwesomeConstant.ACTION_RECENTS.value();
 
     long mDownTime;
     long mUpTime;
@@ -71,8 +76,18 @@ public class KeyButtonView extends ImageView {
 
     AwesomeButtonInfo mActions;
 
+    protected static IStatusBarService mBarService;
+    public static synchronized void getStatusBarInstance() {
+        if (mBarService == null) {
+            mBarService = IStatusBarService.Stub.asInterface(
+                    ServiceManager.getService(Context.STATUS_BAR_SERVICE));
+        }
+    }
+
     boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
     boolean mHasBlankSingleAction = false;
+    boolean mIsRecentsAction = false;
+    volatile boolean mRecentsPreloaded;
 
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
@@ -120,9 +135,13 @@ public class KeyButtonView extends ImageView {
         mHasSingleAction = mActions != null && (mActions.singleAction != null);
         mHasLongAction = mActions != null && mActions.longPressAction != null;
         mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
-        mHasBlankSingleAction = mActions != null
-                && mActions.singleAction != null
-                && mActions.singleAction.equals(BLANK_ACTION);
+        mHasBlankSingleAction = mHasSingleAction && mActions.singleAction.equals(BLANK_ACTION);
+
+        mIsRecentsAction = (mHasSingleAction && mActions.singleAction.equals(RECENTS_ACTION))
+                || (mHasLongAction && mActions.longPressAction.equals(RECENTS_ACTION))
+                || (mHasDoubleAction && mActions.doubleTapAction.equals(RECENTS_ACTION));
+
+        if (mIsRecentsAction) getStatusBarInstance();
 
         setLongClickable(mHasLongAction);
         Log.e(TAG, "Adding a navbar button in landscape or portrait");
@@ -280,6 +299,7 @@ public class KeyButtonView extends ImageView {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                if (mIsRecentsAction && mRecentsPreloaded == false) preloadRecentApps();
                 mDownTime = SystemClock.uptimeMillis();
                 setPressed(true);
                 if (mHasSingleAction) {
@@ -317,6 +337,7 @@ public class KeyButtonView extends ImageView {
                     removeCallbacks(mCheckLongPress);
 
                 }
+                if (mRecentsPreloaded == true) cancelPreloadRecentApps();
                 break;
             case MotionEvent.ACTION_UP:
                 mUpTime = SystemClock.uptimeMillis();
@@ -345,7 +366,18 @@ public class KeyButtonView extends ImageView {
         if (callOnClick()) {
             // cool
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
-        } else if (mActions != null) {
+        } else if (mIsRecentsAction) {
+            try {
+                mBarService.toggleRecentApps();
+                sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
+                mRecentsPreloaded = false;
+            } catch (RemoteException e) {
+                Log.e(TAG, "RECENTS ACTION FAILED");
+            }
+            return;
+        }
+
+        if (mActions != null) {
             if (mActions.singleAction != null) {
                 AwesomeAction.launchAction(mContext, mActions.singleAction);
                 sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
@@ -356,17 +388,58 @@ public class KeyButtonView extends ImageView {
     private void doDoubleTap() {
         if (mHasDoubleAction) {
             removeCallbacks(mSingleTap);
-            AwesomeAction.launchAction(mContext, mActions.doubleTapAction);
+            if (mIsRecentsAction) {
+                try {
+                    mBarService.toggleRecentApps();
+                    mRecentsPreloaded = false;
+                } catch (RemoteException e) {
+                    Log.e(TAG, "RECENTS ACTION FAILED");
+                }
+            } else {
+                AwesomeAction.launchAction(mContext, mActions.doubleTapAction);
+            }
         }
     }
 
     private void doLongPress() {
         if (mHasLongAction) {
             removeCallbacks(mSingleTap);
-            AwesomeAction.launchAction(mContext, mActions.longPressAction);
-            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
+            if (mIsRecentsAction) {
+                try {
+                    mBarService.toggleRecentApps();
+                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                    sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
+                    mRecentsPreloaded = false;
+                } catch (RemoteException e) {
+                    Log.e(TAG, "RECENTS ACTION FAILED");
+                }
+            } else {
+                AwesomeAction.launchAction(mContext, mActions.longPressAction);
+                performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
+            }
         }
+    }
+
+    private void cancelPreloadRecentApps() {
+        if (mRecentsPreloaded == false) return;
+        try {
+            mBarService.cancelPreloadRecentApps();
+        } catch (RemoteException e) {
+            // use previous state
+            return;
+        }
+        mRecentsPreloaded = false;
+    }
+
+    private void preloadRecentApps() {
+        try {
+            mBarService.preloadRecentApps();
+        } catch (RemoteException e) {
+            mRecentsPreloaded = false;
+            return;
+        }
+        mRecentsPreloaded = true;
     }
 
     public void setGlowBackground(int resId) {

@@ -77,15 +77,6 @@ public class AwesomeAction {
             AwesomeConstant AwesomeEnum = fromString(action);
             AudioManager am;
             switch (AwesomeEnum) {
-                case ACTION_RECENTS:
-                    try {
-                        IStatusBarService.Stub.asInterface(
-                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE))
-                                .toggleRecentApps();
-                    } catch (RemoteException e) {
-                        Log.e(TAG, "RECENTS ACTION FAILED");
-                    }
-                    break;
                 case ACTION_HOME:
                     IWindowManager mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
                     try {
