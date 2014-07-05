@@ -2031,8 +2031,4 @@
 
   <!-- External media format -->
   <java-symbol type="string" name="extmedia_format_message_cm" />
-
-  <!-- Wifi tethering-->
-  <java-symbol type="plurals" name="tethered_clients_connected" />
-
 </resources>
