@@ -108,6 +108,7 @@ public class NavigationBarView extends LinearLayout {
     private boolean mPrefNavring;
     private boolean mPrefLockscreen;
     private String mUserButtons;
+    private boolean mSideKeys;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
@@ -551,10 +552,13 @@ public class NavigationBarView extends LinearLayout {
                 @Override
                 public void onChange(boolean selfChange) {
                     mUserButtons = Settings.System.getString(r, Settings.System.NAVIGATION_BAR_BUTTONS);
+                    mSideKeys = Settings.System.getInt(r, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
                     setupNavigationButtons();
                 }};
 
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS),
+                false, mSettingsObserver);
+            r.registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_SIDEKEYS),
                 false, mSettingsObserver);
         }
 
@@ -657,17 +661,21 @@ public class NavigationBarView extends LinearLayout {
             lightsOut.removeAllViews();
 
             if (mTablet) {
-                // offset menu button
-                addSeparator(navButtons, landscape, (int) mMenuButtonWidth, 0f);
-                addSeparator(lightsOut, landscape, (int) mMenuButtonWidth, 0f);
+                if (mSideKeys) {
+                    // offset menu button
+                    addSeparator(navButtons, landscape, (int) mMenuButtonWidth, 0f);
+                    addSeparator(lightsOut, landscape, (int) mMenuButtonWidth, 0f);
 
-                // eats up that extra mTablet space
-                addSeparator(navButtons, landscape, 0, stockThreeButtonLayout ? 1f : 0.5f);
-                addSeparator(lightsOut, landscape, 0, stockThreeButtonLayout ? 1f : 0.5f);
+                    // eats up that extra mTablet space
+                    addSeparator(navButtons, landscape, 0, stockThreeButtonLayout ? 1f : 0.5f);
+                    addSeparator(lightsOut, landscape, 0, stockThreeButtonLayout ? 1f : 0.5f);
+                }
             } else {
-                // on phone ui this offsets the right side menu button
-                addSeparator(navButtons, landscape, separatorSize, 0f);
-                addSeparator(lightsOut, landscape, separatorSize, 0f);
+                if (mSideKeys) {
+                    // on phone ui this offsets the right side menu button
+                    addSeparator(navButtons, landscape, separatorSize, 0f);
+                    addSeparator(lightsOut, landscape, separatorSize, 0f);
+                }
             }
 
             for (int j = 0; j < mNavButtons.size(); j++) {
@@ -724,7 +732,11 @@ public class NavigationBarView extends LinearLayout {
             menuButton.setLayoutParams(getLayoutParams(landscape, mMenuButtonWidth, 0f));
             menuButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                     : R.drawable.ic_sysbar_highlight);
-            menuButton.setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+            if (mSideKeys) {
+                menuButton.setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+            } else {
+                menuButton.setVisibility(View.GONE);
+            }
             if (mMenuButtonId == 0) {
                 // assign the same id for layout and horizontal buttons
                 mMenuButtonId = View.generateViewId();
@@ -733,16 +745,20 @@ public class NavigationBarView extends LinearLayout {
             // MENU BUTTON NOT YET ADDED ANYWHERE!
 
             if (mTablet) {
-                // om nom
-                addSeparator(navButtons, landscape, 0,  stockThreeButtonLayout ? 1f : 0.5f);
-                addSeparator(lightsOut, landscape, 0,  stockThreeButtonLayout ? 1f : 0.5f);
+                if (mSideKeys) {
+                    // om nom
+                    addSeparator(navButtons, landscape, 0,  stockThreeButtonLayout ? 1f : 0.5f);
+                    addSeparator(lightsOut, landscape, 0,  stockThreeButtonLayout ? 1f : 0.5f);
 
-                // add the button last so it hangs on the edge
-                addButton(navButtons, menuButton, landscape);
-                addLightsOutButton(lightsOut, menuButton, landscape, true);
+                    // add the button last so it hangs on the edge
+                    addButton(navButtons, menuButton, landscape);
+                    addLightsOutButton(lightsOut, menuButton, landscape, true);
+                }
             } else {
-                addButton(navButtons, menuButton, landscape);
-                addLightsOutButton(lightsOut, menuButton, landscape, true);
+                if (mSideKeys) {
+                    addButton(navButtons, menuButton, landscape);
+                    addLightsOutButton(lightsOut, menuButton, landscape, true);
+                }
             }
         }
         invalidate();
