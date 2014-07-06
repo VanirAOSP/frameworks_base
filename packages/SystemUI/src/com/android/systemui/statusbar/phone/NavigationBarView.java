@@ -684,23 +684,7 @@ public class NavigationBarView extends LinearLayout {
                 KeyButtonView button = new KeyButtonView(mContext, null);
                 button.setButtonActions(info);
                 if (mTablet) {
-                    if (mNavButtons.size() <= 4) {
-                        // use stock tablet button spacing, even with 4 buttons it seems to work
-                        int padding = getResources().getDimensionPixelSize(landscape
-                                ? R.dimen.navigation_tablet_key_padding_land
-                                : R.dimen.navigation_tablet_key_padding
-                        );
-                        int width = getResources().getDimensionPixelSize(landscape
-                                ? R.dimen.navigation_tablet_key_width_land
-                                : R.dimen.navigation_tablet_key_width
-                        );
-                        button.setLayoutParams(getLayoutParams(landscape, width, 0f));
-                        button.setPaddingRelative(padding, 0, padding, 0);
-                    } else {
-                        // 5 or more buttons don't fit in portrait, so spread them all out equally
-                        button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
-                    }
-
+                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
                     button.setGlowBackground(R.drawable.ic_sysbar_highlight);
                 } else {
                     button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, stockThreeButtonLayout ? 0f : 0.5f));
