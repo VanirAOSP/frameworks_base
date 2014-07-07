@@ -18,7 +18,6 @@
 
 package com.android.keyguard;
 
-import android.graphics.Bitmap;
 import com.android.internal.policy.IKeyguardExitCallback;
 import com.android.internal.policy.IKeyguardShowCallback;
 import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
@@ -559,8 +558,8 @@ public class KeyguardViewMediator {
         mLockSoundVolume = (float)Math.pow(10, (float)lockSoundDefaultAttenuation/20);
     }
 
-    public void setBackgroundBitmap(Bitmap bmp) {
-    	mKeyguardViewManager.setBackgroundBitmap(bmp);
+    public void setBackgroundBitmap() {
+        mKeyguardViewManager.setBackgroundBitmap();
     }
     
     /**

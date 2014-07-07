@@ -26,6 +26,7 @@ import android.graphics.drawable.TransitionDrawable;
 
 import com.android.internal.policy.IKeyguardShowCallback;
 import com.android.internal.widget.LockPatternUtils;
+import com.android.server.display.DisplayManagerService;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -67,9 +68,11 @@ import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
+import android.view.DisplayInfo;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SurfaceControl;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
@@ -101,12 +104,15 @@ public class KeyguardViewManager {
     private final Context mContext;
     private final ViewManager mViewManager;
     private final KeyguardViewMediator.ViewMediatorCallback mViewMediatorCallback;
+    private final DisplayManagerService mDisplayManager;
 
     private WindowManager.LayoutParams mWindowLayoutParams;
     private boolean mNeedsInput = false;
 
     private ViewManagerHost mKeyguardHost;
     private KeyguardHostView mKeyguardView;
+    private NotificationHostView mNotificationView;
+    private NotificationViewManager mNotificationViewManager;
 
     private boolean mScreenOn = false;
     private LockPatternUtils mLockPatternUtils;
@@ -114,22 +120,21 @@ public class KeyguardViewManager {
     private boolean mTranslucentDecor;
     private boolean mBlurEnabled = false;
     private int mBlurRadius = 12;
-    private SettingsObserver mObserver;
     private boolean isSeeThroughEnabled;
+    private Bitmap mBackgroundBlurImage = null;
 
-    private NotificationHostView mNotificationView;
-    private NotificationViewManager mNotificationViewManager;
+    private SettingsObserver mObserver;
+    private Handler mHandler;
+
     private boolean mLockscreenNotifications = true;
     private boolean mUnlockKeyDown = false;
 
     private KeyguardUpdateMonitorCallback mBackgroundChanger = new KeyguardUpdateMonitorCallback() {
         @Override
         public void onSetBackground(Bitmap bmp) {
-            mKeyguardHost.setCustomBackground(bmp != null ?
-                    new BitmapDrawable(mContext.getResources(), bmp) : null);
-            if (bmp == null && isSeeThroughEnabled)
-                mKeyguardHost.cacheUserImage();
-            updateShowWallpaper(mKeyguardHost.shouldShowWallpaper(false));
+            mKeyguardHost.setCustomBackground( new BitmapDrawable(mContext.getResources(),
+                    bmp != null ? bmp : mBackgroundBlurImage));
+            updateShowWallpaper(bmp == null && mBackgroundBlurImage == null);
          }
     };
 
@@ -154,6 +159,7 @@ public class KeyguardViewManager {
                     Settings.System.LOCKSCREEN_BLUR_RADIUS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.LOCKSCREEN_NOTIFICATIONS), false, this);
+            updateSettings();
         }
 
         @Override
@@ -167,12 +173,13 @@ public class KeyguardViewManager {
     private void updateSettings() {
         isSeeThroughEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_SEE_THROUGH, 0) == 1;
-        if (isSeeThroughEnabled &&
-                (mBlurEnabled = Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.LOCKSCREEN_BLUR_BEHIND, 0) == 1)) {
-            mBlurRadius = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.LOCKSCREEN_BLUR_RADIUS, 12);
+        mBlurEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_BLUR_BEHIND, 0) == 1;
+        if (!mBlurEnabled) {
+            mBackgroundBlurImage = null;
         }
+        mBlurRadius = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_BLUR_RADIUS, 12);
 
         mLockscreenNotifications = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_NOTIFICATIONS, 0) == 1;
@@ -203,15 +210,18 @@ public class KeyguardViewManager {
             KeyguardViewMediator.ViewMediatorCallback callback,
             LockPatternUtils lockPatternUtils) {
         mContext = context;
-        final Resources res = mContext.getResources();
+        final Resources res = context.getResources();
+
         mViewManager = viewManager;
         mViewMediatorCallback = callback;
         mLockPatternUtils = lockPatternUtils;
         mTranslucentDecor = res.getBoolean(R.bool.config_enableLockScreenTranslucentDecor);
 
-        mObserver = new SettingsObserver(new Handler());
+        mHandler = new Handler();
+
+        mDisplayManager = new DisplayManagerService(context, mHandler);
+        mObserver = new SettingsObserver(mHandler);
         mObserver.observe();
-        updateSettings();
     }
 
     /**
@@ -225,7 +235,6 @@ public class KeyguardViewManager {
 
         maybeCreateKeyguardLocked(enableScreenRotation, false, options);
         maybeEnableScreenRotation(enableScreenRotation);
-        updateShowWallpaper(mKeyguardHost.shouldShowWallpaper());
 
         // Disable common aspects of the system/status/navigation bars that are not appropriate or
         // useful on any keyguard screen but can be re-shown by dialogs or SHOW_WHEN_LOCKED
@@ -258,18 +267,14 @@ public class KeyguardViewManager {
         return mTranslucentDecor;
     }
 
-    public void setBackgroundBitmap(Bitmap bmp) {
-        if (!isSeeThroughEnabled)
-            return;
-        if (bmp != null && mBlurEnabled) {
-            bmp = blurBitmap(bmp, mBlurRadius);
-        }
-        if (!mBlurEnabled || bmp == null) {
-            WallpaperManager wm = WallpaperManager.getInstance(mContext);
-            try {
-                wm.setKeyguardBitmap(bmp);
-            } catch(java.io.IOException ex) {
-                Log.e(TAG, "Error setting keyguard background", ex);
+    public void setBackgroundBitmap() {
+        if (mBlurEnabled) {
+            DisplayInfo di = mDisplayManager.getDisplayInfo(mDisplayManager.getDisplayIds()[0]);
+            // Up to 22000, the layers seem to be used by apps. Everything above that is systemui or a system alert
+            // and we don't want these on our screenshot.
+            final Bitmap bmp = SurfaceControl.screenshot(di.getNaturalWidth(), di.getNaturalHeight(), 0, 22000);
+            if (bmp != null) {
+                mBackgroundBlurImage = blurBitmap(bmp, mBlurRadius);
             }
         }
     }
@@ -280,10 +285,12 @@ public class KeyguardViewManager {
         // scale image if it's too large
         if (bmp.getWidth() > MAX_BLUR_WIDTH)
             tmpBmp = bmp.createScaledBitmap(bmp, MAX_BLUR_WIDTH, MAX_BLUR_HEIGHT, false);
-
         Bitmap out = Bitmap.createBitmap(tmpBmp);
-        RenderScript rs = RenderScript.create(mContext);
 
+        // no need to process this
+        if (radius == 0) return out;
+
+        RenderScript rs = RenderScript.create(mContext);
         Allocation input = Allocation.createFromBitmap(
                 rs, tmpBmp, MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
         Allocation output = Allocation.createTyped(rs, input.getType());
@@ -483,6 +490,7 @@ public class KeyguardViewManager {
         }
 
         public void cacheUserImage() {
+            if (mBlurEnabled) return;
             if (isSeeThroughEnabled) {
                 mUserBackground = null;
             } else {
@@ -813,7 +821,9 @@ public class KeyguardViewManager {
         if (show && !isSeeThroughEnabled) {
             mWindowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
         } else {
-            mWindowLayoutParams.flags &= ~WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+            if (isSeeThroughEnabled && !mBlurEnabled) {
+                mWindowLayoutParams.flags &= ~WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+            }
         }
         mWindowLayoutParams.format = (show || isSeeThroughEnabled) ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE;
         mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);

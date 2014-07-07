@@ -209,7 +209,7 @@ public class WindowAnimator {
         ArrayList<WindowStateAnimator> unForceHiding = null;
         boolean wallpaperInUnForceHiding = false;
         mForceHiding = KEYGUARD_NOT_SHOWN;
-        boolean shouldAnimate = !(beergoggles.getTransparent() || beergoggles.getBlurry());
+        boolean shouldAnimate = (!beergoggles.getTransparent() && !beergoggles.getBlurry());
 
         for (int i = windows.size() - 1; i >= 0; i--) {
             WindowState win = windows.get(i);
