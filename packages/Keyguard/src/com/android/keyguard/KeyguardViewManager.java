@@ -821,9 +821,7 @@ public class KeyguardViewManager {
         if (show && !isSeeThroughEnabled) {
             mWindowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
         } else {
-            if (isSeeThroughEnabled && !mBlurEnabled) {
-                mWindowLayoutParams.flags &= ~WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
-            }
+            mWindowLayoutParams.flags &= ~WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
         }
         mWindowLayoutParams.format = (show || isSeeThroughEnabled) ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE;
         mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
