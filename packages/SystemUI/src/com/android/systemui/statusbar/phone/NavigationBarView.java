@@ -240,6 +240,8 @@ public class NavigationBarView extends LinearLayout {
                 Context.WINDOW_SERVICE)).getDefaultDisplay();
 
         final Resources res = mContext.getResources();
+        final ContentResolver cr = mContext.getContentResolver();
+
         mBarSize = res.getDimensionPixelSize(R.dimen.navigation_bar_size);
         mVertical = false;
         mShowMenu = false;
@@ -249,8 +251,8 @@ public class NavigationBarView extends LinearLayout {
 
         mBarTransitions = new NavigationBarTransitions(this);
 
-        mUserButtons = Settings.System.getString(mContext.getContentResolver(), Settings.System.NAVIGATION_BAR_BUTTONS);
-        mSideKeys = Settings.System.getInt(r, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
+        mUserButtons = Settings.System.getString(cr, Settings.System.NAVIGATION_BAR_BUTTONS);
+        mSideKeys = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
 
         mCameraDisabledByDpm = isCameraDisabledByDpm();
         watchForDevicePolicyChanges();
