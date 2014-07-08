@@ -126,6 +126,8 @@ public class KeyguardViewManager {
     private SettingsObserver mObserver;
     private Handler mHandler;
 
+    private boolean mEnableLockScreenRotation;
+    private boolean mEnableAccelerometerRotation;
     private boolean mLockscreenNotifications = true;
     private boolean mUnlockKeyDown = false;
 
@@ -159,6 +161,10 @@ public class KeyguardViewManager {
                     Settings.System.LOCKSCREEN_BLUR_RADIUS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.LOCKSCREEN_NOTIFICATIONS), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_ROTATION), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ACCELEROMETER_ROTATION), false, this);
             updateSettings();
         }
 
@@ -198,6 +204,11 @@ public class KeyguardViewManager {
             mNotificationViewManager.unregisterListeners();
             mNotificationViewManager = null;
         }
+
+        mEnableLockScreenRotation = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_ROTATION, 0) != 0;
+        mEnableAccelerometerRotation = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.ACCELEROMETER_ROTATION, 1) != 0;
     }
 
     /**
@@ -231,17 +242,15 @@ public class KeyguardViewManager {
     public synchronized void show(Bundle options) {
         if (DEBUG) Log.d(TAG, "show(); mKeyguardView==" + mKeyguardView);
 
-        boolean enableScreenRotation = shouldEnableScreenRotation();
-
-        maybeCreateKeyguardLocked(enableScreenRotation, false, options);
-        maybeEnableScreenRotation(enableScreenRotation);
+        maybeCreateKeyguardLocked(mEnableLockScreenRotation && mEnableAccelerometerRotation, false, options);
+        maybeEnableScreenRotation(mEnableLockScreenRotation && mEnableAccelerometerRotation);
 
         // Disable common aspects of the system/status/navigation bars that are not appropriate or
         // useful on any keyguard screen but can be re-shown by dialogs or SHOW_WHEN_LOCKED
         // activities. Other disabled bits are handled by the KeyguardViewMediator talking
         // directly to the status bar service.
         int visFlags = View.STATUS_BAR_DISABLE_HOME;
-        if (shouldEnableTranslucentDecor()) {
+        if (mTranslucentDecor) {
             mWindowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
                                        | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
         }
@@ -252,19 +261,6 @@ public class KeyguardViewManager {
         mKeyguardHost.setVisibility(View.VISIBLE);
         mKeyguardView.show();
         mKeyguardView.requestFocus();
-    }
-
-    private boolean shouldEnableScreenRotation() {
-        Resources res = mContext.getResources();
-        boolean enableLockScreenRotation = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.LOCKSCREEN_ROTATION, 0) != 0;
-        boolean enableAccelerometerRotation = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION, 1) != 0;
-        return enableLockScreenRotation && enableAccelerometerRotation;
-    }
-
-    private boolean shouldEnableTranslucentDecor() {
-        return mTranslucentDecor;
     }
 
     public void setBackgroundBitmap() {
@@ -459,7 +455,7 @@ public class KeyguardViewManager {
                 if (DEBUG) Log.v(TAG, "onConfigurationChanged: no relevant changes");
             } else if (mKeyguardHost.getVisibility() == View.VISIBLE) {
                 // only propagate configuration messages if we're currently showing
-                maybeCreateKeyguardLocked(shouldEnableScreenRotation(), true, null);
+                maybeCreateKeyguardLocked(mEnableLockScreenRotation && mEnableAccelerometerRotation, true, null);
             } else {
                 if (DEBUG) Log.v(TAG, "onConfigurationChanged: view not visible");
             }
@@ -854,7 +850,7 @@ public class KeyguardViewManager {
         if (DEBUG) Log.d(TAG, "reset()");
         // User might have switched, check if we need to go back to keyguard
         // TODO: It's preferable to stay and show the correct lockscreen or unlock if none
-        maybeCreateKeyguardLocked(shouldEnableScreenRotation(), true, options);
+        maybeCreateKeyguardLocked(mEnableLockScreenRotation && mEnableAccelerometerRotation, true, options);
     }
 
     public synchronized void onScreenTurnedOff() {
