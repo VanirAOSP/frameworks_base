@@ -18,7 +18,6 @@ package com.android.server;
 
 import android.os.BatteryStats;
 import com.android.internal.app.IBatteryStats;
-import com.android.internal.util.cm.QuietHoursUtils;
 import com.android.server.am.BatteryStatsService;
 
 import android.app.ActivityManagerNative;
@@ -98,6 +97,9 @@ public final class BatteryService extends IBatteryService.Stub {
 
     private static final String DUMPSYS_DATA_PATH = "/data/system/";
 
+    private static final String UPDATE_QUIET_HOURS_MODES =
+            "com.android.settings.vanir.service.UPDATE_QUIET_HOURS_MODES";
+
     // This should probably be exposed in the API, though it's not critical
     private static final int BATTERY_PLUGGED_NONE = 0;
 
@@ -112,6 +114,7 @@ public final class BatteryService extends IBatteryService.Stub {
     private int mLastBatteryStatus;
     private int mLastBatteryHealth;
     private boolean mLastBatteryPresent;
+    private int mQuietHoursMode;
     private int mLastBatteryLevel;
     private int mLastBatteryVoltage;
     private int mLastBatteryTemperature;
@@ -950,7 +953,10 @@ public final class BatteryService extends IBatteryService.Stub {
             if (!mLightEnabled) {
                 // No lights if explicitly disabled
                 mBatteryLight.turnOff();
-            } else if (QuietHoursUtils.inQuietHours(mContext, Settings.System.QUIET_HOURS_DIM)) {
+            } else if (Settings.System.getIntForUser(
+                    mContext.getContentResolver(),
+                    Settings.System.QUIET_HOURS_DIM,
+                    0, UserHandle.USER_CURRENT_OR_SELF) == 2) {
                 if (mLedPulseEnabled && level < mLowBatteryWarningLevel &&
                         status != BatteryManager.BATTERY_STATUS_CHARGING) {
                     // The battery is low, the device is not charging and the low battery pulse
@@ -1026,11 +1032,8 @@ public final class BatteryService extends IBatteryService.Stub {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QUIET_HOURS_ENABLED), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QUIET_HOURS_START), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QUIET_HOURS_END), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QUIET_HOURS_DIM), false, this);
+                    Settings.System.QUIET_HOURS_DIM), false, this,
+                    UserHandle.USER_ALL);
 
             update();
         }
@@ -1042,6 +1045,17 @@ public final class BatteryService extends IBatteryService.Stub {
         public void update() {
             ContentResolver resolver = mContext.getContentResolver();
             Resources res = mContext.getResources();
+
+            final int newQhMode = Settings.System.getIntForUser(resolver,
+                    Settings.System.QUIET_HOURS_ENABLED, 0,
+                    UserHandle.USER_CURRENT_OR_SELF);
+            if (newQhMode != mQuietHoursMode
+                    && ActivityManagerNative.isSystemReady()) {
+                Intent intent = new Intent();
+                intent.setAction(UPDATE_QUIET_HOURS_MODES);
+                mContext.sendBroadcast(intent);
+            }
+            mQuietHoursMode = newQhMode;
 
             // Battery light enabled
             mLightEnabled = Settings.System.getInt(resolver,

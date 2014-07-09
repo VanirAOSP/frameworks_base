@@ -52,8 +52,6 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-import com.android.internal.util.cm.QuietHoursUtils;
-
 import java.util.HashMap;
 
 /**
@@ -891,13 +889,11 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
             onStopSounds();
         }
 
-        if (!QuietHoursUtils.inQuietHours(mContext, Settings.System.QUIET_HOURS_SYSTEM)) {
             synchronized (this) {
                 ToneGenerator toneGen = getOrCreateToneGenerator(streamType);
                 if (toneGen != null) {
                     toneGen.startTone(ToneGenerator.TONE_PROP_BEEP);
                     sendMessageDelayed(obtainMessage(MSG_STOP_SOUNDS), BEEP_DURATION);
-                }
             }
         }
     }
