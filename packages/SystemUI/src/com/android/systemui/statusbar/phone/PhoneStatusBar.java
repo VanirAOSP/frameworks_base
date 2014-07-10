@@ -3502,6 +3502,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mStatusBarContainer.removeAllViews();
         mStatusBarContainer.clearDisappearingChildren();
 
+        removeAllViews(mStatusBarWindow);
+
         // extract icons from the soon-to-be recreated viewgroup.
         int nIcons = mStatusIcons.getChildCount();
         ArrayList<StatusBarIcon> icons = new ArrayList<StatusBarIcon>(nIcons);
