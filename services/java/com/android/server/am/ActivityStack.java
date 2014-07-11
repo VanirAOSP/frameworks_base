@@ -1717,13 +1717,17 @@ final class ActivityStack {
 
         boolean privacy = mService.mAppOpsService.getPrivacyGuardSettingForPackage(
                 next.app.uid, next.packageName);
+        boolean privacyNotification = (Settings.Secure.getInt(mContext.getContentResolver(),
+                Settings.Secure.PRIVACY_GUARD_NOTIFICATION, 1) == 1);
+        //boolean privacyNotificationIcon = (Settings.Secure.getInt(mContext.getContentResolver(),
+          //      Settings.Secure.PRIVACY_GUARD_NOTIFICATION_ICON, 1) == 1);
 
         if (privacyGuardPackageName != null && !privacy) {
             Message msg = mService.mHandler.obtainMessage(
                     ActivityManagerService.CANCEL_PRIVACY_NOTIFICATION_MSG, next.userId);
             msg.sendToTarget();
             mStackSupervisor.mPrivacyGuardPackageName = null;
-        } else if (privacy) {
+        } else if (privacy && privacyNotification) {
             Message msg = mService.mHandler.obtainMessage(
                     ActivityManagerService.POST_PRIVACY_NOTIFICATION_MSG, next);
             msg.sendToTarget();
