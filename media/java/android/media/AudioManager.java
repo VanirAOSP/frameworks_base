@@ -1794,6 +1794,10 @@ public class AudioManager {
             return;
         }
 
+        if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.QUIET_HOURS_SYSTEM, 0) == 2) {
+            return;
+        }
+
         if (!querySoundEffectsEnabled()) {
             return;
         }
