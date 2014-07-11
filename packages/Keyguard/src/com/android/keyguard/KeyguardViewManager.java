@@ -96,7 +96,7 @@ public class KeyguardViewManager {
     private final int MAX_BLUR_HEIGHT = 1600;
 
     // Delay dismissing keyguard to allow animations to complete.
-    private static final int HIDE_KEYGUARD_DELAY = 500;
+    private static final int HIDE_KEYGUARD_DELAY = 300;
 
     // Timeout used for keypresses
     static final int DIGIT_PRESS_WAKE_MILLIS = 5000;
@@ -121,7 +121,7 @@ public class KeyguardViewManager {
     private boolean mBlurEnabled = false;
     private int mBlurRadius = 12;
     private boolean isSeeThroughEnabled;
-    private Bitmap mBackgroundBlurImage = null;
+    private Bitmap mBackgroundImage = null;
 
     private SettingsObserver mObserver;
     private Handler mHandler;
@@ -135,8 +135,7 @@ public class KeyguardViewManager {
         @Override
         public void onSetBackground(Bitmap bmp) {
             mKeyguardHost.setCustomBackground( new BitmapDrawable(mContext.getResources(),
-                    bmp != null ? bmp : mBackgroundBlurImage));
-            updateShowWallpaper(bmp == null && mBackgroundBlurImage == null);
+                    bmp != null ? bmp : mBackgroundImage));
          }
     };
 
@@ -181,9 +180,6 @@ public class KeyguardViewManager {
                 Settings.System.LOCKSCREEN_SEE_THROUGH, 0) == 1;
         mBlurEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_BLUR_BEHIND, 0) == 1;
-        if (!mBlurEnabled) {
-            mBackgroundBlurImage = null;
-        }
         mBlurRadius = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_BLUR_RADIUS, 12);
 
@@ -270,8 +266,10 @@ public class KeyguardViewManager {
             // and we don't want these on our screenshot.
             final Bitmap bmp = SurfaceControl.screenshot(di.getNaturalWidth(), di.getNaturalHeight(), 0, 22000);
             if (bmp != null) {
-                mBackgroundBlurImage = blurBitmap(bmp, mBlurRadius);
+                mBackgroundImage = blurBitmap(bmp, mBlurRadius);
             }
+        } else {
+            mKeyguardHost.cacheUserImage();
         }
     }
 
@@ -486,16 +484,18 @@ public class KeyguardViewManager {
         }
 
         public void cacheUserImage() {
-            if (mBlurEnabled) return;
             if (isSeeThroughEnabled) {
-                mUserBackground = null;
+                mBackgroundImage = null;
+                updateShowWallpaper(false);
             } else {
                 WallpaperManager wm = WallpaperManager.getInstance(mContext);
                 Bitmap bitmap = wm.getKeyguardBitmap();
                 if (bitmap != null) {
-                    mUserBackground = new BitmapDrawable(mContext.getResources(), bitmap);
+                    mBackgroundImage = bitmap;
+                    updateShowWallpaper(false);
                 } else {
-                    mUserBackground = null;
+                    mBackgroundImage = null;
+                    updateShowWallpaper(true);
                 }
             }
             setCustomBackground(null);
@@ -519,7 +519,7 @@ public class KeyguardViewManager {
         }
 
         public boolean shouldShowWallpaper() {
-            return mUserBackground == null;
+            return mBackgroundImage == null;
         }
     }
 
@@ -685,11 +685,8 @@ public class KeyguardViewManager {
 
             int flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                         | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                        | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
-
-            if (!isSeeThroughEnabled) {
-                flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
-            }
+                        | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
+                        | WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
 
             if (!mNeedsInput) {
                 flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
@@ -814,10 +811,12 @@ public class KeyguardViewManager {
     }
 
     void updateShowWallpaper(boolean show) {
-        if (show && !isSeeThroughEnabled) {
+        if (show) {
             mWindowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
         } else {
-            mWindowLayoutParams.flags &= ~WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+            if ((mWindowLayoutParams.flags & WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER) != 0) {
+                mWindowLayoutParams.flags &= ~WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+            }
         }
         mWindowLayoutParams.format = (show || isSeeThroughEnabled) ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE;
         mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
@@ -955,11 +954,6 @@ public class KeyguardViewManager {
                             lastView.cleanUp();
                             // Let go of any large bitmaps.
                             mKeyguardHost.setCustomBackground(null);
-                            // When turning the screen off and a custom wallpaper is set,
-                            // showing the wallpaper will cause the *regular* wallpaper
-                            // to briefly flash. This is proper behavior only if no
-                            // custom wallpaper is set.
-                            updateShowWallpaper(mKeyguardHost.shouldShowWallpaper(true));
                             mKeyguardHost.removeView(lastView);
                             mViewMediatorCallback.keyguardGone();
                         }
