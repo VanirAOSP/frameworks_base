@@ -72,16 +72,18 @@ public class TakeScreenrecordService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(ACTION_START)) {
-            startScreenrecord();
-        } else if (intent.getAction().equals(ACTION_STOP)) {
-            stopScreenrecord();
-        } else if (intent.getAction().equals(ACTION_TOGGLE_POINTER)) {
-            int currentStatus = Settings.System.getInt(getContentResolver(),
-                        Settings.System.SHOW_TOUCHES, 0);
-            Settings.System.putInt(getContentResolver(), Settings.System.SHOW_TOUCHES,
-                        1 - currentStatus);
-            mScreenrecord.updateNotification();
+        if (intent != null) {
+            if (intent.getAction().equals(ACTION_START)) {
+                startScreenrecord();
+            } else if (intent.getAction().equals(ACTION_STOP)) {
+                stopScreenrecord();
+            } else if (intent.getAction().equals(ACTION_TOGGLE_POINTER)) {
+                int currentStatus = Settings.System.getInt(getContentResolver(),
+                            Settings.System.SHOW_TOUCHES, 0);
+                Settings.System.putInt(getContentResolver(), Settings.System.SHOW_TOUCHES,
+                            1 - currentStatus);
+                mScreenrecord.updateNotification();
+            }
         }
 
         return super.onStartCommand(intent, flags, startId);
