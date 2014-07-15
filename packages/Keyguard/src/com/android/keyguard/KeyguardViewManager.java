@@ -269,7 +269,12 @@ public class KeyguardViewManager {
                 mBackgroundImage = blurBitmap(bmp, mBlurRadius);
             }
         } else {
-            mKeyguardHost.cacheUserImage();
+            mKeyguardHost.post(new Runnable() {
+                @Override
+                public void run() {
+                    mKeyguardHost.cacheUserImage();
+                }
+            });
         }
     }
 
