@@ -2880,7 +2880,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             mTickingDoneListener));
             }
 
-            if (!hasTicked) return;
+            if (mHoverState == HOVER_ENABLED && !hasTicked) return;
             mStatusBarContents.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
