@@ -48,7 +48,7 @@
     <!-- Constant for hidden ribbon drag handle -->
     <dimen name="ribbon_drag_handle_height">25dp</dimen>
 
-    <!-- Hover dimens -->
+    <!-- Hover -->
     <dimen name="hover_height">64dp</dimen>
     <dimen name="hover_cling_width">-1px</dimen>
 

@@ -19,18 +19,24 @@ package com.android.systemui.statusbar.notification;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.KeyguardManager;
+import android.app.Notification;
 import android.content.Context;
+import android.content.ContentResolver;
+import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.IWindowManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.WindowManagerGlobal;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
@@ -61,9 +67,13 @@ public class Hover {
     private static final int INDEX_CURRENT = 0; // first array object
     private static final int INDEX_NEXT = 1; // second array object
     private static final int INSTANT_FADE_OUT_DELAY = 0; // 0 seconds
-    private static final int MICRO_FADE_OUT_DELAY = 1250; // 1.25 seconds, enough
-    private static final int LONG_FADE_OUT_DELAY = 5000; // 5 seconds, default show time
+    private static final int MICRO_FADE_OUT_DELAY = 1250; // 1.25 seconds
     private static final int SHORT_FADE_OUT_DELAY = 2500; // 2.5 seconds to show next one
+
+    // Configurable by user
+    private int mLongFadeOutDelay; // default hover duration is 5 seconds.
+    public int mHoverHeight;
+    private int mHoverSize = -1;
 
     private static final int OVERLAY_NOTIFICATION_OFFSET = 125; // special purpose
 
@@ -75,7 +85,6 @@ public class Hover {
     private boolean mHiding;
     private boolean mShowing;
     private boolean mUserLocked;
-    private int mHoverHeight;
     private BaseStatusBar mStatusBar;
     private Context mContext;
     private DecelerateInterpolator mAnimInterpolator;
@@ -90,9 +99,52 @@ public class Hover {
     private Runnable mOverrideRunnable;
     private TelephonyManager mTelephonyManager;
     private WindowManager mWindowManager;
+    private IWindowManager mWindowManagerService;
+
+    private SettingsObserver mSettingsObserver;
+
+    private boolean mExcludeNonClearable;
+    private boolean mExcludeLowPriority;
+    private boolean mRequireFullScreen;
+    private boolean mForceRemovable;
+    private boolean mExcludeForeground;
 
     private ArrayList<HoverNotification> mNotificationList;
     private ArrayList<StatusBarNotification> mStatusBarNotifications;
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOVER_DURATION), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOVER_DURATION_LONG), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOVER_REQUIRE_FULLSCREEN), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOVER_LOW_PRIORITY), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOVER_NON_CLEARABLE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOVER_FORCE_REMOVABLE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOVER_EXCLUDE_FOREGROUND), false, this);
+            updateSettings();
+        }
+
+        void destroy() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
 
     /**
      * Creates a new hover instance
@@ -102,11 +154,18 @@ public class Hover {
     public Hover(BaseStatusBar statusBar, Context context) {
         mContext = context;
         mStatusBar = statusBar;
-        mPowerManager = mStatusBar.getPowerManagerInstance(); // get power manager instance from status bar
+
+        if (mSettingsObserver == null) {
+            mSettingsObserver = new SettingsObserver(mHandler);
+            mSettingsObserver.observe();
+        }
+
+        mHoverHeight = mContext.getResources().getDimensionPixelSize(R.dimen.hover_height);
+
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mHoverLayout = (HoverLayout) mInflater.inflate(R.layout.hover_container, null);
         mHoverLayout.setHoverContainer(this);
-        mHoverHeight = mContext.getResources().getDimensionPixelSize(R.dimen.hover_height);
+
         mNotificationList = new ArrayList<HoverNotification>();
         mStatusBarNotifications = new ArrayList<StatusBarNotification>();
 
@@ -137,10 +196,34 @@ public class Hover {
         };
 
         // initialize system services
+        mPowerManager = mStatusBar.getPowerManagerInstance();
+        mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         mKeyguardManager = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         mAnimInterpolator = new DecelerateInterpolator();
+    }
+
+    public void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mLongFadeOutDelay = Settings.System.getInt(resolver,
+                Settings.System.HOVER_DURATION, 3500);
+
+        mRequireFullScreen = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HOVER_REQUIRE_FULLSCREEN, 0) == 1;
+
+        mExcludeLowPriority = Settings.System.getInt(resolver,
+                Settings.System.HOVER_LOW_PRIORITY, 0) == 1;
+
+        mExcludeNonClearable = Settings.System.getInt(resolver,
+                Settings.System.HOVER_NON_CLEARABLE, 0) == 1;
+
+        mForceRemovable = Settings.System.getInt(resolver,
+                Settings.System.HOVER_FORCE_REMOVABLE, 0) == 1;
+
+        mExcludeForeground = Settings.System.getInt(resolver,
+                Settings.System.HOVER_EXCLUDE_FOREGROUND, 0) == 1;
     }
 
     public static String getContentDescription(StatusBarNotification content) {
@@ -349,7 +432,7 @@ public class Hover {
     }
 
     public boolean isClearable() {
-        return getCurrentNotification().getContent().isClearable();
+        return getCurrentNotification().getContent().isClearable() || mForceRemovable;
     }
 
     public boolean isClickable() {
@@ -561,7 +644,9 @@ public class Hover {
 
     // callbacks to handle the queue
     public void startLongHideCountdown() {
-        startHideCountdown(LONG_FADE_OUT_DELAY);
+        // add the animation duration here for a minimum value of 850 ms
+        // otherwise the event shows too quickly
+        startHideCountdown(mLongFadeOutDelay + ANIMATION_DURATION);
     }
 
     public void startShortHideCountdown() {
@@ -573,7 +658,7 @@ public class Hover {
     }
 
     public void startLongOverrideCountdown() {
-        startOverrideCountdown(LONG_FADE_OUT_DELAY);
+        startOverrideCountdown(mLongFadeOutDelay);
     }
 
     public void startShortOverrideCountdown() {
@@ -594,14 +679,38 @@ public class Hover {
 
     // notifications processing
     public void setNotification(Entry entry, boolean update) {
-        // first, check if current notification's package is blacklisted
-        boolean allowed = true; // default on
+        // Default
+        boolean allowed = true;
+
+        // Is the notification blacklisted?
         try {
             final String packageName = entry.notification.getPackageName();
             allowed = mStatusBar.getNotificationManager().isPackageAllowedForHover(packageName);
         } catch (android.os.RemoteException ex) {
             // System is dead
         }
+
+        // Check for the user configuration
+        boolean excludeNonClearable =  mExcludeNonClearable && !entry.notification.isClearable();
+        boolean excludeLowPriority = mExcludeLowPriority && entry.notification.getNotification().priority < Notification.PRIORITY_LOW;
+        boolean foregroundApp = mExcludeForeground && entry.notification.getPackageName().equals(mNotificationHelper.getForegroundPackageName());
+
+        // set user configuration
+        if (excludeLowPriority || excludeNonClearable || foregroundApp) allowed = false;
+
+        // Check for fullscreen mode
+        if (mRequireFullScreen) {
+            int vis = 0;
+            try {
+                vis = mWindowManagerService.getSystemUIVisibility();
+            } catch (android.os.RemoteException ex) {
+            }
+            final boolean isStatusBarVisible = (vis & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0
+                    || (vis & View.STATUS_BAR_TRANSIENT) != 0;
+            if (isStatusBarVisible)
+                allowed = false;
+        }
+
         if (!allowed) {
             addStatusBarNotification(entry.notification);
             return;
@@ -697,7 +806,7 @@ public class Hover {
         if (!mShowing) {
             showCurrentNotification();
         } else if (hasMultipleNotifications()) { // proced
-            startOverrideCountdown(expanded ? LONG_FADE_OUT_DELAY : SHORT_FADE_OUT_DELAY);
+            startOverrideCountdown(expanded ? mLongFadeOutDelay : SHORT_FADE_OUT_DELAY);
         } else if (!mHiding) {
             startLongHideCountdown();
         }
