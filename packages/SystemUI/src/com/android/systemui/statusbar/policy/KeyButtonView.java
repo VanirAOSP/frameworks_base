@@ -59,7 +59,6 @@ public class KeyButtonView extends ImageView {
     public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
     public static final String BLANK_ACTION = AwesomeConstant.ACTION_BLANK.value();
     public static final String RECENTS_ACTION = AwesomeConstant.ACTION_RECENTS.value();
-    public static final String DPAD_UP_ACTION = AwesomeConstant.ACTION_ARROW_UP.value();
 
     long mDownTime;
     long mUpTime;
@@ -85,9 +84,9 @@ public class KeyButtonView extends ImageView {
         }
     }
 
-    private boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
-    private boolean mHasBlankSingleAction = false;
-    private boolean mIsRecentsAction = false, mIsRecentsSingleAction, mIsRecentsLongAction, mIsRecentsDoubleTapAction;
+    boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
+    boolean mHasBlankSingleAction = false;
+    boolean mIsRecentsAction = false, mIsRecentsSingleAction, mIsRecentsLongAction, mIsRecentsDoubleTapAction;
     volatile boolean mRecentsPreloaded;
 
     Runnable mCheckLongPress = new Runnable() {
@@ -257,7 +256,7 @@ public class KeyButtonView extends ImageView {
 
             // also invalidate our immediate parent to help avoid situations where nearby glows
             // interfere
-            if (getParent() != null) ((View) getParent()).invalidate();
+            ((View) getParent()).invalidate();
         }
     }
 
