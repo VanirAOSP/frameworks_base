@@ -68,10 +68,6 @@
     <string name="action_app_window">App Window</string>
     <string name="action_ribbon">Ribbon</string>
     <string name="action_app">Custom App/Vanir action</string>
-    <string name="action_arrow_left">Cursor left</string>
-    <string name="action_arrow_right">Cursor right</string>
-    <string name="action_arrow_up">Cursor up</string>
-    <string name="action_arrow_down">Cursor down</string>
 
     <!-- Title of an application permission that lets an application view/edit revoked permissions. -->
     <string name="permlab_revokePermissions">Allows view and edit of revoked permissions. Not for use by normal applications.</string>
