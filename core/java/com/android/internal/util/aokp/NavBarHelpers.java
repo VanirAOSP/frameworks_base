@@ -38,10 +38,6 @@ public class NavBarHelpers {
             AwesomeConstant.ACTION_VIB,
             AwesomeConstant.ACTION_SILENT_VIB,
             AwesomeConstant.ACTION_NULL,
-            AwesomeConstant.ACTION_ARROW_LEFT,
-            AwesomeConstant.ACTION_ARROW_RIGHT,
-            AwesomeConstant.ACTION_ARROW_UP,
-            AwesomeConstant.ACTION_ARROW_DOWN,
             /* these are just not implemented yet: */
             AwesomeConstant.ACTION_WIDGETS,
             AwesomeConstant.ACTION_APP_WINDOW

@@ -62,10 +62,7 @@ import com.vanir.util.TaskUtils;
 public class AwesomeAction {
 
     public final static String TAG = "AwesomeAction";
-    public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
-
-    private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY;
-    private static final int CURSOR_FLAGS = KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE;
+    private static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
 
     private static boolean wtf = true;
     private static boolean ftw;
@@ -88,25 +85,20 @@ public class AwesomeAction {
                         Log.e(TAG, "HOME ACTION FAILED");
                     }
                     break;
-
                 case ACTION_BACK:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_BACK, STANDARD_FLAGS);
+                    triggerVirtualKeypress(KeyEvent.KEYCODE_BACK);
                     break;
-
                 case ACTION_MENU:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_MENU, STANDARD_FLAGS);
+                    triggerVirtualKeypress(KeyEvent.KEYCODE_MENU);
                     break;
-
                 case ACTION_SEARCH:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH, STANDARD_FLAGS);
+                    triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH);
                     break;
-
                 case ACTION_KILL:
                     Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                     KillTask mKillTask = new KillTask(mContext);
                     mHandler.post(mKillTask);
                     break;
-
                 case ACTION_ASSIST:
                     Intent intent = new Intent(Intent.ACTION_ASSIST);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -118,15 +110,12 @@ public class AwesomeAction {
                     intentVoice.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intentVoice);
                     break;
-
                 case ACTION_POWER:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_POWER, STANDARD_FLAGS);
+                    triggerVirtualKeypress(KeyEvent.KEYCODE_POWER);
                     break;
-
                 case ACTION_LAST_APP:
                     TaskUtils.toggleLastApp(mContext);
                     break;
-
                 case ACTION_NOTIFICATIONS:
                     if (wtf) {
                         if (!ftw) {
@@ -158,7 +147,6 @@ public class AwesomeAction {
                         }
                     }
                     break;
-
                 case ACTION_APP:
                     try {
                         Intent intentapp = Intent.parseUri(action, 0);
@@ -169,33 +157,14 @@ public class AwesomeAction {
                     } catch (ActivityNotFoundException e) {
                         Log.e(TAG, "ActivityNotFound: [" + action + "]");
                     }
-                    break;
-
+                break;
                 case ACTION_APP_WINDOW:
                     Intent appWindow = new Intent();
                     appWindow.setAction("com.android.systemui.ACTION_SHOW_APP_WINDOW");
                     mContext.sendBroadcast(appWindow);
-                    break;
-
+                break;
                 case ACTION_BLANK:
-                    break;
-
-                case ACTION_ARROW_LEFT:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_LEFT, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_RIGHT:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_RIGHT, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_UP:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_UP, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_DOWN:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_DOWN, CURSOR_FLAGS);
-                    break;
-
+                break;
                 case ACTION_VIB:
                     am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                     if (am != null) {
@@ -217,12 +186,10 @@ public class AwesomeAction {
                         }
                     }
                     break;
-
                 case ACTION_IME:
                     mContext.sendBroadcast(new Intent(
                             "android.settings.SHOW_INPUT_METHOD_PICKER"));
                     break;
-
                 case ACTION_SILENT:
                     am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                     if (am != null) {
@@ -239,7 +206,6 @@ public class AwesomeAction {
                         }
                     }
                     break;
-
                 case ACTION_SILENT_VIB:
                     am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                     if (am != null) {
@@ -304,13 +270,13 @@ public class AwesomeAction {
         return list.size() > 0;
     }
 
-    private static void triggerVirtualKeypress(final int keyCode, int flags) {
+    private static void triggerVirtualKeypress(final int keyCode) {
         InputManager im = InputManager.getInstance();
         long now = SystemClock.uptimeMillis();
 
         final KeyEvent downEvent = new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
                 keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
-                flags, InputDevice.SOURCE_KEYBOARD);
+                KeyEvent.FLAG_FROM_SYSTEM, InputDevice.SOURCE_KEYBOARD);
         final KeyEvent upEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_UP);
 
         im.injectInputEvent(downEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);

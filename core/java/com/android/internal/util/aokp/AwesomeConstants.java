@@ -25,10 +25,6 @@ import android.text.TextUtils;
 public class AwesomeConstants {
 
     public static final String ASSIST_ICON_METADATA_NAME = "com.android.systemui.action_assist_icon";
-    public static final String PHONE_IME_LAYOUT =
-            "**back**,,,|**ime**,,,|**arrow_left**,,,|**arrow_up**,,,|**arrow_down**,,,|**arrow_right**,,,";
-    public static final String TABLET_IME_LAYOUT =
-            "**back**,,,|**ime**,,,|**blank**,,,|**arrow_left**,,,|**arrow_up**,,,|**arrow_down**,,,|**arrow_right**,,,";
 
     public final static int SWIPE_LEFT = 0;
     public final static int SWIPE_RIGHT = 1;
@@ -64,11 +60,7 @@ public class AwesomeConstants {
         ACTION_VIB           { @Override public String value() { return "**ring_vib**";}},
         ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
         ACTION_NULL          { @Override public String value() { return "**null**";}},
-        ACTION_APP           { @Override public String value() { return "**app**";}},
-        ACTION_ARROW_LEFT    { @Override public String value() { return "**arrow_left**";}},
-        ACTION_ARROW_RIGHT   { @Override public String value() { return "**arrow_right**";}},
-        ACTION_ARROW_UP      { @Override public String value() { return "**arrow_up**";}},
-        ACTION_ARROW_DOWN    { @Override public String value() { return "**arrow_down**";}};
+        ACTION_APP           { @Override public String value() { return "**app**";}};
         public String value() { return this.value(); }
     }
 
@@ -190,18 +182,6 @@ public class AwesomeConstants {
             case ACTION_APP:
                 value = res.getString(com.android.internal.R.string.action_app);
                 break;
-            case ACTION_ARROW_LEFT:
-                value = res.getString(com.android.internal.R.string.action_arrow_left);
-                break;
-            case ACTION_ARROW_RIGHT:
-                value = res.getString(com.android.internal.R.string.action_arrow_right);
-                break;
-            case ACTION_ARROW_UP:
-                value = res.getString(com.android.internal.R.string.action_arrow_up);
-                break;
-            case ACTION_ARROW_DOWN:
-                value = res.getString(com.android.internal.R.string.action_arrow_down);
-                break;
             case ACTION_NULL:
             default:
                 value = res.getString(com.android.internal.R.string.action_null);
@@ -264,18 +244,6 @@ public class AwesomeConstants {
             case ACTION_BLANK:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_blank");
                 break;
-            case ACTION_ARROW_LEFT:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_left");
-                break;
-            case ACTION_ARROW_RIGHT:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_right");
-                break;
-            case ACTION_ARROW_UP:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_up");
-                break;
-            case ACTION_ARROW_DOWN:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_down");
-                break;
             case ACTION_VIB:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_vib");
                 break;
@@ -291,9 +259,5 @@ public class AwesomeConstants {
 
         }
         return value;
-    }
-
-    public static String imeKeyLayout(boolean isTablet) {
-        return isTablet ? TABLET_IME_LAYOUT : PHONE_IME_LAYOUT;
     }
 }
