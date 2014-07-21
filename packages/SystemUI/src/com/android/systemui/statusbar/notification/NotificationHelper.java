@@ -115,14 +115,6 @@ public class NotificationHelper {
         return mHover;
     }
 
-    public boolean isHoverEnabled() {
-        return mHover.mHoverActive;
-    }
-
-    public boolean isHoverShowing() {
-        return mHover.isShowing();
-    }
-
     /**
      * Hint: <!-- XYZ --> = XYZ feature(s) make use of the following
      * -------------------------------------------------------------
