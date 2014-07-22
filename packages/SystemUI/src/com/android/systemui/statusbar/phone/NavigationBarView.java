@@ -717,7 +717,7 @@ public class NavigationBarView extends LinearLayout {
                     button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
                     button.setGlowBackground(R.drawable.ic_sysbar_highlight);
                 } else {
-                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.5f));
+                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, stockThreeButtonLayout ? 0f : 0.5f));
                     button.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                             : R.drawable.ic_sysbar_highlight);
                 }
