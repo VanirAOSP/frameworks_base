@@ -84,9 +84,9 @@ public class KeyButtonView extends ImageView {
         }
     }
 
-    boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
-    boolean mHasBlankSingleAction = false;
-    boolean mIsRecentsAction = false, mIsRecentsSingleAction, mIsRecentsLongAction, mIsRecentsDoubleTapAction;
+    private boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
+    private boolean mIsRecentsAction = false, mIsRecentsSingleAction, mIsRecentsLongAction, mIsRecentsDoubleTapAction;
+    public boolean mHasBlankSingleAction = false;
     volatile boolean mRecentsPreloaded;
 
     Runnable mCheckLongPress = new Runnable() {
@@ -256,7 +256,7 @@ public class KeyButtonView extends ImageView {
 
             // also invalidate our immediate parent to help avoid situations where nearby glows
             // interfere
-            ((View) getParent()).invalidate();
+            if (getParent() != null) ((View) getParent()).invalidate();
         }
     }
 
