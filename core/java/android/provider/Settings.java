@@ -3375,6 +3375,7 @@ public final class Settings {
         public static final String NAVBAR_LEFT_IN_LANDSCAPE = "navigation_bar_left";
 
         /**
+<<<<<<< HEAD
          * Width and height of output vide expressed in WxH
          * @hide
          */
@@ -3391,6 +3392,12 @@ public final class Settings {
          * @hide
          */
         public static final String SCREEN_RECORDER_RECORD_AUDIO = "screen_recorder_record_audio";
+
+        /**
+         * Locale for secondary overlay on dialer for t9 search input
+         * @hide
+         */
+        public static final String T9_SEARCH_INPUT_LOCALE = "t9_search_input_locale";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
