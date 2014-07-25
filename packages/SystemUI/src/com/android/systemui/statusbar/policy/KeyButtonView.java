@@ -53,12 +53,18 @@ public class KeyButtonView extends ImageView {
 
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
     public static final float DEFAULT_QUIESCENT_ALPHA = 0.70f;
+    private static final int DPAD_TIMEOUT_INTERVAL = 500;
+    private static final int DPAD_REPEAT_INTERVAL = 75;
 
     private final int mLongPressTimeout;
 
     public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
     public static final String BLANK_ACTION = AwesomeConstant.ACTION_BLANK.value();
     public static final String RECENTS_ACTION = AwesomeConstant.ACTION_RECENTS.value();
+    public static final String ARROW_UP = AwesomeConstant.ACTION_ARROW_UP.value();
+    public static final String ARROW_LEFT = AwesomeConstant.ACTION_ARROW_LEFT.value();
+    public static final String ARROW_RIGHT = AwesomeConstant.ACTION_ARROW_RIGHT.value();
+    public static final String ARROW_DOWN = AwesomeConstant.ACTION_ARROW_DOWN.value();
 
     long mDownTime;
     long mUpTime;
@@ -73,6 +79,7 @@ public class KeyButtonView extends ImageView {
     RectF mRect = new RectF();
     AnimatorSet mPressedAnim;
     Animator mAnimateToQuiescent = new ObjectAnimator();
+    boolean mShouldClick = true;
 
     AwesomeButtonInfo mActions;
 
@@ -86,6 +93,7 @@ public class KeyButtonView extends ImageView {
 
     private boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
     private boolean mIsRecentsAction = false, mIsRecentsSingleAction, mIsRecentsLongAction, mIsRecentsDoubleTapAction;
+    private boolean mIsDPadAction;
     public boolean mHasBlankSingleAction = false;
     volatile boolean mRecentsPreloaded;
 
@@ -136,6 +144,14 @@ public class KeyButtonView extends ImageView {
         mHasLongAction = mActions != null && mActions.longPressAction != null;
         mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
         mHasBlankSingleAction = mHasSingleAction && mActions.singleAction.equals(BLANK_ACTION);
+
+        // TO DO: determine type of key prior to getting a keybuttonview instance to allow more specialized
+        // and efficiently coded keybuttonview classes.
+        mIsDPadAction = mHasSingleAction
+                && (mActions.singleAction.equals(ARROW_LEFT)
+                || mActions.singleAction.equals(ARROW_UP)
+                || mActions.singleAction.equals(ARROW_DOWN)
+                || mActions.singleAction.equals(ARROW_RIGHT));
 
         mIsRecentsSingleAction = (mHasSingleAction && mActions.singleAction.equals(RECENTS_ACTION));
         mIsRecentsLongAction = (mHasLongAction && mActions.longPressAction.equals(RECENTS_ACTION));
@@ -307,19 +323,26 @@ public class KeyButtonView extends ImageView {
                 setPressed(true);
                 if (mHasSingleAction) {
                     removeCallbacks(mSingleTap);
+                    if (mIsDPadAction) {
+                        mShouldClick = true;
+                        removeCallbacks(mDPadKeyRepeater);
+                    }
                 }
                 performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 long diff = mDownTime - mUpTime; // difference between last up and now
                 if (mHasDoubleAction && diff <= 200) {
                     doDoubleTap();
                 } else {
-                    if (mHasLongAction) {
-                        removeCallbacks(mCheckLongPress);
-                        postDelayed(mCheckLongPress, mLongPressTimeout);
-                    }
-
-                    if (mHasSingleAction) {
-                        postDelayed(mSingleTap, 150);
+                    if (mIsDPadAction) {
+                        postDelayed(mDPadKeyRepeater, DPAD_TIMEOUT_INTERVAL);
+                    } else {
+                        if (mHasLongAction) {
+                            removeCallbacks(mCheckLongPress);
+                            postDelayed(mCheckLongPress, mLongPressTimeout);
+                        }
+                        if (mHasSingleAction) {
+                            postDelayed(mSingleTap, 150);
+                        }
                     }
                 }
                 break;
@@ -333,33 +356,42 @@ public class KeyButtonView extends ImageView {
                 break;
             case MotionEvent.ACTION_CANCEL:
                 setPressed(false);
+                if (mIsDPadAction) {
+                    mShouldClick = true;
+                    removeCallbacks(mDPadKeyRepeater);
+                }
                 if (mHasSingleAction) {
                     removeCallbacks(mSingleTap);
                 }
                 if (mHasLongAction) {
                     removeCallbacks(mCheckLongPress);
-
                 }
                 if (mRecentsPreloaded == true) cancelPreloadRecentApps();
                 break;
             case MotionEvent.ACTION_UP:
                 mUpTime = SystemClock.uptimeMillis();
+                boolean playSound;
 
-                if (mHasLongAction) {
-                    removeCallbacks(mCheckLongPress);
+                if (mIsDPadAction) {
+                    playSound = mShouldClick;
+                    mShouldClick = true;
+                    removeCallbacks(mDPadKeyRepeater);
+                } else {
+                    if (mHasLongAction) {
+                        removeCallbacks(mCheckLongPress);
+                    }
+                    playSound = isPressed();
                 }
-                final boolean doIt = isPressed();
                 setPressed(false);
-                if (doIt) {
+
+                if (playSound) {
                     playSoundEffect(SoundEffectConstants.CLICK);
                 }
 
                 if (!mHasDoubleAction && !mHasLongAction) {
-                    // a little optimization here
                     removeCallbacks(mSingleTap);
                     doSinglePress();
                 }
-
                 break;
         }
         return true;
@@ -453,6 +485,24 @@ public class KeyButtonView extends ImageView {
             mGlowHeight = mGlowBG.getIntrinsicHeight();
         }
     }
+
+    private Runnable mDPadKeyRepeater = new Runnable() {
+        @Override
+        public void run() {
+            if (mActions != null) {
+                if (mActions.singleAction != null) {
+                    AwesomeAction.launchAction(mContext, mActions.singleAction);
+                    // click on the first event since we're handling in MotionEvent.ACTION_DOWN
+                    if (mShouldClick) {
+                        mShouldClick = false;
+                        playSoundEffect(SoundEffectConstants.CLICK);
+                    }
+                }
+            }
+            // repeat action
+            postDelayed(this, DPAD_REPEAT_INTERVAL);
+        }
+    };
 
     public static class AwesomeButtonInfo {
         String singleAction, doubleTapAction, longPressAction, iconUri;
