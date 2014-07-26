@@ -3625,11 +3625,10 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_LONG_MENU_ACTION = "lockscreen_long_menu_action";
 
+        /**
          * @hide
          */
         public static final String PROXIMITY_ON_WAKE = "proximity_on_wake";
-
-        /**
 
         /**
          * Use EdgeGesture Service for system gestures in PhoneWindowManager
