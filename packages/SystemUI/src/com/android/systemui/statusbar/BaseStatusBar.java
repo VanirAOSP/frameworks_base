@@ -935,7 +935,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     @Override
-    public void setButtonDrawable(int buttonId, int iconId) {}
+    public void setButtonDrawable(int buttonId, int iconId) { }
 
     protected abstract WindowManager.LayoutParams getSearchLayoutParams(
             LayoutParams layoutParams);
