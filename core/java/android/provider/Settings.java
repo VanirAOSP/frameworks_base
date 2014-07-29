@@ -3240,6 +3240,12 @@ public final class Settings {
         public static final String NAVIGATION_BAR_ARROWS = "navigation_bar_arrows";
 
         /**
+         * Button layout for IME arrows
+         * @hide
+         */
+        public static final String NAVIGATION_IME_LAYOUT = "navigation_ime_layout";
+
+        /**
          * Whether or not to enable the navring
          * @hide
          */
