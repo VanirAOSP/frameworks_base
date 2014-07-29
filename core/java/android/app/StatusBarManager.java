@@ -101,7 +101,7 @@ public class StatusBarManager {
             throw new RuntimeException(ex);
         }
     }
-    
+
     /**
      * Expand the notifications panel.
      */
