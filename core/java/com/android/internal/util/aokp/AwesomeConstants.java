@@ -25,10 +25,6 @@ import android.text.TextUtils;
 public class AwesomeConstants {
 
     public static final String ASSIST_ICON_METADATA_NAME = "com.android.systemui.action_assist_icon";
-    public static final String PHONE_IME_LAYOUT =
-            "**back**,,,|**ime**,,,|**arrow_left**,,,|**arrow_up**,,,|**arrow_down**,,,|**arrow_right**,,,";
-    public static final String TABLET_IME_LAYOUT =
-            "**back**,,,|**ime**,,,|**blank**,,,|**arrow_left**,,,|**arrow_up**,,,|**arrow_down**,,,|**arrow_right**,,,";
 
     public final static int SWIPE_LEFT = 0;
     public final static int SWIPE_RIGHT = 1;
@@ -293,7 +289,13 @@ public class AwesomeConstants {
         return value;
     }
 
-    public static String imeKeyLayout(boolean isTablet) {
-        return isTablet ? TABLET_IME_LAYOUT : PHONE_IME_LAYOUT;
+    public static String defaultNavbarLayout(Context context) {
+        Resources res = context.getResources();
+        return res.getString(com.android.internal.R.string.def_navbar_layout);
+    }
+
+    public static String defaultIMEKeyLayout(Context context) {
+        Resources res = context.getResources();
+        return res.getString(com.android.internal.R.string.def_ime_layout);
     }
 }
