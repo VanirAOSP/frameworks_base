@@ -56,7 +56,7 @@
   <string name="quick_settings_network_adb_disabled_label">Disattivato</string>
   <string name="quick_settings_network_adb_enabled_label">Attivato</string>
   <string name="quick_settings_bluetooth_multi_label">%1$d connesso</string>
-  <string name="quick_settings_heads_up_on">Heads up attivato</string>
+  <string name="quick_settings_heads_up_on">Heads up attivo</string>
   <string name="quick_settings_heads_up_off">No interruzioni</string>
   <string name="location_mode_high_accuracy_title">Alta precisione</string>
   <string name="location_mode_battery_saving_title">Risparmio batteria</string>
@@ -84,6 +84,7 @@
   <string name="advanced_dev_option_force_stop">Arresto forzato</string>
   <string name="accessibility_dock_battery_level">Batteria Dock <xliff:g id="number">%d</xliff:g> percento.</string>
   <string name="screenshot_delete_action">Elimina</string>
-  <string name="screenshot_delete_confirmation">Screenshot eliminato.</string>
+  <string name="screenshot_delete_confirmation">Schermata eliminata.</string>
   <string name="accessibility_desc_add_quick_settings">Aggiungi Impostazioni rapide.</string>
+  <string name="status_bar_notification_spam_item_title">Blocca messaggi come questi</string>
 </resources>
