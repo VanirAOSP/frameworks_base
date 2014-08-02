@@ -366,20 +366,12 @@ public class NavigationBarView extends LinearLayout {
 
     private void updateKeyButtonViewResources(ViewGroup container) {
         if (mCurrentView == null) return;
-        for (final String k : AwesomeConstant.values()) {
-            final View child = mCurrentView.findViewWithTag(k);
+        for (final AwesomeConstant k : AwesomeConstant.values()) {
+            final View child = mCurrentView.findViewWithTag(k.value());
 
             if (child instanceof KeyButtonView) {
                 ((KeyButtonView) child).updateResources(mThemedResources);
             }
-        }
-        KeyButtonView kbv = (KeyButtonView) findViewById(R.id.one);
-        if (kbv != null) {
-            kbv.updateResources(mThemedResources);
-        }
-        kbv = (KeyButtonView) findViewById(R.id.six);
-        if (kbv != null) {
-            kbv.updateResources(mThemedResources);
         }
     }
 
