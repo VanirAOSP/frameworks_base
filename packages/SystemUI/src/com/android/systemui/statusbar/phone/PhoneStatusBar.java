@@ -734,7 +734,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         updateShowSearchHoldoff();
 
         updateNavigationBarState();
-                mNavigationBarView.updateResources(getNavbarThemedResources());
+        if (mNavigationBarView != null) {
+            mNavigationBarView.updateResources(getNavbarThemedResources());
+        }
 
         if (mRecreating) {
         } else {
