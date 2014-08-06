@@ -56,7 +56,6 @@ public class CommandQueue extends IStatusBar.Stub {
     private static final int MSG_PRELOAD_RECENT_APPS        = 14 << MSG_SHIFT;
     private static final int MSG_CANCEL_PRELOAD_RECENT_APPS = 15 << MSG_SHIFT;
     private static final int MSG_SET_WINDOW_STATE           = 16 << MSG_SHIFT;
-    private static final int MSG_CHANGE_BUTTON_LAYOUT       = 17 << MSG_SHIFT;
 
     public static final int FLAG_EXCLUDE_NONE = 0;
     public static final int FLAG_EXCLUDE_SEARCH_PANEL = 1 << 0;
@@ -100,6 +99,7 @@ public class CommandQueue extends IStatusBar.Stub {
         public void cancelPreloadRecentApps();
         public void setWindowState(int window, int state);
         public void setButtonDrawable(int buttonId, int iconId);
+        public void notifyLayoutChange(int direction);
     }
 
     public CommandQueue(Callbacks callbacks, StatusBarIconList list) {
@@ -113,6 +113,10 @@ public class CommandQueue extends IStatusBar.Stub {
             mHandler.removeMessages(what);
             mHandler.obtainMessage(what, OP_SET_ICON, 0, icon.clone()).sendToTarget();
         }
+    }
+
+    public void notifyLayoutChange(int direction) {
+        mCallbacks.notifyLayoutChange(direction);
     }
 
     public void setButtonDrawable(int buttonId, int iconId) {
