@@ -64,6 +64,8 @@ public class AwesomeConstants {
         ACTION_TORCH          ("**torch**",           com.android.internal.R.string.action_torch,         "com.android.systemui:drawable/ic_sysbar_torch"),
 
         /* unassignable actions */
+        ACTION_LAYOUT_LEFT    ("**layout_left**",     com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_layout_left"),
+        ACTION_LAYOUT_RIGHT    ("**layout_right**",   com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_layout_right"),
         ACTION_ARROW_LEFT     ("**arrow_left**",      com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_left"),
         ACTION_ARROW_RIGHT    ("**arrow_right**",     com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_right"),
         ACTION_ARROW_UP       ("**arrow_up**",        com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_up"),
