@@ -61,6 +61,8 @@ public class AwesomeConstants {
         ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
         ACTION_NULL          { @Override public String value() { return "**null**";}},
         ACTION_APP           { @Override public String value() { return "**app**";}},
+        ACTION_LAYOUT_LEFT   { @Override public String value() { return "**layout_left**";}},
+        ACTION_LAYOUT_RIGHT  { @Override public String value() { return "**layout_right**";}},
         ACTION_ARROW_LEFT    { @Override public String value() { return "**arrow_left**";}},
         ACTION_ARROW_RIGHT   { @Override public String value() { return "**arrow_right**";}},
         ACTION_ARROW_UP      { @Override public String value() { return "**arrow_up**";}},
@@ -186,18 +188,6 @@ public class AwesomeConstants {
             case ACTION_APP:
                 value = res.getString(com.android.internal.R.string.action_app);
                 break;
-            case ACTION_ARROW_LEFT:
-                value = res.getString(com.android.internal.R.string.action_arrow_left);
-                break;
-            case ACTION_ARROW_RIGHT:
-                value = res.getString(com.android.internal.R.string.action_arrow_right);
-                break;
-            case ACTION_ARROW_UP:
-                value = res.getString(com.android.internal.R.string.action_arrow_up);
-                break;
-            case ACTION_ARROW_DOWN:
-                value = res.getString(com.android.internal.R.string.action_arrow_down);
-                break;
             case ACTION_NULL:
             default:
                 value = res.getString(com.android.internal.R.string.action_null);
@@ -259,6 +249,12 @@ public class AwesomeConstants {
                 break;
             case ACTION_BLANK:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_blank");
+                break;
+            case ACTION_LAYOUT_LEFT:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_layout_left");
+                break;
+            case ACTION_LAYOUT_RIGHT:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_layout_right");
                 break;
             case ACTION_ARROW_LEFT:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_left");
