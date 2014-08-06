@@ -62,6 +62,8 @@ public class AwesomeConstants {
         ACTION_WIDGETS       { @Override public String value() { return "**widgets**";}},
         ACTION_APP_WINDOW    { @Override public String value() { return "**app_window**";}},
         ACTION_NULL          { @Override public String value() { return "**null**";}},
+        ACTION_LAYOUT_LEFT   { @Override public String value() { return "**layout_left**";}},
+        ACTION_LAYOUT_RIGHT  { @Override public String value() { return "**layout_right**";}},
         ACTION_ARROW_LEFT    { @Override public String value() { return "**arrow_left**";}},
         ACTION_ARROW_RIGHT   { @Override public String value() { return "**arrow_right**";}},
         ACTION_ARROW_UP      { @Override public String value() { return "**arrow_up**";}},
@@ -246,6 +248,12 @@ public class AwesomeConstants {
             case ACTION_BLANK:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_blank");
                 break;
+            case ACTION_LAYOUT_LEFT:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_layout_left");
+                break;
+            case ACTION_LAYOUT_RIGHT:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_layout_right");
+                break;
             case ACTION_ARROW_LEFT:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_left");
                 break;
@@ -286,11 +294,13 @@ public class AwesomeConstants {
 
     public static String defaultNavbarLayout(Context context) {
         Resources res = context.getResources();
+        // must not be empty
         return res.getString(com.android.internal.R.string.def_navbar_layout);
     }
 
     public static String defaultIMEKeyLayout(Context context) {
         Resources res = context.getResources();
+        // must contain ime switcher, home, and blank space
         return res.getString(com.android.internal.R.string.def_ime_layout);
     }
 }
