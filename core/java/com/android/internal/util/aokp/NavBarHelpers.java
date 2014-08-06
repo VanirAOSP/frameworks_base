@@ -41,6 +41,8 @@ public class NavBarHelpers {
             AwesomeConstant.ACTION_SILENT_VIB,
             AwesomeConstant.ACTION_NULL,
             AwesomeConstant.ACTION_POWER,
+            AwesomeConstant.ACTION_LAYOUT_LEFT,
+            AwesomeConstant.ACTION_LAYOUT_RIGHT,
             AwesomeConstant.ACTION_ARROW_LEFT,
             AwesomeConstant.ACTION_ARROW_RIGHT,
             AwesomeConstant.ACTION_ARROW_UP,

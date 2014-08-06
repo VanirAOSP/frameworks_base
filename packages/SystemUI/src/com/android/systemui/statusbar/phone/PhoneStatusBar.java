@@ -3758,6 +3758,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     @Override
+    public void notifyLayoutChange(int direction) {
+        mNavigationBarView.notifyLayoutChange(direction);
+        mHandler.postDelayed(new Runnable() { public void run() { updateNavigationBarState(); }}, 20);
+    }
+
+    @Override
     public void setButtonDrawable(int buttonId, int iconId) {
         if (mNavigationBarView != null) {
             mNavigationBarView.setButtonDrawable(buttonId, iconId);
