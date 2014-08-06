@@ -458,8 +458,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private void updateNavigationBarState() {
 
-        boolean shouldAddNavbar = mNavbarRequired || Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.ENABLE_NAVIGATION_BAR, 0) == 1;
+        boolean shouldAddNavbar = mNavbarRequired
+                || Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.ENABLE_NAVIGATION_BAR, 0) == 1;
 
         if (shouldAddNavbar) {
             forceAddNavigationBar();
@@ -654,8 +655,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         updateDisplaySize(); // populates mDisplayMetrics
         loadDimens();
 
-        mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
         mNavbarRequired = res.getBoolean(com.android.internal.R.bool.config_showNavigationBar);
+        mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
         final boolean isMultiSimEnabled = MSimTelephonyManager.getDefault().isMultiSimEnabled();
 
         if (isMultiSimEnabled) {
@@ -3675,6 +3676,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mRowHeight =  res.getDimensionPixelSize(R.dimen.notification_row_min_height);
 
         if (false) Log.v(TAG, "updateResources");
+    }
+
+    @Override
+    public void notifyLayoutChange(int direction) {
+        mNavigationBarView.notifyLayoutChange(direction);
     }
 
     @Override
