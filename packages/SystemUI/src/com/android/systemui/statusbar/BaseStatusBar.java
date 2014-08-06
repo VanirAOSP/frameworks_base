@@ -927,6 +927,8 @@ public abstract class BaseStatusBar extends SystemUI implements
     public void onHeadsUpDismissed() {
     }
 
+    public void notifyLayoutChange(int direction) { }
+
     @Override
     public void toggleRecentApps() {
         int msg = MSG_TOGGLE_RECENTS_PANEL;

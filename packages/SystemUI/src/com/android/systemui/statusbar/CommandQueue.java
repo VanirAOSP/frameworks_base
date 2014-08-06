@@ -102,6 +102,7 @@ public class CommandQueue extends IStatusBar.Stub {
         public void cancelPreloadRecentApps();
         public void setWindowState(int window, int state);
         public void setButtonDrawable(int buttonId, int iconId);
+        public void notifyLayoutChange(int direction);
     }
 
     public CommandQueue(Callbacks callbacks, StatusBarIconList list) {
@@ -115,6 +116,10 @@ public class CommandQueue extends IStatusBar.Stub {
             mHandler.removeMessages(what);
             mHandler.obtainMessage(what, OP_SET_ICON, 0, icon.clone()).sendToTarget();
         }
+    }
+
+    public void notifyLayoutChange(int direction) {
+        mCallbacks.notifyLayoutChange(direction);
     }
 
     public void setButtonDrawable(int buttonId, int iconId) {

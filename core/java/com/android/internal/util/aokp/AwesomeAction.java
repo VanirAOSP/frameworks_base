@@ -61,6 +61,9 @@ public class AwesomeAction {
 
     public static final String TAG = "AwesomeAction";
 
+    private static final int LAYOUT_LEFT = -1;
+    private static final int LAYOUT_RIGHT = 1;
+
     private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY;
     private static final int CURSOR_FLAGS = KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE;
 
@@ -213,6 +216,22 @@ public class AwesomeAction {
                             tg.startTone(ToneGenerator.TONE_PROP_BEEP);
                         }
                     }
+                }
+                break;
+
+            case ACTION_LAYOUT_LEFT:
+                try {
+                    IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).notifyLayoutChange(LAYOUT_LEFT);
+                } catch (RemoteException e) {
+                }
+                break;
+
+            case ACTION_LAYOUT_RIGHT:
+                try {
+                    IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).notifyLayoutChange(LAYOUT_RIGHT);
+                } catch (RemoteException e) {
                 }
                 break;
 

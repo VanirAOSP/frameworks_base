@@ -69,6 +69,8 @@ public class NavRingHelpers {
             AwesomeConstant.ACTION_POWER,
             AwesomeConstant.ACTION_WIDGETS,
             AwesomeConstant.ACTION_APP_WINDOW,
+            AwesomeConstant.ACTION_LAYOUT_LEFT,
+            AwesomeConstant.ACTION_LAYOUT_RIGHT,
             AwesomeConstant.ACTION_ARROW_LEFT,
             AwesomeConstant.ACTION_ARROW_RIGHT,
             AwesomeConstant.ACTION_ARROW_UP,
