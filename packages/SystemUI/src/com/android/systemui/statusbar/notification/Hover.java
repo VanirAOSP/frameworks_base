@@ -581,7 +581,6 @@ public class Hover {
             public void onAnimationEnd(Animator animation) {
                 mLastNotification = nextNotification; // backup current notification object
                 setAnimatingVisibility(false);
-                setTouchOutside(false);
                 // check if there are other notif to override with
                 processOverridingQueue(isExpanded());
             }
@@ -631,7 +630,7 @@ public class Hover {
                             }
 
                             mHiding = false;
-                            setTouchOutside(false);
+                            setTouchOutside(false); // reset
 
                             // check if there are other notif to show
                             if (!quit) {
