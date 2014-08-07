@@ -2,6 +2,7 @@
  * Copyright (C) 2012 The Android Open Source Project
  * Copyright (C) 2013 CyanogenMod Project
  * Copyright (C) 2013 The SlimRoms Project
+ * Copyright (C) 2013 Vanir AOSP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,31 +37,20 @@ import com.android.systemui.statusbar.phone.QuickSettingsController;
 public class QuietHoursTile extends QuickSettingsTile {
 
     private int mMode;
-    private int mTaps = 0;
 
     private Handler mHandler = new Handler();
 
     public QuietHoursTile(Context context, QuickSettingsController qsc) {
         super(context, qsc);
 
+
         mOnClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mHandler.removeCallbacks(checkDouble);
-                if (mTaps > 0) {
-                    // Set to timed mode and get update from controller to
-                    // put us in the correct visual state
-                    Settings.System.putIntForUser(mContext.getContentResolver(),
-                            Settings.System.QUIET_HOURS_ENABLED,
-                            1, UserHandle.USER_CURRENT);
-                    mTaps = 0;
-                } else {
-                    mTaps += 1;
-                    mHandler.postDelayed(checkDouble,
-                            ViewConfiguration.getDoubleTapTimeout());
-                }
+        changeQuietHoursMode();
             }
         };
+
         mOnLongClick = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -91,14 +81,11 @@ public class QuietHoursTile extends QuickSettingsTile {
         updateTile();
         super.updateResources();
     }
-
-    final Runnable checkDouble = new Runnable () {
-        public void run() {
-            mTaps = 0;
+   private void changeQuietHoursMode(){
             int newVal = 0;
             switch (mMode) {
-                case 0: // Quiet hours disabled completely set to on
-                    newVal = 2;
+                case 0: // Quiet hours disabled completely set to timmed
+                    newVal = 1;
                     break;
                 case 1: // Quiet hours timer enabled but not active - set to on
                     newVal = 2;
@@ -116,8 +103,7 @@ public class QuietHoursTile extends QuickSettingsTile {
             Settings.System.putIntForUser(mContext.getContentResolver(),
                     Settings.System.QUIET_HOURS_ENABLED,
                     newVal, UserHandle.USER_CURRENT);
-        }
-    };
+    }
 
     private synchronized void updateTile() {
         mMode = Settings.System.getIntForUser(mContext.getContentResolver(),
@@ -153,3 +139,4 @@ public class QuietHoursTile extends QuickSettingsTile {
     }
 
 }
+
