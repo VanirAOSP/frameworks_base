@@ -696,6 +696,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             cancelAllNotificationsInt(pkg, 0, 0, true, UserHandle.getUserId(uid));
         }
         writeBlockDb();
+        writeHaloBlockDb();
         writeHoverBlockDb();
     }
 
