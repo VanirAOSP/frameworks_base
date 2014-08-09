@@ -15,16 +15,16 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="clear_keyguard_wallpaper">Neteja</string>
+  <string name="clear_keyguard_wallpaper">Garbitu</string>
   <plurals name="number_of_items_selected">
-    <item quantity="one">%1$d seleccionat</item>
-    <item quantity="other">%1$d seleccionats</item>
+    <item quantity="one">%1$d aukeratua</item>
+    <item quantity="other">%1$d aukeratuak</item>
   </plurals>
-  <string name="wallpaper_accessibility_name">Fons de pantalla %1$d de %2$d</string>
-  <string name="announce_selection"><xliff:g id="label" example="Wallpaper 3 of 10">%1$s</xliff:g> seleccionat</string>
-  <string name="wallpaper_delete">Esborra</string>
-  <string name="pick_image">Tria una imatge</string>
-  <string name="pick_wallpaper">Fons de pantalla</string>
-  <string name="activity_not_found">L\'app no està instal·lada.</string>
-  <string name="lockscreen_wallpaper_instructions">Estableix el fons de la pantalla de bloqueig</string>
+  <string name="wallpaper_accessibility_name">%2$d-tik %1$d. hormairudia</string>
+  <string name="announce_selection"><xliff:g id="label" example="Wallpaper 3 of 10">%1$s</xliff:g> aukeratua</string>
+  <string name="wallpaper_delete">Ezabatu</string>
+  <string name="pick_image">Irudia aukeratu</string>
+  <string name="pick_wallpaper">Hormairudiak</string>
+  <string name="activity_not_found">Aplikazioa ez dago instalatuta.</string>
+  <string name="lockscreen_wallpaper_instructions">Ezarri lokatze-pantailako hormairudia</string>
 </resources>
