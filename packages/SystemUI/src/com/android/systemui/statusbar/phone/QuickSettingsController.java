@@ -23,6 +23,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
@@ -36,6 +37,7 @@ import android.view.LayoutInflater;
 
 import com.android.internal.util.cm.QSUtils;
 import com.android.systemui.quicksettings.*;
+import com.android.systemui.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +67,9 @@ public class QuickSettingsController {
     private final String mSettingsKey;
     private final boolean mRibbonMode;
 
+    int mPressColorDefault;
+    int mBackgroundColorDefault;
+
     private static boolean _firstShot = true;
     private static boolean isMultiSimEnabled;
     private static boolean mPerformanceTileSupport;
@@ -85,6 +90,11 @@ public class QuickSettingsController {
             PhoneStatusBar statusBarService, String settingsKey, boolean ribbonMode) {
         mContext = context;
         mContainerView = container;
+
+        final Resources res = context.getResources();
+        mPressColorDefault = res.getColor(R.color.quick_settings_press_default);
+        mBackgroundColorDefault = res.getColor(R.color.quick_settings_background_default);
+
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -378,9 +388,9 @@ public class QuickSettingsController {
         } else if (Settings.System.getInt(resolver, //ribbon custom colors aren't supported ATM
                 Settings.System.QUICK_TILES_CUSTOM_COLOR, 0) == 1) {
             int bgColor = Settings.System.getInt(resolver,
-                    Settings.System.QUICK_TILES_BG_COLOR, -2);
+                    Settings.System.QUICK_TILES_BG_COLOR, mBackgroundColorDefault);
             int presColor = Settings.System.getInt(resolver,
-                    Settings.System.QUICK_TILES_BG_PRESSED_COLOR, -2);
+                    Settings.System.QUICK_TILES_BG_PRESSED_COLOR, mPressColorDefault);
             for (QuickSettingsTile t : mQuickSettingsTiles) {
                 t.setColors(bgColor, presColor);
             }
