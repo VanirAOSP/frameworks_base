@@ -48,6 +48,9 @@ public class OnTheGoTile extends QuickSettingsTile {
                 startIntent.setComponent(cn);
                 startIntent.setAction("start");
                 context.startService(startIntent);
+                if (isFlipTilesEnabled()) {
+                    flipTile(0);
+                }
             }
         };
 

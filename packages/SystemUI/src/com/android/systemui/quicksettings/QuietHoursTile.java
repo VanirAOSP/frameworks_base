@@ -28,6 +28,8 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
@@ -59,9 +61,12 @@ public class QuietHoursTile extends QuickSettingsTile {
                     mHandler.postDelayed(checkDouble,
                             ViewConfiguration.getDoubleTapTimeout());
                 }
+                if (isFlipTilesEnabled()) {
+                    flipTile(0);
+                }
             }
         };
-        mOnLongClick = new View.OnLongClickListener() {
+        mOnLongClick = new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_MAIN);

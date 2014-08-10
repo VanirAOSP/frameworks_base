@@ -34,6 +34,9 @@ public class HeadsUpTile extends QuickSettingsTile {
                 Settings.System.putInt(mContext.getContentResolver(),
                         Settings.System.HEADS_UP_NOTIFICATION, !getEnabled() ? 1 : 0);
                 updateTile();
+                if (isFlipTilesEnabled()) {
+                    flipTile(0);
+                }
             }
         };
 
