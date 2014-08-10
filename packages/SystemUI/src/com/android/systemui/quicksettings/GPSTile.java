@@ -36,6 +36,9 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
             @Override
             public void onClick(View v) {
                 mLocationController.setLocationEnabled(!mLocationEnabled);
+                if (isFlipTilesEnabled()) {
+                    flipTile(0);
+                }
             }
         };
 
@@ -46,22 +49,6 @@ public class GPSTile extends QuickSettingsTile implements LocationSettingsChange
                 return true;
             }
         };
-    }
-
-    @Override
-    public void onFlingRight() {
-        if (mLocationEnabled) {
-            mLocationController.switchLocationMode(mLocationMode);
-        super.onFlingRight();
-        }
-    }
-
-    @Override
-    public void onFlingLeft() {
-        if (mLocationEnabled) {
-            mLocationController.switchLocationMode(mLocationMode);
-        super.onFlingLeft();
-        }
     }
 
     @Override

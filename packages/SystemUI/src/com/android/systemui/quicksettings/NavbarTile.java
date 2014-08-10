@@ -30,6 +30,9 @@ public class NavbarTile extends QuickSettingsTile {
                 boolean next = !getWantsNavbar();
                 Settings.System.putInt(mContext.getContentResolver(),
                     Settings.System.ENABLE_NAVIGATION_BAR, next ? 1 : 0);
+                if (isFlipTilesEnabled()) {
+                    flipTile(0);
+                }
             }
         };
 

@@ -44,6 +44,7 @@ public class UpdateTile extends QuickSettingsTile {
                     Intent i = new Intent(Intent.ACTION_CHECK_FOR_UPDATES);
                     mContext.sendBroadcast(i);
                 } else {
+                    mQsc.mBar.collapseAllPanels(true);  // the toast will not show above the expanded statusbar
                     final String cheese = mContext.getString(R.string.update_check_failed);
                     Toast.makeText(mContext, cheese, Toast.LENGTH_SHORT).show();
                 }

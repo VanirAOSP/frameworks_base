@@ -68,6 +68,9 @@ public class MusicTile extends QuickSettingsTile {
             @Override
             public void onClick(View v) {
                 sendMediaButtonClick(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                if (isFlipTilesEnabled()) {
+                    flipTile(0);
+                }
             }
         };
 
@@ -78,20 +81,6 @@ public class MusicTile extends QuickSettingsTile {
                 return true;
             }
         };
-    }
-
-    @Override
-    public void onFlingRight() {
-        Intent intent = new Intent();
-                sendMediaButtonClick(KeyEvent.KEYCODE_MEDIA_NEXT);
-        super.onFlingRight();
-    }
-
-    @Override
-    public void onFlingLeft() {
-        Intent intent = new Intent();
-                sendMediaButtonClick(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-        super.onFlingLeft();
     }
 
     @Override
