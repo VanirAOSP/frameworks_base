@@ -879,7 +879,9 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
 
         // If preference is no sound - just exit here
         if (Settings.System.getInt(mContext.getContentResolver(),
-                 Settings.System.VOLUME_ADJUST_SOUNDS_ENABLED, 1) == 0) {
+                 Settings.System.VOLUME_ADJUST_SOUNDS_ENABLED, 1) == 0
+                || Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QUIET_HOURS_SYSTEM, 1) == 2) {
              return;
          }
 
@@ -889,13 +891,11 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
             onStopSounds();
         }
 
-        if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.QUIET_HOURS_SYSTEM, 0) != 2) {
             synchronized (this) {
                 ToneGenerator toneGen = getOrCreateToneGenerator(streamType);
                 if (toneGen != null) {
                     toneGen.startTone(ToneGenerator.TONE_PROP_BEEP);
                     sendMessageDelayed(obtainMessage(MSG_STOP_SOUNDS), BEEP_DURATION);
-                }
             }
         }
     }

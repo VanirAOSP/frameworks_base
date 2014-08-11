@@ -3605,7 +3605,7 @@ public final class Settings {
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
 
         /**
-         * Whether to remove the system sounds during quiet hours.
+         * Whether to disable system sounds during quiet hours.
          * 0 = Setting disabled
          * 1 = Setting enabled but inactive
          * 2 = Setting enabled and active
