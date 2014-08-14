@@ -5874,12 +5874,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             return ByteBuffer.allocate(8).putLong(crc).array();
         } catch (Exception e) {
         } finally {
-            if (zfile != null)
-                try {
-                    zfile.close();
-                } catch (java.io.IOException ex) {
-                    //well, we tried.
-                }
+            IoUtils.closeQuietly(zfile);
         }
         return null;
     }
