@@ -50,7 +50,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.provider.Settings;
 
 import com.android.internal.widget.SizeAdaptiveLayout;
 import com.android.systemui.R;
@@ -170,9 +169,7 @@ public class NotificationHelper {
             boolean makeFloating = floating
                     && !isNotificationBlacklisted(entry.notification.getPackageName())
                     // if the notification is from the foreground app, don't open in floating mode
-                    && !entry.notification.getPackageName().equals(getForegroundPackageName())
-                    && openInFloatingMode();
-
+                    && !entry.notification.getPackageName().equals(getForegroundPackageName());
 
             intent.makeFloating(makeFloating);
         }
@@ -320,10 +317,5 @@ public class NotificationHelper {
         return state == TelephonyManager.SIM_STATE_PIN_REQUIRED
                 | state == TelephonyManager.SIM_STATE_PUK_REQUIRED
                 | state == TelephonyManager.SIM_STATE_NETWORK_LOCKED;
-    }
-
-    public boolean openInFloatingMode() {
-        return Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.HEADS_UP_FLOATING_WINDOW, true);
     }
 }

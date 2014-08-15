@@ -23,9 +23,13 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.*;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.IPackageDataObserver;
 import android.content.pm.PackageManager;
@@ -99,7 +103,6 @@ import com.android.systemui.statusbar.notification.Hover;
 import com.android.systemui.statusbar.notification.HoverCling;
 import com.android.systemui.statusbar.notification.NotificationHelper;
 import com.android.systemui.statusbar.phone.Ticker;
-import com.android.systemui.statusbar.notification.NotificationHelper;
 import com.android.systemui.statusbar.phone.KeyguardTouchDelegate;
 import com.android.systemui.statusbar.policy.activedisplay.ActiveDisplayView;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
@@ -1675,7 +1678,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                     } else {
                         if (DEBUG) Log.d(TAG, "updating the current heads up:" + notification);
                         mInterruptingNotificationEntry.notification = notification;
-                        updateNotificationViews(mInterruptingNotificationEntry, notification, true);
+                        updateNotificationViews(mInterruptingNotificationEntry, notification);
                     }
                 }
 
@@ -1737,11 +1740,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     private void updateNotificationViews(NotificationData.Entry entry,
             StatusBarNotification notification) {
-        updateNotificationViews(entry, notification, false);
-    }
-
-    private void updateNotificationViews(NotificationData.Entry entry,
-            StatusBarNotification notification, boolean headsUp) {
         final RemoteViews contentView = notification.getNotification().contentView;
         final RemoteViews bigContentView = notification.getNotification().bigContentView;
         // Reapply the RemoteViews
@@ -1752,8 +1750,8 @@ public abstract class BaseStatusBar extends SystemUI implements
         // update contentIntent and floatingIntent
         final PendingIntent contentIntent = notification.getNotification().contentIntent;
         if (contentIntent != null) {
-            final View.OnClickListener listener =
-                    mNotificationHelper.getNotificationClickListener(entry, headsUp);
+            final View.OnClickListener listener = makeClicker(contentIntent,
+                    notification.getPackageName(), notification.getTag(), notification.getId());
             entry.content.setOnClickListener(listener);
             entry.floatingIntent = makeClicker(contentIntent,
                     notification.getPackageName(), notification.getTag(), notification.getId());
@@ -1831,7 +1829,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         if (!isHighPriority && keyguardNotVisible && !isOngoing && !isIMEShowing) {
             // However, we don't want to interrupt if we're in an application that is
             // in Do Not Disturb
-            if(!isPackageInDnd(getTopLevelPackage())) {
+            if (!isPackageInDnd(getTopLevelPackage())) {
                 return true;
             }
         }
