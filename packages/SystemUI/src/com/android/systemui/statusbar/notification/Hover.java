@@ -56,8 +56,8 @@ import java.util.ArrayList;
  */
 public class Hover {
 
-    public static final boolean DEBUG = true;
-    public static final boolean DEBUG_REPARENT = true;
+    public static final boolean DEBUG = false;
+    public static final boolean DEBUG_REPARENT = false;
 
     private static final String TAG = "Hover";
     private static final String IN_CALL_UI = "com.android.incallui";
@@ -685,7 +685,6 @@ public class Hover {
         try {
             final String packageName = entry.notification.getPackageName();
             allowed = mStatusBar.getNotificationManager().isPackageAllowedForHover(packageName);
-            Log.w(TAG, "not showing hover: "+packageName+" IS DISALLOWED");
         } catch (android.os.RemoteException ex) {
             // System is dead
         }
@@ -698,7 +697,6 @@ public class Hover {
         // set user configuration
         if (excludeLowPriority || excludeNonClearable || foregroundApp) {
             allowed = false;
-            Log.w(TAG, "not showing hover: reqFullScr="+mRequireFullScreen+",excNonClr="+excludeNonClearable+",excLowPrio="+excludeLowPriority+",excFG="+foregroundApp);
         }
 
         // Check for fullscreen mode
@@ -711,7 +709,6 @@ public class Hover {
             final boolean isStatusBarVisible = (vis & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0
                     || (vis & View.STATUS_BAR_TRANSIENT) != 0;
             if (isStatusBarVisible) {
-                Log.w(TAG, "not showing hover: reqFullScr="+isStatusBarVisible+",excNonClr="+excludeNonClearable+",excLowPrio="+excludeLowPriority+",excFG="+foregroundApp);
                 allowed = false;
             }
         }
@@ -728,7 +725,6 @@ public class Hover {
             } else {
                 clearNotificationList();
             }
-            Log.w(TAG, "screen is off, statusbar is expanded, or keyguard is showing");
             addStatusBarNotification(entry.notification);
             return;
         }
@@ -782,7 +778,6 @@ public class Hover {
                 }
             } else {
                 // uh spam detected...go away!
-                Log.w(TAG, "notification should not be shown?!");
                 addStatusBarNotification(entry.notification);
                 return;
             }
