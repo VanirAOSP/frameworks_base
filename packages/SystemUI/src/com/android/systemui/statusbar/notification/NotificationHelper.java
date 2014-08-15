@@ -115,6 +115,14 @@ public class NotificationHelper {
         return mHover;
     }
 
+    public boolean isHoverEnabled() {
+        return mHover.mHoverActive;
+    }
+
+    public boolean isHoverShowing() {
+        return mHover.isShowing();
+    }
+
     /**
      * Hint: <!-- XYZ --> = XYZ feature(s) make use of the following
      * -------------------------------------------------------------
@@ -156,7 +164,7 @@ public class NotificationHelper {
         NotificationClicker intent = null;
         final PendingIntent contentIntent = entry.notification.getNotification().contentIntent;
         if (contentIntent != null) {
-            intent = mStatusBar.makeClicker(contentIntent,
+            intent = mHover.getStatusBar().makeClicker(contentIntent,
                     entry.notification.getPackageName(), entry.notification.getTag(),
                     entry.notification.getId());
             boolean makeFloating = floating
