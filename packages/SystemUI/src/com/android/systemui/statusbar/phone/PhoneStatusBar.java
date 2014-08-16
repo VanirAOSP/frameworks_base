@@ -302,6 +302,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // on-screen navigation buttons
     private NavigationBarView mNavigationBarView = null;
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
+    static boolean showingIME;
+    boolean mDeviceRequiresNavbar;
 
     // member to store notification alpha
     private int mAlpha = 255;
@@ -660,6 +662,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
         final boolean isMultiSimEnabled = MSimTelephonyManager.getDefault().isMultiSimEnabled();
+        mDeviceRequiresNavbar = res.getBoolean(com.android.internal.R.bool.config_showNavigationBar);
 
         if (isMultiSimEnabled) {
             mStatusBarWindow = (StatusBarWindowView) View.inflate(context,
@@ -1201,12 +1204,17 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     private void prepareNavigationBarView() {
-        mNavigationBarView.reorient();
+
+        if (mDeviceRequiresNavbar) {
+            mNavigationBarView.reorient();
+        } else {
+            mNavigationBarView.inflateForHardwareDevice(showingIME);
+        }
 
         if (mNavigationBarView.getRecentsButton() != null) {
             mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
             mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
-            if(mCustomRecent == 0) mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
+            if (mCustomRecent == 0) mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
         }
         if (mNavigationBarView.getHomeButton() != null) {
             mNavigationBarView.getHomeButton().setOnTouchListener(mHomeSearchActionListener);
@@ -2551,13 +2559,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         return mGestureRec;
     }
 
-    private void setNavigationIconHints(int hints) {
-        if (hints == mNavigationIconHints) return;
+    private void setNavigationIconHints(int hints, boolean navbarDevice) {
+        if ((hints == mNavigationIconHints) && navbarDevice) return;
 
         mNavigationIconHints = hints;
-
         if (mNavigationBarView != null) {
-            mNavigationBarView.setNavigationIconHints(hints);
+            mNavigationBarView.setNavigationIconHints(hints, !navbarDevice);
         }
         checkBarModes();
     }
@@ -2798,10 +2805,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     public void setImeWindowStatus(IBinder token, int vis, int backDisposition) {
         boolean altBack = (backDisposition == InputMethodService.BACK_DISPOSITION_WILL_DISMISS)
             || ((vis & InputMethodService.IME_VISIBLE) != 0);
+        int IMEvalue = altBack ? (mNavigationIconHints | NAVIGATION_HINT_BACK_ALT)
+                        : (mNavigationIconHints & ~NAVIGATION_HINT_BACK_ALT);
+        showingIME = altBack;
 
-        setNavigationIconHints(
-                altBack ? (mNavigationIconHints | NAVIGATION_HINT_BACK_ALT)
-                        : (mNavigationIconHints & ~NAVIGATION_HINT_BACK_ALT));
+        setNavigationIconHints(IMEvalue, mDeviceRequiresNavbar);
+
         if (mQS != null) mQS.setImeWindowStatus(vis > 0);
         if (vis > 0) {
             mHandler.sendEmptyMessage(MSG_HIDE_HEADS_UP);
