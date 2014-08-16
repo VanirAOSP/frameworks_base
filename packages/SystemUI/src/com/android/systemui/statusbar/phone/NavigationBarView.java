@@ -93,7 +93,6 @@ public class NavigationBarView extends LinearLayout {
 
     final boolean mTablet = isTablet(mContext);
 
-    private ArrayList<AwesomeButtonInfo> mButtons = new ArrayList<AwesomeButtonInfo>();
     private ArrayList<AwesomeButtonInfo> mNavButtons = new ArrayList<AwesomeButtonInfo>();
     private ArrayList<AwesomeButtonInfo> mIMEKeyArray = new ArrayList<AwesomeButtonInfo>();
 
@@ -259,7 +258,6 @@ public class NavigationBarView extends LinearLayout {
 
         mBarTransitions = new NavigationBarTransitions(this);
         mBarTransitions.updateResources(res);
-
 
         mSideKeys = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
         mArrows = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_ARROWS, 0) == 1;
@@ -454,11 +452,7 @@ public class NavigationBarView extends LinearLayout {
     final Runnable mSetCustomBarLayout = new Runnable() {
         @Override
         public void run() {
-            if (showingIME) {
-                setupNavigationButtons(mIMEKeyArray);
-            } else {
-                setupNavigationButtons(mNavButtons);
-            }
+            setupNavigationButtons();
             if (getBackButton() != null) {
                 if (showingIME) {
                     ((ImageView) getBackButton()).setImageResource(R.drawable.ic_sysbar_back_ime);
@@ -490,8 +484,6 @@ public class NavigationBarView extends LinearLayout {
 
         mDisabledFlags = disabledFlags;
 
-        if (mButtons.isEmpty()) return; // no buttons yet!
-
         final boolean disableHome = ((disabledFlags & View.STATUS_BAR_DISABLE_HOME) != 0);
         final boolean disableRecent = ((disabledFlags & View.STATUS_BAR_DISABLE_RECENT) != 0);
         final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0)
@@ -518,6 +510,8 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
         }
+
+        if (getCurrentButtonArray().isEmpty()) return; // no buttons yet!
 
         KeyButtonView[] allButtons = getAllButtons();
         for (KeyButtonView button : allButtons) {
@@ -706,11 +700,10 @@ public class NavigationBarView extends LinearLayout {
     }
 
     private void loadButtonArrays() {
-        String mUserButtons = mPrimaryButtons;
         String[] userButtons;
         // Primary navbar
         mNavButtons.clear();
-        userButtons = mUserButtons.split("\\|");
+        userButtons = mPrimaryButtons.split("\\|");
         if (userButtons != null) {
             for (String button : userButtons) {
                 String[] actions = button.split(",", 4);
@@ -719,23 +712,28 @@ public class NavigationBarView extends LinearLayout {
         }
         // IME key layout
         mIMEKeyArray.clear();
-        mUserButtons = mIMEKeyLayout;
-        userButtons = mUserButtons.split("\\|");
+        userButtons = mIMEKeyLayout.split("\\|");
         if (userButtons != null) {
             for (String button : userButtons) {
                 String[] actions = button.split(",", 4);
                 mIMEKeyArray.add(new AwesomeButtonInfo(actions[0], actions[1], actions[2], actions[3]));
             }
         }
-        setupNavigationButtons(mNavButtons);
+        setupNavigationButtons();
     }
 
-    private void setupNavigationButtons(ArrayList buttonsArray) {
-        mButtons = buttonsArray;
+    private ArrayList<AwesomeButtonInfo> getCurrentButtonArray() {
+        return (mArrows && showingIME) ? mIMEKeyArray : mNavButtons;
+    }
 
-        final boolean stockThreeButtonLayout = mButtons.size() == 3;
+    private void setupNavigationButtons() {
+        setupNavigationButtons(getCurrentButtonArray());
+    }
+
+    private void setupNavigationButtons(ArrayList<AwesomeButtonInfo> buttonsArray) {
+        final boolean stockThreeButtonLayout = buttonsArray.size() == 3;
         final int separatorSize = (int) mMenuButtonWidth;
-        final int length = mButtons.size();
+        final int length = buttonsArray.size();
 
         for (int i = 0; i <= 1; i++) {
             boolean landscape = (i == 1);
@@ -768,7 +766,7 @@ public class NavigationBarView extends LinearLayout {
 
             for (int j = 0; j < length; j++) {
                 // create the button
-                AwesomeButtonInfo info = mButtons.get(j);
+                AwesomeButtonInfo info = buttonsArray.get(j);
                 KeyButtonView button = new KeyButtonView(mContext, null);
                 button.setButtonActions(info);
                 if (mTablet) {
@@ -876,6 +874,10 @@ public class NavigationBarView extends LinearLayout {
         return mVertical;
     }
 
+    void setIMEState(boolean showing) {
+        showingIME = showing;
+    }
+
     public void reorient() {
         final int rot = mDisplay.getRotation();
         for (int i = 0; i < 4; i++) {
@@ -888,7 +890,11 @@ public class NavigationBarView extends LinearLayout {
         mDeadZone = (DeadZone) mCurrentView.findViewById(R.id.deadzone);
 
         // force the low profile & disabled states into compliance
-        mBarTransitions.init(mVertical);
+        try {
+            mBarTransitions.init(mVertical);
+        } finally {
+        }
+
         setMenuVisibility(mShowMenu, true /* force */);
 
         if (DEBUG) {
@@ -911,7 +917,7 @@ public class NavigationBarView extends LinearLayout {
     public KeyButtonView[] getAllButtons() {
         ViewGroup view = (ViewGroup) mCurrentView.findViewById(R.id.nav_buttons);
         int N = view.getChildCount();
-        KeyButtonView[] views = new KeyButtonView[mButtons.size()];
+        KeyButtonView[] views = new KeyButtonView[N];
 
         int workingIdx = 0;
         for (int i = 0; i < N; i++) {
