@@ -287,7 +287,6 @@ public class NavigationBarView extends LinearLayout {
         mBarTransitions = new NavigationBarTransitions(this);
         mBarTransitions.updateResources(res);
 
-
         mLegacyMenu = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
         mArrows = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_ARROWS, 0) == 1;
         mPrimaryButtons = Settings.System.getString(cr, Settings.System.NAVIGATION_BAR_BUTTONS);
@@ -470,10 +469,6 @@ public class NavigationBarView extends LinearLayout {
         setDisabledFlags(mDisabledFlags, true);
     }
 
-    public void setNavigationIconHints(int hints) {
-        setNavigationIconHints(hints, false);
-    }
-
     public void setNavigationIconHints(int hints, boolean force) {
         if (!force && hints == mNavigationIconHints) return;
         showingIME = (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0;
@@ -508,11 +503,7 @@ public class NavigationBarView extends LinearLayout {
     final Runnable mSetCustomBarLayout = new Runnable() {
         @Override
         public void run() {
-            if (showingIME) {
-                setupNavigationButtons(mIMEKeyArray);
-            } else {
-                mHandler.post(mNotifyLayoutChanged);
-            }
+            setupNavigationButtons();
             if (getBackButton() != null) {
                 if (showingIME) {
                     ((ImageView) getBackButton()).setImageResource(R.drawable.ic_sysbar_back_ime);
@@ -537,24 +528,7 @@ public class NavigationBarView extends LinearLayout {
             } else if (mCurrentLayout >= mRightStopKey) {
                 mCurrentLayout = KEY_LAYOUT_1;
             }
-                
-            switch (mCurrentLayout) {
-                case KEY_LAYOUT_1:
-                    setupNavigationButtons(mContainer_1);
-                    break;
-                case KEY_LAYOUT_2:
-                    setupNavigationButtons(mContainer_2);
-                    break;
-                case KEY_LAYOUT_3:
-                    setupNavigationButtons(mContainer_3);
-                    break;
-                case KEY_LAYOUT_4:
-                    setupNavigationButtons(mContainer_4);
-                    break;
-                case KEY_LAYOUT_5:
-                    setupNavigationButtons(mContainer_5);
-                    break;
-            }
+            setupNavigationButtons();
         }
     };
 
@@ -857,7 +831,6 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
         } else {
-            Log.e(TAG, "mAlternateButtons value" + mAlternateButtons);
             for (int j = 0; j < mAlternateButtons; j++) {
                 switch (j) {
                     case 0:
@@ -876,7 +849,6 @@ public class NavigationBarView extends LinearLayout {
                         mUserButtons = mButtonContainerString_5;
                         break;
                 }
-                Log.e(TAG, "loop iteration " + j + " string " + mUserButtons);
                 userButtons = mUserButtons.split("\\|");
                 if (userButtons != null) {
                     for (String button : userButtons) {
@@ -917,27 +889,31 @@ public class NavigationBarView extends LinearLayout {
         if (mCurrentLayout > mAlternateButtons) {
                 mCurrentLayout = mAlternateButtons;
         }
-        switch (mCurrentLayout) {
-            case 1:
-                setupNavigationButtons(mContainer_1);
-                break;
-            case 2:
-                setupNavigationButtons(mContainer_2);
-                break;
-            case 3:
-                setupNavigationButtons(mContainer_3);
-                break;
-            case 4:
-                setupNavigationButtons(mContainer_4);
-                break;
-            case 5:
-                setupNavigationButtons(mContainer_5);
-                break;
-        }
+        setupNavigationButtons();
     }
 
-    private void setupNavigationButtons(ArrayList buttonsArray) {
-        mButtons = buttonsArray;
+    private void setupNavigationButtons() {
+        if (showingIME && mArrows) {
+            mButtons = mIMEKeyArray;
+        } else {
+            switch (mCurrentLayout) {
+                case KEY_LAYOUT_1:
+                    mButtons = mContainer_1;
+                    break;
+                case KEY_LAYOUT_2:
+                    mButtons = mContainer_2;
+                    break;
+                case KEY_LAYOUT_3:
+                    mButtons = mContainer_3;
+                    break;
+                case KEY_LAYOUT_4:
+                    mButtons = mContainer_4;
+                    break;
+                case KEY_LAYOUT_5:
+                    mButtons = mContainer_5;
+                    break;
+            }
+        }
 
         final boolean stockThreeButtonLayout = mButtons.size() == 3;
         final int separatorSize = (int) mMenuButtonWidth;
@@ -1117,6 +1093,26 @@ public class NavigationBarView extends LinearLayout {
         return mVertical;
     }
 
+    public void inflateForHardwareDevice(boolean showing) {
+        final int rot = mDisplay.getRotation();
+        for (int i = 0; i < 4; i++) {
+            mRotatedViews[i].setVisibility(View.GONE);
+        }
+
+        mCurrentView = mRotatedViews[rot];
+        mCurrentView.setVisibility(View.VISIBLE);
+
+        mDeadZone = (DeadZone) mCurrentView.findViewById(R.id.deadzone);
+
+        mBarTransitions.init(mVertical);
+        setMenuVisibility(mShowMenu, true);
+        if (mArrows) {
+            showingIME = showing;
+            removeCallbacks(mSetCustomBarLayout);
+            mHandler.postDelayed(mSetCustomBarLayout, 10);
+        }
+    }
+
     public void reorient() {
         final int rot = mDisplay.getRotation();
         for (int i = 0; i < 4; i++) {
@@ -1130,7 +1126,6 @@ public class NavigationBarView extends LinearLayout {
 
         // force the low profile & disabled states into compliance
         mBarTransitions.init(mVertical);
-        Log.e(TAG, "MENU VISIBILITY " + mShowMenu);
         setMenuVisibility(mShowMenu, true /* force */);
 
         if (DEBUG) {
