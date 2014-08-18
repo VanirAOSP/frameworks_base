@@ -1189,8 +1189,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
     public void onClick(View v) {
         if (mTranslucentDialog && mShouldRunDropTranslucentAnimation) {
             startRemoveTranslucentAnimation();
-        }
-        if (v == mMoreButton) {
+        } else if (v == mMoreButton) {
             expand();
         } else if (v instanceof ImageView) {
             Intent volumeSettings = new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS);
@@ -1206,8 +1205,8 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         if (!mTranslucentDialog || mRunningDropTranslucentAnimation) return;
 
         mPanel.getBackground().setAlpha(TRANSLUCENT_START_LEVEL);
-        mMoreButton.setAlpha(TRANSLUCENT_START_LEVEL);
-        mDivider.setAlpha(TRANSLUCENT_START_LEVEL);
+        mMoreButton.setAlpha(0.0f);
+        mDivider.setAlpha(0.0f);
         mShouldRunDropTranslucentAnimation = true;
     }
 
