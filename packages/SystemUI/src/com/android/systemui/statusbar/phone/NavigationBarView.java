@@ -874,8 +874,13 @@ public class NavigationBarView extends LinearLayout {
         return mVertical;
     }
 
-    void setIMEState(boolean showing) {
-        showingIME = showing;
+    void inflateForHardwareDevice(int hints) {
+        // We're inflating the class here specifically for a hardware key device so we need
+        // to get the IME window state values from PhoneStatusBar since NavigationBarView has not been
+        // initialized
+        showingIME = (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0;
+        mNavigationIconHints = hints;
+        reorient();
     }
 
     public void reorient() {
@@ -892,7 +897,8 @@ public class NavigationBarView extends LinearLayout {
         // force the low profile & disabled states into compliance
         try {
             mBarTransitions.init(mVertical);
-        } finally {
+        } catch (NullPointerException WTF) {
+            Log.d(TAG, "mBarTransitions.init(mVertical) ... " + WTF);
         }
 
         setMenuVisibility(mShowMenu, true /* force */);
