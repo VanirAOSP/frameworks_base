@@ -80,6 +80,7 @@ import android.util.Pair;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
+import android.view.inputmethod.InputMethodManager;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -468,9 +469,47 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         if (DEBUG) Log.v(TAG, "hasNavigationBar=" + showNav);
         if (showNav || userPreference) {
+            InputMethodManager imm = null;
+            if (mNavigationBarView == null && userPreference)
+            {
+                // if we're enabling navbar on a device with a navbar, and an IM is active, then hide it temporarily during add
+                imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (showingIME) {
+                    Log.w(TAG, "Hiding IME");
+                    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                } else {
+                    Log.w(TAG, "Not hiding IME");
+                    imm = null;
+                }
+            }
+
             forceAddNavigationBar();
+
+            if (imm != null) {
+                //add it back?
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+            }
         } else {
+            InputMethodManager imm = null;
+            if (mNavigationBarView != null)
+            {
+                // if we're disabling navbar (only happens on hardware nav devices), and an IM is active, then hide it temporarily during remove
+                imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (showingIME) {
+                    Log.w(TAG, "Hiding IME");
+                    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                } else {
+                    Log.w(TAG, "Not hiding IME");
+                    imm = null;
+                }
+            }
+
             removeNavigationBar();
+
+            if (imm != null) {
+                //add it back?
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+            }
         }
     }
 
