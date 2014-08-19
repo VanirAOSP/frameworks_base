@@ -85,10 +85,6 @@ public final class NavigationBarTransitions extends BarTransitions {
         View[] views = mView.getAllButtons();
 
         for(View v : views) {
-            if (AwesomeConstant.ACTION_BACK.value().equals(v.getTag())) {
-                // back button was skipped in original calculations
-                continue;
-            }
             setKeyButtonViewQuiescentAlpha(v, alpha, animate);
         }
 
@@ -110,10 +106,6 @@ public final class NavigationBarTransitions extends BarTransitions {
         float backAlpha = 0;
         View[] views = mView.getAllButtons();
         for(View v : views) {
-            if (AwesomeConstant.ACTION_BACK.value().equals(v.getTag())) {
-                // back button was skipped in original calculations
-                continue;
-            }
             backAlpha = maxVisibleQuiescentAlpha(backAlpha, v);
         }
 
