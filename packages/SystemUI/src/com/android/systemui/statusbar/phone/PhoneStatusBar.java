@@ -456,11 +456,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     private void updateNavigationBarState() {
+        boolean showNav = true;
+        try {
+              showNav = mWindowManagerService.hasNavigationBar();
+        } catch(RemoteException ex) {
+            Log.e("NavBar", "Exception while checking NavigationBar stuff via WindowManagerStuff", ex);
+        }
 
-        boolean shouldAddNavbar = mNavbarRequired || Settings.System.getInt(mContext.getContentResolver(),
+        boolean userPreference = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.ENABLE_NAVIGATION_BAR, 0) == 1;
 
-        if (shouldAddNavbar) {
+        if (DEBUG) Log.v(TAG, "hasNavigationBar=" + showNav);
+        if (showNav || userPreference) {
             forceAddNavigationBar();
         } else {
             removeNavigationBar();
