@@ -1099,11 +1099,7 @@ public class NavigationBarView extends LinearLayout {
         mDeadZone = (DeadZone) mCurrentView.findViewById(R.id.deadzone);
 
         // force the low profile & disabled states into compliance
-        try {
-            mBarTransitions.init(mVertical);
-        } catch (NullPointerException WTF) {
-            Log.d(TAG, "mBarTransitions.init(mVertical) ... " + WTF);
-        }
+        mBarTransitions.init(mVertical);
 
         setMenuVisibility(mShowMenu, true /* force */);
 
