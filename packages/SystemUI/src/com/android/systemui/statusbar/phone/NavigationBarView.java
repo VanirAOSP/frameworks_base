@@ -874,10 +874,6 @@ public class NavigationBarView extends LinearLayout {
         return mVertical;
     }
 
-    void setIMEState(boolean showing) {
-        showingIME = showing;
-    }
-
     public void reorient() {
         final int rot = mDisplay.getRotation();
         for (int i = 0; i < 4; i++) {
