@@ -458,7 +458,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private void updateNavigationBarState() {
         boolean showNav = true;
         try {
-              showNav = mWindowManagerService.hasNavigationBar();
+              showNav = mWindowManagerService.needsNavigationBar();
         } catch(RemoteException ex) {
             Log.e("NavBar", "Exception while checking NavigationBar stuff via WindowManagerStuff", ex);
         }
