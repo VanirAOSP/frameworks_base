@@ -29,6 +29,7 @@ import android.media.ToneGenerator;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
@@ -129,7 +130,8 @@ public class AwesomeAction {
                 break;
 
             case ACTION_POWER:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_POWER, STANDARD_FLAGS);
+                    PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+                    pm.goToSleep(SystemClock.uptimeMillis());
                 break;
 
             case ACTION_LAST_APP:
