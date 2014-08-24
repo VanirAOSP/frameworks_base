@@ -14,21 +14,14 @@
      limitations under the License.
 -->
 
-<resources>
-   <!-- Slim recent -->
-    <color name="recent_background">#80f5f5f5</color>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_window_focused="false" android:state_enabled="true"
+        android:drawable="@drawable/btn_ga_cancel_gesturing_normal" />
+    <item android:state_pressed="true"
+        android:drawable="@drawable/btn_ga_cancel_gesturing_pressed" />
+    <item android:state_enabled="true"
+        android:drawable="@drawable/btn_ga_cancel_gesturing_normal" />
+    <item
+         android:drawable="@drawable/btn_ga_cancel_gesturing_normal" />
+</selector>
 
-    <!-- Card Color -->
-    <color name="card_background">#ffffffff</color>
-    <color name="card_background_header">#ffffffff</color>
-    <color name="card_backgroundExpand">#ffffffff</color>
-
-    <color name="card_text_color_header">#ff000000</color>
-
-    <!-- Used by selector -->
-    <color name="card_pressed">#7e3c3c3c</color>
-
-    <!-- Gesture Actions specific colors -->
-    <color name="gesture_overlay_background_fill_color">#80000000</color>
-    <color name="gesture_color">@android:color/holo_blue_light</color>
-</resources>

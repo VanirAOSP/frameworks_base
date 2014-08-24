@@ -778,9 +778,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mNavigationBarView.updateResources(getNavbarThemedResources());
         }
 
-        if (mRecreating) {
-        } else {
+        if (!mRecreating) {
             updateActiveDisplayViewState();
+            addGestureView();
         }
 
         // figure out which pixel-format to use for the status bar.
