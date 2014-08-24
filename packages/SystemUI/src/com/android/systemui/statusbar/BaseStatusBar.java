@@ -98,6 +98,7 @@ import com.android.systemui.SystemUI;
 import com.android.systemui.slimrecent.RecentController;
 import com.android.systemui.statusbar.halo.Halo;
 import com.android.systemui.cm.SpamMessageProvider;
+import com.android.systemui.vanir.GesturePanelView;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.notification.Hover;
 import com.android.systemui.statusbar.notification.HoverCling;
@@ -170,6 +171,9 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     // Search panel
     protected AOKPSearchPanelView mSearchPanelView;
+
+    // Gesture panel
+    protected GesturePanelView mGesturePanelView = null;
 
     protected PopupMenu mNotificationBlamePopup;
 
@@ -1900,7 +1904,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected void addActiveDisplayView() {
         if (mActiveDisplayView == null) {
-            Log.v(TAG, "Adding active display view");
             mActiveDisplayView = (ActiveDisplayView)View.inflate(mContext, R.layout.active_display, null);
             mActiveDisplayView.setStatusBar(this);
             mWindowManager.addView(mActiveDisplayView, getActiveDisplayViewLayoutParams());
@@ -1910,12 +1913,41 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     protected void removeActiveDisplayView() {
-        if (mActiveDisplayView != null)
-        {
-            Log.v(TAG, "Removing active display view");
+        if (mActiveDisplayView != null) {
             mWindowManager.removeView(mActiveDisplayView);
             mActiveDisplayView = null;
         }
+    }
+
+    protected void addGesturePanelView() {
+        if (mGesturePanelView == null) {
+            mGesturePanelView = (GesturePanelView)View.inflate(
+            mContext, R.layout.gesture_action_overlay, null);
+            mWindowManager.addView(mGesturePanelView, getGesturePanelViewLayoutParams());
+            mGesturePanelView.setStatusBar(this);
+            mGesturePanelView.switchToOpenState();
+        }
+    }
+
+    public void removeGesturePanelView() {
+        if (mGesturePanelView != null) {
+            mWindowManager.removeView(mGesturePanelView);
+            mGesturePanelView = null;
+        }
+    }
+
+    protected WindowManager.LayoutParams getGesturePanelViewLayoutParams() {
+        boolean useGFX = ActivityManager.isHighEndGfx();
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_STATUS_BAR_SUB_PANEL,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                useGFX ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE);
+        if (useGFX) lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+        lp.gravity = Gravity.BOTTOM;
+        lp.setTitle("GesturePanelView");
+
+        return lp;
     }
 
     protected WindowManager.LayoutParams getActiveDisplayViewLayoutParams() {

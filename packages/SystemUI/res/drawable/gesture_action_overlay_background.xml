@@ -14,19 +14,11 @@
      limitations under the License.
 -->
 
-<resources>
-   <!-- Slim recent -->
-    <color name="recent_background">#80f5f5f5</color>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <!-- Card Color -->
-    <color name="card_background">#ffffffff</color>
-    <color name="card_background_header">#ffffffff</color>
-    <color name="card_backgroundExpand">#ffffffff</color>
+    <gradient name="gesture_action_overlay_background"
+        android:startColor="#E0000000"
+        android:endColor="#99000000"
+        android:angle="90" />
 
-    <color name="card_text_color_header">#ff000000</color>
-
-    <!-- Used by selector -->
-    <color name="card_pressed">#7e3c3c3c</color>
-
-    <color name="gesture_color">@android:color/holo_blue_light</color>
-</resources>
+</shape>
