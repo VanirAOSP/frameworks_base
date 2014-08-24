@@ -61,8 +61,9 @@ import com.vanir.util.TaskUtils;
 
 public class AwesomeAction {
 
-    public final static String TAG = "AwesomeAction";
+    public static final String TAG = "AwesomeAction";
     public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
+    public static final String TOGGLE_GESTURE_ACTIONS = "vanir.TOGGLE_GESTURE_PANEL";
 
     private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY;
     private static final int CURSOR_FLAGS = KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE;
@@ -262,6 +263,10 @@ public class AwesomeAction {
                             }
                         }
                     }
+                    break;
+
+                case GESTURE_ACTIONS:
+                    mContext.sendBroadcast(new Intent(TOGGLE_GESTURE_ACTIONS));
                     break;
                 }
         return true;
