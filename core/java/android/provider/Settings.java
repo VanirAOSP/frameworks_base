@@ -3739,6 +3739,12 @@ public final class Settings {
         public static final String GESTURES_DOUBLE_TAP = "gestures_double_tap";
 
         /**
+         * Gesture Actions: observed actions change
+         * @hide
+         */
+         public static final String GESTURE_ACTIONS_CHANGED = "gesture_actions_changed";
+
+        /**
          * Whether power menu airplane toggle is enabled
          * @hide
          */
