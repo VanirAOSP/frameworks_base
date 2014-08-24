@@ -61,7 +61,7 @@ import com.vanir.util.TaskUtils;
 
 public class AwesomeAction {
 
-    public final static String TAG = "AwesomeAction";
+    public static final String TAG = "AwesomeAction";
     public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
 
     private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY;
@@ -262,6 +262,10 @@ public class AwesomeAction {
                             }
                         }
                     }
+                    break;
+
+                case GESTURE_ACTIONS:
+                    mContext.sendBroadcast(new Intent(Intent.TOGGLE_GESTURE_ACTIONS));
                     break;
                 }
         return true;
