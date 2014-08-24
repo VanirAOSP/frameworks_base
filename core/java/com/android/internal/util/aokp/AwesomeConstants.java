@@ -64,7 +64,8 @@ public class AwesomeConstants {
         ACTION_ARROW_LEFT    { @Override public String value() { return "**arrow_left**";}},
         ACTION_ARROW_RIGHT   { @Override public String value() { return "**arrow_right**";}},
         ACTION_ARROW_UP      { @Override public String value() { return "**arrow_up**";}},
-        ACTION_ARROW_DOWN    { @Override public String value() { return "**arrow_down**";}};
+        ACTION_ARROW_DOWN    { @Override public String value() { return "**arrow_down**";}},
+        GESTURE_ACTIONS      { @Override public String value() { return "**gesture_actions**";}};
         public String value() { return this.value(); }
     }
 
@@ -198,6 +199,9 @@ public class AwesomeConstants {
             case ACTION_ARROW_DOWN:
                 value = res.getString(com.android.internal.R.string.action_arrow_down);
                 break;
+            case GESTURE_ACTIONS:
+                value = res.getString(com.android.internal.R.string.gesture_actions);
+                break;
             case ACTION_NULL:
             default:
                 value = res.getString(com.android.internal.R.string.action_null);
@@ -277,6 +281,9 @@ public class AwesomeConstants {
                 break;
             case ACTION_SILENT_VIB:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_silent_vib");
+                break;
+            case GESTURE_ACTIONS:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_gesture");
                 break;
             case ACTION_APP: // APP doesn't really have an icon - it should look up
                         //the package icon - we'll return the 'null' on just in case
