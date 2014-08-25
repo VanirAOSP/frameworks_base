@@ -75,6 +75,8 @@ import android.service.dreams.IDreamManager;
 import android.service.gesture.EdgeGestureManager;
 import com.android.internal.os.DeviceKeyHandler;
 
+import com.android.internal.util.cm.ActionUtils;
+import com.android.internal.util.aokp.AwesomeAction;
 import dalvik.system.DexClassLoader;
 
 import android.util.DisplayMetrics;
@@ -134,7 +136,6 @@ import static android.view.WindowManagerPolicy.WindowManagerFuncs.LID_OPEN;
 import static android.view.WindowManagerPolicy.WindowManagerFuncs.LID_CLOSED;
 
 import com.vanir.torch.DelayedStickyTorch;
-import com.vanir.util.TaskUtils;
 
 /**
  * WindowManagerPolicy implementation for the Android phone UI.  This
@@ -1239,7 +1240,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mHandler.post(mKillTask);
                 break;
             case KEY_ACTION_LASTAPP:
-                TaskUtils.toggleLastApp(mContext);
+                ActionUtils.switchToLastApp(mContext, mCurrentUserId);
                 break;
             case KEY_ACTION_NAVBAR:
                 Settings.System.putInt(mContext.getContentResolver(),
@@ -1261,7 +1262,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     Runnable mKillTask = new Runnable() {
         public void run() {
-            if (TaskUtils.killActiveTask(mContext)) {
+            if (ActionUtils.killForegroundApp(mContext,mCurrentUserId)) {
                 performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
                 Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
             }
@@ -6632,6 +6633,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 // oh well
             }
         }
+        AwesomeAction.setCurrentUser(newUserId);
         setLastInputMethodWindowLw(null, null);
         mCurrentUser = newUserId;
     }

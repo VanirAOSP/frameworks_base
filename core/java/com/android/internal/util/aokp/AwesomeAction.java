@@ -16,9 +16,6 @@
 
 package com.android.internal.util.aokp;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentUris;
@@ -57,7 +54,7 @@ import java.util.List;
 
 import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 import static com.android.internal.util.aokp.AwesomeConstants.fromString;
-import com.vanir.util.TaskUtils;
+import com.android.internal.util.cm.ActionUtils;
 
 public class AwesomeAction {
 
@@ -70,7 +67,13 @@ public class AwesomeAction {
     private static boolean wtf = true;
     private static boolean ftw;
 
+    private static int mCurrentUserId = 0;
+
     private AwesomeAction() {
+    }
+
+    public static void setCurrentUser(int newUserId) {
+        mCurrentUserId = newUserId;
     }
 
     public static boolean launchAction(final Context mContext, final String action) {
@@ -102,9 +105,15 @@ public class AwesomeAction {
                     break;
 
                 case ACTION_KILL:
-                    Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
-                    KillTask mKillTask = new KillTask(mContext);
-                    mHandler.post(mKillTask);
+                    mHandler.removeCallbacksAndMessages(null);
+                    mHandler.post(new Runnable() { 
+                        @Override
+                        public void run() {
+                            if (ActionUtils.killForegroundApp(mContext,mCurrentUserId)) {
+                                Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                     break;
 
                 case ACTION_ASSIST:
@@ -124,7 +133,7 @@ public class AwesomeAction {
                     break;
 
                 case ACTION_LAST_APP:
-                    TaskUtils.toggleLastApp(mContext);
+                    ActionUtils.switchToLastApp(mContext, mCurrentUserId);
                     break;
 
                 case ACTION_NOTIFICATIONS:
@@ -265,36 +274,6 @@ public class AwesomeAction {
                     break;
                 }
         return true;
-    }
-
-    public static class KillTask implements Runnable {
-        private final static String SysUIPackage = "com.android.systemui";
-        private Context mContext;
-
-        public KillTask(Context context) {
-            this.mContext = context;
-        }
-
-        public void run() {
-            final Intent intent = new Intent(Intent.ACTION_MAIN);
-            final ActivityManager am = (ActivityManager) mContext
-                    .getSystemService(Activity.ACTIVITY_SERVICE);
-            String defaultHomePackage = "com.android.launcher";
-            intent.addCategory(Intent.CATEGORY_HOME);
-            final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
-
-            if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
-                defaultHomePackage = res.activityInfo.packageName;
-            }
-
-            RunningTaskInfo info = am.getRunningTasks(1).get(0);
-            String packageName = info.topActivity.getPackageName();
-
-            if (SysUIPackage.equals(packageName)) return; // don't kill SystemUI
-            if (!defaultHomePackage.equals(packageName)) {
-                am.removeTask(info.id, ActivityManager.REMOVE_TASK_KILL_PROCESS);
-            }
-        }
     }
 
     public static boolean isIntentAvailable(Context context, Intent intent) {
