@@ -125,7 +125,6 @@ public class KeyguardViewManager {
     private Bitmap mBackgroundImage = null;
 
     private SettingsObserver mObserver;
-    private Handler mHandler;
 
     private boolean mEnableLockScreenRotation;
     private boolean mEnableAccelerometerRotation;
