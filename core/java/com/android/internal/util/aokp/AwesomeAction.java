@@ -80,199 +80,199 @@ public class AwesomeAction {
         if (TextUtils.isEmpty(action) || action.equals(NULL_ACTION)) {
             return false;
         }
-            AwesomeConstant AwesomeEnum = fromString(action);
-            AudioManager am;
-            switch (AwesomeEnum) {
-                case ACTION_HOME:
-                    IWindowManager mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
-                    try {
-                        mWindowManagerService.sendHomeAction();
-                    } catch (RemoteException e) {
-                        Log.e(TAG, "HOME ACTION FAILED");
-                    }
-                    break;
+        AwesomeConstant AwesomeEnum = fromString(action);
+        AudioManager am;
+        switch (AwesomeEnum) {
+            case ACTION_HOME:
+                IWindowManager mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
+                try {
+                    mWindowManagerService.sendHomeAction();
+                } catch (RemoteException e) {
+                    Log.e(TAG, "HOME ACTION FAILED");
+                }
+                break;
 
-                case ACTION_BACK:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_BACK, STANDARD_FLAGS);
-                    break;
+            case ACTION_BACK:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_BACK, STANDARD_FLAGS);
+                break;
 
-                case ACTION_MENU:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_MENU, STANDARD_FLAGS);
-                    break;
+            case ACTION_MENU:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_MENU, STANDARD_FLAGS);
+                break;
 
-                case ACTION_SEARCH:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH, STANDARD_FLAGS);
-                    break;
+            case ACTION_SEARCH:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH, STANDARD_FLAGS);
+                break;
 
-                case ACTION_KILL:
-                    mHandler.removeCallbacksAndMessages(null);
-                    mHandler.post(new Runnable() { 
-                        @Override
-                        public void run() {
-                            if (ActionUtils.killForegroundApp(mContext,mCurrentUserId)) {
-                                Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
-                            }
+            case ACTION_KILL:
+                mHandler.removeCallbacksAndMessages(null);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ActionUtils.killForegroundApp(mContext,mCurrentUserId)) {
+                            Toast.makeText(mContext, R.string.app_killed_message, Toast.LENGTH_SHORT).show();
                         }
-                    });
-                    break;
+                    }
+                });
+                break;
 
-                case ACTION_ASSIST:
-                    Intent intent = new Intent(Intent.ACTION_ASSIST);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    if (isIntentAvailable(mContext, intent))
-                        mContext.startActivity(intent);
-                    break;
-                case ACTION_VOICEASSIST:
-                    Intent intentVoice = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
-                    intentVoice.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intentVoice);
-                    break;
+            case ACTION_ASSIST:
+                Intent intent = new Intent(Intent.ACTION_ASSIST);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                if (isIntentAvailable(mContext, intent))
+                    mContext.startActivity(intent);
+                break;
+            case ACTION_VOICEASSIST:
+                Intent intentVoice = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
+                intentVoice.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intentVoice);
+                break;
 
-                case ACTION_POWER:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_POWER, STANDARD_FLAGS);
-                    break;
+            case ACTION_POWER:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_POWER, STANDARD_FLAGS);
+                break;
 
-                case ACTION_LAST_APP:
-                    ActionUtils.switchToLastApp(mContext, mCurrentUserId);
-                    break;
+            case ACTION_LAST_APP:
+                ActionUtils.switchToLastApp(mContext, mCurrentUserId);
+                break;
 
-                case ACTION_NOTIFICATIONS:
-                    if (wtf) {
-                        if (!ftw) {
-                            try {
-                                IStatusBarService.Stub.asInterface(
-                                    ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandNotificationsPanel();
-                                ftw = true;
-                            } catch (RemoteException e) {
-                                // A RemoteException is like a cold
-                                // Let's hope we don't catch one!
-                            }
-                        } else {
-                            try {
-                                IStatusBarService.Stub.asInterface(
-                                    ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandSettingsPanel();
-                                ftw = false;
-                            } catch (RemoteException e) {
-                                // NO!!!
-                            }
-                            wtf = false;
-                            }
-                        } else {
+            case ACTION_NOTIFICATIONS:
+                if (wtf) {
+                    if (!ftw) {
                         try {
                             IStatusBarService.Stub.asInterface(
-                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).collapsePanels();
-                            wtf = true;
+                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandNotificationsPanel();
+                            ftw = true;
                         } catch (RemoteException e) {
-                            // EL CHUPACABRA!!
+                            // A RemoteException is like a cold
+                            // Let's hope we don't catch one!
                         }
-                    }
-                    break;
-
-                case ACTION_APP:
+                    } else {
+                        try {
+                            IStatusBarService.Stub.asInterface(
+                                ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).expandSettingsPanel();
+                            ftw = false;
+                        } catch (RemoteException e) {
+                            // NO!!!
+                        }
+                        wtf = false;
+                        }
+                    } else {
                     try {
-                        Intent intentapp = Intent.parseUri(action, 0);
-                        intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intentapp);
-                    } catch (URISyntaxException e) {
-                        Log.e(TAG, "URISyntaxException: [" + action + "]");
-                    } catch (ActivityNotFoundException e) {
-                        Log.e(TAG, "ActivityNotFound: [" + action + "]");
+                        IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).collapsePanels();
+                        wtf = true;
+                    } catch (RemoteException e) {
+                        // EL CHUPACABRA!!
                     }
-                    break;
-
-                case ACTION_APP_WINDOW:
-                    Intent appWindow = new Intent();
-                    appWindow.setAction("com.android.systemui.ACTION_SHOW_APP_WINDOW");
-                    mContext.sendBroadcast(appWindow);
-                    break;
-
-                case ACTION_BLANK:
-                    break;
-
-                case ACTION_ARROW_LEFT:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_LEFT, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_RIGHT:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_RIGHT, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_UP:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_UP, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_ARROW_DOWN:
-                    triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_DOWN, CURSOR_FLAGS);
-                    break;
-
-                case ACTION_VIB:
-                    am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-                    if (am != null) {
-                        if (am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
-                            am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-                            Vibrator vib = (Vibrator) mContext
-                                    .getSystemService(Context.VIBRATOR_SERVICE);
-                            if (vib != null) {
-                                vib.vibrate(50);
-                            }
-                        } else {
-                            am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                            ToneGenerator tg = new ToneGenerator(
-                                    AudioManager.STREAM_NOTIFICATION,
-                                    (int) (ToneGenerator.MAX_VOLUME * 0.85));
-                            if (tg != null) {
-                                tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-                            }
-                        }
-                    }
-                    break;
-
-                case ACTION_IME:
-                    mContext.sendBroadcast(new Intent(
-                            "android.settings.SHOW_INPUT_METHOD_PICKER"));
-                    break;
-
-                case ACTION_SILENT:
-                    am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-                    if (am != null) {
-                        if (am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
-                            am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                        } else {
-                            am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                            ToneGenerator tg = new ToneGenerator(
-                                    AudioManager.STREAM_NOTIFICATION,
-                                    (int) (ToneGenerator.MAX_VOLUME * 0.85));
-                            if (tg != null) {
-                                tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-                            }
-                        }
-                    }
-                    break;
-
-                case ACTION_SILENT_VIB:
-                    am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-                    if (am != null) {
-                        if (am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
-                            am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-                            Vibrator vib = (Vibrator) mContext
-                                    .getSystemService(Context.VIBRATOR_SERVICE);
-                            if (vib != null) {
-                                vib.vibrate(50);
-                            }
-                        } else if (am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
-                            am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                        } else {
-                            am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                            ToneGenerator tg = new ToneGenerator(
-                                    AudioManager.STREAM_NOTIFICATION,
-                                    (int) (ToneGenerator.MAX_VOLUME * 0.85));
-                            if (tg != null) {
-                                tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-                            }
-                        }
-                    }
-                    break;
                 }
+                break;
+
+            case ACTION_APP:
+                try {
+                    Intent intentapp = Intent.parseUri(action, 0);
+                    intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intentapp);
+                } catch (URISyntaxException e) {
+                    Log.e(TAG, "URISyntaxException: [" + action + "]");
+                } catch (ActivityNotFoundException e) {
+                    Log.e(TAG, "ActivityNotFound: [" + action + "]");
+                }
+                break;
+
+            case ACTION_APP_WINDOW:
+                Intent appWindow = new Intent();
+                appWindow.setAction("com.android.systemui.ACTION_SHOW_APP_WINDOW");
+                mContext.sendBroadcast(appWindow);
+                break;
+
+            case ACTION_BLANK:
+                break;
+
+            case ACTION_ARROW_LEFT:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_LEFT, CURSOR_FLAGS);
+                break;
+
+            case ACTION_ARROW_RIGHT:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_RIGHT, CURSOR_FLAGS);
+                break;
+
+            case ACTION_ARROW_UP:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_UP, CURSOR_FLAGS);
+                break;
+
+            case ACTION_ARROW_DOWN:
+                triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_DOWN, CURSOR_FLAGS);
+                break;
+
+            case ACTION_VIB:
+                am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                if (am != null) {
+                    if (am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
+                        am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                        Vibrator vib = (Vibrator) mContext
+                                .getSystemService(Context.VIBRATOR_SERVICE);
+                        if (vib != null) {
+                            vib.vibrate(50);
+                        }
+                    } else {
+                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                        ToneGenerator tg = new ToneGenerator(
+                                AudioManager.STREAM_NOTIFICATION,
+                                (int) (ToneGenerator.MAX_VOLUME * 0.85));
+                        if (tg != null) {
+                            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+                        }
+                    }
+                }
+                break;
+
+            case ACTION_IME:
+                mContext.sendBroadcast(new Intent(
+                        "android.settings.SHOW_INPUT_METHOD_PICKER"));
+                break;
+
+            case ACTION_SILENT:
+                am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                if (am != null) {
+                    if (am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
+                        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                    } else {
+                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                        ToneGenerator tg = new ToneGenerator(
+                                AudioManager.STREAM_NOTIFICATION,
+                                (int) (ToneGenerator.MAX_VOLUME * 0.85));
+                        if (tg != null) {
+                            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+                        }
+                    }
+                }
+                break;
+
+            case ACTION_SILENT_VIB:
+                am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                if (am != null) {
+                    if (am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+                        am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                        Vibrator vib = (Vibrator) mContext
+                                .getSystemService(Context.VIBRATOR_SERVICE);
+                        if (vib != null) {
+                            vib.vibrate(50);
+                        }
+                    } else if (am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+                        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                    } else {
+                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                        ToneGenerator tg = new ToneGenerator(
+                                AudioManager.STREAM_NOTIFICATION,
+                                (int) (ToneGenerator.MAX_VOLUME * 0.85));
+                        if (tg != null) {
+                            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+                        }
+                    }
+                }
+                break;
+        }
         return true;
     }
 
