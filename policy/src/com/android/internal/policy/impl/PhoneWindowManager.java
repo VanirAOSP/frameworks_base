@@ -202,6 +202,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int KEY_ACTION_HOME = 11;
     private static final int KEY_ACTION_BACK = 12;
     private static final int KEY_ACTION_LASTAPP = 13;
+    private static final int KEY_GESTURE_PANEL = 14;
 
     // Masks for checking presence of hardware keys.
     // Must match values in core/res/res/values/config.xml
@@ -1240,6 +1241,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 break;
             case KEY_ACTION_LASTAPP:
                 TaskUtils.toggleLastApp(mContext);
+                break;
+            case KEY_GESTURE_PANEL:
+                mContext.sendBroadcast(new Intent(Intent.TOGGLE_GESTURE_ACTIONS));
                 break;
             case KEY_ACTION_NAVBAR:
                 Settings.System.putInt(mContext.getContentResolver(),
