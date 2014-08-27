@@ -18,9 +18,11 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.android.internal.util.nameless.NamelessUtils;
 import com.android.internal.telephony.PhoneConstants;
 
 public class QSUtils {
+
         public static boolean deviceSupportsImeSwitcher(Context ctx) {
             Resources res = ctx.getResources();
             return res.getBoolean(com.android.internal.R.bool.config_show_cmIMESwitcher);
@@ -97,4 +99,10 @@ public class QSUtils {
             return (sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null
                     && sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null);
         }
+        private int vanirupdate;
+        public boolean deviceSupportsUpdater() {
+            if (NamelessUtils.isPackageInstalled(getActivity(), "com.vanir.updater")) {
+                return vanirupdate != null;
+            }
+        } 
 }
