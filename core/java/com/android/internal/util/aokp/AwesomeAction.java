@@ -296,12 +296,7 @@ public class AwesomeAction {
         im.injectInputEvent(upEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }
 
-    private static Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-            }
-        }
-    };
+    private static Handler mHandler = new Handler();
 
     public static void wtfHelper() {
         wtf = true;
