@@ -356,7 +356,7 @@ public class KeyButtonView extends ImageView {
                             postDelayed(mCheckLongPress, mLongPressTimeout);
                         }
                         if (mHasSingleAction) {
-                            postDelayed(mSingleTap, 150);
+                            postDelayed(mSingleTap, 200);
                         }
                     }
                 }
