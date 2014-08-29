@@ -708,6 +708,13 @@ public class Intent implements Parcelable, Cloneable {
      */
     public static final String EXTRA_SHORTCUT_NAME = "android.intent.extra.shortcut.NAME";
     /**
+     * GesturePanelView: Toggle the panel
+     *  <p>Input: nothing
+     *  <p>Output: nothing
+     *  @hide
+     */
+    public static final String TOGGLE_GESTURE_ACTIONS = "vanir.TOGGLE_GESTURE_PANEL";
+    /**
      * PhoneWindowManager: Take Screenshot via takeScreenshot()
      *  <p>Input: nothing
      *  <p>Output: nothing
