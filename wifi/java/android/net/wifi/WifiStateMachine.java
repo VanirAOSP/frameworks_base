@@ -2379,9 +2379,6 @@ public class WifiStateMachine extends StateMachine {
 
     void handlePreDhcpSetup() {
         mDhcpActive = true;
-            // Disable the coexistence mode
-            mWifiNative.setBluetoothCoexistenceMode(
-                    mWifiNative.BLUETOOTH_COEXISTENCE_MODE_DISABLED);
 
         /* Disable power save and suspend optimizations during DHCP */
         // Note: The order here is important for now. Brcm driver changes
@@ -2389,6 +2386,10 @@ public class WifiStateMachine extends StateMachine {
         // TODO: Remove this comment when the driver is fixed.
         setSuspendOptimizationsNative(SUSPEND_DUE_TO_DHCP, false);
         mWifiNative.setPowerSave(false);
+
+        // Disable the coexistence mode
+        mWifiNative.setBluetoothCoexistenceMode(
+                    mWifiNative.BLUETOOTH_COEXISTENCE_MODE_DISABLED);
 
         stopBatchedScan();
 
@@ -2421,15 +2422,15 @@ public class WifiStateMachine extends StateMachine {
     }
 
     void handlePostDhcpSetup() {
-        /* Restore power save and suspend optimizations */
-        setSuspendOptimizationsNative(SUSPEND_DUE_TO_DHCP, true);
-        mWifiNative.setPowerSave(true);
-
         mWifiP2pChannel.sendMessage(WifiP2pService.BLOCK_DISCOVERY, WifiP2pService.DISABLED);
 
         // Set the coexistence mode back to its default value
         mWifiNative.setBluetoothCoexistenceMode(
                 mWifiNative.BLUETOOTH_COEXISTENCE_MODE_SENSE);
+
+        /* Restore power save and suspend optimizations */
+        setSuspendOptimizationsNative(SUSPEND_DUE_TO_DHCP, true);
+        mWifiNative.setPowerSave(true);
 
         mDhcpActive = false;
 
