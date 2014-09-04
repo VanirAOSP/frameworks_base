@@ -64,6 +64,10 @@ else
   LOCAL_LDLIBS += -lz
 endif
 
+ifeq ($(SHOW_MANIFEST_WARNING),true)
+LOCAL_CPPFLAGS += -DSHOW_MANIFEST_WARNING
+endif
+
 LOCAL_MODULE := aapt
 
 include $(BUILD_HOST_EXECUTABLE)
@@ -96,6 +100,10 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_STATIC_LIBRARIES := \
         libstlport_static \
         libexpat_static
+
+ifeq ($(SHOW_MANIFEST_WARNING),true)
+LOCAL_CPPFLAGS += -DSHOW_MANIFEST_WARNING
+endif
 
 include $(BUILD_EXECUTABLE)
 endif
