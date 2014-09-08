@@ -49,7 +49,9 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
         mLeftSide = mView.findViewById(R.id.notification_icon_area);
         mStatusIcons = mView.findViewById(R.id.statusIcons);
         if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
-            mSignalCluster = mView.findViewById(R.id.msim_signal_cluster);
+        	if (mSignalCluster != null) {
+                mSignalCluster = mView.findViewById(R.id.msim_signal_cluster);
+            }
         } else {
             mSignalCluster = mView.findViewById(R.id.signal_cluster);
         }
