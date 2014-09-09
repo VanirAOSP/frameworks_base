@@ -40,6 +40,7 @@
   <string name="reboot_bootmenu">บูตเมนู</string>
   <string name="reboot_fastboot">Fastboot</string>
   <string name="reboot_download">ดาวน์โหลด</string>
+  <string name="reboot_soft">เริ่มเฟรมเวิร์กใหม่</string>
   <string name="reboot_progress">กำลังเริ่มระบบใหม่\u2026</string>
   <string name="reboot_confirm" product="tablet">แท็บเล็ตของคุณจะเริ่มระบบใหม่</string>
   <string name="reboot_confirm" product="default">โทรศัพท์ของคุณ จะเริ่มระบบใหม่</string>
@@ -125,4 +126,5 @@
   <string name="adb_net_active_notification_title">ADB บนเครือข่ายถูกเปิดใช้งาน</string>
   <string name="adb_both_active_notification_title">ADB บน USB และ &amp; เครือข่ายถูกเปิดใช้งาน</string>
   <string name="adb_active_generic_notification_message">แตะเพื่อปิดใช้งานการแก้ไขข้อบกพร่อง</string>
+  <string name="usb_storage_notification_manage_message">แตะเพื่อจัดการ</string>
 </resources>
