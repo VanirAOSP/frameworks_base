@@ -32,6 +32,22 @@
     android:fitsSystemWindows="true"
     >
 
+    <LinearLayout
+        android:id="@+id/center_clock_layout"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent">
+        <com.android.systemui.statusbar.policy.Clock
+            android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+            android:gravity="center"
+            android:id="@+id/center_clock"
+            android:tag="center"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:singleLine="true" />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/notification_lights_out"
         android:layout_width="@dimen/status_bar_icon_size"
@@ -50,6 +66,23 @@
         android:paddingEnd="6dip"
         android:orientation="horizontal"
         >
+
+        <LinearLayout
+            android:id="@+id/left_clock_layout"
+            android:gravity="left"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" >
+            <com.android.systemui.statusbar.policy.Clock
+                android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+                android:gravity="center"
+                android:id="@+id/left_clock"
+                android:tag="left"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:singleLine="true"
+                android:paddingEnd="6dip" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/notification_icon_area"
