@@ -97,7 +97,7 @@ public class RecentController implements RecentsComponent, RecentPanelView.OnExi
     private ViewGroup mRecentContainer;
     private LinearLayout mRecentContent;
     private LinearLayout mRecentWarningContent;
-    private ImageView mEmptyRecentView;
+    private View mEmptyRecentView;
 
     private int mLayoutDirection;
     private int mMainGravity;
@@ -163,8 +163,7 @@ public class RecentController implements RecentsComponent, RecentPanelView.OnExi
         final CardListView cardListView =
                 (CardListView) mRecentContainer.findViewById(R.id.recent_list);
 
-        mEmptyRecentView =
-                (ImageView) mRecentContainer.findViewById(R.id.empty_recent);
+        mEmptyRecentView = mRecentContainer.findViewById(R.id.empty_recent);
 
         // Prepare gesture detector.
         final ScaleGestureDetector recentListGestureDetector =

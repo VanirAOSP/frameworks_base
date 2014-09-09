@@ -94,7 +94,7 @@ public class RecentPanelView {
 
     private final Context mContext;
     private final CardListView mListView;
-    private final ImageView mEmptyRecentView;
+    private final View mEmptyRecentView;
 
     private final RecentController mController;
 
@@ -140,7 +140,7 @@ public class RecentPanelView {
     }
 
     public RecentPanelView(Context context, RecentController controller,
-            CardListView listView, ImageView emptyRecentView) {
+            CardListView listView, View emptyRecentView) {
         mContext = context;
         mListView = listView;
         mEmptyRecentView = emptyRecentView;
