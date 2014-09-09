@@ -38,8 +38,10 @@ public class Reboot extends Activity {
   @Override
   public void onResume() {
     super.onResume();
-    Intent intent = new Intent(Intent.ACTION_REBOOTMENU);
-    sendBroadcast(intent);
-    this.finish();
+    synchronized(this) {
+        Intent intent = new Intent(Intent.ACTION_REBOOTMENU);
+        sendBroadcast(intent);
+        this.finish();
+    }
   }
 }
