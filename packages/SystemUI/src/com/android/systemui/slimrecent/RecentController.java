@@ -251,19 +251,27 @@ public class RecentController implements RecentsComponent, RecentPanelView.OnExi
         // Reset all backgrounds.
         mRecentContent.setBackgroundResource(0);
         mRecentWarningContent.setBackgroundResource(0);
-        mEmptyRecentView.setImageResource(0);
+        ImageView iv = null;
+        try {
+            iv = (ImageView) mEmptyRecentView;
+        } catch(Exception ex) {
+        }
+        if (iv != null)
+            iv.setImageResource(0);
 
         // Set correct backgrounds based on calculated main gravity.
         if (mMainGravity == Gravity.LEFT) {
             mRecentContent.setBackgroundResource(R.drawable.recent_bg_dropshadow_left);
             mRecentWarningContent.setBackgroundResource(
                     R.drawable.recent_warning_bg_dropshadow_left);
-            mEmptyRecentView.setImageResource(R.drawable.ic_empty_recent_left);
+            if (iv != null)
+                iv.setImageResource(R.drawable.ic_empty_recent_left);
         } else {
             mRecentContent.setBackgroundResource(R.drawable.recent_bg_dropshadow);
             mRecentWarningContent.setBackgroundResource(
                     R.drawable.recent_warning_bg_dropshadow);
-            mEmptyRecentView.setImageResource(R.drawable.ic_empty_recent);
+            if (iv != null)
+                iv.setImageResource(R.drawable.ic_empty_recent);
         }
         // Notify panel view about new main gravity.
         if (mRecentPanelView != null) {
