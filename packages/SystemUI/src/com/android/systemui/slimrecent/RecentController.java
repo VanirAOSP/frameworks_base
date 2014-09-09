@@ -251,6 +251,8 @@ public class RecentController implements RecentsComponent, RecentPanelView.OnExi
         // Reset all backgrounds.
         mRecentContent.setBackgroundResource(0);
         mRecentWarningContent.setBackgroundResource(0);
+
+        mEmptyRecentView.setVisibility(View.GONE);
         ImageView iv = null;
         try {
             iv = (ImageView) mEmptyRecentView;
@@ -264,12 +266,14 @@ public class RecentController implements RecentsComponent, RecentPanelView.OnExi
             mRecentContent.setBackgroundResource(R.drawable.recent_bg_dropshadow_left);
             mRecentWarningContent.setBackgroundResource(
                     R.drawable.recent_warning_bg_dropshadow_left);
+            mEmptyRecentView.setVisibility(View.VISIBLE);
             if (iv != null)
                 iv.setImageResource(R.drawable.ic_empty_recent_left);
         } else {
             mRecentContent.setBackgroundResource(R.drawable.recent_bg_dropshadow);
             mRecentWarningContent.setBackgroundResource(
                     R.drawable.recent_warning_bg_dropshadow);
+            mEmptyRecentView.setVisibility(View.VISIBLE);
             if (iv != null)
                 iv.setImageResource(R.drawable.ic_empty_recent);
         }
