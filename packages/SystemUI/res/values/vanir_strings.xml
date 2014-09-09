@@ -23,7 +23,7 @@
     <string name="action_screenshot">Screenshot</string>
     <string name="action_screenrecord">Screenrecord</string>
     <string name="toggle_active_notifications">Active notifications</string>
-    <string name="toggle_torch">Torch</string>
+    <string name="action_power">Screen off</string>
     <string name="toggle_flushmemory">Free memory</string>
     <string name="toggle_immersive">Immersive mode</string>
     <string name="toggle_ring_vib">Ring/Vib - toggle</string>

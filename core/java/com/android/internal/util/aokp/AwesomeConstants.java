@@ -41,31 +41,34 @@ public class AwesomeConstants {
      * should be added prior to **null**
      */
     public static enum AwesomeConstant {
-        ACTION_HOME          { @Override public String value() { return "**home**";}},
+        // Assignable actions
         ACTION_BACK          { @Override public String value() { return "**back**";}},
-        ACTION_MENU          { @Override public String value() { return "**menu**";}},
+        ACTION_APP           { @Override public String value() { return "**app**";}},
+        ACTION_BLANK         { @Override public String value() { return "**blank**";}},
+        GESTURE_ACTIONS      { @Override public String value() { return "**gesture_actions**";}},
+        ACTION_HOME          { @Override public String value() { return "**home**";}},
         ACTION_SEARCH        { @Override public String value() { return "**search**";}},
+        ACTION_KILL          { @Override public String value() { return "**kill**";}},
+        ACTION_LAST_APP      { @Override public String value() { return "**lastapp**";}},
+        ACTION_MENU          { @Override public String value() { return "**menu**";}},
+        ACTION_NOTIFICATIONS { @Override public String value() { return "**notifications**";}},
+        ACTION_IME           { @Override public String value() { return "**ime**";}},
         ACTION_RECENTS       { @Override public String value() { return "**recents**";}},
         ACTION_ASSIST        { @Override public String value() { return "**assist**";}},
+        ACTION_SILENT        { @Override public String value() { return "**ring_silent**";}},
+        ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
+        ACTION_TORCH         { @Override public String value() { return "**torch**";}},
+        ACTION_VIB           { @Override public String value() { return "**ring_vib**";}},
+        ACTION_VOICEASSIST   { @Override public String value() { return "**voiceassist**";}},
+        // Disabled or not assignable actions
         ACTION_POWER         { @Override public String value() { return "**power**";}},
         ACTION_WIDGETS       { @Override public String value() { return "**widgets**";}},
         ACTION_APP_WINDOW    { @Override public String value() { return "**app_window**";}},
-        ACTION_NOTIFICATIONS { @Override public String value() { return "**notifications**";}},
-        ACTION_VOICEASSIST   { @Override public String value() { return "**voiceassist**";}},
-        ACTION_LAST_APP      { @Override public String value() { return "**lastapp**";}},
-        ACTION_IME           { @Override public String value() { return "**ime**";}},
-        ACTION_KILL          { @Override public String value() { return "**kill**";}},
-        ACTION_BLANK         { @Override public String value() { return "**blank**";}},
-        ACTION_SILENT        { @Override public String value() { return "**ring_silent**";}},
-        ACTION_VIB           { @Override public String value() { return "**ring_vib**";}},
-        ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
         ACTION_NULL          { @Override public String value() { return "**null**";}},
-        ACTION_APP           { @Override public String value() { return "**app**";}},
         ACTION_ARROW_LEFT    { @Override public String value() { return "**arrow_left**";}},
         ACTION_ARROW_RIGHT   { @Override public String value() { return "**arrow_right**";}},
         ACTION_ARROW_UP      { @Override public String value() { return "**arrow_up**";}},
-        ACTION_ARROW_DOWN    { @Override public String value() { return "**arrow_down**";}},
-        GESTURE_ACTIONS      { @Override public String value() { return "**gesture_actions**";}};
+        ACTION_ARROW_DOWN    { @Override public String value() { return "**arrow_down**";}};
         public String value() { return this.value(); }
     }
 
@@ -154,14 +157,8 @@ public class AwesomeConstants {
             case ACTION_LAST_APP:
                 value = res.getString(com.android.internal.R.string.action_lastapp);
                 break;
-            case ACTION_POWER:
-                value = res.getString(com.android.internal.R.string.action_power);
-                break;
-            case ACTION_WIDGETS:
-                value = res.getString(com.android.internal.R.string.action_widgets);
-                break;
-            case ACTION_APP_WINDOW:
-                value = res.getString(com.android.internal.R.string.action_app_window);
+            case ACTION_TORCH:
+                value = res.getString(com.android.internal.R.string.action_torch);
                 break;
             case ACTION_NOTIFICATIONS:
                 value = res.getString(com.android.internal.R.string.action_notifications);
@@ -187,22 +184,16 @@ public class AwesomeConstants {
             case ACTION_APP:
                 value = res.getString(com.android.internal.R.string.action_app);
                 break;
-            case ACTION_ARROW_LEFT:
-                value = res.getString(com.android.internal.R.string.action_arrow_left);
-                break;
-            case ACTION_ARROW_RIGHT:
-                value = res.getString(com.android.internal.R.string.action_arrow_right);
-                break;
-            case ACTION_ARROW_UP:
-                value = res.getString(com.android.internal.R.string.action_arrow_up);
-                break;
-            case ACTION_ARROW_DOWN:
-                value = res.getString(com.android.internal.R.string.action_arrow_down);
-                break;
             case GESTURE_ACTIONS:
                 value = res.getString(com.android.internal.R.string.gesture_actions);
                 break;
-            case ACTION_NULL:
+/*          case ACTION_WIDGETS:
+                value = res.getString(com.android.internal.R.string.action_widgets);
+                break;
+            case ACTION_APP_WINDOW:
+                value = res.getString(com.android.internal.R.string.action_app_window);
+                break;
+*/          case ACTION_NULL:
             default:
                 value = res.getString(com.android.internal.R.string.action_null);
                 break;
@@ -240,14 +231,8 @@ public class AwesomeConstants {
             case ACTION_LAST_APP:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_lastapp");
                 break;
-            case ACTION_POWER:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_power");
-                break;
-            case ACTION_WIDGETS:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_widget");
-                break;
-            case ACTION_APP_WINDOW:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_widget");
+            case ACTION_TORCH:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_torch");
                 break;
             case ACTION_NOTIFICATIONS:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_notifications");
@@ -287,7 +272,13 @@ public class AwesomeConstants {
                 break;
             case ACTION_APP: // APP doesn't really have an icon - it should look up
                         //the package icon - we'll return the 'null' on just in case
-            case ACTION_NULL:
+/*          case ACTION_WIDGETS:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_widget");
+                break;
+            case ACTION_APP_WINDOW:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_widget");
+                break;
+*/          case ACTION_NULL:
             default:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_null");
                 break;

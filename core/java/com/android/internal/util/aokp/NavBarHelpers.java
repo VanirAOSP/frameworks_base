@@ -18,6 +18,7 @@ package com.android.internal.util.aokp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -27,6 +28,7 @@ import android.text.TextUtils;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import com.android.internal.util.cm.QSUtils;
 import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 
 public class NavBarHelpers {
@@ -38,6 +40,7 @@ public class NavBarHelpers {
             AwesomeConstant.ACTION_VIB,
             AwesomeConstant.ACTION_SILENT_VIB,
             AwesomeConstant.ACTION_NULL,
+            AwesomeConstant.ACTION_POWER,
             AwesomeConstant.ACTION_ARROW_LEFT,
             AwesomeConstant.ACTION_ARROW_RIGHT,
             AwesomeConstant.ACTION_ARROW_UP,
@@ -73,7 +76,7 @@ public class NavBarHelpers {
         return actionIcon;
     }
 
-    public static String[] getNavBarActions() {
+    public static String[] getNavBarActions(Context context) {
         boolean itemFound;
         String[] mActions;
         ArrayList<String> mActionList = new ArrayList<String>();
@@ -89,6 +92,9 @@ public class NavBarHelpers {
             }
             if (!itemFound) {
                 mActionList.add(mActionStart[i]);
+            }
+            if (!context.getResources().getBoolean(com.android.internal.R.bool.config_enableTorch)) {
+                mActionList.remove(AwesomeConstants.AwesomeConstant.ACTION_TORCH.value());
             }
         }
         int actionSize = mActionList.size();

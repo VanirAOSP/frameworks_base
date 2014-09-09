@@ -47,6 +47,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.android.internal.util.cm.QSUtils;
 import static com.android.internal.util.aokp.AwesomeConstants.*;
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.TargetDrawable;
@@ -62,10 +63,11 @@ public class NavRingHelpers {
     // Available Actions
     private static final AwesomeConstant[] EXCLUDED_FROM_NAVRING = {
             // these can be removed as the features are added back
-            AwesomeConstant.ACTION_WIDGETS,
-            AwesomeConstant.ACTION_APP_WINDOW,
             AwesomeConstant.ACTION_BLANK,
             AwesomeConstant.ACTION_NULL,
+            AwesomeConstant.ACTION_POWER,
+            AwesomeConstant.ACTION_WIDGETS,
+            AwesomeConstant.ACTION_APP_WINDOW,
             AwesomeConstant.ACTION_ARROW_LEFT,
             AwesomeConstant.ACTION_ARROW_RIGHT,
             AwesomeConstant.ACTION_ARROW_UP,
@@ -75,7 +77,7 @@ public class NavRingHelpers {
     private NavRingHelpers() {
     }
 
-    public static String[] getNavRingActions() {
+    public static String[] getNavRingActions(Context context) {
         boolean itemFound;
         String[] mActions;
         ArrayList<String> mActionList = new ArrayList<String>();
@@ -91,6 +93,9 @@ public class NavRingHelpers {
             }
             if (!itemFound) {
                 mActionList.add(mActionStart[i]);
+            }
+            if (!context.getResources().getBoolean(com.android.internal.R.bool.config_enableTorch)) {
+                mActionList.remove(AwesomeConstants.AwesomeConstant.ACTION_TORCH.value());
             }
         }
         int actionSize = mActionList.size();
