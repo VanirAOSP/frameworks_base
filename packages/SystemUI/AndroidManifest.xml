@@ -362,15 +362,14 @@
                 <category android:name="com.android.systemui.SHORTCUT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.android.systemui.vanir.Torch"
-            android:label="@string/toggle_torch"
-            android:icon="@drawable/ic_sysbar_torch"
+                <activity
+            android:name="com.android.systemui.vanir.ScreenOff"
+            android:label="@string/action_power"
+            android:icon="@drawable/ic_sysbar_power"
             android:theme="@android:style/Theme.Holo.Panel"
             android:excludeFromRecents="true"
             android:launchMode="singleTop" >
             <intent-filter>
-                <action android:name="com.android.systemui.INTENT_TORCH_TOGGLE" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.android.systemui.SHORTCUT" />
             </intent-filter>

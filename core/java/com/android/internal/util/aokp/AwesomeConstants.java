@@ -44,28 +44,30 @@ public class AwesomeConstants {
         ACTION_HOME          { @Override public String value() { return "**home**";}},
         ACTION_BACK          { @Override public String value() { return "**back**";}},
         ACTION_MENU          { @Override public String value() { return "**menu**";}},
-        ACTION_SEARCH        { @Override public String value() { return "**search**";}},
         ACTION_RECENTS       { @Override public String value() { return "**recents**";}},
-        ACTION_ASSIST        { @Override public String value() { return "**assist**";}},
-        ACTION_POWER         { @Override public String value() { return "**power**";}},
-        ACTION_WIDGETS       { @Override public String value() { return "**widgets**";}},
-        ACTION_APP_WINDOW    { @Override public String value() { return "**app_window**";}},
-        ACTION_NOTIFICATIONS { @Override public String value() { return "**notifications**";}},
-        ACTION_VOICEASSIST   { @Override public String value() { return "**voiceassist**";}},
         ACTION_LAST_APP      { @Override public String value() { return "**lastapp**";}},
+        ACTION_NOTIFICATIONS { @Override public String value() { return "**notifications**";}},
+        GESTURE_ACTIONS      { @Override public String value() { return "**gesture_actions**";}},
+        ACTION_SEARCH        { @Override public String value() { return "**search**";}},
+        ACTION_ASSIST        { @Override public String value() { return "**assist**";}},
+        ACTION_VOICEASSIST   { @Override public String value() { return "**voiceassist**";}},
+        ACTION_POWER         { @Override public String value() { return "**power**";}},
+        ACTION_TORCH         { @Override public String value() { return "**torch**";}},
         ACTION_IME           { @Override public String value() { return "**ime**";}},
         ACTION_KILL          { @Override public String value() { return "**kill**";}},
-        ACTION_BLANK         { @Override public String value() { return "**blank**";}},
         ACTION_SILENT        { @Override public String value() { return "**ring_silent**";}},
         ACTION_VIB           { @Override public String value() { return "**ring_vib**";}},
         ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
-        ACTION_NULL          { @Override public String value() { return "**null**";}},
         ACTION_APP           { @Override public String value() { return "**app**";}},
+        ACTION_BLANK         { @Override public String value() { return "**blank**";}},
+        // Not available or implemented for navbar/navring use
+        ACTION_WIDGETS       { @Override public String value() { return "**widgets**";}},
+        ACTION_APP_WINDOW    { @Override public String value() { return "**app_window**";}},
+        ACTION_NULL          { @Override public String value() { return "**null**";}},
         ACTION_ARROW_LEFT    { @Override public String value() { return "**arrow_left**";}},
         ACTION_ARROW_RIGHT   { @Override public String value() { return "**arrow_right**";}},
         ACTION_ARROW_UP      { @Override public String value() { return "**arrow_up**";}},
-        ACTION_ARROW_DOWN    { @Override public String value() { return "**arrow_down**";}},
-        GESTURE_ACTIONS      { @Override public String value() { return "**gesture_actions**";}};
+        ACTION_ARROW_DOWN    { @Override public String value() { return "**arrow_down**";}};
         public String value() { return this.value(); }
     }
 
@@ -153,6 +155,9 @@ public class AwesomeConstants {
                 break;
             case ACTION_LAST_APP:
                 value = res.getString(com.android.internal.R.string.action_lastapp);
+                break;
+            case ACTION_TORCH:
+                value = res.getString(com.android.internal.R.string.action_torch);
                 break;
             case ACTION_POWER:
                 value = res.getString(com.android.internal.R.string.action_power);
@@ -242,6 +247,9 @@ public class AwesomeConstants {
                 break;
             case ACTION_POWER:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_power");
+                break;
+            case ACTION_TORCH:
+                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_torch");
                 break;
             case ACTION_WIDGETS:
                 value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_widget");

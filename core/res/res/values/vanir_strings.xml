@@ -48,13 +48,13 @@
     <string name="action_home">Home</string>
     <string name="action_back">Back</string>
     <string name="action_recents">Recents</string>
-    <string name="action_search">Search</string>
+    <string name="action_search">In-app search</string>
     <string name="action_screenshot">Screenshot</string>
     <string name="action_menu">Menu</string>
     <string name="action_ime">Open IME Switcher</string>
     <string name="action_kill">Kill task</string>
     <string name="action_lastapp">Last app</string>
-    <string name="action_power">Power</string>
+    <string name="action_power">Screen off</string>
     <string name="action_blank">Empty spacer</string>
     <string name="action_notifications">Notifications</string>
     <string name="action_assist">Search (Google Now)</string>
