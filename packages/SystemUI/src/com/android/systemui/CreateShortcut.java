@@ -56,10 +56,10 @@ public class CreateShortcut extends LauncherActivity {
     private int getProperShortcutIcon(String className) {
         String c = className.substring(className.lastIndexOf(".") + 1);
 
-        if (c.equals("Torch")) {
-            return R.drawable.ic_sysbar_torch;
-        } else if (c.equals ("ScreenShotAction")) {
+        if (c.equals ("ScreenShotAction")) {
             return R.drawable.ic_sysbar_screenshot;
+        } else if (c.equals ("ScreenOff")) {
+            return R.drawable.ic_sysbar_power;
         } else if (c.equals ("FlushMemory")) {
             return R.drawable.vanir_flush_memory;
         } else if (c.equals ("Reboot")) {
