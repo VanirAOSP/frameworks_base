@@ -19,10 +19,15 @@
 package com.android.internal.util.vanir;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+
+import java.net.URISyntaxException;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -130,6 +135,15 @@ public class AwesomeConstants {
 
         //returns the drawable for this specific AwesomeConstant
         public Drawable getDrawable(Context context) {
+            if (this == ACTION_APP) {
+                try {
+                    return context.getPackageManager().getActivityIcon(Intent.parseUri(mAction, 0));
+                } catch (NameNotFoundException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
             final Resources res = getMyPackageResources(context);
             Drawable dr = null;
             if (res != null)
@@ -163,7 +177,35 @@ public class AwesomeConstants {
         }
 
         //resource lookup... yadayada
-        public String getProperName(Context context) { return context.getResources().getString(mStringId); }
+        public String getProperName(Context context) {
+            if (this != ACTION_APP)
+                return context.getResources().getString(mStringId);
+            try {
+                Intent intent = Intent.parseUri(mAction, 0);
+                if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+                    final PackageManager pm = context.getPackageManager();
+                    ActivityInfo ai = intent.resolveActivityInfo(pm, PackageManager.GET_ACTIVITIES);
+                    String friendlyName = null;
+
+                    if (ai != null) {
+                        friendlyName = ai.loadLabel(pm).toString();
+                        if (friendlyName == null) {
+                            friendlyName = ai.name;
+                        }
+                    }
+
+                    String activityName = (friendlyName != null) ? friendlyName : intent.toUri(0);
+                    String name = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
+
+                    if (activityName != null && name != null) {
+                        return activityName + ": " + name;
+                    }
+                    return name != null ? name : intent.toUri(0);
+                }
+            } catch (URISyntaxException e) {
+            }
+            return ACTION_NULL.getProperName(context);
+        }
 
         public int getStringId() { return mStringId; }
 

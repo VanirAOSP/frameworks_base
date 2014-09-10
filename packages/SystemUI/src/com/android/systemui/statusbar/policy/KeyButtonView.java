@@ -44,6 +44,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.vanir.AwesomeAction;
 import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
 import com.android.internal.util.vanir.NavBarHelpers;
+import com.android.internal.util.vanir.NavHelpersBase;
 import com.android.systemui.R;
 
 import java.io.File;
@@ -133,9 +134,9 @@ public class KeyButtonView extends ImageView {
 
     public void setButtonActions(AwesomeButtonInfo abi) {
 
-        singleAction = AwesomeConstant.fromAction(abi.singleTap);
-        doubleTapAction = AwesomeConstant.fromAction(abi.doubleTap);
-        longPressAction = AwesomeConstant.fromAction(abi.longPress);
+        singleAction = AwesomeConstant.fromAction(abi.singleAction);
+        doubleTapAction = AwesomeConstant.fromAction(abi.doubleTapAction);
+        longPressAction = AwesomeConstant.fromAction(abi.longPressAction);
 
         if (singleAction == AwesomeConstant.ACTION_NULL) {
             singleAction = null;
@@ -156,16 +157,13 @@ public class KeyButtonView extends ImageView {
 
         setImage();
 
-        longPressAction == ACTION_RECENTS = (longPressAction == ACTION_RECENTS);
-        doubleTapAction == ACTION_RECENTS = (doubleTapAction == ACTION_RECENTS);
-
         if (singleAction == AwesomeConstant.ACTION_RECENTS || 
                 longPressAction == AwesomeConstant.ACTION_RECENTS ||
                 doubleTapAction == AwesomeConstant.ACTION_RECENTS) {
             getStatusBarInstance();
         }
 
-        setLongClickable();
+        setLongClickable(doubleTapAction != null);
         Log.e(TAG, "Adding a navbar button in landscape or portrait");
     }
 
@@ -184,7 +182,7 @@ public class KeyButtonView extends ImageView {
                 setImageDrawable(new BitmapDrawable(res, f.getAbsolutePath()));
             }
         } else if (singleAction != null) {
-            setImageDrawable(NavBarHelpers.getIconImage(mContext, singleAction));
+            setImageDrawable(NavHelpersBase.getIconImage(mContext, singleAction));
         } else {
             setImageResource(R.drawable.ic_sysbar_null);
         }
@@ -320,7 +318,7 @@ public class KeyButtonView extends ImageView {
     }
 
     public boolean onTouchEvent(MotionEvent ev) {
-        if (singleAction == ACTION_BLANK) return true;
+        if (singleAction == AwesomeConstant.ACTION_BLANK) return true;
 
         final int action = ev.getAction();
         int x, y;
@@ -332,12 +330,12 @@ public class KeyButtonView extends ImageView {
                 doubleTapAction == AwesomeConstant.ACTION_RECENTS) && mRecentsPreloaded == false) preloadRecentApps();
                 mDownTime = SystemClock.uptimeMillis();
                 setPressed(true);
-                if (msingleAction != null) {
+                if (mSingleTap != null) {
                     removeCallbacks(mSingleTap);
-                    if ((singleAction == ACTION_ARROW_LEFT
-                || singleAction == ACTION_ARROW_RIGHT
-                || singleAction == ACTION_ARROW_UP
-                || singleAction == ACTION_ARROW_DOWN)) {
+                if ((singleAction == AwesomeConstant.ACTION_ARROW_LEFT
+                || singleAction == AwesomeConstant.ACTION_ARROW_RIGHT
+                || singleAction == AwesomeConstant.ACTION_ARROW_UP
+                || singleAction == AwesomeConstant.ACTION_ARROW_DOWN)) {
                         mShouldClick = true;
                         removeCallbacks(mDPadKeyRepeater);
                     }
@@ -346,20 +344,18 @@ public class KeyButtonView extends ImageView {
                 long diff = mDownTime - mUpTime; // difference between last up and now
                 if (doubleTapAction != null && diff <= 200) {
                     doDoubleTap();
+                } else if ((singleAction == AwesomeConstant.ACTION_ARROW_LEFT
+                            || singleAction == AwesomeConstant.ACTION_ARROW_RIGHT
+                            || singleAction == AwesomeConstant.ACTION_ARROW_UP
+                            || singleAction == AwesomeConstant.ACTION_ARROW_DOWN)) {
+                    postDelayed(mDPadKeyRepeater, DPAD_TIMEOUT_INTERVAL);
                 } else {
-                    if ((singleAction == ACTION_ARROW_LEFT
-                || singleAction == ACTION_ARROW_RIGHT
-                || singleAction == ACTION_ARROW_UP
-                || singleAction == ACTION_ARROW_DOWN)) {
-                        postDelayed(mDPadKeyRepeater, DPAD_TIMEOUT_INTERVAL);
-                    } else {
-                        if (mlongPressAction != null) {
-                            removeCallbacks(mCheckLongPress);
-                            postDelayed(mCheckLongPress, mLongPressTimeout);
-                        }
-                        if (msingleAction != null) {
-                            postDelayed(mSingleTap, 200);
-                        }
+                    if (mCheckLongPress != null) {
+                        removeCallbacks(mCheckLongPress);
+                        postDelayed(mCheckLongPress, mLongPressTimeout);
+                    }
+                    if (mSingleTap != null) {
+                        postDelayed(mSingleTap, 200);
                     }
                 }
                 break;
@@ -373,17 +369,17 @@ public class KeyButtonView extends ImageView {
                 break;
             case MotionEvent.ACTION_CANCEL:
                 setPressed(false);
-                if ((singleAction == ACTION_ARROW_LEFT
-                || singleAction == ACTION_ARROW_RIGHT
-                || singleAction == ACTION_ARROW_UP
-                || singleAction == ACTION_ARROW_DOWN)) {
+                if ((singleAction == AwesomeConstant.ACTION_ARROW_LEFT
+                || singleAction == AwesomeConstant.ACTION_ARROW_RIGHT
+                || singleAction == AwesomeConstant.ACTION_ARROW_UP
+                || singleAction == AwesomeConstant.ACTION_ARROW_DOWN)) {
                     mShouldClick = true;
                     removeCallbacks(mDPadKeyRepeater);
                 }
-                if (msingleAction != null) {
+                if (mSingleTap != null) {
                     removeCallbacks(mSingleTap);
                 }
-                if (mlongPressAction != null) {
+                if (mCheckLongPress != null) {
                     removeCallbacks(mCheckLongPress);
                 }
                 if (mRecentsPreloaded == true) cancelPreloadRecentApps();
@@ -392,15 +388,15 @@ public class KeyButtonView extends ImageView {
                 mUpTime = SystemClock.uptimeMillis();
                 boolean playSound;
 
-                if ((singleAction == ACTION_ARROW_LEFT
-                || singleAction == ACTION_ARROW_RIGHT
-                || singleAction == ACTION_ARROW_UP
-                || singleAction == ACTION_ARROW_DOWN)) {
+                if ((singleAction == AwesomeConstant.ACTION_ARROW_LEFT
+                || singleAction == AwesomeConstant.ACTION_ARROW_RIGHT
+                || singleAction == AwesomeConstant.ACTION_ARROW_UP
+                || singleAction == AwesomeConstant.ACTION_ARROW_DOWN)) {
                     playSound = mShouldClick;
                     mShouldClick = true;
                     removeCallbacks(mDPadKeyRepeater);
                 } else {
-                    if (mlongPressAction != null) {
+                    if (mCheckLongPress != null) {
                         removeCallbacks(mCheckLongPress);
                     }
                     playSound = isPressed();
@@ -411,7 +407,7 @@ public class KeyButtonView extends ImageView {
                     playSoundEffect(SoundEffectConstants.CLICK);
                 }
 
-                if (!doubleTapAction != null && !mlongPressAction != null) {
+                if (doubleTapAction == null && longPressAction == null) {
                     removeCallbacks(mSingleTap);
                     doSinglePress();
                 }
@@ -424,7 +420,7 @@ public class KeyButtonView extends ImageView {
         if (callOnClick()) {
             // cool
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
-        } else if (mIsRecentsSingleAction) {
+        } else if (singleAction == AwesomeConstant.ACTION_RECENTS) {
             try {
                 mBarService.toggleRecentApps();
                 sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
@@ -444,7 +440,7 @@ public class KeyButtonView extends ImageView {
     private void doDoubleTap() {
         if (doubleTapAction != null) {
             removeCallbacks(mSingleTap);
-            if (doubleTapAction == ActionConstant.ACTION_RECENTS) {
+            if (doubleTapAction == AwesomeConstant.ACTION_RECENTS) {
                 try {
                     mBarService.toggleRecentApps();
                     mRecentsPreloaded = false;
@@ -460,7 +456,7 @@ public class KeyButtonView extends ImageView {
     private void doLongPress() {
         if (longPressAction != null) {
             removeCallbacks(mSingleTap);
-            if (longPressAction == ACTION_RECENTS) {
+            if (longPressAction == AwesomeConstant.ACTION_RECENTS) {
                 try {
                     mBarService.toggleRecentApps();
                     performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -524,7 +520,7 @@ public class KeyButtonView extends ImageView {
         }
     };
 
-    public class AwesomeButtonInfo {
+    public static class AwesomeButtonInfo {
         String singleAction, doubleTapAction, longPressAction;
         String iconUri;
 
@@ -534,5 +530,9 @@ public class KeyButtonView extends ImageView {
             this.longPressAction = longPress;
             this.iconUri = iconUri;
         }
+    }
+
+    public boolean hasSingleAction() {
+        return singleAction != null;
     }
 }
