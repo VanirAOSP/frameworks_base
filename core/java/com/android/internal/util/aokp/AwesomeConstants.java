@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// The wordwrapping in here is girthy because SO ARE WE. -Nuke
+
 package com.android.internal.util.aokp;
 
 import android.content.Context;
@@ -22,7 +24,178 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
 public class AwesomeConstants {
+
+    //not presently utilized, but gives the gist of AwesomeConstants' methods without scrolling down (YAY)
+    public interface AwesomeGuts {
+        String value();                            //returns the magic **something** string that is concatted in bar+ring settings
+
+        int getStringId();                         //returns the resource id of this awesomeconstant's user-facing name
+        String getProperName(Context mContext);          //getStrings ^
+
+        Resources getMyPackageResources(Context context); //gets a Resources where the drawable can be found (i.e. from mDrawablePackage)
+        int getDrawableId(Context context);             //gets the identifier from ^
+        Drawable getDrawable(Context mContext);         //gets the drawable from ^ and ^^
+    }
+
+    // THESE AIN'T YOUR DAD'S Assignable actions
+    public static enum AwesomeConstant implements AwesomeGuts {
+        //                    Action                  Proper name identifier                             Icon package+identifier name
+        ACTION_APP            ("**app**",             com.android.internal.R.string.action_app,           null),
+        ACTION_BACK           ("**back**",            com.android.internal.R.string.action_back,          "com.android.systemui:drawable/ic_sysbar_back"),
+        ACTION_HOME           ("**home**",            com.android.internal.R.string.action_home,          "com.android.systemui:drawable/ic_sysbar_home"),
+        ACTION_RECENTS        ("**recents**",         com.android.internal.R.string.action_recents,       "com.android.systemui:drawable/ic_sysbar_recent"),
+        ACTION_BLANK          ("**blank**",           com.android.internal.R.string.action_blank,         "com.android.systemui:drawable/ic_sysbar_blank"),
+        ACTION_GESTURE_ACTIONS("**gesture_actions**", com.android.internal.R.string.gesture_actions,      "com.android.systemui:drawable/ic_sysbar_gesture"),
+        ACTION_KILL           ("**kill**",            com.android.internal.R.string.action_kill,          "com.android.systemui:drawable/ic_sysbar_killtask"),
+        ACTION_LASTAPP        ("**lastapp**",         com.android.internal.R.string.action_lastapp,       "com.android.systemui:drawable/ic_sysbar_lastapp"),
+        ACTION_MENU           ("**menu**",            com.android.internal.R.string.action_menu,          "com.android.systemui:drawable/ic_sysbar_menu_big"),
+        ACTION_NOTIFICATIONS  ("**notifications**",   com.android.internal.R.string.action_notifications, "com.android.systemui:drawable/ic_sysbar_notifications"),
+        ACTION_IME            ("**ime**",             com.android.internal.R.string.action_ime,           "com.android.systemui:drawable/ic_sysbar_ime_switcher"),
+        ACTION_ASSIST         ("**assist**",          com.android.internal.R.string.action_assist,        "com.android.systemui:drawable/ic_sysbar_assist"),
+        ACTION_SEARCH         ("**search**",          com.android.internal.R.string.action_search,        "com.android.systemui:drawable/ic_sysbar_search"),
+        ACTION_VOICEASSIST    ("**voiceassist**",     com.android.internal.R.string.action_voiceassist,   "com.android.systemui:drawable/ic_sysbar_voiceassist"),
+        ACTION_RING_SILENT    ("**ring_silent**",     com.android.internal.R.string.action_silent,        "com.android.systemui:drawable/ic_sysbar_silent"),
+        ACTION_RING_VIB_SILENT("**ring_vib_silent**", com.android.internal.R.string.action_silent_vib,    "com.android.systemui:drawable/ic_sysbar_silent_vib"),
+        ACTION_RING_VIB       ("**ring_vib**",        com.android.internal.R.string.action_vib,           "com.android.systemui:drawable/ic_sysbar_vib"),
+        ACTION_TORCH          ("**torch**",           com.android.internal.R.string.action_torch,         "com.android.systemui:drawable/ic_sysbar_torch"),
+
+        /* unassignable actions */
+        ACTION_ARROW_LEFT     ("**arrow_left**",      com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_left"),
+        ACTION_ARROW_RIGHT    ("**arrow_right**",     com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_right"),
+        ACTION_ARROW_UP       ("**arrow_up**",        com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_up"),
+        ACTION_ARROW_DOWN     ("**arrow_down**",      com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_down"),
+
+        /* disabled or special actions?? */
+        ACTION_POWER          ("**power**",           com.android.internal.R.string.action_null,          null),
+        ACTION_WIDGETS        ("**widgets**",         com.android.internal.R.string.action_null,          null),
+        ACTION_APP_WINDOW     ("**app_window**",      com.android.internal.R.string.action_null,          null),
+        ACTION_NULL           ("**null**",            com.android.internal.R.string.action_null,          null);
+
+        private final String mAction;
+        private final int mStringId;
+        private String mDrawablePackage;
+        private String mDrawableUnresolvedIdentifier;
+        private int mDrawableId = 0;
+
+        private AwesomeConstant(final String a, final int s, final String unresolved_drawable_id) {
+            mAction = a;
+            mStringId = s;
+            mDrawableUnresolvedIdentifier = unresolved_drawable_id;
+            if (unresolved_drawable_id != null && unresolved_drawable_id.contains(":")) {
+                mDrawablePackage = unresolved_drawable_id.split(":")[0];
+            }
+        }
+
+        private static HashMap<String, Resources> mPackageResources = new HashMap<String, Resources>();
+
+        //gets a Resources for the package referred to in this constant's unresolved drawable string
+        public Resources getMyPackageResources(Context context) {
+            if (mDrawablePackage == null)
+                return context.getResources();
+
+            Resources res = null;
+            synchronized(mPackageResources) {
+                res = mPackageResources.get(mDrawablePackage); //check the map
+                if (res == null) { //if absent, look it up
+                    try {
+                        mPackageResources.put(mDrawablePackage,
+                                (res = context.getPackageManager().getResourcesForApplication(mDrawablePackage)));
+                    } catch (Exception e) {
+                    }
+                }
+            }
+            return res;
+        }
+
+        //returns the resource Id associated with this AwesomeConstant's drawable (the resource is in systemui)
+        public int getDrawableId(Context context) {
+            if (mDrawableUnresolvedIdentifier != null) {
+                final Resources res = getMyPackageResources(context);
+                if (res == null) {
+                    return 0; //return an empty drawable because something is __wrong__
+                }
+                try {
+                    mDrawableId = res.getIdentifier(mDrawableUnresolvedIdentifier, null, null);
+                } catch(Exception e) {
+                    return 0;
+                }
+                mDrawableUnresolvedIdentifier = null;
+            }
+            return mDrawableId;
+        }
+
+        //returns the drawable for this specific AwesomeConstant
+        public Drawable getDrawable(Context context) {
+            final Resources res = getMyPackageResources(context);
+            Drawable dr = null;
+            if (res != null)
+                try {
+                    dr = res.getDrawable(getDrawableId(context));
+                } catch (Exception e) {
+                    //something ain't right. force re-finding package reses
+                    synchronized(mPackageResources) {
+                        mPackageResources.remove(mDrawablePackage);
+                    }
+                    return null;
+                }
+            return dr;
+        }
+
+        //**parse** an action, returning the associated AwesomeConstant
+        public static AwesomeConstant fromAction(String string) {
+            if (string==null || TextUtils.isEmpty(string))
+                return AwesomeConstant.ACTION_NULL;
+
+            // assumes relationship between enum name and action string
+            //   input   **x**
+            //   output  ACTION_X
+            if (string.startsWith("**")) {
+                final String suffix = string.replace("**","").toUpperCase();
+                return AwesomeConstant.valueOf("ACTION_"+suffix);
+            }
+
+            // not in ENUM, must be an intent
+            return AwesomeConstant.ACTION_APP;
+        }
+
+        //resource lookup... yadayada
+        public String getProperName(Context context) { return context.getResources().getString(mStringId); }
+
+        public int getStringId() { return mStringId; }
+
+        @Override
+        public String toString() { return mAction; }
+
+        public String value() { return mAction; }
+    }
+
+    //returns a string array containing the actions of all AwesomeConstants
+    public static String[] AwesomeActions() {
+        return Arrays.toString(AwesomeConstant.values()).split("[\\[\\] \\,]+");
+    }
+
+    // Will return a string for the associated action, but will need the caller's context to get resources.
+    public static String getProperName(Context context, String actionstring) {
+        return AwesomeConstant.fromAction(actionstring).getProperName(context);
+    }
+
+    // Will return a Drawable for the associated action, and may need the caller's context to ninja somebody else's resources.
+    public static Drawable getActionIcon(Context context,String actionstring) {
+        return AwesomeConstant.fromAction(actionstring).getDrawable(context);
+    }
+
+    //for compatibility with existing usages of this class
+    public static AwesomeConstant fromString(String actionstring) {
+        return AwesomeConstant.fromAction(actionstring);
+    }
+
+    //********************
+    // STUFF BELOW HERE WILL BE EVICTED SHORTLY
+    //********************
 
     public static final String ASSIST_ICON_METADATA_NAME = "com.android.systemui.action_assist_icon";
 
@@ -34,255 +207,6 @@ public class AwesomeConstants {
     public final static int PRESS_LONG = 5;
     public final static int SPEN_REMOVE = 6;
     public final static int SPEN_INSERT = 7;
-
-    /* Adding Actions here will automatically add them to NavBar actions in Settings.
-     */
-    public static enum AwesomeConstant {
-        // Assignable actions
-        ACTION_APP           { @Override public String value() { return "**app**";}},
-        ACTION_BACK          { @Override public String value() { return "**back**";}},
-        ACTION_HOME          { @Override public String value() { return "**home**";}},
-        ACTION_RECENTS       { @Override public String value() { return "**recents**";}},
-        ACTION_BLANK         { @Override public String value() { return "**blank**";}},
-        GESTURE_ACTIONS      { @Override public String value() { return "**gesture_actions**";}},
-        ACTION_KILL          { @Override public String value() { return "**kill**";}},
-        ACTION_LAST_APP      { @Override public String value() { return "**lastapp**";}},
-        ACTION_MENU          { @Override public String value() { return "**menu**";}},
-        ACTION_NOTIFICATIONS { @Override public String value() { return "**notifications**";}},
-        ACTION_IME           { @Override public String value() { return "**ime**";}},
-        ACTION_ASSIST        { @Override public String value() { return "**assist**";}},
-        ACTION_SEARCH        { @Override public String value() { return "**search**";}},
-        ACTION_VOICEASSIST   { @Override public String value() { return "**voiceassist**";}},
-        ACTION_SILENT        { @Override public String value() { return "**ring_silent**";}},
-        ACTION_SILENT_VIB    { @Override public String value() { return "**ring_vib_silent**";}},
-        ACTION_TORCH         { @Override public String value() { return "**torch**";}},
-        ACTION_VIB           { @Override public String value() { return "**ring_vib**";}},
-        // Disabled or non-assignable actions
-        ACTION_POWER         { @Override public String value() { return "**power**";}},
-        ACTION_WIDGETS       { @Override public String value() { return "**widgets**";}},
-        ACTION_APP_WINDOW    { @Override public String value() { return "**app_window**";}},
-        ACTION_NULL          { @Override public String value() { return "**null**";}},
-        ACTION_ARROW_LEFT    { @Override public String value() { return "**arrow_left**";}},
-        ACTION_ARROW_RIGHT   { @Override public String value() { return "**arrow_right**";}},
-        ACTION_ARROW_UP      { @Override public String value() { return "**arrow_up**";}},
-        ACTION_ARROW_DOWN    { @Override public String value() { return "**arrow_down**";}};
-        public String value() { return this.value(); }
-    }
-
-    public static AwesomeConstant fromString(String string) {
-        if (!TextUtils.isEmpty(string)) {
-            AwesomeConstant[] allTargs = AwesomeConstant.values();
-            for (int i=0; i < allTargs.length; i++) {
-                if (string.equals(allTargs[i].value())) {
-                    return allTargs[i];
-                }
-            }
-        }
-        // not in ENUM must be custom
-        return AwesomeConstant.ACTION_APP;
-    }
-
-    public static String[] AwesomeActions() {
-        return fromAwesomeActionArray(AwesomeConstant.values());
-    }
-
-    public static String[] fromAwesomeActionArray(AwesomeConstant[] allTargs) {
-        int actions = allTargs.length;
-        String[] values = new String [actions];
-        for (int i = 0; i < actions; i++) {
-            values [i] = allTargs[i].value();
-        }
-        return values;
-    }
-
-    public static Drawable getSystemUIDrawable(Context mContext, String DrawableID) {
-        Resources res = mContext.getResources();
-        PackageManager pm = mContext.getPackageManager();
-        int resId = 0;
-        Drawable d = null;
-        if (pm != null) {
-            Resources mSystemUiResources = null;
-            try {
-                mSystemUiResources = pm.getResourcesForApplication("com.android.systemui");
-            } catch (Exception e) {
-            }
-
-            if (mSystemUiResources != null && DrawableID != null) {
-                resId = mSystemUiResources.getIdentifier(DrawableID, null, null);
-            }
-            if (resId > 0) {
-                try {
-                    d = mSystemUiResources.getDrawable(resId);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return d;
-    }
-
-    public static String getProperName(Context context, String actionstring) {
-        // Will return a string for the associated action, but will need the caller's context to get resources.
-        Resources res = context.getResources();
-        String value = "";
-        if (TextUtils.isEmpty(actionstring)) {
-            actionstring = AwesomeConstant.ACTION_NULL.value();
-        }
-        AwesomeConstant action = fromString(actionstring);
-        switch (action) {
-            case ACTION_HOME :
-                value = res.getString(com.android.internal.R.string.action_home);
-                break;
-            case ACTION_BACK:
-                value = res.getString(com.android.internal.R.string.action_back);
-                break;
-            case ACTION_RECENTS:
-                value = res.getString(com.android.internal.R.string.action_recents);
-                break;
-            case ACTION_SEARCH:
-                value = res.getString(com.android.internal.R.string.action_search);
-                break;
-            case ACTION_MENU:
-                value = res.getString(com.android.internal.R.string.action_menu);
-                break;
-            case ACTION_IME:
-                value = res.getString(com.android.internal.R.string.action_ime);
-                break;
-            case ACTION_KILL:
-                value = res.getString(com.android.internal.R.string.action_kill);
-                break;
-            case ACTION_LAST_APP:
-                value = res.getString(com.android.internal.R.string.action_lastapp);
-                break;
-            case ACTION_TORCH:
-                value = res.getString(com.android.internal.R.string.action_torch);
-                break;
-            case ACTION_NOTIFICATIONS:
-                value = res.getString(com.android.internal.R.string.action_notifications);
-                break;
-            case ACTION_ASSIST:
-                value = res.getString(com.android.internal.R.string.action_assist);
-                break;
-            case ACTION_VOICEASSIST:
-                value = res.getString(com.android.internal.R.string.action_voiceassist);
-                break;
-            case ACTION_SILENT:
-                value = res.getString(com.android.internal.R.string.action_silent);
-                break;
-            case ACTION_BLANK:
-                value = res.getString(com.android.internal.R.string.action_blank);
-                break;
-            case ACTION_VIB:
-                value = res.getString(com.android.internal.R.string.action_vib);
-                break;
-            case ACTION_SILENT_VIB:
-                value = res.getString(com.android.internal.R.string.action_silent_vib);
-                break;
-            case ACTION_APP:
-                value = res.getString(com.android.internal.R.string.action_app);
-                break;
-            case GESTURE_ACTIONS:
-                value = res.getString(com.android.internal.R.string.gesture_actions);
-                break;
-/*          case ACTION_WIDGETS:
-                value = res.getString(com.android.internal.R.string.action_widgets);
-                break;
-            case ACTION_APP_WINDOW:
-                value = res.getString(com.android.internal.R.string.action_app_window);
-                break;
-*/          case ACTION_NULL:
-            default:
-                value = res.getString(com.android.internal.R.string.action_null);
-                break;
-
-        }
-        return value;
-    }
-    public static Drawable getActionIcon(Context context,String actionstring) {
-        // Will return a Drawable for the associated action, but will need the caller's context to get resources.
-        Resources res = context.getResources();
-        Drawable value = null;
-        AwesomeConstant action = fromString(actionstring);
-        switch (action) {
-            case ACTION_HOME :
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_home");
-                break;
-            case ACTION_BACK:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_back");
-                break;
-            case ACTION_RECENTS:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_recent");
-                break;
-            case ACTION_SEARCH:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_search");
-                break;
-            case ACTION_MENU:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_menu_big");
-                break;
-            case ACTION_IME:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_switcher");
-                break;
-            case ACTION_KILL:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_killtask");
-                break;
-            case ACTION_LAST_APP:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_lastapp");
-                break;
-            case ACTION_TORCH:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_torch");
-                break;
-            case ACTION_NOTIFICATIONS:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_notifications");
-                break;
-            case ACTION_ASSIST:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_assist");
-                break;
-            case ACTION_VOICEASSIST:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_voiceassist");
-                break;
-            case ACTION_SILENT:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_silent");
-                break;
-            case ACTION_BLANK:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_blank");
-                break;
-            case ACTION_ARROW_LEFT:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_left");
-                break;
-            case ACTION_ARROW_RIGHT:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_right");
-                break;
-            case ACTION_ARROW_UP:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_up");
-                break;
-            case ACTION_ARROW_DOWN:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_ime_down");
-                break;
-            case ACTION_VIB:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_vib");
-                break;
-            case ACTION_SILENT_VIB:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_silent_vib");
-                break;
-            case GESTURE_ACTIONS:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_gesture");
-                break;
-            case ACTION_APP: // APP doesn't really have an icon - it should look up
-                        //the package icon - we'll return the 'null' on just in case
-/*          case ACTION_WIDGETS:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_widget");
-                break;
-            case ACTION_APP_WINDOW:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_widget");
-                break;
-*/          case ACTION_NULL:
-            default:
-                value = getSystemUIDrawable(context, "com.android.systemui:drawable/ic_sysbar_null");
-                break;
-
-        }
-        return value;
-    }
 
     public static String defaultNavbarLayout(Context context) {
         Resources res = context.getResources();
