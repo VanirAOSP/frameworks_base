@@ -42,13 +42,13 @@ public class DelayedStickyTorch extends StickyTorch {
         Runnable r = new Runnable() {
                         @Override
                         public void run() {
-                            Dump("Torch runnable ("+on+") running");
+                            if (DEBUG) Dump("Torch runnable ("+on+") running");
                             internalChangeTorchState(context, on);
                         }
                      };
 
         if (on) {
-            Dump("Posting delayed enable");
+            if (DEBUG) Dump("Posting delayed enable");
             mHandler.postDelayed(r, ViewConfiguration.getLongPressTimeout());
         } else {
             mHandler.post(r);

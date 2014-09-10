@@ -27,6 +27,9 @@ import com.android.internal.util.cm.TorchConstants;
 public abstract class StickyTorch {
     private static final String TAG = "STICKYTORCH";
 
+    protected static final boolean DEBUG = false;
+    protected static final boolean SPEW = false;
+
     protected boolean mGlobalTorchOn; // global state of torch
     protected boolean mTorchOn;       // if mGlobalTorchOn && mTorchOn, that means we turned it on
 
@@ -42,7 +45,7 @@ public abstract class StickyTorch {
         public void onReceive(Context context, Intent intent) {
             synchronized(this) {
                 mGlobalTorchOn = intent.getIntExtra(TorchConstants.EXTRA_CURRENT_STATE, 0) != 0;
-                Dump("Received torch state broadcast");
+                if (DEBUG) Dump("Received torch state broadcast");
                 if (mTorchOn && !mGlobalTorchOn) {
                     Dump("Forcing torch back on because something else disabled it");
                     Intent i = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
@@ -58,7 +61,7 @@ public abstract class StickyTorch {
         Dump("internalChangeTorchState("+on+")");
         if (on != mTorchOn && mTorchOn == mGlobalTorchOn) {
             mTorchOn = on;
-            Dump("Firing torch toggle intent");
+            if (DEBUG) Dump("Firing torch toggle intent");
             Intent i = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
             context.sendBroadcast(i);
         }
@@ -66,14 +69,16 @@ public abstract class StickyTorch {
 
     public void changeTorchState(Context context, boolean on) {
         synchronized(this) {
-            Dump("changeTorchState("+on+")");
+            if (DEBUG) Dump("changeTorchState("+on+")");
             setTorchState(context, on);
         }
     }
 
     protected void Dump(String s) {
         Log.v(TAG, s);
-        Log.v(TAG, "\tmGlobalTorchOn="+mGlobalTorchOn);
-        Log.v(TAG, "\tmTorchOn="+mTorchOn);
+        if (SPEW) {
+            Log.v(TAG, "\tmGlobalTorchOn="+mGlobalTorchOn);
+            Log.v(TAG, "\tmTorchOn="+mTorchOn);
+        }
     }
 }
