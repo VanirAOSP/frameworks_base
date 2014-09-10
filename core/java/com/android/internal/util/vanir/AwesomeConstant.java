@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 AOKP by Mike Wilson - Zaphod-Beeblebrox && Steve Spear - Stevespear426
+ * Copyright (C) 2014 VanirAOSP && The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 // The wordwrapping in here is girthy because SO ARE WE. -Nuke
 
-package com.android.internal.util.aokp;
+package com.android.internal.util.vanir;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
