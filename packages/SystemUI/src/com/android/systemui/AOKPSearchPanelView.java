@@ -200,7 +200,7 @@ public class AOKPSearchPanelView extends FrameLayout implements
                 if (shouldUnlock(longList.get(mTarget))) {
                     maybeSkipKeyguard();
                 }
-                AwesomeAction.launchAction(mContext, longList.get(mTarget));
+                AwesomeAction.launchAction(mContext, AwesomeConstant.fromAction(longList.get(mTarget)));
                 mBar.hideSearchPanel();
             }
         }
@@ -234,7 +234,7 @@ public class AOKPSearchPanelView extends FrameLayout implements
                     if (shouldUnlock(intentList.get(target))) {
                         maybeSkipKeyguard();
                     }
-                    AwesomeAction.launchAction(mContext, intentList.get(target));
+                    AwesomeAction.launchAction(mContext, AwesomeConstant.fromAction(intentList.get(target)));
                 }
                 mHandler.removeCallbacks(SetLongPress);
             }
