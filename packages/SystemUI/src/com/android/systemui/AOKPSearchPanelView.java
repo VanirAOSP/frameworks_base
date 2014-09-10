@@ -49,7 +49,7 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.FrameLayout;
 
-import static com.android.internal.util.aokp.AwesomeConstants.*;
+import static com.android.internal.util.vanir.AwesomeConstants.*;
 
 import com.android.internal.util.aokp.AwesomeAction;
 import com.android.internal.util.aokp.NavRingHelpers;

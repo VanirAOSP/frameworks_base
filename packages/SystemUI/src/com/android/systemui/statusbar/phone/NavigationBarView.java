@@ -54,8 +54,8 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 
 import com.android.internal.widget.LockPatternUtils;
-import com.android.internal.util.aokp.AwesomeConstants;
-import com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
+import com.android.internal.util.vanir.AwesomeConstants;
+import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;

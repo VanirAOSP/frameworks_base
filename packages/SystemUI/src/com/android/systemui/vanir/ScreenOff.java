@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.android.internal.util.aokp.AwesomeAction;
-import com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
+import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
 
 /*
  * Screen off
