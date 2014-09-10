@@ -57,18 +57,19 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class NavRingHelpers extends NavHelpersBase {
 
     // These items will be subtracted from NavBar Actions when RC requests list of
     // Available Actions
-    private static final ArrayList<AwesomeConstant> EXCLUDED_FROM_NAVRING = Arrays.asList(
+    protected static final List<AwesomeConstant> EXCLUDED_FROM_NAVRING = Arrays.<AwesomeConstant>asList(
             AwesomeConstant.ACTION_BLANK
     );
 
     @Override
-    public static boolean isExcluded(AwesomeConstant action) {
-        return (EXCLUDED_FROM_NAVRING.contains(action) || super.isExcluded(action);
+    public boolean isExcluded(AwesomeConstant action) {
+        return (EXCLUDED_FROM_NAVRING.contains(action) || super.isExcluded(action));
     }
 
     public static TargetDrawable getTargetDrawable(Context context, String action) {

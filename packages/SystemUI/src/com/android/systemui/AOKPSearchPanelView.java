@@ -52,7 +52,7 @@ import android.widget.FrameLayout;
 import static com.android.internal.util.vanir.AwesomeConstants.*;
 
 import com.android.internal.util.aokp.AwesomeAction;
-import com.android.internal.util.aokp.NavRingHelpers;
+import com.android.internal.util.vanir.NavRingHelpers;
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.GlowPadView.OnTriggerListener;
 import com.android.internal.widget.multiwaveview.TargetDrawable;

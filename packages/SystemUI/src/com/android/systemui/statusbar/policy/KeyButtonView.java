@@ -43,7 +43,7 @@ import android.widget.ImageView;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.aokp.AwesomeAction;
 import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
-import com.android.internal.util.aokp.NavBarHelpers;
+import com.android.internal.util.vanir.NavBarHelpers;
 import com.android.systemui.R;
 
 import java.io.File;
@@ -58,14 +58,6 @@ public class KeyButtonView extends ImageView {
     private static final int DPAD_REPEAT_INTERVAL = 75;
 
     private final int mLongPressTimeout;
-
-    public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
-    public static final String BLANK_ACTION = AwesomeConstant.ACTION_BLANK.value();
-    public static final String RECENTS_ACTION = AwesomeConstant.ACTION_RECENTS.value();
-    public static final String ARROW_UP = AwesomeConstant.ACTION_ARROW_UP.value();
-    public static final String ARROW_LEFT = AwesomeConstant.ACTION_ARROW_LEFT.value();
-    public static final String ARROW_RIGHT = AwesomeConstant.ACTION_ARROW_RIGHT.value();
-    public static final String ARROW_DOWN = AwesomeConstant.ACTION_ARROW_DOWN.value();
 
     long mDownTime;
     long mUpTime;
@@ -83,7 +75,8 @@ public class KeyButtonView extends ImageView {
     Animator mAnimateToQuiescent = new ObjectAnimator();
     boolean mShouldClick = true;
 
-    AwesomeButtonInfo mActions;
+    private AwesomeConstant singleAction, doubleTapAction, longPressAction;
+    private AwesomeButtonInfo mActions;
 
     protected static IStatusBarService mBarService;
     public static synchronized void getStatusBarInstance() {
@@ -93,10 +86,6 @@ public class KeyButtonView extends ImageView {
         }
     }
 
-    private boolean mHasSingleAction = true, mHasDoubleAction, mHasLongAction;
-    private boolean mIsRecentsAction = false, mIsRecentsSingleAction, mIsRecentsLongAction, mIsRecentsDoubleTapAction;
-    private boolean mIsDPadAction;
-    public boolean mHasBlankSingleAction = false;
     volatile boolean mRecentsPreloaded;
 
     Runnable mCheckLongPress = new Runnable() {
@@ -142,36 +131,41 @@ public class KeyButtonView extends ImageView {
         setImage(res);
     }
 
-    public void setButtonActions(AwesomeButtonInfo actions) {
-        this.mActions = actions;
+    public void setButtonActions(AwesomeButtonInfo abi) {
 
-        setTag(mActions.singleAction); // should be OK even if it's null
+        singleAction = AwesomeConstant.fromAction(abi.singleTap);
+        doubleTapAction = AwesomeConstant.fromAction(abi.doubleTap);
+        longPressAction = AwesomeConstant.fromAction(abi.longPress);
+
+        if (singleAction == AwesomeConstant.ACTION_NULL) {
+            singleAction = null;
+            abi.singleAction = null;
+        }
+        if (doubleTapAction == AwesomeConstant.ACTION_NULL) {
+            doubleTapAction = null;
+            abi.doubleTapAction = null;
+        }
+        if (longPressAction == AwesomeConstant.ACTION_NULL) {
+            longPressAction = null;
+            abi.longPressAction = null;
+        }
+
+        mActions = abi;
+
+        setTag(singleAction); // should be OK even if it's null
 
         setImage();
 
-        mHasSingleAction = mActions != null && (mActions.singleAction != null);
-        mHasLongAction = mActions != null && mActions.longPressAction != null;
-        mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
-        mHasBlankSingleAction = mHasSingleAction && mActions.singleAction.equals(BLANK_ACTION);
+        longPressAction == ACTION_RECENTS = (longPressAction == ACTION_RECENTS);
+        doubleTapAction == ACTION_RECENTS = (doubleTapAction == ACTION_RECENTS);
 
-        // TO DO: determine type of key prior to getting a keybuttonview instance to allow more specialized
-        // and efficiently coded keybuttonview classes.
-        mIsDPadAction = mHasSingleAction
-                && (mActions.singleAction.equals(ARROW_LEFT)
-                || mActions.singleAction.equals(ARROW_UP)
-                || mActions.singleAction.equals(ARROW_DOWN)
-                || mActions.singleAction.equals(ARROW_RIGHT));
-
-        mIsRecentsSingleAction = (mHasSingleAction && mActions.singleAction.equals(RECENTS_ACTION));
-        mIsRecentsLongAction = (mHasLongAction && mActions.longPressAction.equals(RECENTS_ACTION));
-        mIsRecentsDoubleTapAction = (mHasDoubleAction && mActions.doubleTapAction.equals(RECENTS_ACTION));
-
-        if (mIsRecentsSingleAction || mIsRecentsLongAction || mIsRecentsDoubleTapAction) {
-            mIsRecentsAction = true;
+        if (singleAction == AwesomeConstant.ACTION_RECENTS || 
+                longPressAction == AwesomeConstant.ACTION_RECENTS ||
+                doubleTapAction == AwesomeConstant.ACTION_RECENTS) {
             getStatusBarInstance();
         }
 
-        setLongClickable(mHasLongAction);
+        setLongClickable();
         Log.e(TAG, "Adding a navbar button in landscape or portrait");
     }
 
@@ -183,14 +177,14 @@ public class KeyButtonView extends ImageView {
     /* @hide */
     public void setImage(final Resources res) {
         // set image
-        if (mActions.iconUri != null && mActions.iconUri.length() > 0) {
+        if (singleAction != null) {
             // custom icon from the URI here
             File f = new File(Uri.parse(mActions.iconUri).getPath());
             if (f.exists()) {
                 setImageDrawable(new BitmapDrawable(res, f.getAbsolutePath()));
             }
-        } else if (mActions.singleAction != null) {
-            setImageDrawable(NavBarHelpers.getIconImage(mContext, mActions.singleAction));
+        } else if (singleAction != null) {
+            setImageDrawable(NavBarHelpers.getIconImage(mContext, singleAction));
         } else {
             setImageResource(R.drawable.ic_sysbar_null);
         }
@@ -326,36 +320,44 @@ public class KeyButtonView extends ImageView {
     }
 
     public boolean onTouchEvent(MotionEvent ev) {
-        if (mHasBlankSingleAction) return true;
+        if (singleAction == ACTION_BLANK) return true;
 
         final int action = ev.getAction();
         int x, y;
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                if (mIsRecentsAction && mRecentsPreloaded == false) preloadRecentApps();
+                if ((singleAction == AwesomeConstant.ACTION_RECENTS ||
+                longPressAction == AwesomeConstant.ACTION_RECENTS ||
+                doubleTapAction == AwesomeConstant.ACTION_RECENTS) && mRecentsPreloaded == false) preloadRecentApps();
                 mDownTime = SystemClock.uptimeMillis();
                 setPressed(true);
-                if (mHasSingleAction) {
+                if (msingleAction != null) {
                     removeCallbacks(mSingleTap);
-                    if (mIsDPadAction) {
+                    if ((singleAction == ACTION_ARROW_LEFT
+                || singleAction == ACTION_ARROW_RIGHT
+                || singleAction == ACTION_ARROW_UP
+                || singleAction == ACTION_ARROW_DOWN)) {
                         mShouldClick = true;
                         removeCallbacks(mDPadKeyRepeater);
                     }
                 }
                 performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 long diff = mDownTime - mUpTime; // difference between last up and now
-                if (mHasDoubleAction && diff <= 200) {
+                if (doubleTapAction != null && diff <= 200) {
                     doDoubleTap();
                 } else {
-                    if (mIsDPadAction) {
+                    if ((singleAction == ACTION_ARROW_LEFT
+                || singleAction == ACTION_ARROW_RIGHT
+                || singleAction == ACTION_ARROW_UP
+                || singleAction == ACTION_ARROW_DOWN)) {
                         postDelayed(mDPadKeyRepeater, DPAD_TIMEOUT_INTERVAL);
                     } else {
-                        if (mHasLongAction) {
+                        if (mlongPressAction != null) {
                             removeCallbacks(mCheckLongPress);
                             postDelayed(mCheckLongPress, mLongPressTimeout);
                         }
-                        if (mHasSingleAction) {
+                        if (msingleAction != null) {
                             postDelayed(mSingleTap, 200);
                         }
                     }
@@ -371,14 +373,17 @@ public class KeyButtonView extends ImageView {
                 break;
             case MotionEvent.ACTION_CANCEL:
                 setPressed(false);
-                if (mIsDPadAction) {
+                if ((singleAction == ACTION_ARROW_LEFT
+                || singleAction == ACTION_ARROW_RIGHT
+                || singleAction == ACTION_ARROW_UP
+                || singleAction == ACTION_ARROW_DOWN)) {
                     mShouldClick = true;
                     removeCallbacks(mDPadKeyRepeater);
                 }
-                if (mHasSingleAction) {
+                if (msingleAction != null) {
                     removeCallbacks(mSingleTap);
                 }
-                if (mHasLongAction) {
+                if (mlongPressAction != null) {
                     removeCallbacks(mCheckLongPress);
                 }
                 if (mRecentsPreloaded == true) cancelPreloadRecentApps();
@@ -387,12 +392,15 @@ public class KeyButtonView extends ImageView {
                 mUpTime = SystemClock.uptimeMillis();
                 boolean playSound;
 
-                if (mIsDPadAction) {
+                if ((singleAction == ACTION_ARROW_LEFT
+                || singleAction == ACTION_ARROW_RIGHT
+                || singleAction == ACTION_ARROW_UP
+                || singleAction == ACTION_ARROW_DOWN)) {
                     playSound = mShouldClick;
                     mShouldClick = true;
                     removeCallbacks(mDPadKeyRepeater);
                 } else {
-                    if (mHasLongAction) {
+                    if (mlongPressAction != null) {
                         removeCallbacks(mCheckLongPress);
                     }
                     playSound = isPressed();
@@ -403,7 +411,7 @@ public class KeyButtonView extends ImageView {
                     playSoundEffect(SoundEffectConstants.CLICK);
                 }
 
-                if (!mHasDoubleAction && !mHasLongAction) {
+                if (!doubleTapAction != null && !mlongPressAction != null) {
                     removeCallbacks(mSingleTap);
                     doSinglePress();
                 }
@@ -427,18 +435,16 @@ public class KeyButtonView extends ImageView {
             return;
         }
 
-        if (mActions != null) {
-            if (mActions.singleAction != null) {
-                AwesomeAction.launchAction(mContext, mActions.singleAction);
-                sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
-            }
+        if (singleAction != null) {
+            AwesomeAction.launchAction(mContext, singleAction);
+            sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
         }
     }
 
     private void doDoubleTap() {
-        if (mHasDoubleAction) {
+        if (doubleTapAction != null) {
             removeCallbacks(mSingleTap);
-            if (mIsRecentsDoubleTapAction) {
+            if (doubleTapAction == ActionConstant.ACTION_RECENTS) {
                 try {
                     mBarService.toggleRecentApps();
                     mRecentsPreloaded = false;
@@ -446,15 +452,15 @@ public class KeyButtonView extends ImageView {
                     Log.e(TAG, "RECENTS ACTION FAILED");
                 }
             } else {
-                AwesomeAction.launchAction(mContext, mActions.doubleTapAction);
+                AwesomeAction.launchAction(mContext, doubleTapAction);
             }
         }
     }
 
     private void doLongPress() {
-        if (mHasLongAction) {
+        if (longPressAction != null) {
             removeCallbacks(mSingleTap);
-            if (mIsRecentsLongAction) {
+            if (longPressAction == ACTION_RECENTS) {
                 try {
                     mBarService.toggleRecentApps();
                     performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -464,7 +470,7 @@ public class KeyButtonView extends ImageView {
                     Log.e(TAG, "RECENTS ACTION FAILED");
                 }
             } else {
-                AwesomeAction.launchAction(mContext, mActions.longPressAction);
+                AwesomeAction.launchAction(mContext, longPressAction);
                 performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
             }
@@ -505,14 +511,12 @@ public class KeyButtonView extends ImageView {
     private Runnable mDPadKeyRepeater = new Runnable() {
         @Override
         public void run() {
-            if (mActions != null) {
-                if (mActions.singleAction != null) {
-                    AwesomeAction.launchAction(mContext, mActions.singleAction);
-                    // click on the first event since we're handling in MotionEvent.ACTION_DOWN
-                    if (mShouldClick) {
-                        mShouldClick = false;
-                        playSoundEffect(SoundEffectConstants.CLICK);
-                    }
+            if (singleAction != null) {
+                AwesomeAction.launchAction(mContext, singleAction);
+                // click on the first event since we're handling in MotionEvent.ACTION_DOWN
+                if (mShouldClick) {
+                    mShouldClick = false;
+                    playSoundEffect(SoundEffectConstants.CLICK);
                 }
             }
             // repeat action
@@ -520,35 +524,15 @@ public class KeyButtonView extends ImageView {
         }
     };
 
-    public static class AwesomeButtonInfo {
-        String singleAction, doubleTapAction, longPressAction, iconUri;
+    public class AwesomeButtonInfo {
+        String singleAction, doubleTapAction, longPressAction;
+        String iconUri;
 
-        public AwesomeButtonInfo(String singleTap, String doubleTap, String longPress, String uri) {
+        public AwesomeButtonInfo(String singleTap, String doubleTap, String longPress, String iconUri) {
             this.singleAction = singleTap;
             this.doubleTapAction = doubleTap;
             this.longPressAction = longPress;
-            this.iconUri = uri;
-            
-            if (singleAction != null) {
-                if ((singleAction.isEmpty()
-                        || singleAction.equals(NULL_ACTION))) {
-                    singleAction = null;
-                }
-            }
-
-            if (doubleTapAction != null) {
-                if ((doubleTapAction.isEmpty()
-                        || doubleTapAction.equals(NULL_ACTION))) {
-                    doubleTapAction = null;
-                }
-            }
-
-            if (longPressAction != null) {
-                if ((longPressAction.isEmpty()
-                        || longPressAction.equals(NULL_ACTION))) {
-                    longPressAction = null;
-                }
-            }
+            this iconUri = iconUri;
         }
     }
 }
