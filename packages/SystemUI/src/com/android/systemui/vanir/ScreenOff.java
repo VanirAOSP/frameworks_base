@@ -20,28 +20,28 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.android.internal.util.cm.TorchConstants;
+import com.android.internal.util.aokp.AwesomeAction;
+import com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
 
 /*
- * Torch activity toggle
+ * Screen off
  */
 
-public class Torch extends Activity {
-  public Torch() {
-    super();
-  }
+public class ScreenOff extends Activity {
+    public ScreenOff() {
+        super();
+    }
 
-  /** Called when the activity is first created. */
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-  }
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
-  @Override
-  public void onResume() {
-    super.onResume();
-    Intent i = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
-    sendBroadcast(i);
-    this.finish();
-  }
+    @Override
+    public void onResume() {
+        super.onResume();
+        AwesomeAction.launchAction(this, AwesomeConstant.ACTION_POWER.value());
+        this.finish();
+    }
 }
