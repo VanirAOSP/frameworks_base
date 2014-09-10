@@ -272,12 +272,12 @@ public class AOKPSearchPanelView extends FrameLayout implements
         if (TextUtils.isEmpty(action))
             return false;
 
-        if (action.equals(AwesomeConstant.ACTION_SILENT_VIB.value()) ||
-            action.equals(AwesomeConstant.ACTION_VIB.value()) ||
+        if (action.equals(AwesomeConstant.ACTION_RING_SILENT_VIB.value()) ||
+            action.equals(AwesomeConstant.ACTION_RING_VIB.value()) ||
             action.equals(AwesomeConstant.ACTION_POWER.value()) ||
             action.equals(AwesomeConstant.ACTION_TORCH.value()) ||
             action.equals(AwesomeConstant.ACTION_NOTIFICATIONS.value()) ||
-            action.equals(AwesomeConstant.ACTION_SILENT.value())) {
+            action.equals(AwesomeConstant.ACTION_RING_SILENT.value())) {
             return false;
         }
 

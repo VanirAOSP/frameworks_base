@@ -138,7 +138,7 @@ public class AwesomeAction {
                 mContext.sendBroadcast(intentTorch);
                 break;
 
-            case ACTION_LAST_APP:
+            case ACTION_LASTAPP:
                 ActionUtils.switchToLastApp(mContext, mCurrentUserId);
                 break;
 
@@ -211,7 +211,7 @@ public class AwesomeAction {
                 triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_DOWN, CURSOR_FLAGS);
                 break;
 
-            case ACTION_VIB:
+            case ACTION_RING_VIB:
                 am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                 if (am != null) {
                     if (am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
@@ -238,7 +238,7 @@ public class AwesomeAction {
                         "android.settings.SHOW_INPUT_METHOD_PICKER"));
                 break;
 
-            case ACTION_SILENT:
+            case ACTION_RING_SILENT:
                 am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                 if (am != null) {
                     if (am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
@@ -255,7 +255,7 @@ public class AwesomeAction {
                 }
                 break;
 
-            case ACTION_SILENT_VIB:
+            case ACTION_RING_SILENT_VIB:
                 am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
                 if (am != null) {
                     if (am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
@@ -279,7 +279,7 @@ public class AwesomeAction {
                 }
                 break;
 
-            case GESTURE_ACTIONS:
+            case ACTION_GESTURE_ACTIONS:
                 mContext.sendBroadcast(new Intent(Intent.TOGGLE_GESTURE_ACTIONS));
                 break;
         }
