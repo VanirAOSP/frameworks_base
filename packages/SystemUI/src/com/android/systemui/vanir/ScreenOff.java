@@ -41,7 +41,7 @@ public class ScreenOff extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        AwesomeAction.launchAction(this, AwesomeConstant.ACTION_POWER.value());
+        AwesomeAction.launchAction(this, AwesomeConstant.ACTION_POWER);
         this.finish();
     }
 }

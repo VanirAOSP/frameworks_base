@@ -781,7 +781,7 @@ public class NavigationBarView extends LinearLayout {
                 // add the button
                 addButton(navButtons, button, landscape);
 
-                if (!button.mHasBlankSingleAction) {
+                if (!button.hasSingleAction()) {
                     addLightsOutButton(lightsOut, button, landscape, false);
                 } else {
                     addSeparator(lightsOut, landscape, (int) mButtonWidth, 0.5f);
@@ -791,7 +791,7 @@ public class NavigationBarView extends LinearLayout {
             if (mSideKeys) {
                 // legacy menu button
                 KeyButtonView menuButton = new KeyButtonView(mContext, null);
-                menuButton.setButtonActions(AwesomeConstant.ACTION_MENU,null, null);
+                menuButton.setButtonActions(new AwesomeButtonInfo(AwesomeConstant.ACTION_MENU.value(), null, null, null));
                 menuButton.setImageResource(R.drawable.ic_sysbar_menu);
                 menuButton.setLayoutParams(getLayoutParams(landscape, mMenuButtonWidth, 0f));
                 menuButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
