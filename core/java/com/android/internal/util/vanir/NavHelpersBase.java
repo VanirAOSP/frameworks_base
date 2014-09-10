@@ -53,18 +53,11 @@ public class NavHelpersBase {
         return (EXCLUDED_FROM_NAV.contains(action));
     }
 
-    public Drawable getIconImage(Context context, String uri) {
+    public static Drawable getIconImage(Context context, String uri) {
         AwesomeConstant act = AwesomeConstant.fromAction(uri);
         if (act != AwesomeConstant.ACTION_APP) {
             return act.getDrawable(context);
         } 
-        try {
-            return context.getPackageManager().getActivityIcon(Intent.parseUri(uri, 0));
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
         return AwesomeConstant.ACTION_NULL.getDrawable(context);
     }
 
