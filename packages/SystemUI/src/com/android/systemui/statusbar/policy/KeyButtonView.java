@@ -41,7 +41,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.internal.util.aokp.AwesomeAction;
+import com.android.internal.util.vanir.AwesomeAction;
 import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
 import com.android.internal.util.aokp.NavBarHelpers;
 import com.android.systemui.R;

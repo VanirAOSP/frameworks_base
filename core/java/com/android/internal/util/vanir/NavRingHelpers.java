@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 The CyanogenMod Project
+ * Copyright (C) 2014 VanirAOSP && The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.internal.util.aokp;
+package com.android.internal.util.vanir;
 
 import android.app.SearchManager;
 import android.content.ComponentName;
@@ -58,53 +58,17 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class NavRingHelpers {
+public class NavRingHelpers extends NavHelpersBase {
 
-    // These items will be subtracted from NavRing Actions when RC requests list of
+    // These items will be subtracted from NavBar Actions when RC requests list of
     // Available Actions
-    private static final AwesomeConstant[] EXCLUDED_FROM_NAVRING = {
-            // these can be removed as the features are added back
-            AwesomeConstant.ACTION_BLANK,
-            AwesomeConstant.ACTION_NULL,
-            AwesomeConstant.ACTION_POWER,
-            AwesomeConstant.ACTION_WIDGETS,
-            AwesomeConstant.ACTION_APP_WINDOW,
-            AwesomeConstant.ACTION_ARROW_LEFT,
-            AwesomeConstant.ACTION_ARROW_RIGHT,
-            AwesomeConstant.ACTION_ARROW_UP,
-            AwesomeConstant.ACTION_ARROW_DOWN
-    };
+    private static final ArrayList<AwesomeConstant> EXCLUDED_FROM_NAVRING = Arrays.asList(
+            AwesomeConstant.ACTION_BLANK
+    );
 
-    private NavRingHelpers() {
-    }
-
-    public static String[] getNavRingActions(Context context) {
-        boolean itemFound;
-        String[] mActions;
-        ArrayList<String> mActionList = new ArrayList<String>();
-        String[] mActionStart = AwesomeConstants.AwesomeActions();
-        int startLength = mActionStart.length;
-        int excludeLength = EXCLUDED_FROM_NAVRING.length;
-        for (int i = 0; i < startLength; i++) {
-            itemFound = false;
-            for (int j = 0; j < excludeLength; j++) {
-                if (mActionStart[i].equals(EXCLUDED_FROM_NAVRING[j].value())) {
-                    itemFound = true;
-                }
-            }
-            if (!itemFound) {
-                mActionList.add(mActionStart[i]);
-            }
-            if (!context.getResources().getBoolean(com.android.internal.R.bool.config_enableTorch)) {
-                mActionList.remove(AwesomeConstants.AwesomeConstant.ACTION_TORCH.value());
-            }
-        }
-        int actionSize = mActionList.size();
-        mActions = new String[actionSize];
-        for (int i = 0; i < actionSize; i++) {
-            mActions[i] = mActionList.get(i);
-        }
-        return mActions;
+    @Override
+    public static boolean isExcluded(AwesomeConstant action) {
+        return (EXCLUDED_FROM_NAVRING.contains(action) || super.isExcluded(action);
     }
 
     public static TargetDrawable getTargetDrawable(Context context, String action) {

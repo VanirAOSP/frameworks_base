@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Android Open Kang Project
+ * Copyright (C) 2014 VanirAOSP && The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.internal.util.aokp;
+package com.android.internal.util.vanir;
 
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -54,7 +54,6 @@ import java.util.List;
 
 import com.android.internal.util.cm.TorchConstants;
 import static com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
-import static com.android.internal.util.vanir.AwesomeConstants.fromString;
 import com.android.internal.util.cm.ActionUtils;
 
 public class AwesomeAction {
@@ -81,7 +80,7 @@ public class AwesomeAction {
         if (TextUtils.isEmpty(action) || action.equals(NULL_ACTION)) {
             return false;
         }
-        AwesomeConstant AwesomeEnum = fromString(action);
+        AwesomeConstant AwesomeEnum = AwesomeConstant.fromAction(action);
         AudioManager am;
         switch (AwesomeEnum) {
             case ACTION_HOME:
