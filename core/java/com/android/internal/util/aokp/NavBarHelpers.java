@@ -105,48 +105,4 @@ public class NavBarHelpers {
         }
         return mActions;
     }
-
-    public static String getProperSummary(Context mContext, String uri) {
-        if (TextUtils.isEmpty(uri)) {
-            uri = AwesomeConstant.ACTION_NULL.value();
-        }
-        if (uri.startsWith("**")) {
-            return AwesomeConstants.getProperName(mContext, uri);
-        } else {  // This must be an app 
-            try {
-                Intent intent = Intent.parseUri(uri, 0);
-                if (Intent.ACTION_MAIN.equals(intent.getAction())) {
-                    return getFriendlyActivityName(mContext, intent);
-                }
-                return getFriendlyShortcutName(mContext, intent);
-            } catch (URISyntaxException e) {
-                return AwesomeConstants.getProperName(mContext, AwesomeConstant.ACTION_NULL.value());
-            }
-        }
-    }
-
-    private static String getFriendlyActivityName(Context mContext, Intent intent) {
-        PackageManager pm = mContext.getPackageManager();
-        ActivityInfo ai = intent.resolveActivityInfo(pm, PackageManager.GET_ACTIVITIES);
-        String friendlyName = null;
-
-        if (ai != null) {
-            friendlyName = ai.loadLabel(pm).toString();
-            if (friendlyName == null) {
-                friendlyName = ai.name;
-            }
-        }
-
-        return (friendlyName != null) ? friendlyName : intent.toUri(0);
-    }
-
-    private static String getFriendlyShortcutName(Context mContext, Intent intent) {
-        String activityName = getFriendlyActivityName(mContext, intent);
-        String name = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
-
-        if (activityName != null && name != null) {
-            return activityName + ": " + name;
-        }
-        return name != null ? name : intent.toUri(0);
-    }
 }
