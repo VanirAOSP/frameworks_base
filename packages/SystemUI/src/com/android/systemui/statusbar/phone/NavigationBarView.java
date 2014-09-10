@@ -790,10 +790,8 @@ public class NavigationBarView extends LinearLayout {
 
             if (mSideKeys) {
                 // legacy menu button
-                AwesomeButtonInfo menuButtonInfo = new AwesomeButtonInfo(AwesomeConstant.ACTION_MENU.value(),
-                        null, null, null);
                 KeyButtonView menuButton = new KeyButtonView(mContext, null);
-                menuButton.setButtonActions(menuButtonInfo);
+                menuButton.setButtonActions(AwesomeConstant.ACTION_MENU,null, null);
                 menuButton.setImageResource(R.drawable.ic_sysbar_menu);
                 menuButton.setLayoutParams(getLayoutParams(landscape, mMenuButtonWidth, 0f));
                 menuButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land

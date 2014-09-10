@@ -59,7 +59,6 @@ import com.android.internal.util.cm.ActionUtils;
 public class AwesomeAction {
 
     public static final String TAG = "AwesomeAction";
-    public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
 
     private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY;
     private static final int CURSOR_FLAGS = KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE;
@@ -76,13 +75,12 @@ public class AwesomeAction {
         mCurrentUserId = newUserId;
     }
 
-    public static boolean launchAction(final Context mContext, final String action) {
-        if (TextUtils.isEmpty(action) || action.equals(NULL_ACTION)) {
+    public static boolean launchAction(final Context mContext, final AwesomeConstant action) {
+        if (action == AwesomeConstant.ACTION_NULL || action == null) {
             return false;
         }
-        AwesomeConstant AwesomeEnum = AwesomeConstant.fromAction(action);
         AudioManager am;
-        switch (AwesomeEnum) {
+        switch (action) {
             case ACTION_HOME:
                 IWindowManager mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
                 try {
@@ -175,7 +173,7 @@ public class AwesomeAction {
 
             case ACTION_APP:
                 try {
-                    Intent intentapp = Intent.parseUri(action, 0);
+                    Intent intentapp = Intent.parseUri(action.value(), 0);
                     intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intentapp);
                 } catch (URISyntaxException e) {

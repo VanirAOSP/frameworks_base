@@ -28,6 +28,7 @@ import android.text.TextUtils;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.android.internal.util.cm.QSUtils;
 import com.android.internal.util.vanir.AwesomeConstants;
@@ -37,7 +38,7 @@ public class NavHelpersBase {
 
     // These items will be subtracted from NavBar Actions when RC requests list of
     // Available Actions
-    private static final ArrayList<AwesomeConstant> EXCLUDED_FROM_NAV = Arrays.asList(
+    protected static final List<AwesomeConstant> EXCLUDED_FROM_NAV = Arrays.<AwesomeConstant>asList(
             AwesomeConstant.ACTION_NULL,
             AwesomeConstant.ACTION_POWER,
             AwesomeConstant.ACTION_ARROW_LEFT,
@@ -48,11 +49,11 @@ public class NavHelpersBase {
             AwesomeConstant.ACTION_APP_WINDOW
     );
 
-    public static boolean isExcluded(AwesomeConstant action) {
-        return EXCLUDED_FROM_NAV.contains(action);
+    public boolean isExcluded(AwesomeConstant action) {
+        return (EXCLUDED_FROM_NAV.contains(action));
     }
 
-    public static Drawable getIconImage(Context context, String uri) {
+    public Drawable getIconImage(Context context, String uri) {
         AwesomeConstant act = AwesomeConstant.fromAction(uri);
         if (act != AwesomeConstant.ACTION_APP) {
             return act.getDrawable(context);
@@ -67,7 +68,7 @@ public class NavHelpersBase {
         return AwesomeConstant.ACTION_NULL.getDrawable(context);
     }
 
-    public static String[] getActions(Context context) {
+    public String[] getActions(Context context) {
         ArrayList<AwesomeConstant> actionList = new ArrayList<AwesomeConstant>();
         for(AwesomeConstant act : AwesomeConstant.values()) {
             if (!isExcluded(act))
