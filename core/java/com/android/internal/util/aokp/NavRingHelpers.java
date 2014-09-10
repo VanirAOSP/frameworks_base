@@ -48,7 +48,7 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.android.internal.util.cm.QSUtils;
-import static com.android.internal.util.aokp.AwesomeConstants.*;
+import static com.android.internal.util.vanir.AwesomeConstants.*;
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.TargetDrawable;
 

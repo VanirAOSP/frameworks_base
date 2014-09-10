@@ -29,7 +29,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import com.android.internal.util.cm.QSUtils;
-import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
+import static com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
 
 public class NavBarHelpers {
 
