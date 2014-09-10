@@ -53,8 +53,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import com.android.internal.util.cm.TorchConstants;
-import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
-import static com.android.internal.util.aokp.AwesomeConstants.fromString;
+import static com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
+import static com.android.internal.util.vanir.AwesomeConstants.fromString;
 import com.android.internal.util.cm.ActionUtils;
 
 public class AwesomeAction {
