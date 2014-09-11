@@ -85,6 +85,7 @@ import android.net.wimax.WimaxManagerConstants;
 import android.nfc.NfcManager;
 import android.os.BatteryManager;
 import android.os.Binder;
+import android.os.BlurManager;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.DropBoxManager;
@@ -92,6 +93,7 @@ import android.os.Environment;
 import android.os.FileUtils;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.IBlurService;
 import android.os.IPowerManager;
 import android.os.IUserManager;
 import android.os.Looper;
@@ -629,6 +631,13 @@ class ContextImpl extends Context {
                     IBatteryService service = IBatteryService.Stub.asInterface(b);
                     return new BatteryManager(service, ctx);
                 }});
+
+        registerService(BLUR_SERVICE, new ServiceFetcher() {
+          public Object createService(ContextImpl ctx) {
+                IBinder b = ServiceManager.getService(BLUR_SERVICE);
+                IBlurService service = IBlurService.Stub.asInterface(b);
+                return new BlurManager(ctx, service);
+            }});
 
         registerService(THEME_SERVICE, new ServiceFetcher() {
             public Object createService(ContextImpl ctx) {

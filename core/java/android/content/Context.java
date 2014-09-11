@@ -2441,6 +2441,15 @@ public abstract class Context {
 
     /**
      * Use with {@link #getSystemService} to retrieve a
+     * {@link android.os.BlurManager} for get a blurred background.
+     *
+     * @see #getSystemService
+     * @see android.os.BlurManager
+     */
+    public static final String BLUR_SERVICE = "blur";
+
+    /**
+     * Use with {@link #getSystemService} to retrieve a
      * {@link android.app.AppOpsManager} for tracking application operations
      * on the device.
      *
