@@ -85,6 +85,7 @@ public class AwesomeConstants {
         private String mDrawablePackage;
         private String mDrawableUnresolvedIdentifier;
         private int mDrawableId = 0;
+        private boolean mAppFullyInitialized = false; //ACTION_APPS undergo a 2-phase process before they're useful
 
         private AwesomeConstant(final String a, final int s, final String unresolved_drawable_id) {
             mAction = a;
@@ -135,7 +136,7 @@ public class AwesomeConstants {
 
         //returns the drawable for this specific AwesomeConstant
         public Drawable getDrawable(Context context) {
-            if (this == ACTION_APP) {
+            if (this == ACTION_APP && mAppFullyInitialized) {
                 try {
                     return context.getPackageManager().getActivityIcon(Intent.parseUri(mAction, 0));
                 } catch (NameNotFoundException e) {
@@ -173,12 +174,14 @@ public class AwesomeConstants {
             }
 
             // not in ENUM, must be an intent
-            return AwesomeConstant.ACTION_APP;
+            AwesomeConstant awesomeapp = ACTION_APP.clone();
+            awesomeapp.setAppAction(string);
+            return awesomeapp;
         }
 
         //resource lookup... yadayada
         public String getProperName(Context context) {
-            if (this != ACTION_APP)
+            if (this != ACTION_APP || !mAppFullyInitialized)
                 return context.getResources().getString(mStringId);
             try {
                 Intent intent = Intent.parseUri(mAction, 0);
@@ -213,6 +216,11 @@ public class AwesomeConstants {
         public String toString() { return mAction; }
 
         public String value() { return mAction; }
+
+        void setAppAction(String act) {
+            mAction = act;
+            mAppFullyInitialized = true;
+	}
     }
 
     //returns a string array containing the actions of all AwesomeConstants
