@@ -48,7 +48,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.android.internal.util.cm.QSUtils;
-import static com.android.internal.util.aokp.AwesomeConstants.*;
+import com.android.internal.util.vanir.AwesomeConstants;
+import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.TargetDrawable;
 
@@ -121,7 +122,7 @@ public class NavRingHelpers {
             return drawable;
         }
 
-        AwesomeConstant IconEnum = fromString(action);
+        AwesomeConstant IconEnum = AwesomeConstants.fromString(action);
         if (IconEnum.equals(AwesomeConstant.ACTION_NULL)) {
             TargetDrawable drawable = new TargetDrawable(res,
                     com.android.internal.R.drawable.ic_action_empty);

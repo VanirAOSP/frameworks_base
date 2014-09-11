@@ -29,7 +29,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import com.android.internal.util.cm.QSUtils;
-import static com.android.internal.util.aokp.AwesomeConstants.AwesomeConstant;
+import com.android.internal.util.vanir.AwesomeConstants;
+import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
 
 public class NavBarHelpers {
 
@@ -56,7 +57,7 @@ public class NavBarHelpers {
     public static Drawable getIconImage(Context mContext, String uri) {
         Drawable actionIcon;
         if (TextUtils.isEmpty(uri)) {
-            uri = AwesomeConstants.AwesomeConstant.ACTION_NULL.value();
+            uri = AwesomeConstant.ACTION_NULL.value();
         }
         if (uri.startsWith("**")) {
             return AwesomeConstants.getActionIcon(mContext, uri);
@@ -66,11 +67,11 @@ public class NavBarHelpers {
             } catch (NameNotFoundException e) {
                 e.printStackTrace();
                 actionIcon = AwesomeConstants.getActionIcon(mContext,
-                        AwesomeConstants.AwesomeConstant.ACTION_NULL.value());
+                        AwesomeConstant.ACTION_NULL.value());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 actionIcon = AwesomeConstants.getActionIcon(mContext,
-                        AwesomeConstants.AwesomeConstant.ACTION_NULL.value());
+                        AwesomeConstant.ACTION_NULL.value());
             }
         }
         return actionIcon;
@@ -94,7 +95,7 @@ public class NavBarHelpers {
                 mActionList.add(mActionStart[i]);
             }
             if (!context.getResources().getBoolean(com.android.internal.R.bool.config_enableTorch)) {
-                mActionList.remove(AwesomeConstants.AwesomeConstant.ACTION_TORCH.value());
+                mActionList.remove(AwesomeConstant.ACTION_TORCH.value());
             }
         }
         int actionSize = mActionList.size();
@@ -107,7 +108,7 @@ public class NavBarHelpers {
 
     public static String getProperSummary(Context mContext, String uri) {
         if (TextUtils.isEmpty(uri)) {
-            uri = AwesomeConstants.AwesomeConstant.ACTION_NULL.value();
+            uri = AwesomeConstant.ACTION_NULL.value();
         }
         if (uri.startsWith("**")) {
             return AwesomeConstants.getProperName(mContext, uri);
@@ -119,7 +120,7 @@ public class NavBarHelpers {
                 }
                 return getFriendlyShortcutName(mContext, intent);
             } catch (URISyntaxException e) {
-                return AwesomeConstants.getProperName(mContext, AwesomeConstants.AwesomeConstant.ACTION_NULL.value());
+                return AwesomeConstants.getProperName(mContext, AwesomeConstant.ACTION_NULL.value());
             }
         }
     }
