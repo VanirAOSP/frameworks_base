@@ -53,6 +53,7 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
@@ -66,6 +67,7 @@ import com.android.systemui.statusbar.policy.DeadZone;
 import com.android.systemui.statusbar.policy.LayoutChangerButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView.KeyButtonInfo;
+import com.android.systemui.statusbar.policy.NxButtonView;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -92,8 +94,10 @@ public class NavigationBarView extends LinearLayout {
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
 
+
     private float mButtonWidth, mMenuButtonWidth, mLayoutChangerWidth;
     private int mMenuButtonId;
+    private int mNxBarId;
 
     final boolean mTablet = isTablet(mContext);
 
@@ -348,6 +352,10 @@ public class NavigationBarView extends LinearLayout {
 
     public View getRightLayoutButton() {
         return mCurrentView.findViewWithTag(AwesomeConstant.ACTION_LAYOUT_RIGHT.value());
+    }
+
+    public View getNxBarView() {
+        return mCurrentView.findViewById(mNxBarId);
     }
 
     public View getMenuButtonFromString() {
@@ -855,6 +863,45 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
 
+if (mCurrentLayout == 3 && !showingIME) {
+            // TEST: HARDCODED NX BUTTON VIEW ON LAYOUT 4
+            NxButtonView nxButton = new NxButtonView(mContext, null);
+            // left side actions
+			info = new KeyButtonInfo(
+                    AwesomeConstant.ACTION_HOME.value(), // short press
+                    AwesomeConstant.ACTION_RECENTS.value(), // long press
+                    AwesomeConstant.ACTION_BACK.value(), // double tap
+                    AwesomeConstant.ACTION_HOME.value(), // long swipe left
+                    AwesomeConstant.ACTION_NOTIFICATIONS.value(), // long swipe right
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value(), // short swipe left
+                    AwesomeConstant.ACTION_IME.value(), // short swipe right
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value()); // upwards swipe
+			nxButton.setLeftActions(info);
+            // right side actions
+            info = new KeyButtonInfo(
+                    AwesomeConstant.ACTION_BACK.value(),
+                    AwesomeConstant.ACTION_RECENTS.value(),
+                    AwesomeConstant.ACTION_BACK.value(),
+                    AwesomeConstant.ACTION_HOME.value(),
+                    AwesomeConstant.ACTION_NOTIFICATIONS.value(),
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value(),
+                    AwesomeConstant.ACTION_IME.value(),
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value());
+            nxButton.setRightActions(info);
+			nxButton.setImageResource(R.drawable.ic_sysbar_blank);
+			nxButton.setLayoutParams(getLayoutParams(
+                    landscape, LayoutParams.MATCH_PARENT, 0.1f));
+			nxButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                    : R.drawable.ic_sysbar_highlight);
+			// add the button and lights out views
+			addButton(navButtons, nxButton, landscape);
+			addLightsOutButton(lightsOut, nxButton, landscape, false);
+            if (mNxBarId == 0) {
+                // assign the same id for layout and horizontal buttons
+                mNxBarId = View.generateViewId();
+            }
+            nxButton.setId(mNxBarId);
+} else {
             for (int j = 0; j < length; j++) {
                 // create the button
                 info = buttonsArray.get(j);
@@ -864,7 +911,7 @@ public class NavigationBarView extends LinearLayout {
                     button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
                     button.setGlowBackground(R.drawable.ic_sysbar_highlight);
                 } else {
-                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.5f));
+                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.1f));
                     button.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                             : R.drawable.ic_sysbar_highlight);
                 }
@@ -909,6 +956,7 @@ public class NavigationBarView extends LinearLayout {
                     addLightsOutButton(lightsOut, button, landscape, true);
                 }
             }
+}
             if (mButtonLayouts > 1) {
                 if (!mArrows || !showingIME) {
                     // right-side layout changer button
@@ -1004,6 +1052,9 @@ public class NavigationBarView extends LinearLayout {
 
         // force the low profile & disabled states into compliance
         mBarTransitions.init(mVertical);
+        if (getNxBarView() != null) {
+            ((NxButtonView) getNxBarView()).setIsVertical(mVertical);
+        }
 
         setMenuVisibility(mShowMenu, true /* force */);
 
@@ -1015,6 +1066,19 @@ public class NavigationBarView extends LinearLayout {
             setNavigationIconHints(mNavigationIconHints, true);
         } else {
             setDisabledFlags(mDisabledFlags, true /* force */);
+        }
+    }
+
+    private int getScaledWidth(boolean tablet, boolean landscape) {
+        WindowManager window = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = window.getDefaultDisplay(); 
+        int width = display.getWidth() / 3;
+        int height = display.getHeight() / 3;
+
+        if (landscape && tablet) {
+            return height;
+        } else {
+            return width;
         }
     }
 
