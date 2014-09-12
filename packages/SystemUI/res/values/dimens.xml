@@ -135,6 +135,9 @@
     <!-- The width of the view containing non-menu status bar icons -->
     <dimen name="navigation_key_width">80dip</dimen>
 
+    <!-- Width of the NX bar containers -->
+    <dimen name="navigation_nx_key_width">180dip</dimen>
+
     <!-- The width of the view containing the menu status bar icon -->
     <dimen name="navigation_menu_key_width">40dip</dimen>
 
