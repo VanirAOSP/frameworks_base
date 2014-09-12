@@ -119,7 +119,6 @@ public class LayoutChangerButtonView extends KeyButtonView {
         return true;
     }
 
-    @Override
     protected void doSinglePress() {
         if (callOnClick()) {
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);

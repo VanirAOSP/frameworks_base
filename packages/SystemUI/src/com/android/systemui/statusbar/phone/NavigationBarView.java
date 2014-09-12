@@ -53,6 +53,7 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
@@ -66,6 +67,7 @@ import com.android.systemui.statusbar.policy.DeadZone;
 import com.android.systemui.statusbar.policy.LayoutChangerButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView.KeyButtonInfo;
+import com.android.systemui.statusbar.policy.NxButtonView;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -83,7 +85,7 @@ public class NavigationBarView extends LinearLayout {
     final Display mDisplay;
     View mCurrentView = null;
     View[] mRotatedViews = new View[4];
-    
+
     int mBarSize;
     boolean mVertical;
     boolean mScreenOn;
@@ -94,6 +96,8 @@ public class NavigationBarView extends LinearLayout {
 
     private float mButtonWidth, mMenuButtonWidth, mLayoutChangerWidth;
     private int mMenuButtonId;
+    private int mNxBarId;
+    boolean makeChangersVisible = false;
 
     final boolean mTablet = isTablet(mContext);
 
@@ -227,6 +231,17 @@ public class NavigationBarView extends LinearLayout {
             KeyguardTouchDelegate.getInstance(getContext()).dispatchButtonClick(0);
         }
     };
+    private final OnClickListener mNxClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            boolean visible = makeChangersVisible;
+            Log.e(TAG, "I'm touching something.. and it's visible" + visible);
+            setVisibleOrGone(getLeftLayoutButton(), visible);
+            setVisibleOrGone(getRightLayoutButton(), visible);
+            if (visible) makeChangersVisible = false;
+            if (!visible) makeChangersVisible = true;
+        }
+    };
 
     private class H extends Handler {
         public void handleMessage(Message m) {
@@ -348,6 +363,14 @@ public class NavigationBarView extends LinearLayout {
 
     public View getRightLayoutButton() {
         return mCurrentView.findViewWithTag(AwesomeConstant.ACTION_LAYOUT_RIGHT.value());
+    }
+
+    public View getNxBarView() {
+        return mCurrentView.findViewById(mNxBarId);
+    }
+    // used for lockscreen notifications
+    public View getNxController() {
+        return mCurrentView.findViewById(R.id.nx_controller);
     }
 
     public View getMenuButtonFromString() {
@@ -575,6 +598,7 @@ public class NavigationBarView extends LinearLayout {
         setVisibleOrGone(getSearchLight(), showSearch);
         setVisibleOrGone(getCameraButton(), showCamera);
         setVisibleOrGone(getNotifsButton(), showNotifs && mWasNotifsButtonVisible);
+        setVisibleOrGone(getNxController(), !disableHome && getNxBarView() != null);
 
         if (mButtonLayouts > 1) {
             final boolean allowLayoutArrows = !disableHome && !showingIME;
@@ -801,6 +825,7 @@ public class NavigationBarView extends LinearLayout {
         LinearLayout navButtons;
         LinearLayout lightsOut;
         boolean landscape;
+        mNxBarId = 0;
 
         KeyButtonView button;
         LayoutChangerButtonView changer;
@@ -854,7 +879,44 @@ public class NavigationBarView extends LinearLayout {
                     addSeparator(lightsOut, landscape, separatorSize, 0f);
                 }
             }
-
+// TESTING ONLY: HARDCODED NX BUTTON VIEW ON LAYOUT 4
+if (mCurrentLayout == 3 && !showingIME) {
+            NxButtonView nxButton = new NxButtonView(mContext, null);
+            // left side actions
+            info = new KeyButtonInfo(
+                    AwesomeConstant.ACTION_HOME.value(), // short press
+                    null, // double tap
+                    null, // long press
+                    AwesomeConstant.ACTION_HOME.value(), // long swipe left
+                    AwesomeConstant.ACTION_LASTAPP.value(), // long swipe right
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value(), // short swipe left
+                    AwesomeConstant.ACTION_IME.value(), // short swipe right
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value()); // upwards swipe
+            nxButton.setLeftActions(info);
+            // right side actions
+            info = new KeyButtonInfo(
+                    AwesomeConstant.ACTION_BACK.value(), // short press
+                    AwesomeConstant.ACTION_RECENTS.value(), // double tap
+                    null, // long press
+                    AwesomeConstant.ACTION_HOME.value(), // long swipe left
+                    AwesomeConstant.ACTION_LASTAPP.value(),  // long swipe right
+                    AwesomeConstant.ACTION_NOTIFICATIONS.value(), // short swipe left
+                    AwesomeConstant.ACTION_IME.value(), // short swipe right
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value()); // upwards swipe
+            nxButton.setRightActions(info);
+            nxButton.setLayoutParams(getLayoutParams(
+                    landscape, LayoutParams.MATCH_PARENT, 0.1f));
+            nxButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                    : R.drawable.ic_sysbar_highlight);
+            // add the button and lights out views
+            addButton(navButtons, nxButton, landscape);
+            addLightsOutButton(lightsOut, nxButton, landscape, false);
+            if (mNxBarId == 0) {
+                // assign the same id for layout and horizontal buttons
+                mNxBarId = View.generateViewId();
+            }
+            nxButton.setId(mNxBarId);
+} else {
             for (int j = 0; j < length; j++) {
                 // create the button
                 info = buttonsArray.get(j);
@@ -864,7 +926,7 @@ public class NavigationBarView extends LinearLayout {
                     button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
                     button.setGlowBackground(R.drawable.ic_sysbar_highlight);
                 } else {
-                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.5f));
+                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.1f));
                     button.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                             : R.drawable.ic_sysbar_highlight);
                 }
@@ -909,6 +971,7 @@ public class NavigationBarView extends LinearLayout {
                     addLightsOutButton(lightsOut, button, landscape, true);
                 }
             }
+}
             if (mButtonLayouts > 1) {
                 if (!mArrows || !showingIME) {
                     // right-side layout changer button
@@ -967,6 +1030,7 @@ public class NavigationBarView extends LinearLayout {
         for (int i = 0; i < mRotatedViews.length; i++) {
             final View cameraButton = mRotatedViews[i].findViewById(R.id.camera_button);
             final View notifsButton = mRotatedViews[i].findViewById(R.id.show_notifs);
+            final View nxController = mRotatedViews[i].findViewById(R.id.nx_controller);
             final View searchLight = mRotatedViews[i].findViewById(R.id.search_light);
             if (cameraButton != null) {
                 hasCamera = true;
@@ -975,6 +1039,9 @@ public class NavigationBarView extends LinearLayout {
             }
             if (notifsButton != null) {
                 notifsButton.setOnClickListener(mNavBarClickListener);
+            }
+            if (nxController != null) {
+                nxController.setOnClickListener(mNxClickListener);
             }
             if (searchLight != null) {
                 searchLight.setOnClickListener(onClickListener);
@@ -1004,6 +1071,9 @@ public class NavigationBarView extends LinearLayout {
 
         // force the low profile & disabled states into compliance
         mBarTransitions.init(mVertical);
+        if (getNxBarView() != null) {
+            ((NxButtonView) getNxBarView()).setIsVertical(mVertical);
+        }
 
         setMenuVisibility(mShowMenu, true /* force */);
 
