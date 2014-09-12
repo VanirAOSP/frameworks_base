@@ -77,6 +77,7 @@ public class DeadZone extends View {
         if (DEBUG)
             Slog.v(TAG, this + " size=[" + mSizeMin + "-" + mSizeMax + "] hold=" + mHold
                     + (mVertical ? " vertical" : " horizontal"));
+        a.recycle();
 
         setFlashOnTouchCapture(context.getResources().getBoolean(R.bool.config_dead_zone_flash));
     }

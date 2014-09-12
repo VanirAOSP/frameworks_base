@@ -101,6 +101,7 @@
                 systemui:decayTime="@integer/navigation_bar_deadzone_decay"
                 systemui:orientation="horizontal"
                 android:layout_gravity="top"
+                android:visibility="gone"
                 />
     </FrameLayout>
 
@@ -167,6 +168,7 @@
                 systemui:decayTime="@integer/navigation_bar_deadzone_decay"
                 systemui:orientation="vertical"
                 android:layout_gravity="top"
+                android:visibility="gone"
                 />
     </FrameLayout>
 
