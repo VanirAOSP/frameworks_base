@@ -53,6 +53,7 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
@@ -66,6 +67,7 @@ import com.android.systemui.statusbar.policy.DeadZone;
 import com.android.systemui.statusbar.policy.LayoutChangerButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView.KeyButtonInfo;
+import com.android.systemui.statusbar.policy.NxButtonView;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -92,7 +94,7 @@ public class NavigationBarView extends LinearLayout {
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
 
-    private float mButtonWidth, mMenuButtonWidth;
+    private float mButtonWidth, mNxButtonWidth, mMenuButtonWidth;
     private int mMenuButtonId;
 
     final boolean mTablet = isTablet(mContext);
@@ -267,6 +269,7 @@ public class NavigationBarView extends LinearLayout {
         mShowMenu = false;
         mDelegateHelper = new DelegateViewHelper(this);
         mButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_key_width);
+        mNxButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_nx_key_width);
         mMenuButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_menu_key_width);
 
         mBarTransitions = new NavigationBarTransitions(this);
@@ -881,6 +884,73 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
 
+            if (mCurrentLayout == 3) {
+                mNxButtonWidth = getScaledWidth(mTablet, landscape);
+                // TEST: HARDCODED NX BUTTON VIEW
+                KeyButtonInfo nxButtonInfo = new KeyButtonInfo(
+                        AwesomeConstant.ACTION_BACK.value(),
+                        AwesomeConstant.ACTION_RECENTS.value(),
+                        AwesomeConstant.ACTION_BACK.value(),
+                        AwesomeConstant.ACTION_HOME.value(),
+                        AwesomeConstant.ACTION_NOTIFICATIONS.value(),
+                        AwesomeConstant.ACTION_GESTURE_ACTIONS.value(),
+                        AwesomeConstant.ACTION_IME.value(),
+                        AwesomeConstant.ACTION_GESTURE_ACTIONS.value());
+                NxButtonView nxButton = new NxButtonView(mContext, null);
+                nxButton.setNxActions(nxButtonInfo);
+                nxButton.setImageResource(R.drawable.ic_sysbar_nx);
+                nxButton.setScaleType(ScaleType.FIT_XY);
+                nxButton.setLayoutParams(getLayoutParams(
+                        landscape, mNxButtonWidth, 0f));
+                nxButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                        : R.drawable.ic_sysbar_highlight);
+                // add the button and lights out views
+                addButton(navButtons, nxButton, landscape);
+                addLightsOutButton(lightsOut, nxButton, landscape, false);
+                // TEST: HARDCODED NX BUTTON VIEW
+                KeyButtonInfo nxButton2Info = new KeyButtonInfo(
+                        AwesomeConstant.ACTION_HOME.value(),
+                        AwesomeConstant.ACTION_RECENTS.value(),
+                        AwesomeConstant.ACTION_BACK.value(),
+                        AwesomeConstant.ACTION_HOME.value(),
+                        AwesomeConstant.ACTION_NOTIFICATIONS.value(),
+                        AwesomeConstant.ACTION_GESTURE_ACTIONS.value(),
+                        AwesomeConstant.ACTION_IME.value(),
+                        AwesomeConstant.ACTION_GESTURE_ACTIONS.value());
+                NxButtonView nxButton2 = new NxButtonView(mContext, null);
+                nxButton2.setNxActions(nxButton2Info);
+                nxButton2.setImageResource(R.drawable.ic_sysbar_nx);
+                nxButton2.setScaleType(ScaleType.FIT_XY);
+                nxButton2.setLayoutParams(getLayoutParams(
+                        landscape, mNxButtonWidth, 0.1f));
+                nxButton2.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                        : R.drawable.ic_sysbar_highlight);
+                // add the button and lights out views
+                addButton(navButtons, nxButton2, landscape);
+                addLightsOutButton(lightsOut, nxButton2, landscape, false);
+                // TEST: HARDCODED NX BUTTON VIEW
+                KeyButtonInfo nxButton3Info = new KeyButtonInfo(
+                        AwesomeConstant.ACTION_RECENTS.value(),
+                        AwesomeConstant.ACTION_RECENTS.value(),
+                        AwesomeConstant.ACTION_BACK.value(),
+                        AwesomeConstant.ACTION_HOME.value(),
+                        AwesomeConstant.ACTION_NOTIFICATIONS.value(),
+                        AwesomeConstant.ACTION_GESTURE_ACTIONS.value(),
+                        AwesomeConstant.ACTION_IME.value(),
+                        AwesomeConstant.ACTION_GESTURE_ACTIONS.value());
+                NxButtonView nxButton3 = new NxButtonView(mContext, null);
+                nxButton3.setNxActions(nxButton3Info);
+                nxButton3.setImageResource(R.drawable.ic_sysbar_nx);
+                nxButton3.setScaleType(ScaleType.FIT_XY);
+                nxButton3.setLayoutParams(getLayoutParams(
+                        landscape, mNxButtonWidth, 0f));
+                nxButton3.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                        : R.drawable.ic_sysbar_highlight);
+                // add the button and lights out views
+                addButton(navButtons, nxButton3, landscape);
+                addLightsOutButton(lightsOut, nxButton3, landscape, false);
+            } else {
+
             for (int j = 0; j < length; j++) {
                 // create the button
                 KeyButtonInfo info = buttonsArray.get(j);
@@ -890,7 +960,7 @@ public class NavigationBarView extends LinearLayout {
                     button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
                     button.setGlowBackground(R.drawable.ic_sysbar_highlight);
                 } else {
-                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.5f));
+                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.1f));
                     button.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                             : R.drawable.ic_sysbar_highlight);
                 }
@@ -936,6 +1006,7 @@ public class NavigationBarView extends LinearLayout {
                     addLightsOutButton(lightsOut, menuButton, landscape, true);
                 }
             }
+} // end if/else for NX testing
             if (mButtonLayouts > 1) {
                 if (!mArrows || !showingIME) {
                     // right-side layout changer button
@@ -1034,6 +1105,19 @@ public class NavigationBarView extends LinearLayout {
             setNavigationIconHints(mNavigationIconHints, true);
         } else {
             setDisabledFlags(mDisabledFlags, true /* force */);
+        }
+    }
+
+    private int getScaledWidth(boolean tablet, boolean landscape) {
+        WindowManager window = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = window.getDefaultDisplay(); 
+        int width = display.getWidth() / 3;
+        int height = display.getHeight() / 3;
+
+        if (landscape && tablet) {
+            return height;
+        } else {
+            return width;
         }
     }
 

@@ -520,6 +520,7 @@ public class KeyButtonView extends ImageView {
 
     public static class KeyButtonInfo {
         String singleAction, doubleTapAction, longPressAction, iconUri;
+        String swipeLeft, swipeRight, swipeLeftShort, swipeRightShort, swipeUp;
 
         // reserved for single purpose keys
         public KeyButtonInfo(String singleTap) {
@@ -551,6 +552,75 @@ public class KeyButtonView extends ImageView {
                 if ((longPressAction.isEmpty()
                         || longPressAction.equals(NULL_ACTION))) {
                     longPressAction = null;
+                }
+            }
+        }
+
+        // reserved for NX bar buttons
+        public KeyButtonInfo(String singleTap, String doubleTap,
+                String longPress, String swipeLeft, String swipeRight, String swipeLeftShort,
+                String swipeRightShort, String swipeUp) {
+            this.singleAction = singleTap;
+            this.doubleTapAction = doubleTap;
+            this.longPressAction = longPress;
+            this.swipeLeft = swipeLeft;
+            this.swipeRight = swipeRight;
+            this.swipeLeftShort = swipeLeftShort;
+            this.swipeRightShort = swipeRightShort;
+            this.swipeUp = swipeUp;
+
+            if (singleAction != null) {
+                if ((singleAction.isEmpty()
+                        || singleAction.equals(NULL_ACTION))) {
+                    singleAction = null;
+                }
+            }
+
+            if (doubleTapAction != null) {
+                if ((doubleTapAction.isEmpty()
+                        || doubleTapAction.equals(NULL_ACTION))) {
+                    doubleTapAction = null;
+                }
+            }
+
+            if (longPressAction != null) {
+                if ((longPressAction.isEmpty()
+                        || longPressAction.equals(NULL_ACTION))) {
+                    longPressAction = null;
+                }
+            }
+
+            if (swipeLeft != null) {
+                if ((swipeLeft.isEmpty()
+                        || swipeLeft.equals(NULL_ACTION))) {
+                    swipeLeft = null;
+                }
+            }
+
+            if (swipeRight != null) {
+                if ((swipeRight.isEmpty()
+                        || swipeRight.equals(NULL_ACTION))) {
+                    swipeRight = null;
+                }
+            }
+            if (swipeLeftShort != null) {
+                if ((swipeLeftShort.isEmpty()
+                        || swipeLeftShort.equals(NULL_ACTION))) {
+                    swipeLeftShort = null;
+                }
+            }
+
+            if (swipeRightShort != null) {
+                if ((swipeRightShort.isEmpty()
+                        || swipeRightShort.equals(NULL_ACTION))) {
+                    swipeRightShort = null;
+                }
+            }
+
+            if (swipeUp != null) {
+                if ((swipeUp.isEmpty()
+                        || swipeUp.equals(NULL_ACTION))) {
+                    swipeUp = null;
                 }
             }
         }
