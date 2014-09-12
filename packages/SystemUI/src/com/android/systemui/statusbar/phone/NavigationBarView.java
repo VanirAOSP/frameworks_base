@@ -53,6 +53,7 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
@@ -67,6 +68,8 @@ import com.android.systemui.statusbar.policy.LayoutChangerButtonView;
 import com.android.systemui.statusbar.policy.LayoutChangerButtonView.LayoutButtonInfo;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView.AwesomeButtonInfo;
+import com.android.systemui.statusbar.policy.NxButtonView;
+import com.android.systemui.statusbar.policy.NxButtonView.NxButtonInfo;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -93,7 +96,7 @@ public class NavigationBarView extends LinearLayout {
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
 
-    private float mButtonWidth, mMenuButtonWidth;
+    private float mButtonWidth, mNxButtonWidth, mMenuButtonWidth;
     private int mMenuButtonId;
 
     final boolean mTablet = isTablet(mContext);
@@ -268,6 +271,7 @@ public class NavigationBarView extends LinearLayout {
         mShowMenu = false;
         mDelegateHelper = new DelegateViewHelper(this);
         mButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_key_width);
+        mNxButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_nx_key_width);
         mMenuButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_menu_key_width);
 
         mBarTransitions = new NavigationBarTransitions(this);
@@ -883,6 +887,27 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
 
+            // TEST: HARDCODED NX BUTTON VIEW
+            NxButtonInfo nxButtonInfo = new NxButtonInfo(
+                    AwesomeConstant.ACTION_MENU.value(),
+                    AwesomeConstant.ACTION_RECENTS.value(),
+                    AwesomeConstant.ACTION_BACK.value(),
+                    AwesomeConstant.ACTION_HOME.value(),
+                    AwesomeConstant.ACTION_NOTIFICATIONS.value(),
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value(),
+                    AwesomeConstant.ACTION_IME.value(),
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value());
+            NxButtonView nxButton = new NxButtonView(mContext, null);
+            nxButton.setNxActions(nxButtonInfo);
+            nxButton.setImageResource(R.drawable.ic_sysbar_nx);
+            nxButton.setScaleType(ScaleType.FIT_XY);
+            nxButton.setLayoutParams(getLayoutParams(landscape, mNxButtonWidth, 0f));
+            nxButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                    : R.drawable.ic_sysbar_highlight);
+            // add the button and lights out views
+            addButton(navButtons, nxButton, landscape);
+            addLightsOutButton(lightsOut, nxButton, landscape, false);
+
             for (int j = 0; j < length; j++) {
                 // create the button
                 AwesomeButtonInfo info = buttonsArray.get(j);
@@ -892,7 +917,7 @@ public class NavigationBarView extends LinearLayout {
                     button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
                     button.setGlowBackground(R.drawable.ic_sysbar_highlight);
                 } else {
-                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.5f));
+                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.1f));
                     button.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                             : R.drawable.ic_sysbar_highlight);
                 }
