@@ -53,19 +53,21 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.util.vanir.AwesomeConstants;
 import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
+import com.android.internal.util.vanir.KeyButtonInfo;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
 import com.android.systemui.statusbar.policy.DeadZone;
 import com.android.systemui.statusbar.policy.LayoutChangerButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
-import com.android.systemui.statusbar.policy.KeyButtonView.KeyButtonInfo;
+import com.android.systemui.statusbar.policy.NxButtonView;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -83,7 +85,7 @@ public class NavigationBarView extends LinearLayout {
     final Display mDisplay;
     View mCurrentView = null;
     View[] mRotatedViews = new View[4];
-    
+
     int mBarSize;
     boolean mVertical;
     boolean mScreenOn;
@@ -94,6 +96,8 @@ public class NavigationBarView extends LinearLayout {
 
     private float mButtonWidth, mMenuButtonWidth, mLayoutChangerWidth;
     private int mMenuButtonId;
+    private int mNxBarId;
+    boolean makeChangersVisible = false;
 
     final boolean mTablet = isTablet(mContext);
 
@@ -105,6 +109,23 @@ public class NavigationBarView extends LinearLayout {
                                                                   Settings.System.NAVIGATION_BAR_BUTTONS_FOUR,
                                                                   Settings.System.NAVIGATION_BAR_BUTTONS_FIVE };
     ArrayList<KeyButtonInfo> mIMEKeyArray = new ArrayList<KeyButtonInfo>();
+
+    String[] leftinfo = {AwesomeConstant.ACTION_HOME.value(), // short press
+                    null, // double tap
+                    null, // long press
+                    AwesomeConstant.ACTION_HOME.value(), // long swipe left
+                    AwesomeConstant.ACTION_LASTAPP.value(), // long swipe right
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value(), // short swipe left
+                    AwesomeConstant.ACTION_IME.value(), // short swipe right
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value()}; // upwards swipe
+    String[] rightinfo = {AwesomeConstant.ACTION_BACK.value(), // short press
+                    AwesomeConstant.ACTION_RECENTS.value(), // double tap
+                    null, // long press
+                    AwesomeConstant.ACTION_HOME.value(), // long swipe left
+                    AwesomeConstant.ACTION_LASTAPP.value(),  // long swipe right
+                    AwesomeConstant.ACTION_NOTIFICATIONS.value(), // short swipe left
+                    AwesomeConstant.ACTION_IME.value(), // short swipe right
+                    AwesomeConstant.ACTION_GESTURE_ACTIONS.value()};
 
     private ContentObserver mSettingsObserver;
     private ContentObserver mDisablePrefsObserver;
@@ -225,6 +246,17 @@ public class NavigationBarView extends LinearLayout {
         @Override
         public void onClick(View v) {
             KeyguardTouchDelegate.getInstance(getContext()).dispatchButtonClick(0);
+        }
+    };
+    private final OnClickListener mNxClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            boolean visible = makeChangersVisible;
+            Log.e(TAG, "I'm touching something.. and it's visible" + visible);
+            setVisibleOrGone(getLeftLayoutButton(), visible);
+            setVisibleOrGone(getRightLayoutButton(), visible);
+            if (visible) makeChangersVisible = false;
+            if (!visible) makeChangersVisible = true;
         }
     };
 
@@ -348,6 +380,14 @@ public class NavigationBarView extends LinearLayout {
 
     public View getRightLayoutButton() {
         return mCurrentView.findViewWithTag(AwesomeConstant.ACTION_LAYOUT_RIGHT.value());
+    }
+
+    public View getNxBarView() {
+        return mCurrentView.findViewById(mNxBarId);
+    }
+    // used for lockscreen notifications
+    public View getNxController() {
+        return mCurrentView.findViewById(R.id.nx_controller);
     }
 
     public View getMenuButtonFromString() {
@@ -575,6 +615,7 @@ public class NavigationBarView extends LinearLayout {
         setVisibleOrGone(getSearchLight(), showSearch);
         setVisibleOrGone(getCameraButton(), showCamera);
         setVisibleOrGone(getNotifsButton(), showNotifs && mWasNotifsButtonVisible);
+        setVisibleOrGone(getNxController(), !disableHome && getNxBarView() != null);
 
         if (mButtonLayouts > 1) {
             final boolean allowLayoutArrows = !disableHome && !showingIME;
@@ -797,6 +838,7 @@ public class NavigationBarView extends LinearLayout {
         LinearLayout navButtons;
         LinearLayout lightsOut;
         boolean landscape;
+        mNxBarId = 0;
 
         KeyButtonView button;
         LayoutChangerButtonView changer;
@@ -835,6 +877,7 @@ public class NavigationBarView extends LinearLayout {
                     addLightsOutButton(lightsOut, changer, landscape, false);
                 }
             }
+
             if (mLegacyMenu && mButtonLayouts == 1) {
                 if (mTablet) {
                     // offset menu button
@@ -852,26 +895,45 @@ public class NavigationBarView extends LinearLayout {
             }
 
             for (int j = 0; j < length; j++) {
-                // create the button
                 info = buttonsArray.get(j);
-                button = new KeyButtonView(mContext, null);
-                button.setButtonActions(info);
-                if (mTablet) {
-                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
-                    button.setGlowBackground(R.drawable.ic_sysbar_highlight);
-                } else {
-                    button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.5f));
-                    button.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
-                            : R.drawable.ic_sysbar_highlight);
-                }
+                switch (info.getViewType()) {
+                    case KeyButtonInfo.NO_EXTENSION:
+                        button = new KeyButtonView(mContext, null);
+                        button.setButtonActions(info);
+                        if (mTablet) {
+                            button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
+                            button.setGlowBackground(R.drawable.ic_sysbar_highlight);
+                        } else {
+                            button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 0.1f));
+                            button.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                                    : R.drawable.ic_sysbar_highlight);
+                        }
+                        addButton(navButtons, button, landscape);
+                        if (!button.mHasBlankSingleAction) {
+                            addLightsOutButton(lightsOut, button, landscape, false);
+                        } else {
+                            addSeparator(lightsOut, landscape, (int) mButtonWidth, 0.5f);
+                        }
+                        break;
 
-                // add the button
-                addButton(navButtons, button, landscape);
-
-                if (!button.mHasBlankSingleAction) {
-                    addLightsOutButton(lightsOut, button, landscape, false);
-                } else {
-                    addSeparator(lightsOut, landscape, (int) mButtonWidth, 0.5f);
+                    case KeyButtonInfo.NX_EXTENSION:
+                        NxButtonView nxbutton = new NxButtonView(mContext, null);
+                        nxbutton.setLeftActions(new KeyButtonInfo(leftinfo));
+                        nxbutton.setRightActions(new KeyButtonInfo(rightinfo));
+                        if (mTablet) {
+                            nxbutton.setLayoutParams(getLayoutParams(landscape, LayoutParams.MATCH_PARENT, 1f));
+                            nxbutton.setGlowBackground(R.drawable.ic_sysbar_highlight);
+                        } else {
+                            nxbutton.setLayoutParams(getLayoutParams(landscape, LayoutParams.MATCH_PARENT, 0.1f));
+                            nxbutton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
+                                    : R.drawable.ic_sysbar_highlight);
+                        }
+                        addButton(navButtons, nxbutton, landscape);
+                        if (mNxBarId == 0) {
+                            mNxBarId = View.generateViewId();
+                        }
+                        nxbutton.setId(mNxBarId);
+                        break;
                 }
             }
 
@@ -963,6 +1025,7 @@ public class NavigationBarView extends LinearLayout {
         for (int i = 0; i < mRotatedViews.length; i++) {
             final View cameraButton = mRotatedViews[i].findViewById(R.id.camera_button);
             final View notifsButton = mRotatedViews[i].findViewById(R.id.show_notifs);
+            final View nxController = mRotatedViews[i].findViewById(R.id.nx_controller);
             final View searchLight = mRotatedViews[i].findViewById(R.id.search_light);
             if (cameraButton != null) {
                 hasCamera = true;
@@ -971,6 +1034,9 @@ public class NavigationBarView extends LinearLayout {
             }
             if (notifsButton != null) {
                 notifsButton.setOnClickListener(mNavBarClickListener);
+            }
+            if (nxController != null) {
+                nxController.setOnClickListener(mNxClickListener);
             }
             if (searchLight != null) {
                 searchLight.setOnClickListener(onClickListener);
@@ -1000,6 +1066,9 @@ public class NavigationBarView extends LinearLayout {
 
         // force the low profile & disabled states into compliance
         mBarTransitions.init(mVertical);
+        if (getNxBarView() != null) {
+            ((NxButtonView) getNxBarView()).setIsVertical(mVertical);
+        }
 
         setMenuVisibility(mShowMenu, true /* force */);
 

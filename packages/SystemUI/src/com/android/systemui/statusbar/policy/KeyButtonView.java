@@ -43,6 +43,7 @@ import android.widget.ImageView;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.aokp.AwesomeAction;
 import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
+import com.android.internal.util.vanir.KeyButtonInfo;
 import com.android.internal.util.aokp.NavBarHelpers;
 import com.android.systemui.R;
 
@@ -524,42 +525,4 @@ public class KeyButtonView extends ImageView {
             postDelayed(this, DPAD_REPEAT_INTERVAL);
         }
     };
-
-    public static class KeyButtonInfo {
-        String singleAction, doubleTapAction, longPressAction, iconUri;
-
-        // reserved for single purpose keys
-        public KeyButtonInfo(String singleTap) {
-            this.singleAction = singleTap;
-        }
-
-        // reserved for configurable buttons
-        public KeyButtonInfo(String singleTap, String doubleTap, String longPress, String uri) {
-            this.singleAction = singleTap;
-            this.doubleTapAction = doubleTap;
-            this.longPressAction = longPress;
-            this.iconUri = uri;
-            
-            if (singleAction != null) {
-                if ((singleAction.isEmpty()
-                        || singleAction.equals(NULL_ACTION))) {
-                    singleAction = null;
-                }
-            }
-
-            if (doubleTapAction != null) {
-                if ((doubleTapAction.isEmpty()
-                        || doubleTapAction.equals(NULL_ACTION))) {
-                    doubleTapAction = null;
-                }
-            }
-
-            if (longPressAction != null) {
-                if ((longPressAction.isEmpty()
-                        || longPressAction.equals(NULL_ACTION))) {
-                    longPressAction = null;
-                }
-            }
-        }
-    }
 }
