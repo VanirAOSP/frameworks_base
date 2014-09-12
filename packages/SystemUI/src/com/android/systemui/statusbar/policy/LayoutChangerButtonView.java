@@ -34,6 +34,7 @@ import com.android.internal.util.aokp.AwesomeAction;
 import com.android.internal.util.aokp.NavBarHelpers;
 import com.android.internal.util.vanir.AwesomeConstants;
 import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
+import com.android.internal.util.vanir.KeyButtonInfo;
 import com.android.systemui.R;
 
 public class LayoutChangerButtonView extends KeyButtonView {

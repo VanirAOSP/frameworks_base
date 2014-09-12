@@ -41,8 +41,6 @@
                 android:id="@+id/nav_buttons"
                 android:animateLayoutChanges="true"
                 >
-
-
         </LinearLayout>
 
         <!-- lights out layout to match exactly -->
@@ -67,6 +65,15 @@
                 android:layout_gravity="center_vertical|left"
                 android:scaleType="center"
                 android:visibility="gone"/>
+
+            <com.android.systemui.statusbar.policy.KeyButtonView
+                android:id="@+id/nx_controller"
+                android:src="@drawable/ic_nx_control"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:scaleType="center"
+                android:visibility="visible" />
 
             <com.android.systemui.statusbar.policy.KeyButtonView
                 android:layout_width="80dp"
@@ -122,7 +129,6 @@
                 android:animateLayoutChanges="true"
                 >
 
-
         </LinearLayout>
 
         <!-- lights out layout to match exactly -->
@@ -143,6 +149,15 @@
                 android:layout_gravity="center_vertical|left"
                 android:scaleType="center"
                 android:visibility="gone"/>
+
+        <com.android.systemui.statusbar.policy.KeyButtonView
+                android:id="@+id/nx_controller"
+                android:src="@drawable/ic_nx_control"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:scaleType="center"
+                android:visibility="visible" />
 
         <com.android.systemui.statusbar.policy.KeyButtonView
                 android:id="@+id/search_light"
