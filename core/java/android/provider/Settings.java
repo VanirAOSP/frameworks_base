@@ -3315,6 +3315,12 @@ public final class Settings {
         public static final String NAVIGATION_BAR_BUTTONS_FIVE = "navigation_bar_buttons_five";
 
         /**
+         * Layouts with NX views
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_NX_LAYOUTS = "navigation_bar_nx_layouts";
+
+        /**
          * Allow navigation bar side keys
          * @hide
          */
