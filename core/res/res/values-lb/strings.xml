@@ -53,6 +53,8 @@
   <string name="BaMmi">Uruffspär</string>
   <string name="PwdMmi">Passwuert-Ännerung</string>
   <string name="PinMmi">PIN-Ännerung</string>
+  <string name="RuacMmi">Refus vun onerwënschten Uriff</string>
+  <string name="CndMmi">Iwwermëttlung fir Ruffnummeren</string>
   <string name="DndMmi">Net stéieren</string>
   <string name="RestrictedChangedTitle">Begrenzten Zougrëff geännert</string>
   <string name="RestrictedOnData">Dateservice ass gespaart.</string>
