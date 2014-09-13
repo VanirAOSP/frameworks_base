@@ -207,7 +207,9 @@ public class KeyguardViewManager {
         @Override
         public void onChange(boolean selfChange) {
             updateSettings();
-            mKeyguardHost.cacheUserImage();
+            if (mKeyguardHost != null) {
+                mKeyguardHost.cacheUserImage();
+            }
             updateShowWallpaper(mKeyguardHost.shouldShowWallpaper(!isSeeThroughEnabled));
         }
     }
