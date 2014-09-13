@@ -67,9 +67,6 @@ public class AwesomeAction {
     private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY;
     private static final int CURSOR_FLAGS = KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE;
 
-    private static boolean wtf = true;
-    private static boolean ftw;
-
     private static int mCurrentUserId = 0;
 
     private AwesomeAction() {

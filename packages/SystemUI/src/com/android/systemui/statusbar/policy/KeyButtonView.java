@@ -81,7 +81,6 @@ public class KeyButtonView extends ImageView {
     RectF mRect = new RectF();
     AnimatorSet mPressedAnim;
     Animator mAnimateToQuiescent = new ObjectAnimator();
-    AnimatorSet as = mPressedAnim = new AnimatorSet();
     boolean mShouldClick = true;
 
     KeyButtonInfo mActions;
@@ -304,6 +303,7 @@ public class KeyButtonView extends ImageView {
                 if (mPressedAnim != null && mPressedAnim.isRunning()) {
                     mPressedAnim.cancel();
                 }
+                final AnimatorSet as = mPressedAnim = new AnimatorSet();
                 if (pressed) {
                     if (mGlowScale < GLOW_MAX_SCALE_FACTOR)
                         mGlowScale = GLOW_MAX_SCALE_FACTOR;
