@@ -2215,6 +2215,43 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     @Override
+    public void animateNotificationsOrSettingsPanel() {
+        if (!panelsEnabled()) return;
+        int state = getExpandedNotificationState();
+        switch (state) {
+            case 0:
+                animateExpandNotificationsPanel();
+                break;
+            case 1:
+                animateCollapsePanels();
+                break;
+            case 2:
+                animateExpandSettingsPanel();
+                break;
+        }
+    }
+
+    /**
+     * 0 = collapsed
+     * 1 = notifications
+     * 2 = quicksettings
+     * @hide
+     */
+    private int getExpandedNotificationState() {
+        Log.d(TAG, "animateExpand: mExpandedVisible=" + mExpandedVisible);
+        if (mExpandedVisible) {
+            // Notification button is on quick settings side
+            if (mNotificationButton.getVisibility() == View.VISIBLE) {
+                return 1;
+            // Settings button is on notification side
+            } else if (mSettingsButton.getVisibility() == View.VISIBLE) {
+                return 2;
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public void animateExpandSettingsPanel() {
         if (SPEW) Log.d(TAG, "animateExpand: mExpandedVisible=" + mExpandedVisible);
         if (!panelsEnabled()) {
