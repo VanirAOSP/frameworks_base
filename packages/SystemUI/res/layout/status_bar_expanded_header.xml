@@ -80,8 +80,8 @@
 
     <FrameLayout android:id="@+id/customize_button_holder"
         android:layout_marginStart="0dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         >
 
     <ImageView android:id="@+id/halo_button"

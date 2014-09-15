@@ -680,6 +680,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         if (!mHaloEnabled) {
             mHaloActive = false;
+            mHaloButton.setVisibility(View.GONE);
         }
 
         if (mHaloActive) {
@@ -710,6 +711,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             mHoverButton.setVisibility(View.VISIBLE);
         } else {
             mHoverState = HOVER_DISABLED;
+            mHoverButton.setVisibility(View.GONE);
         }
 
         mHoverButton.setImageResource(mHoverState != HOVER_DISABLED
