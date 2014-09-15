@@ -36,7 +36,7 @@
             android:id="@+id/clock"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingStart="8dp"
+            android:paddingStart="2dp"
             android:paddingEnd="4dp"
             android:singleLine="true"
             android:tag="expanded"
@@ -55,7 +55,7 @@
             android:background="@drawable/ic_notify_button_bg"
             android:gravity="center_vertical"
             android:paddingStart="4dp"
-            android:paddingEnd="8dp"
+            android:paddingEnd="0dp"
             />
     </RelativeLayout>
 
@@ -67,9 +67,9 @@
 
     <TextView
         android:id="@+id/header_debug_info"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:fontFamily="sans-serif-condensed"
         android:textSize="11dp"
@@ -80,12 +80,12 @@
 
     <FrameLayout android:id="@+id/customize_button_holder"
         android:layout_marginStart="0dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         >
 
     <ImageView android:id="@+id/halo_button"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="50dp"
             android:scaleType="center"
             android:src="@drawable/ic_notify_halo"
@@ -95,7 +95,7 @@
             />
 
     <ImageView android:id="@+id/hover_button"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="50dp"
             android:scaleType="center"
             android:src="@drawable/ic_notify_hover_normal"
@@ -108,12 +108,12 @@
 
     <FrameLayout android:id="@+id/action_button_holder"
         android:layout_marginStart="0dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         >
 
         <ImageView android:id="@+id/clear_all_button"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="50dp"
             android:scaleType="center"
             android:src="@drawable/ic_notify_clear"
@@ -121,7 +121,7 @@
             android:contentDescription="@string/accessibility_clear_all"
             />
         <ImageView android:id="@+id/add_tile_button"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="50dp"
             android:scaleType="center"
             android:src="@drawable/ic_menu_add"
@@ -132,12 +132,12 @@
     </FrameLayout>
 
     <FrameLayout android:id="@+id/settings_button_holder"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignRight="@+id/header">
 
         <ImageView android:id="@+id/settings_button"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="50dp"
             android:scaleType="center"
             android:src="@drawable/ic_notify_settings"
@@ -145,7 +145,7 @@
             android:contentDescription="@string/accessibility_desc_quick_settings"
             />
         <ImageView android:id="@+id/notification_button"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="50dp"
             android:scaleType="center"
             android:src="@drawable/ic_notifications"
