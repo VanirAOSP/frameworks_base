@@ -20,6 +20,7 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
@@ -32,7 +33,6 @@ import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.ImageView;
 
 import com.android.internal.util.aokp.AwesomeAction;
 import com.android.internal.util.aokp.NavBarHelpers;
@@ -40,26 +40,26 @@ import com.android.internal.util.vanir.AwesomeConstants;
 import com.android.internal.util.vanir.AwesomeConstants.AwesomeConstant;
 import com.android.systemui.R;
 
-public class LayoutChangerButtonView extends ImageView {
+public class LayoutChangerButtonView extends KeyButtonView {
     private static final String TAG = "StatusBar.LayoutChangerButtonView";
     public static final String ACTION_MENU = AwesomeConstant.ACTION_MENU.value();
     public static final String LAYOUT_RIGHT = AwesomeConstant.ACTION_LAYOUT_RIGHT.value();
 
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
-    public static final float DEFAULT_QUIESCENT_ALPHA = 0.25f;
+    public static final float LAYOUT_CHANGER_QUIESCENT_ALPHA = 0.30f;
 
     int mTouchSlop;
     Drawable mGlowBG;
+    final float mQuiescentAlpha = LAYOUT_CHANGER_QUIESCENT_ALPHA;
     int mGlowWidth, mGlowHeight;
     float mGlowAlpha = 0f, mGlowScale = 1f;
     float mDrawingAlpha = 1f;
-    float mQuiescentAlpha = DEFAULT_QUIESCENT_ALPHA;
     RectF mRect = new RectF();
     AnimatorSet mPressedAnim;
     Animator mAnimateToQuiescent = new ObjectAnimator();
     AnimatorSet as = mPressedAnim = new AnimatorSet();
 
-    LayoutButtonInfo mActions;
+    KeyButtonInfo mActions;
 
     public LayoutChangerButtonView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -79,9 +79,10 @@ public class LayoutChangerButtonView extends ImageView {
         setLongClickable(false);
     }
 
-    public void setButtonActions(LayoutButtonInfo actions) {
+    @Override
+    public void setButtonActions(KeyButtonInfo actions) {
         this.mActions = actions;
-        setTag(mActions.singleAction); // should be OK even if it's null
+        setTag(mActions.singleAction);
         setImage();
     }
 
@@ -95,9 +96,13 @@ public class LayoutChangerButtonView extends ImageView {
         }
     }
 
+    @Override
     public void setImage() {
         setImageDrawable(NavBarHelpers.getIconImage(mContext, LAYOUT_RIGHT));
     }
+
+    @Override
+    public void setImage(final Resources res) { }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -121,16 +126,7 @@ public class LayoutChangerButtonView extends ImageView {
     }
 
     public void setQuiescentAlpha(float alpha, boolean animate) {
-        mAnimateToQuiescent.cancel();
-        alpha = Math.min(Math.max(alpha, 0), 1);
-        if (alpha == mQuiescentAlpha && alpha == mDrawingAlpha) return;
-        mQuiescentAlpha = alpha;
-        if (mGlowBG != null && animate) {
-            mAnimateToQuiescent = animateToQuiescent();
-            mAnimateToQuiescent.start();
-        } else {
-            setDrawingAlpha(mQuiescentAlpha);
-        }
+        setDrawingAlpha(mQuiescentAlpha);
     }
 
     private ObjectAnimator animateToQuiescent() {
@@ -240,11 +236,10 @@ public class LayoutChangerButtonView extends ImageView {
                 setPressed(false);
                 break;
             case MotionEvent.ACTION_UP:
-                boolean playSound = isPressed();
-                setPressed(false);
-                if (playSound) {
+                if (isPressed()) {
                     playSoundEffect(SoundEffectConstants.CLICK);
                 }
+                setPressed(false);
                 doSinglePress();
                 break;
         }
@@ -265,14 +260,6 @@ public class LayoutChangerButtonView extends ImageView {
             setDrawingAlpha(mDrawingAlpha);
             mGlowWidth = mGlowBG.getIntrinsicWidth();
             mGlowHeight = mGlowBG.getIntrinsicHeight();
-        }
-    }
-
-    public static class LayoutButtonInfo {
-        String singleAction;
-
-        public LayoutButtonInfo(String singleTap) {
-            this.singleAction = singleTap;
         }
     }
 }
