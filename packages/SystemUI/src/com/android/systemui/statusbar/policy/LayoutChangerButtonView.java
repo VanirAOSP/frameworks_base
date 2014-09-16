@@ -74,13 +74,19 @@ public class LayoutChangerButtonView extends KeyButtonView {
         setImage();
     }
 
-    public void setMenuAction(boolean show) {
+    public void setMenuAction(boolean show, boolean isVertical, boolean isTablet) {
         if (show) {
             mActions.singleAction = ACTION_MENU;
             setImageResource(R.drawable.ic_sysbar_menu);
         } else {
             mActions.singleAction = LAYOUT_RIGHT;
-            setImageResource(R.drawable.ic_sysbar_layout_right);
+            if (isTablet) {
+                setImageResource(R.drawable.ic_sysbar_layout_right);
+            } else {
+                setImageResource(!isVertical
+                        ? R.drawable.ic_sysbar_layout_right_landscape
+                        : R.drawable.ic_sysbar_layout_right);
+            }
         }
     }
 

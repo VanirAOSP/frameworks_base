@@ -92,7 +92,7 @@ public class NavigationBarView extends LinearLayout {
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
 
-    private float mButtonWidth, mMenuButtonWidth;
+    private float mButtonWidth, mMenuButtonWidth, mLayoutChangerWidth;
     private int mMenuButtonId;
 
     final boolean mTablet = isTablet(mContext);
@@ -268,6 +268,7 @@ public class NavigationBarView extends LinearLayout {
         mDelegateHelper = new DelegateViewHelper(this);
         mButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_key_width);
         mMenuButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_menu_key_width);
+        mLayoutChangerWidth = res.getDimensionPixelSize(R.dimen.navigation_layout_changer_width);
 
         mBarTransitions = new NavigationBarTransitions(this);
         mBarTransitions.updateResources(res);
@@ -646,7 +647,7 @@ public class NavigationBarView extends LinearLayout {
 
         if (mButtonLayouts > 1 && mLegacyMenu) {
             if (getRightLayoutButton() != null) {
-                ((LayoutChangerButtonView) getRightLayoutButton()).setMenuAction(mShowMenu);
+                ((LayoutChangerButtonView) getRightLayoutButton()).setMenuAction(mShowMenu, isVertical(), mTablet);
             }
         } else {
             if (getMenuButton() != null) {
@@ -856,8 +857,14 @@ public class NavigationBarView extends LinearLayout {
                     KeyButtonInfo leftButtonInfo = new KeyButtonInfo(AwesomeConstant.ACTION_LAYOUT_LEFT.value());
                     LayoutChangerButtonView leftButton = new LayoutChangerButtonView(mContext, null);
                     leftButton.setButtonActions(leftButtonInfo);
-                    leftButton.setImageResource(R.drawable.ic_sysbar_layout_left);
-                    leftButton.setLayoutParams(getLayoutParams(landscape, mMenuButtonWidth, 0f));
+                    if (mTablet) {
+                        leftButton.setImageResource(R.drawable.ic_sysbar_layout_left);
+                    } else {
+                         leftButton.setImageResource(landscape
+                                ? R.drawable.ic_sysbar_layout_left_landscape
+                                : R.drawable.ic_sysbar_layout_left);
+                    }
+                    leftButton.setLayoutParams(getLayoutParams(landscape, mLayoutChangerWidth, 0f));
                     leftButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                             : R.drawable.ic_sysbar_highlight);
                     // add the button and lights out views
@@ -944,10 +951,18 @@ public class NavigationBarView extends LinearLayout {
                             : AwesomeConstant.ACTION_LAYOUT_RIGHT.value());
                     LayoutChangerButtonView rightButton = new LayoutChangerButtonView(mContext, null);
                     rightButton.setButtonActions(rightButtonInfo);
-                    rightButton.setImageResource(mShowMenu
-                            ? R.drawable.ic_sysbar_menu
-                            : R.drawable.ic_sysbar_layout_right);
-                    rightButton.setLayoutParams(getLayoutParams(landscape, mMenuButtonWidth, 0f));
+                    if (mTablet) {
+                        rightButton.setImageResource(mShowMenu
+                                ? R.drawable.ic_sysbar_menu
+                                : R.drawable.ic_sysbar_layout_right);
+                    } else {
+                         rightButton.setImageResource(mShowMenu
+                                ? R.drawable.ic_sysbar_menu
+                                : landscape
+                                        ? R.drawable.ic_sysbar_layout_right_landscape
+                                        : R.drawable.ic_sysbar_layout_right);
+                    }
+                    rightButton.setLayoutParams(getLayoutParams(landscape, mLayoutChangerWidth, 0f));
                     rightButton.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
                             : R.drawable.ic_sysbar_highlight);
                     // add the button and lights out views
