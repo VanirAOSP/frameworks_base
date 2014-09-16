@@ -84,7 +84,7 @@ public class KeyButtonView extends ImageView {
     AnimatorSet as = mPressedAnim = new AnimatorSet();
     boolean mShouldClick = true;
 
-    AwesomeButtonInfo mActions;
+    KeyButtonInfo mActions;
 
     protected static IStatusBarService mBarService;
     public static synchronized void getStatusBarInstance() {
@@ -143,7 +143,7 @@ public class KeyButtonView extends ImageView {
         setImage(res);
     }
 
-    public void setButtonActions(AwesomeButtonInfo actions) {
+    public void setButtonActions(KeyButtonInfo actions) {
         this.mActions = actions;
 
         setTag(mActions.singleAction); // should be OK even if it's null
@@ -512,10 +512,16 @@ public class KeyButtonView extends ImageView {
         }
     };
 
-    public static class AwesomeButtonInfo {
+    public static class KeyButtonInfo {
         String singleAction, doubleTapAction, longPressAction, iconUri;
 
-        public AwesomeButtonInfo(String singleTap, String doubleTap, String longPress, String uri) {
+        // reserved for single purpose keys
+        public KeyButtonInfo(String singleTap) {
+            this.singleAction = singleTap;
+        }
+
+        // reserved for configurable buttons
+        public KeyButtonInfo(String singleTap, String doubleTap, String longPress, String uri) {
             this.singleAction = singleTap;
             this.doubleTapAction = doubleTap;
             this.longPressAction = longPress;
