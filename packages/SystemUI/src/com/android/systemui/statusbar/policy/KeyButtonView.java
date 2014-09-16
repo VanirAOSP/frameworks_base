@@ -412,19 +412,13 @@ public class KeyButtonView extends ImageView {
     }
 
     private void doSinglePress() {
-        if (callOnClick()) {
-            sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
-        } else if (mIsRecentsSingleAction) {
-            try {
-                mBarService.toggleRecentApps();
-                sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
-                mRecentsPreloaded = false;
-            } catch (RemoteException e) {
-                Log.e(TAG, "RECENTS ACTION FAILED");
-            }
+        if (mIsRecentsSingleAction) {
+            // we'll use the recents handling in PSB for this one
             return;
         }
-
+        if (callOnClick()) {
+            sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
+        }
         if (mActions != null) {
             if (mActions.singleAction != null) {
                 AwesomeAction.launchAction(mContext, mActions.singleAction);

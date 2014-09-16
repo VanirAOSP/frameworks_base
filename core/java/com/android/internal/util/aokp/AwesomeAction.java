@@ -94,6 +94,15 @@ public class AwesomeAction {
                     Log.e(TAG, "HOME ACTION FAILED");
                 }
                 break;
+            case ACTION_RECENTS:
+                try {
+                    IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService(mContext.STATUS_BAR_SERVICE))
+                            .toggleRecentApps();
+                } catch (RemoteException e) {
+                    Log.e(TAG, "RECENTS ACTION FAILED");
+                }
+                break;
 
             case ACTION_BACK:
                 triggerVirtualKeypress(KeyEvent.KEYCODE_BACK, STANDARD_FLAGS);
