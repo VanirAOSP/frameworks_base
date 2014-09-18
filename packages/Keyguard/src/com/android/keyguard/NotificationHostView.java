@@ -394,6 +394,7 @@ public class NotificationHostView extends FrameLayout {
                 (sbn.getNotification().bigContentView != null &&
                 (NotificationViewManager.config.expandedView || sbn.getNotification().contentView == null));
         nv.bigContentView = bigContentView && forceBigContentView;
+        if (sbn.getNotification().contentView != null) {
         RemoteViews rv = nv.bigContentView ? sbn.getNotification().bigContentView : sbn.getNotification().contentView;
         final View remoteView = rv.apply(mContext, null);
         remoteView.setLayoutParams(new LayoutParams(mDynamicWidth ? LayoutParams.WRAP_CONTENT : LayoutParams.MATCH_PARENT,
@@ -416,6 +417,7 @@ public class NotificationHostView extends FrameLayout {
                     return true;
                 }
             });
+        }
         }
 
         if (reposted){
