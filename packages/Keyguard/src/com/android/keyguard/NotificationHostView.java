@@ -393,6 +393,7 @@ public class NotificationHostView extends FrameLayout {
         boolean bigContentView = (reposted && oldView.bigContentView) ||
                 (sbn.getNotification().bigContentView != null &&
                 (NotificationViewManager.config.expandedView || sbn.getNotification().contentView == null));
+        try {
         nv.bigContentView = bigContentView && forceBigContentView;
         RemoteViews rv = nv.bigContentView ? sbn.getNotification().bigContentView : sbn.getNotification().contentView;
         final View remoteView = rv.apply(mContext, null);
@@ -402,6 +403,9 @@ public class NotificationHostView extends FrameLayout {
         setBackgroundRecursive((ViewGroup)remoteView);
         remoteView.setBackgroundColor(NotificationViewManager.config.notificationColor);
         remoteView.setAlpha(1f);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Failed to cancel notification: " + sbn.getPackageName());
+        }
         if (bigContentView && sbn.getNotification().contentView != null) {
             final boolean bc = !forceBigContentView;
             final NotificationView notifView = reposted ? oldView : nv;
