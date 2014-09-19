@@ -1828,12 +1828,14 @@ public class MediaFocusControl implements OnFinished {
 
         // if the audio focus and RC owners belong to different packages, there is a mismatch, clear
         if (!af.hasSamePackage(mRCStack.peek().mCallingPackageName)) {
+            Log.d(TAG, "Clearing RemoteControlDisplay! Package name is different!");
             clearRemoteControlDisplay_syncAfRcs();
             return;
         }
         // if the audio focus didn't originate from the same Uid as the one in which the remote
         //   control information will be retrieved, clear
         if (!af.hasSameUid(mRCStack.peek().mCallingUid)) {
+            Log.d(TAG, "Clearing RemoteControlDisplay calling UID is different!");
             clearRemoteControlDisplay_syncAfRcs();
             return;
         }
