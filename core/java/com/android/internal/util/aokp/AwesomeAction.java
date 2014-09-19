@@ -300,9 +300,4 @@ public class AwesomeAction {
     }
 
     private static Handler mHandler = new Handler();
-
-    public static void wtfHelper() {
-        wtf = true;
-        ftw = false;
-    }
 }
