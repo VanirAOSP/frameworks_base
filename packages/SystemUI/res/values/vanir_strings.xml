@@ -23,6 +23,8 @@
     <string name="action_screenshot">Screenshot</string>
     <string name="action_screenrecord">Screenrecord</string>
     <string name="toggle_active_notifications">Active notifications</string>
+    <string name="toggle_profile">Profiles</string>
+    <string name="toggle_profile_toast">Profiles are currently disabled</string>
     <string name="toggle_dream">Screensaver</string>
     <string name="toggle_dream_failed">Dreams are off or disabled</string>
     <string name="action_power">Screen off</string>
