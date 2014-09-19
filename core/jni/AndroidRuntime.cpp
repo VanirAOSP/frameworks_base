@@ -44,6 +44,10 @@
 #include <dirent.h>
 #include <assert.h>
 
+#ifdef ALOGD
+#undef ALOGD
+#endif
+#define ALOGD(...) { }
 
 using namespace android;
 
