@@ -81,7 +81,6 @@ public class KeyButtonView extends ImageView {
     RectF mRect = new RectF();
     AnimatorSet mPressedAnim;
     Animator mAnimateToQuiescent = new ObjectAnimator();
-    AnimatorSet as = mPressedAnim = new AnimatorSet();
     boolean mShouldClick = true;
 
     KeyButtonInfo mActions;
@@ -112,7 +111,7 @@ public class KeyButtonView extends ImageView {
             }
         }
     };
-    Runnable mSingleTap = new Runnable() {
+    private Runnable mSingleTap = new Runnable() {
         @Override
         public void run() {
             if (!isPressed()) {
@@ -304,6 +303,7 @@ public class KeyButtonView extends ImageView {
                 if (mPressedAnim != null && mPressedAnim.isRunning()) {
                     mPressedAnim.cancel();
                 }
+                final AnimatorSet as = mPressedAnim = new AnimatorSet();
                 if (pressed) {
                     if (mGlowScale < GLOW_MAX_SCALE_FACTOR)
                         mGlowScale = GLOW_MAX_SCALE_FACTOR;
@@ -335,6 +335,7 @@ public class KeyButtonView extends ImageView {
         if (mHasBlankSingleAction) return true;
 
         final int action = ev.getAction();
+        int x, y;
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -367,8 +368,8 @@ public class KeyButtonView extends ImageView {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                int x = (int) ev.getX();
-                int y = (int) ev.getY();
+                x = (int) ev.getX();
+                y = (int) ev.getY();
                 setPressed(x >= -mTouchSlop
                         && x < getWidth() + mTouchSlop
                         && y >= -mTouchSlop
@@ -419,6 +420,7 @@ public class KeyButtonView extends ImageView {
 
     protected void doSinglePress() {
         if (callOnClick()) {
+            // cool
             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
         } else if (mIsRecentsSingleAction) {
             try {
