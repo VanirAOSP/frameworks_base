@@ -80,6 +80,8 @@ public class CreateShortcut extends LauncherActivity {
             return R.drawable.ic_lockscreen_soundon;
         } else if (c.equals ("StartDreamActivity")) {
             return R.drawable.ic_sysbar_dream;
+        } else if (c.equals ("ProfileActivity")) {
+            return R.drawable.ic_sysbar_profile;
         } else {
             return R.drawable.ic_sysbar_null;
         }
