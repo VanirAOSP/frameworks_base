@@ -388,6 +388,18 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="com.android.systemui.vanir.StartDreamActivity"
+            android:label="@string/toggle_dream"
+            android:icon="@drawable/ic_sysbar_dream"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="com.android.systemui.vanir.ImmersiveToggleActivity"
             android:label="@string/toggle_immersive"
             android:icon="@drawable/ic_sysbar_expanded_desktop"

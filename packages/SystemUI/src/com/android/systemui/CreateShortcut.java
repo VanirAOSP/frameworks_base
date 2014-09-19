@@ -78,6 +78,8 @@ public class CreateShortcut extends LauncherActivity {
             return R.drawable.ic_lockscreen_silent;
         } else if (c.equals ("RingVibSilentToggle")) {
             return R.drawable.ic_lockscreen_soundon;
+        } else if (c.equals ("StartDreamActivity")) {
+            return R.drawable.ic_sysbar_dream;
         } else {
             return R.drawable.ic_sysbar_null;
         }
