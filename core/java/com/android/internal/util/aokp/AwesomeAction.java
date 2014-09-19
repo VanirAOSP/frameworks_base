@@ -244,7 +244,8 @@ public class AwesomeAction {
                         if (tg != null) {
                             tg.startTone(ToneGenerator.TONE_PROP_BEEP);
                         }
-                    }
+                    }    private static boolean wtf = true;
+-    private static boolean ftw;
                 }
                 break;
 
@@ -300,9 +301,4 @@ public class AwesomeAction {
     }
 
     private static Handler mHandler = new Handler();
-
-    public static void wtfHelper() {
-        wtf = true;
-        ftw = false;
-    }
 }
