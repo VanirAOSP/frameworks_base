@@ -25,7 +25,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.BlurManager;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -124,6 +127,7 @@ public class AlertController {
     private int mSingleChoiceItemLayout;
     private int mListItemLayout;
 
+    BlurManager mBlurManager;
     private Handler mHandler;
 
     View.OnClickListener mButtonHandler = new View.OnClickListener() {
@@ -394,7 +398,22 @@ public class AlertController {
         LinearLayout contentPanel = (LinearLayout) mWindow.findViewById(R.id.contentPanel);
         setupContent(contentPanel);
         boolean hasButtons = setupButtons();
-        
+
+        mWindow.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+        mWindow.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+        if (mBlurManager == null)
+            mBlurManager = (BlurManager) mContext.getSystemService(Context.BLUR_SERVICE);
+        mBlurManager.prepare();
+        mBlurManager.setOnBitmapReady(new BlurManager.OnBitmapReady() {
+            @Override
+            public void onBitmapReady(Bitmap bitmap) {
+                if (bitmap == null) return;
+                mWindow.setBackgroundDrawable(new BitmapDrawable(bitmap));
+            }
+        });
+        mBlurManager.getFullBlurBmp(20);
+
         LinearLayout topPanel = (LinearLayout) mWindow.findViewById(R.id.topPanel);
         TypedArray a = mContext.obtainStyledAttributes(
                 null, com.android.internal.R.styleable.AlertDialog, com.android.internal.R.attr.alertDialogStyle, 0);

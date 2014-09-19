@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManagerGlobal;
-import android.os.Handler;
 import android.os.IBlurService;
 import android.view.Display;
 import android.view.DisplayInfo;
@@ -30,7 +29,6 @@ public class BlurService extends IBlurService.Stub {
     private Context mContext;
 
     private DisplayInfo mDisplayInfo;
-    private Handler mHandler;
 
     private final int BLUR_WIDTH = 300;
     private final int BLUR_HEIGHT = 550;
@@ -44,36 +42,35 @@ public class BlurService extends IBlurService.Stub {
     private Bitmap mWallpaper;
 
     public BlurService(Context context) {
-    mContext = context;
-        mHandler = new Handler();
+        mContext = context;
 
-    if (DEBUG) Log.d(TAG, "Blur service up");
+        if (DEBUG) Log.d(TAG, "Blur service up");
     }
 
     @Override
     public Bitmap prepare() {
-    getFullSize();
-    if (fullW == 0) {
-        fullW = BLUR_WIDTH + 1;
-        fullH = BLUR_HEIGHT + 1;
-    }
-    mTemp = SurfaceControl.screenshot(fullW, fullH, 0, 22000);
-    return mTemp;
+        getFullSize();
+        if (fullW == 0) {
+            fullW = BLUR_WIDTH + 1;
+            fullH = BLUR_HEIGHT + 1;
+        }
+        mTemp = SurfaceControl.screenshot(fullW, fullH, 0, 22000);
+        return mTemp;
     }
 
     @Override
     public Bitmap getFullBlurBmp(int radius) {
-    if (fullW < BLUR_WIDTH || fullH < BLUR_HEIGHT) {
+        if (fullW < BLUR_WIDTH || fullH < BLUR_HEIGHT) {
             if (DEBUG) Log.d(TAG, "Blurring wallpaper");
-        return getBlurWallpaper(radius);
-    }
+            return getBlurWallpaper(radius);
+        }
         if (DEBUG) Log.d(TAG, "Blurring screenshot");
-    return blurIt(mTemp, radius);
+        return blurIt(mTemp, radius);
     }
 
     @Override
     public Bitmap getBlurBmp(Bitmap bmp, int radius) {
-    return blurIt(bmp, radius);
+        return blurIt(bmp, radius);
     }
 
     @Override
@@ -82,16 +79,16 @@ public class BlurService extends IBlurService.Stub {
         Drawable temp = wallpaperManager.getDrawable();
         mWallpaper = convertToBitmap(temp);
 
-    return blurIt(mWallpaper, radius);
+        return blurIt(mWallpaper, radius);
     }
 
     private void getFullSize() {
-    mDisplayInfo = DisplayManagerGlobal.getInstance().getDisplayInfo(
-            Display.DEFAULT_DISPLAY);
-    if (mDisplayInfo == null) {
+        mDisplayInfo = DisplayManagerGlobal.getInstance().getDisplayInfo(
+                Display.DEFAULT_DISPLAY);
+        if (mDisplayInfo == null) {
             if (DEBUG) Log.d(TAG, "DisplayInfo is null... bailing out");
-        return;
-    }
+            return;
+        }
 
         fullW = mDisplayInfo.getNaturalWidth();
         fullH = mDisplayInfo.getNaturalHeight();
@@ -100,25 +97,25 @@ public class BlurService extends IBlurService.Stub {
     }
 
     private Bitmap blurIt(Bitmap bmp, int radius) {
-            RenderScript rs = RenderScript.create(mContext);
-            ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-            Bitmap tmpBmp = bmp;
+        RenderScript rs = RenderScript.create(mContext);
+        ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+        Bitmap tmpBmp = bmp;
 
-            if (bmp.getWidth() > BLUR_WIDTH)
-                 tmpBmp = bmp.createScaledBitmap(bmp, BLUR_WIDTH, BLUR_HEIGHT, false);
+        if (bmp.getWidth() > BLUR_WIDTH)
+            tmpBmp = bmp.createScaledBitmap(bmp, BLUR_WIDTH, BLUR_HEIGHT, false);
 
-            Bitmap out = Bitmap.createBitmap(tmpBmp);
+        Bitmap out = Bitmap.createBitmap(tmpBmp);
 
-            Allocation input = Allocation.createFromBitmap(
-                    rs, tmpBmp, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
-            Allocation output = Allocation.createTyped(rs, input.getType());
+        Allocation input = Allocation.createFromBitmap(
+                rs, tmpBmp, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
+        Allocation output = Allocation.createTyped(rs, input.getType());
 
-            script.setInput(input);
-            script.setRadius(radius);
-            script.forEach(output);
+        script.setInput(input);
+        script.setRadius(radius);
+        script.forEach(output);
 
-            output.copyTo(out);
-            return out;
+        output.copyTo(out);
+        return out;
     }
 
     private Bitmap convertToBitmap(Drawable drawable) {
