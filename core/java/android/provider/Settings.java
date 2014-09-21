@@ -3439,17 +3439,12 @@ public final class Settings {
          * Whether to show the signal text or signal bars.
          * default: 0
          * 0: show signal bars
-         * 1: show signal text numbers
-         * 2: show signal text numbers w/small dBm appended
+         * 1: show 6 signal bars
+         * 2: show signal text numbers
+         * 3: show signal text numbers w/small dBm appended
          * @hide
          */
         public static final String STATUS_BAR_SIGNAL_TEXT = "status_bar_signal";
-
-        /**
-         * Toggle for 6 bar signal bars
-         * @hide
-         */
-        public static final String STATUSBAR_6BAR_SIGNAL = "statusbar_6bar_signal";
 
          /**
          * Whether to control brightness from status bar
