@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
@@ -186,8 +187,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     private String mCustomLabel = "";
 
     protected boolean mHasMobileDataFeature;
-    private boolean mUseSixBar;
-    private DirtyObserver mObserver = null;
+    private static boolean mUseSixBar;
 
     boolean mDataAndWifiStacked = false;
 
@@ -279,10 +279,10 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         // AIRPLANE_MODE_CHANGED is sent at boot; we've probably already missed it
         updateAirplaneMode();
 
-        // 6-bar data icons
-        updateSixBar();
-        mObserver = new DirtyObserver(new Handler());
-        mObserver.observe();
+        int signalStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_SIGNAL_TEXT,
+                0, UserHandle.USER_CURRENT);
+        mUseSixBar = signalStyle == 1;
 
         mLastLocale = mContext.getResources().getConfiguration().locale;
 
@@ -1923,28 +1923,9 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         mUpdateUIListener = listener;
     }
 
-    private class DirtyObserver extends ContentObserver {
-        public DirtyObserver(Handler handler) {
-            super(handler);
-        }
-
-        public void observe() {
-            mCr.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_6BAR_SIGNAL), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSixBar();
-            updateTelephonySignalStrength();
-            refreshViews();
-        }
-    }
-
-    private void updateSixBar() {
-        boolean sixBarEnabled = (Settings.System.getInt(mCr,
-            Settings.System.STATUSBAR_6BAR_SIGNAL, 0) == 1);
-        mUseSixBar = sixBarEnabled;
+    public void setStyle(int style) {
+        mUseSixBar = style == 1;
+        updateTelephonySignalStrength();
     }
 
 }

@@ -3532,6 +3532,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         int signalStyle = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_SIGNAL_TEXT,
                 SignalClusterView.STYLE_NORMAL, mCurrentUserId);
+        mNetworkController.setStyle(signalStyle);
 
         if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
             mMSimSignalClusterView.setStyle(signalStyle);
