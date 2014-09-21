@@ -680,7 +680,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         if (!mHaloEnabled) {
             mHaloActive = false;
-            mHaloButton.setVisibility(View.GONE);
         }
 
         if (mHaloActive) {

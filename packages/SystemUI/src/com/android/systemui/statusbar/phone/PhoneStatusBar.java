@@ -2435,7 +2435,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 setVisibilityWhenDone(
                     ObjectAnimator.ofFloat(mHaloButton, View.ALPHA, 0f)
                         .setDuration(FLIP_DURATION),
-                        mScrollView, View.GONE));
+                        mScrollView, View.INVISIBLE));
         }
 
         if (mHoverEnabled) {
@@ -2443,7 +2443,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 setVisibilityWhenDone(
                     ObjectAnimator.ofFloat(mHoverButton, View.ALPHA, 0f)
                         .setDuration(FLIP_DURATION),
-                        mScrollView, View.GONE));
+                        mScrollView, View.INVISIBLE));
         }
 
         mNotificationButton.setVisibility(View.VISIBLE);
