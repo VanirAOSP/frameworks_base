@@ -2,6 +2,7 @@ package com.android.systemui.quicksettings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.View;
@@ -72,7 +73,29 @@ public class BatteryTile extends QuickSettingsTile implements BatteryStateChange
 
     @Override
     public void onBatteryMeterModeChanged(BatteryMeterMode mode) {
-        // All the battery tiles (qs and ribbon) uses the NORMAL battery mode
+        int batteryStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_BATTERY, 0, UserHandle.USER_CURRENT);
+        switch (batteryStyle) {
+            case 2:
+                mode = BatteryMeterMode.BATTERY_METER_CIRCLE;
+                break;
+
+            case 4: // use default for hidden in statusbar 
+                mode = BatteryMeterMode.BATTERY_METER_CIRCLE;
+                break;
+
+            case 5:
+                mode = BatteryMeterMode.BATTERY_METER_ICON_LANDSCAPE;
+                break;
+
+            case 6:
+                mode = BatteryMeterMode.BATTERY_METER_TEXT;
+                break;
+
+            default:
+                break;
+        }
+        mBatteryView.setMode(mode);
     }
 
     @Override

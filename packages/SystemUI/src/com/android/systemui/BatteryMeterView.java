@@ -786,7 +786,7 @@ public class BatteryMeterView extends View implements DemoMode {
             if (mAnimOffset > 360) {
                 mAnimOffset = 0;
             } else {
-                mAnimOffset += 3;
+                mAnimOffset += 2;
             }
 
             mHandler.removeCallbacks(mInvalidate);
