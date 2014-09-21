@@ -60,7 +60,6 @@ import com.android.internal.util.cm.ActionUtils;
 public class AwesomeAction {
 
     public static final String TAG = "AwesomeAction";
-    public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
 
     private static final int LAYOUT_LEFT = -1;
     private static final int LAYOUT_RIGHT = 1;
@@ -78,11 +77,7 @@ public class AwesomeAction {
     }
 
     public static boolean launchAction(final Context mContext, final String action) {
-        if (TextUtils.isEmpty(action) || action.equals(NULL_ACTION)) {
-            return false;
-        }
         AwesomeConstant AwesomeEnum = fromString(action);
-        AudioManager am;
         switch (AwesomeEnum) {
             case ACTION_HOME:
                 IWindowManager mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
@@ -123,6 +118,7 @@ public class AwesomeAction {
                 if (isIntentAvailable(mContext, intent))
                     mContext.startActivity(intent);
                 break;
+
             case ACTION_VOICEASSIST:
                 Intent intentVoice = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
                 intentVoice.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -169,9 +165,6 @@ public class AwesomeAction {
                 mContext.sendBroadcast(appWindow);
                 break;
 
-            case ACTION_BLANK:
-                break;
-
             case ACTION_ARROW_LEFT:
                 triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_LEFT, CURSOR_FLAGS);
                 break;
@@ -189,17 +182,17 @@ public class AwesomeAction {
                 break;
 
             case ACTION_RING_VIB:
-                am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-                if (am != null) {
-                    if (am.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
-                        am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                final AudioManager rv = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                if (rv != null) {
+                    if (rv.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE) {
+                        rv.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
                         Vibrator vib = (Vibrator) mContext
                                 .getSystemService(Context.VIBRATOR_SERVICE);
                         if (vib != null) {
                             vib.vibrate(50);
                         }
                     } else {
-                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                        rv.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                         ToneGenerator tg = new ToneGenerator(
                                 AudioManager.STREAM_NOTIFICATION,
                                 (int) (ToneGenerator.MAX_VOLUME * 0.85));
@@ -232,12 +225,12 @@ public class AwesomeAction {
                 break;
 
             case ACTION_RING_SILENT:
-                am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-                if (am != null) {
-                    if (am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
-                        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                final AudioManager rs = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                if (rs != null) {
+                    if (rs.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
+                        rs.setRingerMode(AudioManager.RINGER_MODE_SILENT);
                     } else {
-                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                        rs.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                         ToneGenerator tg = new ToneGenerator(
                                 AudioManager.STREAM_NOTIFICATION,
                                 (int) (ToneGenerator.MAX_VOLUME * 0.85));
@@ -249,19 +242,19 @@ public class AwesomeAction {
                 break;
 
             case ACTION_RING_VIB_SILENT:
-                am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-                if (am != null) {
-                    if (am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
-                        am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                final AudioManager rvs = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                if (rvs != null) {
+                    if (rvs.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+                        rvs.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
                         Vibrator vib = (Vibrator) mContext
                                 .getSystemService(Context.VIBRATOR_SERVICE);
                         if (vib != null) {
                             vib.vibrate(50);
                         }
-                    } else if (am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
-                        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                    } else if (rvs.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+                        rvs.setRingerMode(AudioManager.RINGER_MODE_SILENT);
                     } else {
-                        am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                        rvs.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                         ToneGenerator tg = new ToneGenerator(
                                 AudioManager.STREAM_NOTIFICATION,
                                 (int) (ToneGenerator.MAX_VOLUME * 0.85));
@@ -274,6 +267,10 @@ public class AwesomeAction {
 
             case ACTION_GESTURE_ACTIONS:
                 mContext.sendBroadcast(new Intent(Intent.TOGGLE_GESTURE_ACTIONS));
+                break;
+
+            case ACTION_NULL:
+            case ACTION_BLANK:
                 break;
         }
         return true;
