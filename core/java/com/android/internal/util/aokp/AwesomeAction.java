@@ -31,7 +31,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
-import android.os.SystemClock;
 import android.os.Vibrator;
 import android.provider.AlarmClock;
 import android.provider.CalendarContract;
@@ -41,7 +40,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.IWindowManager;
-import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.WindowManagerGlobal;
 import android.widget.Toast;
@@ -69,6 +67,8 @@ public class AwesomeAction {
 
     private static int mCurrentUserId = 0;
 
+    private static Handler mHandler = new Handler();
+
     private AwesomeAction() {
     }
 
@@ -89,15 +89,15 @@ public class AwesomeAction {
                 break;
 
             case ACTION_BACK:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_BACK, STANDARD_FLAGS);
+                InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_BACK, STANDARD_FLAGS);
                 break;
 
             case ACTION_MENU:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_MENU, STANDARD_FLAGS);
+                InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_MENU, STANDARD_FLAGS);
                 break;
 
             case ACTION_SEARCH:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH, STANDARD_FLAGS);
+                InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH, STANDARD_FLAGS);
                 break;
 
             case ACTION_KILL:
@@ -126,7 +126,7 @@ public class AwesomeAction {
                 break;
 
             case ACTION_POWER:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_POWER, STANDARD_FLAGS);
+                InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_POWER, STANDARD_FLAGS);
                 break;
 
             case ACTION_TORCH:
@@ -166,19 +166,19 @@ public class AwesomeAction {
                 break;
 
             case ACTION_ARROW_LEFT:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_LEFT, CURSOR_FLAGS);
+                InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_LEFT, CURSOR_FLAGS);
                 break;
 
             case ACTION_ARROW_RIGHT:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_RIGHT, CURSOR_FLAGS);
+                InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_RIGHT, CURSOR_FLAGS);
                 break;
 
             case ACTION_ARROW_UP:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_UP, CURSOR_FLAGS);
+                InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_UP, CURSOR_FLAGS);
                 break;
 
             case ACTION_ARROW_DOWN:
-                triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_DOWN, CURSOR_FLAGS);
+                InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_DPAD_DOWN, CURSOR_FLAGS);
                 break;
 
             case ACTION_RING_VIB:
@@ -282,19 +282,4 @@ public class AwesomeAction {
                 PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
-
-    private static void triggerVirtualKeypress(final int keyCode, int flags) {
-        InputManager im = InputManager.getInstance();
-        long now = SystemClock.uptimeMillis();
-
-        final KeyEvent downEvent = new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
-                keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
-                flags, InputDevice.SOURCE_KEYBOARD);
-        final KeyEvent upEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_UP);
-
-        im.injectInputEvent(downEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
-        im.injectInputEvent(upEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
-    }
-
-    private static Handler mHandler = new Handler();
 }
