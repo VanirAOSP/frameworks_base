@@ -677,11 +677,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 case MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK:
                     dispatchMediaKeyRepeatWithWakeLock((KeyEvent)msg.obj);
                     break;
-                case MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK:
+                case MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK: {
+                    KeyEvent event = (KeyEvent) msg.obj;
                     mIsLongPress = true;
-                    dispatchMediaKeyWithWakeLockToAudioService((KeyEvent)msg.obj);
-                    dispatchMediaKeyWithWakeLockToAudioService(KeyEvent.changeAction((KeyEvent)msg.obj, KeyEvent.ACTION_UP));
+                    dispatchMediaKeyWithWakeLockToAudioService(event);
+                    dispatchMediaKeyWithWakeLockToAudioService(
+                            KeyEvent.changeAction(event, KeyEvent.ACTION_UP));
                     break;
+                }
             }
         }
     }
@@ -1143,17 +1146,18 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             final AudioManager am = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
             final int ringerMode = am.getRingerMode();
             final VolumePanel volumePanel = new VolumePanel(getUiContext(),
-                                                              (AudioService) getAudioService());
+                    (AudioService) getAudioService());
             if (ringerMode == AudioManager.RINGER_MODE_NORMAL) {
-                boolean vibrateSetting = Settings.System.getIntForUser(mContext.getContentResolver(),
-                        Settings.System.VIBRATE_WHEN_RINGING, 0, UserHandle.USER_CURRENT) != 0;
-                am.setRingerMode(vibrateSetting ? AudioManager.RINGER_MODE_VIBRATE :
-                                   AudioManager.RINGER_MODE_SILENT);
+                boolean vibrateEnabled = Settings.System.getIntForUser(
+                        mContext.getContentResolver(), Settings.System.VIBRATE_WHEN_RINGING,
+                        0, UserHandle.USER_CURRENT) != 0;
+                am.setRingerMode(vibrateEnabled
+                        ? AudioManager.RINGER_MODE_VIBRATE : AudioManager.RINGER_MODE_SILENT);
             } else {
                 am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
             }
-            volumePanel.postVolumeChanged(AudioManager.STREAM_RING,AudioManager.FLAG_SHOW_UI
-                                          | AudioManager.FLAG_VIBRATE);
+            volumePanel.postVolumeChanged(AudioManager.STREAM_RING,
+                    AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
         }
     };
 
@@ -3698,7 +3702,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mNavigationBarOnBottom = (!mNavigationBarCanMove || displayWidth < displayHeight);
                 if (mNavigationBarOnBottom) {
                     // It's a system nav bar or a portrait screen; nav bar goes on bottom.
-                    int top = displayHeight - overscanBottom - mNavigationBarHeightForRotation[displayRotation];
+                    int top = displayHeight - overscanBottom
+                            - mNavigationBarHeightForRotation[displayRotation];
                     mTmpNavigationFrame.set(0, top, displayWidth, displayHeight - overscanBottom);
                     if (immersiveModeHidesNavigationBar()) {
                         mStableBottom = mStableFullscreenBottom = displayHeight - overscanBottom;
@@ -3712,7 +3717,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         mNavigationBarController.setBarShowingLw(true);
                         mDockBottom = mTmpNavigationFrame.top;
                         mRestrictedScreenHeight = mDockBottom - mRestrictedScreenTop;
-                        mRestrictedOverscanScreenHeight = mDockBottom - mRestrictedOverscanScreenTop;
+                        mRestrictedOverscanScreenHeight =
+                                mDockBottom - mRestrictedOverscanScreenTop;
                     } else {
                         // We currently want to hide the navigation UI.
                         mNavigationBarController.setBarShowingLw(false);
@@ -5031,17 +5037,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             case KeyEvent.KEYCODE_HOME:
                 if (down && !isScreenOn && isWakeKey && mHomeWakeScreen) {
-                    if ((keyCode != KeyEvent.KEYCODE_VOLUME_UP) && (keyCode != KeyEvent.KEYCODE_VOLUME_DOWN)) {
-                        // Otherwise, wake the device ourselves.
-                        result |= ACTION_WAKE_UP;
-                    }
+                    result |= ACTION_WAKE_UP;
                 }
                 break;
             case KeyEvent.KEYCODE_FOCUS:
                 if (down && !isScreenOn && mCameraWakeScreen) {
-                    if ((keyCode != KeyEvent.KEYCODE_VOLUME_UP) && (keyCode != KeyEvent.KEYCODE_VOLUME_DOWN)) {
-                        result |= ACTION_WAKE_UP;
-                    }
+                    result |= ACTION_WAKE_UP;
                     if (mCameraSleepOnRelease) {
                         mIsFocusPressed = true;
                     }
@@ -5055,9 +5056,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mIsFocusPressed = false;
                 }
                 if (down && !isScreenOn && mCameraWakeScreen && mSingleStageCameraKey) {
-                    if ((keyCode != KeyEvent.KEYCODE_VOLUME_UP) && (keyCode != KeyEvent.KEYCODE_VOLUME_DOWN)) {
-                        result |= ACTION_WAKE_UP;
-                    }
+                    result |= ACTION_WAKE_UP;
                 }
                 if (mCameraMusicControls) {
                     // if the camera key is not pressable, see if music is active
@@ -5067,11 +5066,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
                     if (mCameraKeyPressable) {
                         if (down) {
-                            Message msg = mHandler.obtainMessage(MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK,
-                                    new KeyEvent(event.getDownTime(), event.getEventTime(),
-                                    event.getAction(), KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, 0));
-                            msg.setAsynchronous(true);
-                            mHandler.sendMessageDelayed(msg, ViewConfiguration.getLongPressTimeout());
+                            scheduleLongPressKeyEvent(event, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
                             break;
                         } else {
                             mHandler.removeMessages(MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK);
@@ -5174,12 +5169,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             // TODO: Long press of MUTE could be mapped to KEYCODE_MEDIA_PLAY_PAUSE
                             int newKeyCode = event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP ?
                                     KeyEvent.KEYCODE_MEDIA_NEXT : KeyEvent.KEYCODE_MEDIA_PREVIOUS;
-                            Message msg = mHandler.obtainMessage(MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK,
-                                    new KeyEvent(event.getDownTime(), event.getEventTime(),
-                                    event.getAction(), newKeyCode, 0));
-                            msg.setAsynchronous(true);
-                            mHandler.sendMessageDelayed(msg,
-                                    ViewConfiguration.getLongPressTimeout());
+                            scheduleLongPressKeyEvent(event, newKeyCode);
                             // Consume key down events of all presses.
                             break;
                         } else {
@@ -5334,6 +5324,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
         return result;
+    }
+
+    private void scheduleLongPressKeyEvent(KeyEvent origEvent, int keyCode) {
+        KeyEvent event = new KeyEvent(origEvent.getDownTime(), origEvent.getEventTime(),
+                origEvent.getAction(), keyCode, 0);
+        Message msg = mHandler.obtainMessage(MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK, event);
+        msg.setAsynchronous(true);
+        mHandler.sendMessageDelayed(msg, ViewConfiguration.getLongPressTimeout());
     }
 
     /**
