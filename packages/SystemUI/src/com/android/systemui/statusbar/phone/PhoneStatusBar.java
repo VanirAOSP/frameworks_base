@@ -1092,10 +1092,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         filter.addAction(ACTION_DEMO);
         context.registerReceiver(mBroadcastReceiver, filter);
 
-        // Gesture actions panel
+        // Custom panel actions
         filter = new IntentFilter();
         filter.addAction(Intent.TOGGLE_GESTURE_ACTIONS);
-        mContext.registerReceiver(mGestureToggleReceiver, filter);
+        mContext.registerReceiver(mActionToggleReceiver, filter);
 
         // listen for USER_SETUP_COMPLETE setting (per-user)
         resetUserSetupObserver();
@@ -3392,17 +3392,20 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     };
 
-    private final BroadcastReceiver mGestureToggleReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mActionToggleReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
             if (km.inKeyguardRestrictedInputMode()) return;
 
-            boolean toggled = (mGesturePanelView != null) && mGesturePanelView.isGesturePanelAttached();
+            String action = intent.getAction();
+            if (Intent.TOGGLE_GESTURE_ACTIONS.equals(action)) {
+                boolean toggled = (mGesturePanelView != null) && mGesturePanelView.isGesturePanelAttached();
 
-            if (!toggled) {
-                addGesturePanelView();
-            } else {
-                mGesturePanelView.switchToClosingState();
+                if (!toggled) {
+                    addGesturePanelView();
+                } else {
+                    mGesturePanelView.switchToClosingState();
+                }
             }
         }
     };
@@ -3899,7 +3902,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mWindowManager.removeViewImmediate(mGesturePanelView);
         }
         mContext.unregisterReceiver(mBroadcastReceiver);
-        mContext.unregisterReceiver(mGestureToggleReceiver);
+        mContext.unregisterReceiver(mActionToggleReceiver);
     }
 
     private boolean mDemoModeAllowed;

@@ -477,6 +477,21 @@
             </intent-filter>
         </activity>
 
+        <!-- Quick contacts action -->
+        <activity
+                android:name="com.android.systemui.vanir.contacts.QuickContactsActivity"
+                android:label="@string/contacts_activity"
+                android:icon="@drawable/contacts_activity"
+                android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                android:excludeFromRecents="true"
+                android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.systemui.SHORTCUT" />
+            </intent-filter>
+        </activity>
+        <!-- end QuickContacts -->
+
         <provider android:name=".cm.SpamMessageProvider"
                   android:permission="android.permission.INTERACT_ACROSS_USERS_FULL"
                   android:exported="true"

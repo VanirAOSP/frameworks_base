@@ -22,7 +22,6 @@
     <color name="card_background">#ffffffff</color>
     <color name="card_background_header">#ffffffff</color>
     <color name="card_backgroundExpand">#ffffffff</color>
-
     <color name="card_text_color_header">#ff000000</color>
 
     <!-- Used by selector -->

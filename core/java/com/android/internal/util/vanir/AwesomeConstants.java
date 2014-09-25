@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// The wordwrapping in here is girthy because SO ARE WE. -Nuke
-
 package com.android.internal.util.vanir;
 
 import android.content.Context;
@@ -41,7 +39,6 @@ public class AwesomeConstants {
         Drawable getDrawable(Context mContext);         //gets the drawable from ^ and ^^
     }
 
-    // THESE AIN'T YOUR DAD'S Assignable actions
     public static enum AwesomeConstant implements AwesomeGuts {
         //                    Action                  Proper name identifier                             Icon package+identifier name
         ACTION_APP            ("**app**",             com.android.internal.R.string.action_app,           null),
@@ -65,13 +62,13 @@ public class AwesomeConstants {
 
         /* unassignable actions */
         ACTION_LAYOUT_LEFT    ("**layout_left**",     com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_layout_left"),
-        ACTION_LAYOUT_RIGHT    ("**layout_right**",   com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_layout_right"),
+        ACTION_LAYOUT_RIGHT   ("**layout_right**",    com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_layout_right"),
         ACTION_ARROW_LEFT     ("**arrow_left**",      com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_left"),
         ACTION_ARROW_RIGHT    ("**arrow_right**",     com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_right"),
         ACTION_ARROW_UP       ("**arrow_up**",        com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_up"),
         ACTION_ARROW_DOWN     ("**arrow_down**",      com.android.internal.R.string.action_null,          "com.android.systemui:drawable/ic_sysbar_ime_down"),
 
-        /* disabled or special actions?? */
+        /* disabled or special actions */
         ACTION_POWER          ("**power**",           com.android.internal.R.string.action_null,          null),
         ACTION_WIDGETS        ("**widgets**",         com.android.internal.R.string.action_null,          null),
         ACTION_APP_WINDOW     ("**app_window**",      com.android.internal.R.string.action_null,          null),

@@ -82,6 +82,8 @@ public class CreateShortcut extends LauncherActivity {
             return R.drawable.ic_sysbar_dream;
         } else if (c.equals ("ProfileActivity")) {
             return R.drawable.ic_sysbar_profile;
+        } else if (c.equals ("QuickContactsActivity")) {
+            return R.drawable.contacts_activity;
         } else {
             return R.drawable.ic_sysbar_null;
         }

@@ -3333,6 +3333,12 @@ public final class Settings {
         public static final String NAVIGATION_IME_LAYOUT = "navigation_ime_layout";
 
         /**
+         * Contacts string for quick access contacts
+         * @hide
+         */
+        public static final String QUICK_ACCESS_CONTACTS = "quick_access_contacts";
+
+        /**
          * Whether or not to enable the navring
          * @hide
          */
