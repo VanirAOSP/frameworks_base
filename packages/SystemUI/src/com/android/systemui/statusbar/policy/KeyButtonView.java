@@ -58,7 +58,7 @@ public class KeyButtonView extends ImageView {
     private static final int DPAD_TIMEOUT_INTERVAL = 500;
     private static final int DPAD_REPEAT_INTERVAL = 75;
 
-    private final int mLongPressTimeout;
+    private int mLongPressTimeout;
 
     public static final String NULL_ACTION = AwesomeConstant.ACTION_NULL.value();
     public static final String BLANK_ACTION = AwesomeConstant.ACTION_BLANK.value();
@@ -147,6 +147,10 @@ public class KeyButtonView extends ImageView {
             mGlowBG = res.getDrawable(mGlowBgId);
         }
         setImage(res);
+    }
+
+    public void setLongPressTimeout(int lpTimeout) {
+        mLongPressTimeout = lpTimeout;
     }
 
     public void setButtonActions(KeyButtonInfo actions) {
