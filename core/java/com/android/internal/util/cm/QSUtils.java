@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.android.internal.util.nameless.NamelessUtils;
 import com.android.internal.telephony.PhoneConstants;
 
 public class QSUtils {
@@ -96,5 +97,11 @@ public class QSUtils {
             SensorManager sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
             return (sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null
                     && sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null);
+        }
+        private int vanirupdate;
+        public boolean deviceSupportsUpdater() {
+			if (NamelessUtils.isPackageInstalled(getActivity(), "com.vanir.updater")) {
+			return vanirupdate != null;
+			}
         }
 }
