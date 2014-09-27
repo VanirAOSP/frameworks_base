@@ -97,4 +97,6 @@ public class QSUtils {
             return (sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null
                     && sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null);
         }
+        public static boolean deviceSupportsUpdater(Context context) {
+            return context.getPackageManager().getResourcesForApplication("com.vanir.updater");
 }
