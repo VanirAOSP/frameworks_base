@@ -48,6 +48,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
@@ -74,6 +75,8 @@ import java.util.ArrayList;
 public class NavigationBarView extends LinearLayout {
     final static boolean DEBUG = false;
     final static String TAG = "PhoneStatusBar/NavigationBarView";
+
+    private static final String URI_SOFTKEY_LONGPRESS_TIMEOUT = "vanir_softkey_longpress_timeout";
 
     final static boolean NAVBAR_ALWAYS_AT_RIGHT = true;
 
@@ -718,6 +721,15 @@ public class NavigationBarView extends LinearLayout {
                                     Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
                     mPrefNavring = Settings.System.getInt(r,
                             Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
+
+                    final int defLongPressTimeout = ViewConfiguration.getLongPressTimeout();
+                    int longPressTimeout = Settings.System.getInt(r,
+                            URI_SOFTKEY_LONGPRESS_TIMEOUT, defLongPressTimeout);
+                    for (View v : getAllChildren(NavigationBarView.this)) {
+                        if (v instanceof KeyButtonView) {
+                            ((KeyButtonView) v).setLongPressTimeout(longPressTimeout);
+                        }
+                    }
                 }};
 
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.LOCKSCREEN_NOTIFICATIONS),
@@ -727,6 +739,8 @@ public class NavigationBarView extends LinearLayout {
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.ACTIVE_NOTIFICATIONS),
                     false, mDisablePrefsObserver);
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE),
+                    false, mDisablePrefsObserver);
+            r.registerContentObserver(Settings.System.getUriFor(URI_SOFTKEY_LONGPRESS_TIMEOUT),
                     false, mDisablePrefsObserver);
 
             // pop goes the weasel
@@ -1205,5 +1219,30 @@ public class NavigationBarView extends LinearLayout {
         boolean xlarge = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4);
         boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
         return (xlarge || large);
+    }
+
+    /* utility to iterate a viewgroup and return a list of child views */
+    public static ArrayList<View> getAllChildren(View v) {
+
+        if (!(v instanceof ViewGroup)) {
+            ArrayList<View> viewArrayList = new ArrayList<View>();
+            viewArrayList.add(v);
+            return viewArrayList;
+        }
+
+        ArrayList<View> result = new ArrayList<View>();
+
+        ViewGroup vg = (ViewGroup) v;
+        for (int i = 0; i < vg.getChildCount(); i++) {
+
+            View child = vg.getChildAt(i);
+
+            ArrayList<View> viewArrayList = new ArrayList<View>();
+            viewArrayList.add(v);
+            viewArrayList.addAll(getAllChildren(child));
+
+            result.addAll(viewArrayList);
+        }
+        return result;
     }
 }
