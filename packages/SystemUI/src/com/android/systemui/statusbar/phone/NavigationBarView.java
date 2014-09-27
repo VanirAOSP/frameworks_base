@@ -48,6 +48,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
@@ -66,6 +67,7 @@ import com.android.systemui.statusbar.policy.DeadZone;
 import com.android.systemui.statusbar.policy.LayoutChangerButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView.KeyButtonInfo;
+import com.vanir.util.Helpers;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -74,6 +76,8 @@ import java.util.ArrayList;
 public class NavigationBarView extends LinearLayout {
     final static boolean DEBUG = false;
     final static String TAG = "PhoneStatusBar/NavigationBarView";
+
+    private static final String URI_SOFTKEY_LONGPRESS_TIMEOUT = "vanir_softkey_longpress_timeout";
 
     final static boolean NAVBAR_ALWAYS_AT_RIGHT = true;
 
@@ -718,6 +722,15 @@ public class NavigationBarView extends LinearLayout {
                                     Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE, 0) == 0;
                     mPrefNavring = Settings.System.getInt(r,
                             Settings.System.ENABLE_NAVIGATION_RING, 1) == 1;
+
+                    // set longpress when settings change
+                    final int defLongPressTimeout = ViewConfiguration.getLongPressTimeout();
+                    int longPressTimeout = Settings.System.getInt(r,
+                            URI_SOFTKEY_LONGPRESS_TIMEOUT, defLongPressTimeout);
+                    for (KeyButtonView v : Helpers.getAllChildren(NavigationBarView.this,
+                            KeyButtonView.class)) {
+                        v.setLongPressTimeout(longPressTimeout);
+                    }
                 }};
 
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.LOCKSCREEN_NOTIFICATIONS),
@@ -727,6 +740,8 @@ public class NavigationBarView extends LinearLayout {
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.ACTIVE_NOTIFICATIONS),
                     false, mDisablePrefsObserver);
             r.registerContentObserver(Settings.System.getUriFor(Settings.System.ACTIVE_NOTIFICATIONS_PRIVACY_MODE),
+                    false, mDisablePrefsObserver);
+            r.registerContentObserver(Settings.System.getUriFor(URI_SOFTKEY_LONGPRESS_TIMEOUT),
                     false, mDisablePrefsObserver);
 
             // pop goes the weasel
@@ -794,6 +809,7 @@ public class NavigationBarView extends LinearLayout {
         final boolean stockThreeButtonLayout = buttonsArray.size() == 3;
         final int separatorSize = (int) mMenuButtonWidth;
         final int length = buttonsArray.size();
+        final int defLongPressTimeout = ViewConfiguration.getLongPressTimeout();
         LinearLayout navButtons;
         LinearLayout lightsOut;
         boolean landscape;
@@ -801,6 +817,9 @@ public class NavigationBarView extends LinearLayout {
         KeyButtonView button;
         LayoutChangerButtonView changer;
         KeyButtonInfo info;
+
+        int longPressTimeout = Settings.System.getInt(mContext.getContentResolver(),
+                URI_SOFTKEY_LONGPRESS_TIMEOUT, defLongPressTimeout);
 
         for (int i = 0; i <= 1; i++) {
             landscape = (i == 1);
@@ -856,6 +875,7 @@ public class NavigationBarView extends LinearLayout {
                 info = buttonsArray.get(j);
                 button = new KeyButtonView(mContext, null);
                 button.setButtonActions(info);
+                button.setLongPressTimeout(longPressTimeout);
                 if (mTablet) {
                     button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, 1f));
                     button.setGlowBackground(R.drawable.ic_sysbar_highlight);
