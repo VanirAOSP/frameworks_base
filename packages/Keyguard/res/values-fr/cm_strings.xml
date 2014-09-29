@@ -18,4 +18,6 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="app_name">Écran de verrouillage</string>
   <string name="keyguard_discharging">Déchargement, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+  <string name="keyguard_low_battery_cm">Branchez votre chargeur, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+  <string name="lockscreen_sim_error_message_short">Carte SIM non valide.</string>
 </resources>
