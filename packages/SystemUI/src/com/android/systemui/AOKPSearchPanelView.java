@@ -286,7 +286,7 @@ public class AOKPSearchPanelView extends FrameLayout implements
 
     private void maybeSkipKeyguard() {
         Intent u = new Intent();
-        u.setAction("com.android.lockscreen.ACTION_UNLOCK_RECEIVER");
+        u.setAction("com.android.keyguard.action.DISMISS_KEYGUARD_SECURELY");
         mContext.sendBroadcastAsUser(u, UserHandle.ALL);
     }
 
