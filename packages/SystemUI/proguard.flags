@@ -7,6 +7,7 @@
   public void setGlowScale(float);
 }
 
+-keep class com.android.systemui.statusbar.BaseStatusBar
 -keep class com.android.systemui.statusbar.halo.HaloProperties {
   public int getHaloX();
   public int getHaloY();
@@ -19,3 +20,4 @@
 }
 
 -keep class com.android.systemui.statusbar.tv.TvStatusBar
+-keep class com.android.systemui.statusbar.phone.PhoneStatusBar
