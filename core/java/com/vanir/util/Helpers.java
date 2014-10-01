@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.content.Context;
@@ -15,6 +16,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.vanir.util.CMDProcessor.CommandResult;
@@ -310,5 +313,52 @@ public class Helpers {
         } else {
             return null;
         }
+    }
+
+    /* utility to iterate a viewgroup recursively and return a list of child views */
+    public static ArrayList<View> getAllChildren(View v) {
+        if (!(v instanceof ViewGroup)) {
+            ArrayList<View> viewArrayList = new ArrayList<View>();
+            viewArrayList.add(v);
+            return viewArrayList;
+        }
+
+        ArrayList<View> result = new ArrayList<View>();
+        ViewGroup vg = (ViewGroup) v;
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            View child = vg.getChildAt(i);
+            ArrayList<View> viewArrayList = new ArrayList<View>();
+            viewArrayList.add(v);
+            viewArrayList.addAll(getAllChildren(child));
+            result.addAll(viewArrayList);
+        }
+        return result;
+    }
+
+    /* utility to iterate a viewgroup and return a list of child views of type */
+    public static <T extends View> ArrayList<T> getAllChildren(View root, Class<T> returnType) {
+        if (!(root instanceof ViewGroup)) {
+            ArrayList<T> viewArrayList = new ArrayList<T>();
+            try {
+                viewArrayList.add(returnType.cast(root));
+            } catch (Exception e) {
+                // handle all exceptions the same and silently fail
+            }
+            return viewArrayList;
+        }
+
+        ArrayList<T> result = new ArrayList<T>();
+        ViewGroup vg = (ViewGroup) root;
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            View child = vg.getChildAt(i);
+            ArrayList<T> viewArrayList = new ArrayList<T>();
+            try {
+                viewArrayList.add(returnType.cast(root));
+            } catch (Exception e) {
+                // handle all exceptions the same and silently fail
+            }
+            viewArrayList.addAll(getAllChildren(child, returnType));
+            result.addAll(viewArrayList);        }
+        return result;
     }
 }
