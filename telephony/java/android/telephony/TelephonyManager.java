@@ -1725,6 +1725,8 @@ public class TelephonyManager {
     /** @hide */
     @PrivateApi
     public boolean isOffhook() {
+        if (getITelephony()==null)
+            return false;
         try {
             return getITelephony().isOffhook();
         } catch (RemoteException e) {
