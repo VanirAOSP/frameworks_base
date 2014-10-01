@@ -1738,6 +1738,8 @@ public class TelephonyManager {
     /** @hide */
     @PrivateApi
     public boolean isRinging() {
+        if (getITelephony()==null)
+            return false;
         try {
             return getITelephony().isRinging();
         } catch (RemoteException e) {
