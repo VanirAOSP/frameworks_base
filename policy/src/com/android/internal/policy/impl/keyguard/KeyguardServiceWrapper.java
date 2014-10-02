@@ -200,7 +200,11 @@ public class KeyguardServiceWrapper implements IKeyguardService {
         // Not used by PhoneWindowManager
     }
 
-    public void dispatch(MotionEvent event) {
+    public void dispatchCameraEvent(MotionEvent event) {
+        // Not used by PhoneWindowManager.  See code in {@link NavigationBarView}
+    }
+
+    public void dispatchApplicationWidgetEvent(MotionEvent event) {
         // Not used by PhoneWindowManager.  See code in {@link NavigationBarView}
     }
 
@@ -209,6 +213,10 @@ public class KeyguardServiceWrapper implements IKeyguardService {
     }
 
     public void launchCamera() {
+        // Not used by PhoneWindowManager.  See code in {@link NavigationBarView}
+    }
+
+    public void launchApplicationWidget() {
         // Not used by PhoneWindowManager.  See code in {@link NavigationBarView}
     }
 

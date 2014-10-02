@@ -61,6 +61,15 @@
                 android:layout_height="match_parent">
 
             <com.android.systemui.statusbar.policy.KeyButtonView
+                android:id="@+id/application_widget_button"
+                android:layout_height="match_parent"
+                android:layout_width="80dp"
+                android:layout_gravity="center_vertical|left"
+                android:scaleType="center"
+                android:visibility="gone"
+                />
+
+            <com.android.systemui.statusbar.policy.KeyButtonView
                 android:layout_width="80dp"
                 android:id="@+id/show_notifs"
                 android:layout_height="match_parent"
@@ -135,6 +144,16 @@
                 >
 
         </LinearLayout>
+
+        <com.android.systemui.statusbar.policy.KeyButtonView
+            android:id="@+id/application_widget_button"
+            android:layout_height="match_parent"
+            android:layout_width="80dp"
+            android:layout_gravity="center_vertical|left"
+            android:scaleType="center"
+            android:visibility="gone"
+            android:rotation="270"
+            />
 
         <com.android.systemui.statusbar.policy.KeyButtonView
                 android:layout_width="80dp"
