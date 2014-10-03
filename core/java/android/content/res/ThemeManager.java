@@ -241,6 +241,10 @@ public class ThemeManager {
     }
 
     public boolean processThemeResources(String themePkgName) {
+        if (mService == null) {
+            Log.e(TAG, "THEME SERVICE IS NULL");
+            return false;
+        }
         try {
             return mService.processThemeResources(themePkgName);
         } catch (RemoteException e) {
