@@ -495,7 +495,7 @@ public class NavigationBarView extends LinearLayout {
     final Runnable mNotifyLayoutChanged = new Runnable() {
         @Override
         public void run() {
-            loadButtonArrays();
+            setupNavigationButtons(getCurrentButtonArray());
         }
     };
 
@@ -691,7 +691,7 @@ public class NavigationBarView extends LinearLayout {
                     for(int i=0;i<mButtonLayouts;i++)
                         mButtonContainerStrings[i] = Settings.System.getString(r, buttonSettings[i]);
 
-                    notifyLayoutChange(0);
+                    setupNavigationButtons(getCurrentButtonArray());
                 }};
 
             for(int i=0;i<5;i++)
@@ -773,7 +773,7 @@ public class NavigationBarView extends LinearLayout {
                 mIMEKeyArray.add(new KeyButtonInfo(actions[0], actions[1], actions[2], actions[3]));
             }
         }
-        setupNavigationButtons();
+        setupNavigationButtons(getCurrentButtonArray());
     }
 
     private ArrayList<KeyButtonInfo> getButtonsArray(final String[] userButtons) {
@@ -788,10 +788,6 @@ public class NavigationBarView extends LinearLayout {
     private ArrayList<KeyButtonInfo> getCurrentButtonArray() {
         if (mArrows && showingIME) return mIMEKeyArray;
         return mAllButtonContainers.get(mCurrentLayout);
-    }
-
-    private void setupNavigationButtons() {
-        setupNavigationButtons(getCurrentButtonArray());
     }
 
     private void setupNavigationButtons(ArrayList<KeyButtonInfo> buttonsArray) {
