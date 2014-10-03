@@ -691,7 +691,7 @@ public class NavigationBarView extends LinearLayout {
                     for(int i=0;i<mButtonLayouts;i++)
                         mButtonContainerStrings[i] = Settings.System.getString(r, buttonSettings[i]);
 
-                    setupNavigationButtons(getCurrentButtonArray());
+                    loadButtonArrays();
                 }};
 
             for(int i=0;i<5;i++)
@@ -751,8 +751,7 @@ public class NavigationBarView extends LinearLayout {
     }
 
     private void loadButtonArrays() {
-
-        // load active navbar layouts
+        // reload active navbar layouts
         mAllButtonContainers.clear();
 
         for (int j = 0; j < mButtonLayouts; j++) {
@@ -770,7 +769,7 @@ public class NavigationBarView extends LinearLayout {
             final String[] userButtons = mIMEKeyLayout.split("\\|");
             for (String button : userButtons) {
                 final String[] actions = button.split(",", 4);
-                mIMEKeyArray.add(new KeyButtonInfo(actions[0], actions[1], actions[2], actions[3]));
+                mIMEKeyArray.add(new KeyButtonInfo(actions));
             }
         }
         setupNavigationButtons(getCurrentButtonArray());
@@ -778,9 +777,10 @@ public class NavigationBarView extends LinearLayout {
 
     private ArrayList<KeyButtonInfo> getButtonsArray(final String[] userButtons) {
         final ArrayList<KeyButtonInfo> mButtonsContainer = new ArrayList<KeyButtonInfo>();
+        int infoLength = userButtons.length;
         for (String button : userButtons) {
-            final String[] actions = button.split(",", 4);
-            mButtonsContainer.add(new KeyButtonInfo(actions[0], actions[1], actions[2], actions[3]));
+            final String[] actions = button.split(",", infoLength);
+            mButtonsContainer.add(new KeyButtonInfo(actions));
         }
         return mButtonsContainer;
     }
@@ -877,8 +877,7 @@ public class NavigationBarView extends LinearLayout {
 
             if (mLegacyMenu && mButtonLayouts == 1) {
                 // legacy menu button
-                info = new KeyButtonInfo(AwesomeConstant.ACTION_MENU.value(),
-                        null, null, null);
+                info = new KeyButtonInfo(AwesomeConstant.ACTION_MENU.value());
                 button = new KeyButtonView(mContext, null);
                 button.setButtonActions(info);
                 button.setImageResource(R.drawable.ic_sysbar_menu);
