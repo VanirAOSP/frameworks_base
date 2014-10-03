@@ -495,7 +495,7 @@ public class NavigationBarView extends LinearLayout {
     final Runnable mNotifyLayoutChanged = new Runnable() {
         @Override
         public void run() {
-            loadButtonArrays();
+            setupNavigationButtons();
         }
     };
 
