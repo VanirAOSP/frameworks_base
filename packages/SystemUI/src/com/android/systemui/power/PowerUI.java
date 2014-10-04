@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -52,10 +53,14 @@ public class PowerUI extends SystemUI {
 
     static final boolean DEBUG = false;
 
+    private static final String URI_DISABLE_LOW_BATTERY_DIALOG = "vanir_disable_low_battery_dialog";
+
     private static final String UPDATE_QUIET_HOURS_MODES =
             "com.android.settings.vanir.service.UPDATE_QUIET_HOURS_MODES";
 
     Handler mHandler = new Handler();
+    OverrideObserver mObserver = new OverrideObserver(mHandler);
+    IntentFilter mFilter = new IntentFilter();
 
     int mBatteryLevel = 100;
     int mBatteryStatus = BatteryManager.BATTERY_STATUS_UNKNOWN;
@@ -87,13 +92,14 @@ public class PowerUI extends SystemUI {
         mScreenOffTime = pm.isScreenOn() ? -1 : SystemClock.elapsedRealtime();
 
         // Register for Intent broadcasts for...
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
-        filter.addAction(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_POWER_CONNECTED);
-        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
-        mContext.registerReceiver(mIntentReceiver, filter, null, mHandler);
+        mFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        mFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        mFilter.addAction(Intent.ACTION_SCREEN_ON);
+        mFilter.addAction(Intent.ACTION_POWER_CONNECTED);
+        mFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
+        mContext.registerReceiver(isOverrideEnabled() ? mOverrideReceiver
+                : mIntentReceiver, mFilter, null, mHandler);
+        mObserver.observe();
     }
 
     /**
@@ -382,6 +388,87 @@ public class PowerUI extends SystemUI {
         }
 
         notificationManager.notify(0, powerNotify);
+    }
+
+    // when override is enabled, we still want to receive broadcasts and update
+    // values, just not produce annoying dialogs
+    private BroadcastReceiver mOverrideReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+                mBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 100);
+                mBatteryStatus = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
+                        BatteryManager.BATTERY_STATUS_UNKNOWN);
+                mPlugType = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 1);
+                mInvalidCharger = intent.getIntExtra(BatteryManager.EXTRA_INVALID_CHARGER, 0);
+
+                final boolean plugged = mPlugType != 0;
+
+                if (mIgnoreFirstPowerEvent && plugged) {
+                    mIgnoreFirstPowerEvent = false;
+                }
+
+            } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
+                mScreenOffTime = SystemClock.elapsedRealtime();
+            } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
+                mScreenOffTime = -1;
+            } else if (Intent.ACTION_POWER_CONNECTED.equals(action)
+                    || Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
+                final ContentResolver cr = mContext.getContentResolver();
+
+                final int quietHoursCharge = Settings.System.getInt(cr,
+                        Settings.System.QUIET_HOURS_REQUIRE_CHARGING, 0);
+                if (quietHoursCharge != 0 &&
+                        action.equals(Intent.ACTION_POWER_CONNECTED)) {
+                    Settings.System.putInt(cr,
+                            Settings.System.QUIET_HOURS_REQUIRE_CHARGING, 2);
+                    sendUpdateIntent();
+                } else if (quietHoursCharge != 0 &&
+                        action.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+                    if (!mIgnoreFirstPowerEvent) {
+                        Settings.System.putInt(cr,
+                                Settings.System.QUIET_HOURS_REQUIRE_CHARGING, 1);
+                        sendUpdateIntent();
+                    }
+                }
+                if (mIgnoreFirstPowerEvent) {
+                    mIgnoreFirstPowerEvent = false;
+                } else {
+                    if (Settings.Global.getInt(cr,
+                            Settings.Global.POWER_NOTIFICATIONS_ENABLED, 0) == 1) {
+                        playPowerNotificationSound();
+                    }
+                }
+            } else {
+                Slog.w(TAG, "unknown intent: " + intent);
+            }
+        }
+    };
+
+    private class OverrideObserver extends ContentObserver {
+        public OverrideObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(URI_DISABLE_LOW_BATTERY_DIALOG),
+                    false, this, UserHandle.USER_ALL);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            final boolean doOverride = isOverrideEnabled();
+            mContext.unregisterReceiver(doOverride ? mIntentReceiver : mOverrideReceiver);
+            mContext.registerReceiver(doOverride ? mOverrideReceiver : mIntentReceiver, mFilter,
+                    null, mHandler);
+        }
+    }
+
+    private boolean isOverrideEnabled() {
+        return Settings.System.getBoolean(mContext.getContentResolver(),
+                URI_DISABLE_LOW_BATTERY_DIALOG, false);
     }
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
