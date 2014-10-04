@@ -16,7 +16,7 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="dessert_case_settings_cm_title">نیشاندانی بەختێکی باشی ساینۆجنمۆد</string>
+  <string name="dessert_case_settings_cm_title">نیشاندانی بەختێکی باشی وەشانەکە</string>
   <string name="dessert_case_settings_cm_summary">نیشاندانی بەختێکی باشی CM لەگەڵ ئارەزوەکانی خەونی ئەندرۆید</string>
   <string name="quick_settings_screen_sleep">بڕۆ بۆ خەوتن</string>
   <string name="quick_settings_label_enabled">چالاکردن</string>

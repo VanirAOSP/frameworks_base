@@ -17,4 +17,13 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="keyguard_discharging">Iškraunama, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+  <string name="keyguard_low_battery_cm">Prijunkite kroviklį, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+  <string name="kg_invalid_sim_puk_hint_cm">PUK kodas turėtų būti 8 skaitmenų.</string>
+  <string name="keyguard_password_wrong_puk_code">Neteisingas PUK kodas.</string>
+  <string name="keyguard_password_pin_failed">PIN operacija nepavyko.</string>
+  <string name="keyguard_password_puk_failed">PUK operacija nepavyko.</string>
+  <string name="pinpuk_attempts">\nLiko bandymų:</string>
+  <string name="lockscreen_sim_error_message_short">Neteisinga kortelė.</string>
+  <string name="keyguard_perso_locked_message">SIM/RUIM Perso užrakintas</string>
+  <string name="msim_kg_sim_pin_msg_format">PREN.: <xliff:g id="number">%d</xliff:g>: <xliff:g id="msg">%s</xliff:g></string>
 </resources>
