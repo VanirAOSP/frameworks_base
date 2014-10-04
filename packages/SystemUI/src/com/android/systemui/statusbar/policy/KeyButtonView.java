@@ -47,7 +47,6 @@ import com.android.internal.util.aokp.NavBarHelpers;
 import com.android.systemui.R;
 
 import java.io.File;
-import java.util.HashMap;
 
 public class KeyButtonView extends ImageView {
     private static final String TAG = "StatusBar.KeyButtonView";
@@ -529,32 +528,38 @@ public class KeyButtonView extends ImageView {
     public static class KeyButtonInfo {
         String singleAction, doubleTapAction, longPressAction, iconUri;
 
-        // prep for different sized delimited strings
-        public KeyButtonInfo(String[] actions) {
-            int actionList = actions.length - 1;
-            String action = "";
-            for( int i = 0; i <= actionList; i++) {
-                action = actions[i];
-                switch (i) {
-                    case 0:
-                        this.singleAction = action;
-                        break;
-                    case 1:
-                        this.doubleTapAction = action;
-                        break;
-                    case 2:
-                        this.longPressAction = action;
-                        break;
-                    case 3:
-                        this.iconUri = action;
-                        break;
-                }
-            }
-        }
-
-        // reserved for single purpose hard coded keys (for now)
+        // reserved for single purpose keys
         public KeyButtonInfo(String singleTap) {
             this.singleAction = singleTap;
+        }
+
+        // reserved for configurable buttons
+        public KeyButtonInfo(String singleTap, String doubleTap, String longPress, String uri) {
+            this.singleAction = singleTap;
+            this.doubleTapAction = doubleTap;
+            this.longPressAction = longPress;
+            this.iconUri = uri;
+            
+            if (singleAction != null) {
+                if ((singleAction.isEmpty()
+                        || singleAction.equals(NULL_ACTION))) {
+                    singleAction = null;
+                }
+            }
+
+            if (doubleTapAction != null) {
+                if ((doubleTapAction.isEmpty()
+                        || doubleTapAction.equals(NULL_ACTION))) {
+                    doubleTapAction = null;
+                }
+            }
+
+            if (longPressAction != null) {
+                if ((longPressAction.isEmpty()
+                        || longPressAction.equals(NULL_ACTION))) {
+                    longPressAction = null;
+                }
+            }
         }
     }
 }
