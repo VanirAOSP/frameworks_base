@@ -18,7 +18,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="app_name">Schermata di sblocco</string>
   <string name="keyguard_discharging">In uso (<xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g>)</string>
-  <string name="keyguard_low_battery_cm">Collegare il caricabatterie, <xliff:g id="number">%d</xliff:g> <xliff:g id="percent">%</xliff:g></string>
+  <string name="keyguard_low_battery_cm">Collegare il caricabatterie, <xliff:g id="number">%d</xliff:g> <xliff:g id="percent">%%</xliff:g></string>
   <string name="kg_invalid_sim_puk_hint_cm">Il codice PUK dovrebbe contenere 8 numeri.</string>
   <string name="keyguard_password_wrong_puk_code">Codice PUK errato.</string>
   <string name="keyguard_password_pin_failed">Operazione PIN fallita.</string>
