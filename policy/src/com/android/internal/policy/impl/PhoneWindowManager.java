@@ -204,6 +204,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int KEY_ACTION_BACK = 12;
     private static final int KEY_ACTION_LASTAPP = 13;
     private static final int KEY_GESTURE_PANEL = 14;
+    private static final int KEY_ACTION_SCREEN_OFF = 15;
 
     // Masks for checking presence of hardware keys.
     // Must match values in core/res/res/values/config.xml
@@ -1250,6 +1251,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 break;
             case KEY_ACTION_POWERMENU:
                 showGlobalActionsDialog();
+                break;
+            case KEY_ACTION_SCREEN_OFF:
+                mPowerManager.goToSleep(SystemClock.uptimeMillis());
+                break;
             default:
                 break;
         }
