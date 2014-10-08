@@ -101,7 +101,6 @@ public class AwesomeAction {
                 break;
 
             case ACTION_KILL:
-                mHandler.removeCallbacksAndMessages(null);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -148,15 +147,19 @@ public class AwesomeAction {
                 break;
 
             case ACTION_APP:
-                try {
-                    Intent intentapp = Intent.parseUri(action, 0);
-                    intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intentapp);
-                } catch (URISyntaxException e) {
-                    Log.e(TAG, "URISyntaxException: [" + action + "]");
-                } catch (ActivityNotFoundException e) {
-                    Log.e(TAG, "ActivityNotFound: [" + action + "]");
-                }
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Intent intentapp = Intent.parseUri(action, 0);
+                            intentapp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(intentapp);
+                        } catch (URISyntaxException e) {
+                            Log.e(TAG, "URISyntaxException: [" + action + "]");
+                        } catch (ActivityNotFoundException e) {
+                            Log.e(TAG, "ActivityNotFound: [" + action + "]");
+                        }
+                }});
                 break;
 
             case ACTION_APP_WINDOW:
