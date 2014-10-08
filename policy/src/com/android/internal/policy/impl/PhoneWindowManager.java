@@ -2922,7 +2922,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else if (keyCode == KeyEvent.KEYCODE_MENU) {
             // Hijack modified menu keys for debugging features
             final int chordBug = KeyEvent.META_SHIFT_ON;
-
             if (down) {
                 if (mPressOnMenuBehavior == KEY_ACTION_APP_SWITCH ||
                         mLongPressOnMenuBehavior == KEY_ACTION_APP_SWITCH) {
@@ -3033,6 +3032,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
                         performKeyAction(mLongPressOnAssistBehavior);
                         mAssistKeyLongPressed = true;
+                        return -1;
                     }
                 }
             } else {
@@ -3044,10 +3044,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     }
                     if (!canceled && !keyguardOn) {
                         performKeyAction(mPressOnAssistBehavior);
+                        return -1;
                     }
                 }
             }
-            return -1;
+            return 0;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (virtualKey || keyguardOn) {
                 return 0;
@@ -3059,7 +3060,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
                 if (repeatCount == 0) {
                     mBackKeyLongPressed = false;
-                } else if (longPress) {
+                } else if (longPress && !mBackKeyLongPressed) {
                     if (mLongPressOnBackBehavior != KEY_ACTION_APP_SWITCH) {
                         cancelPreloadRecentApps();
                     }
@@ -3067,7 +3068,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
                         performKeyAction(mLongPressOnBackBehavior);
                         mBackKeyLongPressed = true;
-                        return -1;
                     }
                 }
             } else {
@@ -3081,8 +3081,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         performKeyAction(mPressOnBackBehavior);
                     }
                 }
-                return -1;
             }
+            return -1;
         } else if (keyCode == KeyEvent.KEYCODE_SYSRQ) {
             if (down && repeatCount == 0) {
                 mHandler.post(mScreenshotRunnable);
