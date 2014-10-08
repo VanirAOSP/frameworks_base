@@ -214,9 +214,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int KEY_MASK_APP_SWITCH = 0x10;
     private static final int KEY_MASK_CAMERA = 0x20;
 
-    // used when not performing the default action
-    private boolean mBackDoCustomAction;
-
     /**
      * These are the system UI flags that, when changing, can cause the layout
      * of the screen to change.
@@ -526,6 +523,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mSearchKeyShortcutPending;
     boolean mConsumeSearchKeyUp;
     boolean mAssistKeyLongPressed;
+    boolean mBackKeyLongPressed;
 
     // Tracks user-customisable behavior for certain key events
     private int mPressOnHomeBehavior = -1;
@@ -2925,11 +2923,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // Hijack modified menu keys for debugging features
             final int chordBug = KeyEvent.META_SHIFT_ON;
 
-            if (virtualKey || keyguardOn) {
-                // Let the app handle the key
-                return 0;
-            }
-
             if (down) {
                 if (mPressOnMenuBehavior == KEY_ACTION_APP_SWITCH ||
                         mLongPressOnMenuBehavior == KEY_ACTION_APP_SWITCH) {
@@ -3056,16 +3049,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             return -1;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (virtualKey || keyguardOn) {
+                return 0;
+            }
             if (down) {
                 if (mPressOnBackBehavior == KEY_ACTION_APP_SWITCH
                         || mLongPressOnBackBehavior == KEY_ACTION_APP_SWITCH) {
                     preloadRecentApps();
                 }
                 if (repeatCount == 0) {
-                    if (mPressOnBackBehavior != KEY_ACTION_BACK && !virtualKey) {
-                        mBackDoCustomAction = true;
-                        return -1;
-                    }
+                    mBackKeyLongPressed = false;
                 } else if (longPress) {
                     if (mLongPressOnBackBehavior != KEY_ACTION_APP_SWITCH) {
                         cancelPreloadRecentApps();
@@ -3073,23 +3066,22 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     if (!keyguardOn && mLongPressOnBackBehavior != KEY_ACTION_NOTHING) {
                         performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
                         performKeyAction(mLongPressOnBackBehavior);
-                        // Do not perform action when key is released
-                        mBackDoCustomAction = false;
+                        mBackKeyLongPressed = true;
                         return -1;
                     }
                 }
             } else {
-                if (mPreloadedRecentApps && mPressOnBackBehavior != KEY_ACTION_APP_SWITCH &&
-                        mLongPressOnBackBehavior != KEY_ACTION_APP_SWITCH) {
-                    cancelPreloadRecentApps();
-                }
-                if (mBackDoCustomAction) {
-                    mBackDoCustomAction = false;
+                if (mBackKeyLongPressed) {
+                    mBackKeyLongPressed = false;
+                } else {
+                    if (mPressOnBackBehavior != KEY_ACTION_APP_SWITCH) {
+                        cancelPreloadRecentApps();
+                    }
                     if (!canceled && !keyguardOn) {
                         performKeyAction(mPressOnBackBehavior);
-                        return -1;
                     }
                 }
+                return -1;
             }
         } else if (keyCode == KeyEvent.KEYCODE_SYSRQ) {
             if (down && repeatCount == 0) {
