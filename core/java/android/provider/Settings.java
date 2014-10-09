@@ -3994,6 +3994,7 @@ public final class Settings {
          * 12 - Navigate back
          * 13 - Lastapp
          * 14 - Gesture Panel
+         * 15 - Screen Off
          * @hide
          */
         public static final String KEY_HOME_ACTION = "key_home_action";
