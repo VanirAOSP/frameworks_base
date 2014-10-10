@@ -304,9 +304,11 @@ public class MSimNetworkController extends NetworkController {
             refreshViews(mDefaultSubscription);
         } else if (action.equals("com.android.settings.LABEL_CHANGED")) {
             mCustomLabel = Settings.System.getString(mContext.getContentResolver(),
-                Settings.System.CUSTOM_CARRIER_LABEL);
+                    Settings.System.CUSTOM_CARRIER_LABEL);
             refreshViews(mDefaultSubscription);
-        }
+        } else if (action.equals("com.vanir.UPDATE_NETWORK_PREFERENCES")) {
+            mWifiNotifications = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.WIFI_NETWORK_NOTIFICATIONS, 0);
     }
 
     public void addSubsLabelView(TextView v) {
