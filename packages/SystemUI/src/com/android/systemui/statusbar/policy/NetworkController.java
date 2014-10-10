@@ -18,6 +18,8 @@
 
 package com.android.systemui.statusbar.policy;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -25,8 +27,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -45,6 +49,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.internal.telephony.IccCardConstants;
 import com.android.internal.telephony.TelephonyIntents;
@@ -121,6 +126,8 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     int mQSWifiIconId = 0;
     int mWifiActivityIconId = 0; // overlay arrows for wifi direction
     int mWifiActivity = WifiManager.DATA_ACTIVITY_NONE;
+    String oldWifiSsid = "";
+    boolean mInitialConnection = true;
 
     // bluetooth
     protected boolean mBluetoothTethered = false;
@@ -185,6 +192,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     int mLastDataTypeIconId = -1;
     String mLastCombinedLabel = "";
     private String mCustomLabel = "";
+    private int mNetworkNotifications = 0;
 
     protected boolean mHasMobileDataFeature;
     private static boolean mUseSixBar;
@@ -257,7 +265,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
 
         // broadcasts
         IntentFilter filter = new IntentFilter();
-        filter.addAction("com.android.settings.LABEL_CHANGED");
+        filter.addAction("com.vanir.UPDATE_NETWORK_PREFERENCES");
         filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -288,6 +296,8 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
 
         mCustomLabel = Settings.System.getString(mContext.getContentResolver(),
                 Settings.System.CUSTOM_CARRIER_LABEL);
+        mNetworkNotifications = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NETWORK_NOTIFICATIONS, 0);
     }
 
     public void unregisterController(Context context) {
@@ -500,9 +510,11 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
                  action.equals(ConnectivityManager.INET_CONDITION_ACTION)) {
             updateConnectivity(intent);
             refreshViews();
-        } else if (action.equals("com.android.settings.LABEL_CHANGED")) {
+        } else if (action.equals("com.vanir.UPDATE_NETWORK_PREFERENCES")) {
             mCustomLabel = Settings.System.getString(mContext.getContentResolver(),
                 Settings.System.CUSTOM_CARRIER_LABEL);
+            mNetworkNotifications = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NETWORK_NOTIFICATIONS, 0);
             refreshViews(); 
         } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
             refreshLocale();
@@ -1048,6 +1060,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         if (action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
             mWifiEnabled = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,
                     WifiManager.WIFI_STATE_UNKNOWN) == WifiManager.WIFI_STATE_ENABLED;
+            if (!mWifiEnabled) mInitialConnection = true;
 
         } else if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
             final NetworkInfo networkInfo = (NetworkInfo)
@@ -1064,6 +1077,33 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
                 }
                 if (info != null) {
                     mWifiSsid = huntForSsid(info);
+                    if (mNetworkNotifications > 0 && !mInitialConnection && (mWifiSsid != oldWifiSsid)) {
+                        switch (mNetworkNotifications) {
+                            case 0:
+                                break;
+                            case 1:
+                                final String cheese = (mContext.getString(R.string.wifi_changed_toast) + mWifiSsid);
+                                Toast.makeText(mContext, cheese, Toast.LENGTH_SHORT).show();
+                                break;
+                            case 2:
+                                NotificationManager nm = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                                Notification.Builder network = new Notification.Builder(mContext)
+                                        .setSmallIcon(R.drawable.wifi_notify)
+                                        .setWhen(System.currentTimeMillis())
+                                        .setTicker(mContext.getString(R.string.wifi_changed_ticker) + " " + mWifiSsid)
+                                        .setContentTitle(mContext.getString(R.string.wifi_changed_ticker))
+                                        .setContentText(mContext.getString(R.string.wifi_address_changed) + " " + mWifiSsid)
+                                        .setAutoCancel(true);
+                                Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                network.setSound(soundUri);
+                                // Trigger the notification
+                                nm.cancel(R.string.wifi_address_changed);
+                                nm.notify(R.string.wifi_address_changed, network.build());
+                                break;
+                        }
+                        oldWifiSsid = mWifiSsid;
+                    }
+                    mInitialConnection = false;
                 } else {
                     mWifiSsid = null;
                 }
@@ -1254,8 +1294,8 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
         int combinedSignalIconId = 0;
         int combinedActivityIconId = 0;
         String combinedLabel = "";
-        String wifiLabel = "";
         String mobileLabel = "";
+        String wifiLabel = "";
         int N;
         final boolean emergencyOnly = isEmergencyOnly();
 
