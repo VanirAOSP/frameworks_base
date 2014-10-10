@@ -2796,6 +2796,12 @@ public final class Settings {
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
 
         /**
+         * Displays a notification when wifi network has changed
+         * @hide
+         */
+        public static final String WIFI_NETWORK_NOTIFICATIONS = "wifi_network_notifications";
+
+        /**
          * Whether to play sounds when the keyguard is shown and dismissed.
          * @hide
          */
