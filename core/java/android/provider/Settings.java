@@ -2778,6 +2778,12 @@ public final class Settings {
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
 
         /**
+         * Displays a notification when wifi network has changed
+         * @hide
+         */
+        public static final String NETWORK_NOTIFICATIONS = "network_notifications";
+
+        /**
          * Whether to play sounds when the keyguard is shown and dismissed.
          * @hide
          */
@@ -3313,6 +3319,12 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS_FIVE = "navigation_bar_buttons_five";
+
+        /**
+         * Layouts with NX views
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_NX_LAYOUTS = "navigation_bar_nx_layouts";
 
         /**
          * Allow navigation bar side keys
