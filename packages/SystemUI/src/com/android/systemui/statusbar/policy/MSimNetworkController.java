@@ -302,6 +302,9 @@ public class MSimNetworkController extends NetworkController {
                 action.equals(WimaxManagerConstants.WIMAX_NETWORK_STATE_CHANGED_ACTION)) {
             updateWimaxState(intent);
             refreshViews(mDefaultSubscription);
+        } else if (action.equals("com.vanir.UPDATE_NETWORK_PREFERENCES")) {
+            mWifiNotifications = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.WIFI_NETWORK_NOTIFICATIONS, 0);
         }
     }
 
