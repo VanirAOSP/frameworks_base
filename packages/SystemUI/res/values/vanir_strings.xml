@@ -62,6 +62,11 @@
     <string name="onthego_front_camera">Use front camera</string>
     <string name="onthego_service_toggle">Automatically restart service</string>
 
+    <!-- notify changed wifi network -->
+    <string name="wifi_changed_toast">New WiFi SSID: </string>
+    <string name="wifi_address_changed">WiFi connection has changed to </string>
+    <string name="wifi_changed_ticker">New WiFi SSID: </string>
+
     <!-- Navbar QS -->
     <string name="quick_settings_navbar_on">Navbar on</string>
     <string name="quick_settings_navbar_off">Navbar off</string>
