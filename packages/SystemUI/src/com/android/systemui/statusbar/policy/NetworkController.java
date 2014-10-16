@@ -184,7 +184,7 @@ public class NetworkController extends BroadcastReceiver implements DemoMode {
     int mLastCombinedSignalIconId = -1;
     int mLastDataTypeIconId = -1;
     String mLastCombinedLabel = "";
-    private String mCustomLabel = "";
+    String mCustomLabel = "";
 
     protected boolean mHasMobileDataFeature;
     private static boolean mUseSixBar;
