@@ -35,6 +35,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.provider.Telephony;
+import android.provider.Settings;
 import android.telephony.MSimTelephonyManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
@@ -301,6 +302,10 @@ public class MSimNetworkController extends NetworkController {
                 action.equals(WimaxManagerConstants.SIGNAL_LEVEL_CHANGED_ACTION) ||
                 action.equals(WimaxManagerConstants.WIMAX_NETWORK_STATE_CHANGED_ACTION)) {
             updateWimaxState(intent);
+            refreshViews(mDefaultSubscription);
+        } else if (action.equals("com.android.settings.LABEL_CHANGED")) {
+            mCustomLabel = Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.CUSTOM_CARRIER_LABEL);
             refreshViews(mDefaultSubscription);
         }
     }
@@ -1125,6 +1130,12 @@ public class MSimNetworkController extends NetworkController {
                 mQSPhoneSignalIconId = 0;
             }
         }
+
+        if (mCustomLabel != null && mCustomLabel.length() > 0) {
+            combinedLabel = mCustomLabel;
+            mobileLabel = mCustomLabel;
+            wifiLabel = mCustomLabel;
+        } 
 
         if (DEBUG) {
             Slog.d(TAG, "refreshViews connected={"
