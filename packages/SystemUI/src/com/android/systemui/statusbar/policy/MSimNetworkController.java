@@ -31,6 +31,7 @@ import android.net.wimax.WimaxManagerConstants;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemProperties;
+import android.provider.Settings;
 import android.provider.Telephony;
 import android.telephony.MSimTelephonyManager;
 import android.telephony.PhoneStateListener;
