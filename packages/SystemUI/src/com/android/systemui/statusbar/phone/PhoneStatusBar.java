@@ -319,6 +319,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private View mTickerView;
     private boolean mTicking;
     private boolean mHoverExcludeForeground;
+    private boolean mTickerDisabled;
 
     // Tracking finger for opening/closing.
     int mEdgeBorder; // corresponds to R.dimen.status_bar_edge_ignore
@@ -411,6 +412,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HOVER_EXCLUDE_FOREGROUND), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.TICKER_ENABLED), false, this);
             updateSettings();
         }
 
@@ -882,11 +885,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     View.STATUS_BAR_DISABLE_CLOCK);
         }
 
+        mTickerDisabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TICKER_DISABLED, 0) == 1;
         mTicker = new MyTicker(context, mStatusBarView);
-
         TickerView tickerView = (TickerView)mStatusBarView.findViewById(R.id.tickerText);
         tickerView.mTicker = mTicker;
-        if (mHaloActive) mTickerView.setVisibility(View.GONE);
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
 
@@ -2921,6 +2924,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // nope
         if (PanelView.isTouchInteracting()) return;
 
+        // just.. no
+        if (mTickerDisabled) return;
+
         // Show the ticker if one is requested. Also don't do this
         // until status bar window is attached to the window manager,
         // because...  well, what's the point otherwise?  And trying to
@@ -3551,10 +3557,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             updateNavigationBarState();
         }
 
-        mHoverExcludeForeground = Settings.System.getInt(mContext.getContentResolver(),
-                                        Settings.System.HOVER_EXCLUDE_FOREGROUND, 0) == 1;
+        mHoverExcludeForeground = Settings.System.getInt(resolver,
+                Settings.System.HOVER_EXCLUDE_FOREGROUND, 0) == 1;
 
-        mDoubleTapToSleep = Settings.System.getInt(mContext.getContentResolver(),
+        mTickerDisabled = Settings.System.getInt(resolver,
+                Settings.System.TICKER_DISABLED, 0) == 1;
+
+        mDoubleTapToSleep = Settings.System.getInt(resolver,
                 Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 0) == 1;
 
         orientationDependentImmersive = Settings.System.getIntForUser(resolver,
@@ -3565,8 +3574,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0,
                 UserHandle.USER_CURRENT) == 1;
 
-        // if immersive is enabled, update the member that indicates whether or not
-        //   immersive mode is expanded-desktop-y
         if (immersive) {
             mImmersiveIsExpandedDesktopLike = Settings.System.getIntForUser(
                     resolver, Settings.System.EXPANDED_DESKTOP, 0,

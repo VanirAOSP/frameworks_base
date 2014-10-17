@@ -3220,6 +3220,13 @@ public final class Settings {
          */
         public static final String HALO_ENABLED = "halo_enabled";
 
+       /**
+        * Enable the statusbar ticker
+        * Default is not hidden
+        * @hide
+        */
+        public static final String TICKER_DISABLED = "ticker_enabled";
+
         /**
          * Set a custom notification background color
          * @hide
