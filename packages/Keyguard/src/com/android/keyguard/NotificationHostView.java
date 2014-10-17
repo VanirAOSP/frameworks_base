@@ -375,7 +375,7 @@ public class NotificationHostView extends FrameLayout {
             v.removeOnLayoutChangeListener(this);
         }
     };
-    private void handleAddNotification(final boolean showNotification, boolean forceBigContentView) {
+    public void handleAddNotification(final boolean showNotification, boolean forceBigContentView) {
         final NotificationView nv = mNotificationsToAdd.poll();
         final StatusBarNotification sbn = nv.statusBarNotification;
         final String sbndesc = describeNotification(sbn);
@@ -473,7 +473,7 @@ public class NotificationHostView extends FrameLayout {
         mHandler.sendMessage(msg);
     }
 
-    private void handleRemoveNotification(final boolean dismiss) {
+    public void handleRemoveNotification(final boolean dismiss) {
         final NotificationView v = mNotificationsToRemove.poll();
         final StatusBarNotification sbn = v.statusBarNotification;
         final String sbndesc = describeNotification(sbn);
