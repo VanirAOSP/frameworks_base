@@ -34,7 +34,7 @@ import android.os.storage.StorageVolume;
 import android.os.UserHandle;
 import android.provider.Settings.Global;
 import android.telecom.TelecomManager;
-import android.telephony.SubscriptionManager;
+import android.text.TextUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -80,7 +80,9 @@ public class PhoneStatusBarPolicy {
     private boolean mZenVisible;
     private boolean mVolumeVisible;
 
-    private int mZen;
+    // Alarm icon
+    private boolean mAlarmIconDisabled;
+
 
     private boolean mBluetoothEnabled = false;
     StorageManager mStorageManager;
@@ -111,6 +113,31 @@ public class PhoneStatusBarPolicy {
             else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
                 updateAlarm();
             }
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QUIET_HOURS_ENABLED),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.ALARM_ICON_PREFERENCE),
+            ContentResolver resolver = mContext.getContentResolver();
+            if (uri.equals(Settings.System.getUriFor(Settings.System.ALARM_ICON_PREFERENCE))) {
+                mAlarmIconDisabled = Settings.System.getIntForUser(resolver,
+                        Settings.System.ALARM_ICON_PREFERENCE, 0, UserHandle.USER_CURRENT) == 1;
+                final String timeString = Settings.System.getString(resolver,
+                        Settings.System.NEXT_ALARM_FORMATTED);
+                if (!mAlarmIconDisabled) {
+                    if (timeString != null || !TextUtils.isEmpty(timeString)) {
+                        mService.setIconVisibility("alarm_clock", true);
+                    }
+                } else {
+                    mService.setIconVisibility("alarm_clock", false);
+                }
+            } else {
+                updateSettings();
+            }
+        }
+                    Settings.System.QUIET_HOURS_ENABLED, 0, UserHandle.USER_CURRENT);
+
         }
     };
 
@@ -180,9 +207,9 @@ public class PhoneStatusBarPolicy {
 
         // cast
         mService.setIcon(SLOT_CAST, R.drawable.stat_sys_cast, 0, null);
-        mService.setIconVisibility(SLOT_CAST, false);
-        mCast.addCallback(mCastCallback);
-    }
+        if (!mAlarmIconDisabled) {
+            alarmSet = false;
+        }
 
     private final void updateSDCardtoAbsent() {
         mService.setIcon(SDCARD_ABSENT, R.drawable.stat_sys_no_sdcard, 0, null);

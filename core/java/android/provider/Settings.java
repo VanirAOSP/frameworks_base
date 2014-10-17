@@ -2902,6 +2902,12 @@ public final class Settings {
 
         /**
          * Whether lock-to-app will be triggered by long-press on recents.
+         * Allow status bar alarm icon
+         * @hide
+         */
+        public static final String ALARM_ICON_PREFERENCE = "alarm_icon_preference";
+
+        /**
          * @hide
          */
         public static final String LOCK_TO_APP_ENABLED = "lock_to_app_enabled";
