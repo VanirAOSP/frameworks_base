@@ -76,6 +76,8 @@ public class NumPadKey extends Button {
 
         mEnableHaptics = new LockPatternUtils(context).isTactileFeedbackEnabled();
         updateText();
+
+        a.recycle();
     }
 
     @Override
