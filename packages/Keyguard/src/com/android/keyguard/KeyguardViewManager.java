@@ -21,7 +21,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.TransitionDrawable;
 
-import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -262,8 +261,6 @@ public class KeyguardViewManager {
         mViewMediatorCallback = callback;
         mLockPatternUtils = lockPatternUtils;
         mTranslucentDecor = res.getBoolean(R.bool.config_enableLockScreenTranslucentDecor);
-
-        mHandler = new Handler();
 
         mDisplayManager = new DisplayManagerService(context, mHandler);
         mObserver = new SettingsObserver(mHandler);
