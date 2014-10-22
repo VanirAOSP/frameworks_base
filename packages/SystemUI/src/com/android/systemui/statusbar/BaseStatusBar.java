@@ -98,6 +98,7 @@ import com.android.systemui.SystemUI;
 import com.android.systemui.slimrecent.RecentController;
 import com.android.systemui.statusbar.halo.Halo;
 import com.android.systemui.cm.SpamMessageProvider;
+import com.android.systemui.vanir.FlashNotifications;
 import com.android.systemui.vanir.GesturePanelView;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.notification.Hover;
@@ -208,6 +209,9 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     // Notification helper
     protected NotificationHelper mNotificationHelper;
+
+    // Flash notifications
+    protected FlashNotifications mFlash;
 
     // Hover
     protected boolean mHoverInit = false;
@@ -587,6 +591,8 @@ public abstract class BaseStatusBar extends SystemUI implements
             activateHoverListeners();
             updateHoverState();
         }
+
+        mFlash = new FlashNotifications(mContext);
 
         mSettingsObserver = new SettingsObserver(new Handler());
         mSettingsObserver.observe();
