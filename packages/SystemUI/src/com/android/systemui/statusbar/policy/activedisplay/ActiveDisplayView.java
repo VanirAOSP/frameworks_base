@@ -279,14 +279,7 @@ public class ActiveDisplayView extends FrameLayout {
                 enableProximitySensor();
                 mHandler.removeMessages(MSG_DISMISS_NOTIFICATION);
                 mHandler.sendEmptyMessage(MSG_DISMISS_NOTIFICATION);
-                mNotification = getNextAvailableNotification();
-                if (mNotification != null) {
-                    setActiveNotification(mNotification, true);
-                    invalidate();
-                    mGlowPadView.ping();
-                    updateTimeoutTimer();
-                    return;
-                }
+                updateTimeoutTimer();
             }
         }
 
@@ -461,7 +454,7 @@ public class ActiveDisplayView extends FrameLayout {
         }
 
         private void handleDismissNotification() {
-            if (mNotification != null && mNotification.isClearable()) {
+            if (mNotification.isClearable()) {
                 try {
                     mNM.cancelNotificationFromSystemListener(mNotificationListener,
                             mNotification.getPackageName(), mNotification.getTag(),
@@ -471,6 +464,7 @@ public class ActiveDisplayView extends FrameLayout {
                 } finally {
                     if (mRemoteView != null) mRemoteViewLayout.removeView(mRemoteView);
                 }
+                // get the next one
                 mNotification = getNextAvailableNotification();
                 if (mNotification != null) {
                     setActiveNotification(mNotification, true);
@@ -479,11 +473,20 @@ public class ActiveDisplayView extends FrameLayout {
                     mGlowPadView.ping();
                     updateTimeoutTimer();
                     return;
+                } else {
+                    // no more notifications
+                    disableProximitySensor();
+                    mPocketTime = 0;
+                    mHandler.removeMessages(MSG_HIDE_NOTIFICATION_VIEW);
+                    mHandler.sendEmptyMessage(MSG_HIDE_NOTIFICATION_VIEW);
+                    return;
                 }
+            } else {
+                // no clearable notifications to display so just turn screen off
+                disableProximitySensor();
+                mPocketTime = 0;
+                turnScreenOff();
             }
-            // no other notifications to display so turn screen off
-            if (mNotification == null) return;
-            turnScreenOff();
         }
     };
 
