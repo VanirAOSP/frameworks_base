@@ -285,7 +285,6 @@ public class ActiveDisplayView extends FrameLayout {
                     invalidate();
                     mGlowPadView.ping();
                     updateTimeoutTimer();
-                    return;
                 }
             }
         }
@@ -482,7 +481,16 @@ public class ActiveDisplayView extends FrameLayout {
                 }
             }
             // no other notifications to display so turn screen off
-            if (mNotification == null) return;
+            if (mNotification == null) {
+                disableProximitySensor();
+                mPocketTime = 0;
+
+                // unlock the keyguard
+                Intent intent = new Intent();
+                intent.setAction(DISMISS_KEYGUARD_SECURELY_ACTION);
+                mContext.sendBroadcast(intent);
+                return;
+            }
             turnScreenOff();
         }
     };
