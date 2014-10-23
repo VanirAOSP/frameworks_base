@@ -33,17 +33,20 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.media.RemoteControlClient;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -105,6 +108,13 @@ public class KeyguardHostView extends KeyguardViewBase {
 
     protected OnDismissAction mDismissAction;
 
+    // user customizable settings
+    private SettingsObserver mObserver;
+    int mMaximizeWidgets;
+    boolean mMenuOverride;
+    boolean mHomeOverride;
+    boolean mCameraOverride;
+
     protected int mFailedAttempts;
     private LockPatternUtils mLockPatternUtils;
 
@@ -151,6 +161,41 @@ public class KeyguardHostView extends KeyguardViewBase {
     /*package*/ interface OnDismissAction {
         /* returns true if the dismiss should be deferred */
         boolean onDismiss();
+    }
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_MUSIC_CONTROLS), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_MAXIMIZE_WIDGETS), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MENU_UNLOCK_SCREEN), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HOME_UNLOCK_SCREEN), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.CAMERA_UNLOCK_SCREEN), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            ContentResolver resolver = mContext.getContentResolver();
+            mTransportShouldBeVisible = Settings.System.getIntForUser(resolver,
+                    Settings.System.LOCKSCREEN_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) != 0;
+            mMaximizeWidgets = Settings.System.getIntForUser(resolver,
+                    Settings.System.LOCKSCREEN_MAXIMIZE_WIDGETS, 0, UserHandle.USER_CURRENT);
+            mMenuOverride = Settings.System.getInt(resolver,
+                    Settings.System.MENU_UNLOCK_SCREEN, 0) == 1;
+            mHomeOverride = Settings.System.getInt(resolver,
+                    Settings.System.HOME_UNLOCK_SCREEN, 0) == 1;
+            mCameraOverride = Settings.System.getInt(resolver,
+                    Settings.System.CAMERA_UNLOCK_SCREEN, 0) == 1;
+        }
     }
 
     public KeyguardHostView(Context context) {
@@ -208,6 +253,12 @@ public class KeyguardHostView extends KeyguardViewBase {
 
         // Ensure we have the current state *before* we call showAppropriateWidgetPage()
         getInitialTransportState();
+
+        if (mObserver == null) {
+            mObserver = new SettingsObserver(new Handler());
+            mObserver.observe();
+            mObserver.onChange(true);
+        }
 
         if (mSafeModeEnabled) {
             Log.v(TAG, "Keyguard widgets disabled by safe mode");
@@ -411,9 +462,6 @@ public class KeyguardHostView extends KeyguardViewBase {
         mViewStateManager.setSecurityViewContainer(mSecurityViewContainer);
 
         setBackButtonEnabled(false);
-
-        mTransportShouldBeVisible = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.LOCKSCREEN_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) != 0;
 
         if (KeyguardUpdateMonitor.getInstance(mContext).hasBootCompleted()) {
             updateAndAddWidgets();
@@ -1173,9 +1221,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         if (mSlidingChallengeLayout == null) {
             return;
         }
-        int setting = Settings.System.getIntForUser(getContext().getContentResolver(),
-                Settings.System.LOCKSCREEN_MAXIMIZE_WIDGETS, 0, UserHandle.USER_CURRENT);
-        if (setting == 1) {
+        if (mMaximizeWidgets == 1) {
             mSlidingChallengeLayout.showChallenge(false);
         }
     }
@@ -1775,21 +1821,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         final boolean configDisabled = res.getBoolean(R.bool.config_disableMenuKeyInLockScreen);
         final boolean isTestHarness = ActivityManager.isRunningInTestHarness();
         final boolean fileOverride = (new File(ENABLE_MENU_KEY_FILE)).exists();
-        final boolean menuOverride = Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.MENU_UNLOCK_SCREEN, 0) == 1;
-        return !configDisabled || isTestHarness || fileOverride || menuOverride;
-    }
-
-    private boolean shouldEnableHomeKey() {
-        final boolean homeOverride = Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.HOME_UNLOCK_SCREEN, 0) == 1;
-        return homeOverride;
-    }
-
-    private boolean shouldEnableCameraKey() {
-        final boolean cameraOverride = Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.CAMERA_UNLOCK_SCREEN, 0) == 1;
-        return cameraOverride;
+        return !configDisabled || isTestHarness || fileOverride || mMenuOverride;
     }
 
     public void goToWidget(int appWidgetId) {
@@ -1808,7 +1840,7 @@ public class KeyguardHostView extends KeyguardViewBase {
 
     public boolean handleHomeKey() {
         // The following enables the HOME key to work for testing automation
-        if (shouldEnableHomeKey()) {
+        if (mHomeOverride) {
             showNextSecurityScreenOrFinish(false);
             return true;
         }
@@ -1817,7 +1849,7 @@ public class KeyguardHostView extends KeyguardViewBase {
 
     public boolean handleCameraKey() {
         // The following enables the CAMERA key to work for testing automation
-        if (shouldEnableCameraKey()) {
+        if (mCameraOverride) {
             showNextSecurityScreenOrFinish(false);
             return true;
         }
