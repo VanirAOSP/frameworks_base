@@ -1199,6 +1199,8 @@ public class MediaScanner
         HashSet<String> existingFiles = new HashSet<String>();
         String directory = "/sdcard/DCIM/.thumbnails";
         String [] files = (new File(directory)).list();
+        Cursor c = null;
+
         if (files == null)
             files = new String[0];
 
@@ -1208,7 +1210,7 @@ public class MediaScanner
         }
 
         try {
-            Cursor c = mMediaProvider.query(
+            c = mMediaProvider.query(
                     mPackageName,
                     mThumbsUri,
                     new String [] { "_data" },
@@ -1233,11 +1235,12 @@ public class MediaScanner
             }
 
             Log.v(TAG, "/pruneDeadThumbnailFiles... " + c);
+        } catch (RemoteException e) {
+            // We will soon be killed...
+        } finally {
             if (c != null) {
                 c.close();
             }
-        } catch (RemoteException e) {
-            // We will soon be killed...
         }
     }
 
