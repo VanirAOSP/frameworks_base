@@ -290,7 +290,7 @@ public class ActiveDisplayView extends FrameLayout {
         }
 
         public void onReleased(final View v, final int handle) {
-            doTransition(mOverflowNotifications, 1.0f, 0);
+            doTransition(mOverflowNotifications, 1.0f, 100);
             if (!privacyMode) {
                 if (mRemoteView != null) {
                     ObjectAnimator.ofFloat(mRemoteView, "alpha", 0f).start();
@@ -307,7 +307,7 @@ public class ActiveDisplayView extends FrameLayout {
                 mPM = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
             mPM.userActivity(SystemClock.uptimeMillis(), true);
             cancelTimeoutTimer();
-            doTransition(mOverflowNotifications, 0.0f, 0);
+            doTransition(mOverflowNotifications, 0.0f, 100);
             if (!privacyMode) {
                 if (mRemoteView != null) {
                     ObjectAnimator.ofFloat(mRemoteView, "alpha", 1f).start();
