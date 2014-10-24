@@ -2863,6 +2863,31 @@ public final class Settings {
         public static final String ACTIVE_DISPLAY_SHOW_DATE = "active_display_show_date";
 
         /**
+         * flash notifications
+         * @hide
+         */
+        public static final String FLASH_NOTIFICATIONS = "flash_notifications";
+        
+        /**
+         * flash notifications: allow with the screen on
+         * @hide
+         */
+        public static final String FLASH_NOTIFICATIONS_ALLOW_WITH_SCREEN_ON = "flash_notifications_with_screen_on";
+
+        /**
+         * Whether to include ongoing/non-clearable notifications
+         * @hide
+         */
+        public static final String FLASH_NOTIFICATIONS_ALL_NOTIFICATIONS = "flash_notifications_all_notifications";
+
+        /**
+         * A list of packages to exclude from activating flash notifications.
+         * This should be a string of packages separated by |
+         * @hide
+         */
+        public static final String FLASH_NOTIFICATIONS_EXCLUDED_APPS = "flash_notifications_excluded_apps";
+
+        /**
          * active notifications
          *@hide
          */
