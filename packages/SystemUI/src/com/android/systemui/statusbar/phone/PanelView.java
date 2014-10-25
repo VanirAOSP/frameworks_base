@@ -482,10 +482,12 @@ public class PanelView extends FrameLayout {
                                     mPeekAnimator.cancel();
                                 }
                                 mJustPeeked = false;
-                                mShouldReactToBrightnessSlider = false;
-                                mHandler.removeCallbacks(mChangeBrightnessRunnable);
+                                if (mStatusBarSliderEnabled) {
+                                    mShouldReactToBrightnessSlider = false;
+                                    mHandler.removeCallbacks(mChangeBrightnessRunnable);
+                                }
                             }
-                            if(!mAutobrightnessEnabled && mStatusBarSliderEnabled && mTracking && mShouldReactToBrightnessSlider) {
+                            if (mStatusBarSliderEnabled && !mAutobrightnessEnabled && mTracking && mShouldReactToBrightnessSlider) {
                                 if(mPropFactor == null) setPropFactor();
                                 mBrightnessValue = checkMinMax(Math.round(event.getRawX() * mPropFactor));
                                 mHandler.postDelayed(mChangeBrightnessRunnable, 100);
@@ -501,8 +503,8 @@ public class PanelView extends FrameLayout {
                         case MotionEvent.ACTION_UP:
                         case MotionEvent.ACTION_CANCEL:
                             mInteracting = false;
-                            mHandler.removeCallbacks(mChangeBrightnessRunnable);
-                            if(!mAutobrightnessEnabled && mStatusBarSliderEnabled && mShouldReactToBrightnessSlider && mTracking) {
+                            if (mStatusBarSliderEnabled) mHandler.removeCallbacks(mChangeBrightnessRunnable);
+                            if (mStatusBarSliderEnabled && !mAutobrightnessEnabled && mShouldReactToBrightnessSlider && mTracking) {
                                 postDelayed(mSaveBrightness, 1000);
                             }
                             mShouldReactToBrightnessSlider = false;
