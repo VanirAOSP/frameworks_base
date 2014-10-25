@@ -262,7 +262,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private TilesChangedObserver mTilesChangedObserver;
     private SettingsObserver mSettingsObserver;
     boolean mSearchPanelAllowed = true;
-    boolean mDoubleTapToSleep;
 
     // Ribbon settings
     private boolean mHasQuickAccessSettings;
@@ -431,18 +430,28 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 if (mSettingsPanel != null) {
                     mSettingsPanel.setBackgroundDrawables();
                 }
+
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_ALPHA))) {
                 mAlpha = (int)(255.0*(1.0 - Settings.System.getFloatForUser(
                     mContext.getContentResolver(), Settings.System.NOTIFICATION_ALPHA,
                     0.0f, UserHandle.USER_CURRENT)));
                 setNotificationAlpha();
+
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR))) {
                 updateNavigationBarState();
+
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE))) {
+                mStatusBarView.setGestureListener(Settings.System.getInt(
+                        mContext.getContentResolver(), Settings.System.DOUBLE_TAP_SLEEP_GESTURE,
+                        0) == 1);
+
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.ENABLE_ACTIVE_DISPLAY))) {
                 updateActiveDisplayViewState();
+
             } else {
                 updateSettings();
             }
@@ -3563,9 +3572,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mTickerDisabled = Settings.System.getInt(resolver,
                 Settings.System.TICKER_DISABLED, 0) == 1;
 
-        mDoubleTapToSleep = Settings.System.getInt(resolver,
-                Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 0) == 1;
-
         orientationDependentImmersive = Settings.System.getIntForUser(resolver,
                 Settings.System.IMMERSIVE_ORIENTATION, 0,
                 UserHandle.USER_CURRENT);
@@ -3579,10 +3585,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.EXPANDED_DESKTOP, 0,
                     UserHandle.USER_CURRENT) != 0;
         }
-    }
-
-    protected boolean isDoubleTapEnabled() {
-        return mDoubleTapToSleep;
     }
 
     private void updateRotationState() {
