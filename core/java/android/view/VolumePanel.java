@@ -114,6 +114,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
     public static final int VOLUME_OVERLAY_EXPANDABLE = 1;
     public static final int VOLUME_OVERLAY_EXPANDED = 2;
     public static final int VOLUME_OVERLAY_NONE = 3;
+    public static final int VOLUME_IN_STATUS_BAR = 4;
 
     private static final int TRANSLUCENT_START_LEVEL = 208;
     private static final int TRANSLUCENT_TO_OPAQUE_DURATION = 400;
@@ -436,6 +437,10 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
                     expand();
                 }
                 mCurrentOverlayStyle = VOLUME_OVERLAY_EXPANDED;
+                break;
+            case VOLUME_IN_STATUS_BAR:
+                mShowCombinedVolumes = false;
+                mCurrentOverlayStyle = VOLUME_OVERLAY_NONE;
                 break;
             case VOLUME_OVERLAY_NONE :
                 mShowCombinedVolumes = false;

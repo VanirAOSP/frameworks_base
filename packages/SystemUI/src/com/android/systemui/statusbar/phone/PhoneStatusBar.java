@@ -415,6 +415,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.HOVER_EXCLUDE_FOREGROUND), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.TICKER_DISABLED), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MODE_VOLUME_OVERLAY), false, this);
             updateSettings();
         }
 
@@ -432,6 +434,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 if (mSettingsPanel != null) {
                     mSettingsPanel.setBackgroundDrawables();
                 }
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.MODE_VOLUME_OVERLAY))) {
+                boolean statusbarVolume = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.MODE_VOLUME_OVERLAY, 1) == 4;
+                mStatusBarView.setVolumeReceiver(statusbarVolume);
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_ALPHA))) {
                 mAlpha = (int)(255.0*(1.0 - Settings.System.getFloatForUser(

@@ -17,9 +17,13 @@
 package com.android.systemui.statusbar.phone;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.media.AudioManager;
 import android.util.AttributeSet;
 import android.util.EventLog;
 import android.util.Log;
@@ -50,6 +54,7 @@ public class PhoneStatusBarView extends PanelBar {
     private boolean mShouldFade;
     private final PhoneStatusBarTransitions mBarTransitions;
     private GestureDetector mDoubleTapGesture;
+    private boolean mAttached;
 
     private boolean mUseGFX;
 
@@ -96,12 +101,49 @@ public class PhoneStatusBarView extends PanelBar {
         return mFullWidthNotifications;
     }
 
+    // to do: rework and move to phonestatusbar
+    public void setVolumeReceiver(boolean enabled) {
+        if (enabled) {
+            if (!mAttached) {
+                Log.e(TAG, "Registering volume receiver");
+                IntentFilter filter = new IntentFilter("vanir.action.SEND_VOLUME_ADJUST");
+                mContext.registerReceiver(mReceiver, filter);
+                mAttached = true;
+            }
+        } else {
+            if (mAttached) {
+                Log.e(TAG, "Unregistering volume receiver");
+                mContext.unregisterReceiver(mReceiver);
+                mAttached = false;
+            }
+        }
+    }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+ //           if (intent.getAction().equals("vanir.action.SEND_VOLUME_ADJUST")) {
+                AudioManager audio = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+                int currentVolume = audio.getStreamVolume(audio.getMode());
+                Log.e("PhoneStatusBarView", "VOLUME HAS BEEN ADJUSTED! " + currentVolume);
+ //           }
+        }
+    };
+
     @Override
     public void onAttachedToWindow() {
         for (PanelView pv : mPanels) {
             pv.setRubberbandingEnabled(!mFullWidthNotifications);
         }
         mBarTransitions.init();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        if (mAttached) {
+            mContext.unregisterReceiver(mReceiver);
+            mAttached = false;
+        }
     }
 
     @Override

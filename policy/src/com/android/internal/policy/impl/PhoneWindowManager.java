@@ -583,6 +583,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private boolean mVolumeDownKeyTriggered;
     private long mVolumeDownKeyTime;
     private long mVolumeUpKeyTime;
+    private boolean mStatusBarVolume;
     private boolean mVolumeDownKeyConsumedByChord;
     private boolean mVolumeUpKeyConsumedByChord;
     private boolean mVolumeUpKeyConsumedByScreenrecordChord;
@@ -784,6 +785,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR), false, this,
                     UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MODE_VOLUME_OVERLAY), false, this);
 
             updateSettings();
         }
@@ -1828,6 +1831,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (mImmersiveModeConfirmation != null) {
                 mImmersiveModeConfirmation.loadSetting();
             }
+
+            mStatusBarVolume = Settings.System.getInt(resolver,
+                Settings.System.MODE_VOLUME_OVERLAY, 1) == 4;
 
             final boolean currentWants = mHasNavigationBar || Settings.System.getInt(resolver, Settings.System.ENABLE_NAVIGATION_BAR, 0) != 0;
 
@@ -4714,6 +4720,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                                 : AudioManager.ADJUST_LOWER,
                         0,
                         mContext.getOpPackageName());
+            }
+            if (mStatusBarVolume) {
+                Log.e(TAG, "vanir.action.SEND_VOLUME_ADJUST");
+                Intent i = new Intent("vanir.action.SEND_VOLUME_ADJUST");
+                mContext.sendBroadcast(i);
             }
         } catch (RemoteException e) {
             Log.w(TAG, "IAudioService.adjust*StreamVolume() threw RemoteException " + e);
