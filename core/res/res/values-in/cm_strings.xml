@@ -78,6 +78,8 @@
   <string name="permdesc_accessThemeService">Memungkinkan aplikasi untuk mengakses layanan tema. Seharusnya tidak diperlukan oleh aplikasi biasa.</string>
   <string name="permlab_setKeyguardWallpaper">set keyguard wallpaper</string>
   <string name="permdesc_setKeyguardWallpaper">Izinkan aplikasi untuk mengubah wallpaper layar kunci.</string>
+  <string name="permlab_keyguardApplicationWidget">mengatur pengaman kunci widget aplikasi</string>
+  <string name="permdesc_keyguardApplicationWidget">Izinkan sebuah aplikasi untuk mengatur widget aplikasi pada pengaman kunci.</string>
   <string name="immersive_mode_confirmation_bottom">Swipe dari bawah ke atas untuk keluar dari layar penuh.</string>
   <string name="app_ops_access_camera">mengakses kamera</string>
   <string name="app_ops_access_location">mengakses lokasi anda</string>
@@ -165,4 +167,5 @@
   <string name="stk_cc_ss_to_ss">Permintaan SS dimodifikasi ke permintaan SS yang baru.</string>
   <string name="theme_install_error_title">Gagal menginstal tema</string>
   <string name="theme_install_error_message">%s gagal untuk di instal</string>
+  <string name="storage_uicc">Penyimpanan UICC</string>
 </resources>

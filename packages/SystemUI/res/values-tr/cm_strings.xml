@@ -16,6 +16,8 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="accessibility_dpad_left">Sol imleç</string>
+  <string name="accessibility_dpad_right">Sağ imleç</string>
   <string name="dessert_case_settings_cm_title">CM\'nin maskotlarını göster</string>
   <string name="dessert_case_settings_cm_summary">Android\'in rüyalardaki tatlıları ile CM\'nin maskotlarını göster</string>
   <string name="quick_settings_screen_sleep">Uyku moduna geç</string>
@@ -33,8 +35,8 @@
   <string name="quick_settings_usb_tether_off_label">Bağlı değil</string>
   <string name="quick_settings_usb_tether_connected_label">USB int. payl. kapalı</string>
   <string name="quick_settings_usb_tether_on_label">USB internet payl.</string>
-  <string name="quick_settings_wifiap">Wi-Fi AP</string>
-  <string name="quick_settings_wifiap_off">Wi-Fi AP kapalı</string>
+  <string name="quick_settings_wifiap">Wi-Fi bağlantı noktası</string>
+  <string name="quick_settings_wifiap_off">Wi-Fi bağlantı noktası kapalı</string>
   <string name="quick_settings_quiethours">Sessiz saatler</string>
   <string name="quick_settings_quiethours_off">Sessiz saatler kapalı</string>
   <string name="quick_settings_lte">LTE</string>
@@ -43,6 +45,9 @@
   <string name="quick_settings_camera_label">Kamera</string>
   <string name="quick_settings_network_adb_disabled_label">Devre dışı</string>
   <string name="quick_settings_network_adb_enabled_label">Etkin</string>
+  <string name="quick_settings_equalizer">Equalizer</string>
+  <string name="quick_settings_compass_off">Pusula kapalı</string>
+  <string name="quick_settings_compass_init">Başlatılıyor\u2026</string>
   <string name="quick_settings_heads_up_on">Bildirim Pencereleri etkin</string>
   <string name="quick_settings_heads_up_off">Bild. Pnc. kapat</string>
   <string name="location_mode_high_accuracy_title">Yüksek doğruluk</string>
@@ -65,6 +70,7 @@
   <string name="navbar_menu_big_button">Menü tuşu</string>
   <string name="advanced_dev_option_wipe_app">Uygulama verisini sil</string>
   <string name="advanced_dev_option_force_stop">Durmaya zorla</string>
+  <string name="advanced_dev_option_uninstall">Kaldır</string>
   <string name="accessibility_dock_battery_level">Ünite pili yüzde <xliff:g id="number">%d</xliff:g>.</string>
   <string name="screenshot_delete_action">Sil</string>
   <string name="screenshot_delete_confirmation">Ekran görüntüsü silindi.</string>
