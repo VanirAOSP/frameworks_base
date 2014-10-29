@@ -262,6 +262,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private TilesChangedObserver mTilesChangedObserver;
     private SettingsObserver mSettingsObserver;
     boolean mSearchPanelAllowed = true;
+    boolean mDoubleTabToSleep = false;
 
     // Ribbon settings
     private boolean mHasQuickAccessSettings;
@@ -442,12 +443,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR))) {
                 updateNavigationBarState();
-
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE))) {
-                mStatusBarView.setGestureListener(Settings.System.getInt(
-                        mContext.getContentResolver(), Settings.System.DOUBLE_TAP_SLEEP_GESTURE,
-                        0) == 1);
 
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.ENABLE_ACTIVE_DISPLAY))) {
@@ -3519,6 +3514,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
+        //update GestureListener only if something has changed
+        final boolean doubleTabToSleep = Settings.System.getInt(
+                        resolver, Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 0) == 1 ;                        
+        if (doubleTabToSleep != mDoubleTabToSleep) {
+            mStatusBarView.setGestureListener(doubleTabToSleep);
+            mDoubleTabToSleep=doubleTabToSleep;
+        }
+        
         int batteryStyle = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_BATTERY, 0, mCurrentUserId);
         BatteryMeterMode mode = BatteryMeterMode.BATTERY_METER_ICON_PORTRAIT;
