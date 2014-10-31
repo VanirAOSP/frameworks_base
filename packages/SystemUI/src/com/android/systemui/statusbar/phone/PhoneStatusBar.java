@@ -296,6 +296,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // position
     int[] mPositionTmp = new int[2];
     boolean mExpandedVisible;
+    boolean mNotificationStateNext = true;
 
     // the date view
     DateView mDateView;
@@ -2264,13 +2265,23 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
      */
     private int getExpandedNotificationState() {
         if (mExpandedVisible) {
-            // Notification button is on quick settings side
-            if (mNotificationButton.getVisibility() == View.VISIBLE) {
-                return 1;
-            // Settings button is on notification side
-            } else if (mSettingsButton.getVisibility() == View.VISIBLE) {
-                return 2;
-            }
+			if (mNotificationButton != null) {
+				// Notification button is on quick settings side
+				if (mNotificationButton.getVisibility() == View.VISIBLE) {
+					return 1;
+				// Settings button is on notification side
+				} else if (mSettingsButton.getVisibility() == View.VISIBLE) {
+					return 2;
+				}
+			} else {
+				if (mNotificationStateNext) {
+					mNotificationStateNext = false;
+					return 2;
+				} else {
+					mNotificationStateNext = true;
+					return 1;
+				}
+			}
         }
         return 0;
     }
