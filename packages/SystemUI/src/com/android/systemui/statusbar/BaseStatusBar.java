@@ -98,7 +98,6 @@ import com.android.systemui.SystemUI;
 import com.android.systemui.slimrecent.RecentController;
 import com.android.systemui.statusbar.halo.Halo;
 import com.android.systemui.cm.SpamMessageProvider;
-import com.android.systemui.vanir.FlashNotifications;
 import com.android.systemui.vanir.GesturePanelView;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.notification.Hover;
@@ -210,9 +209,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     // Notification helper
     protected NotificationHelper mNotificationHelper;
 
-    // Flash notifications
-    protected FlashNotifications mFlash;
-
     // Hover
     protected boolean mHoverInit = false;
     protected Hover mHover;
@@ -320,8 +316,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                     Settings.System.getUriFor(Settings.System.HOVER_ENABLED), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.HOVER_FLOATING), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.FLASH_NOTIFICATIONS), false, this);
             update();
         }
 
@@ -388,9 +382,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                         break;
                 }
 
-            } else  if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.FLASH_NOTIFICATIONS))) {
-                    setFlashNotifications();
             } else {
                 update();
             }
@@ -597,16 +588,9 @@ public abstract class BaseStatusBar extends SystemUI implements
             updateHoverState();
         }
 
-        setFlashNotifications();
-
         mSettingsObserver = new SettingsObserver(new Handler());
         mSettingsObserver.observe();
     }
-
-	public FlashNotifications getFlashNotificationsInstance() {
-		if (mFlash == null) mFlash = new FlashNotifications(mContext);
-		return mFlash;
-	}
 
     public Hover getHoverInstance() {
         if (mHover == null) mHover = new Hover(this, mContext);
@@ -671,21 +655,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                     restartHalo();
             }});
             mHaloInit = true;
-        }
-    }
-
-    // Use a temp method here until a base notification listener service is written for active notifications
-    protected void setFlashNotifications() {
-        boolean flashNotifications = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FLASH_NOTIFICATIONS, 0) == 1;
-        if (mFlash == null && flashNotifications) {
-			getFlashNotificationsInstance();
-		}
-        if (flashNotifications) {
-            mFlash.registerListenerService();
-        } else {
-            mFlash.unregisterListenerService();
-            mFlash = null;
         }
     }
 
