@@ -48,7 +48,6 @@
   <string name="permlab_preventpower">zastępowanie przycisku zasilania</string>
   <string name="permdesc_preventpower">Pozwala aplikacji na zastępowanie przycisku zasilania</string>
   <string name="permlab_sendMockSms">wysyłanie pozorowanych wiadomości SMS</string>
-  <string name="permdesc_sendMockSms">Pozwala aplikacji na wysyłanie pozorowanych wiadomości SMS. W rezultacie umożliwi to wysyłanie SMS-ów do zaufanych aplikacji. Złośliwe aplikacje mogą wysyłać wiadomości w sposób ciągły, blokując system powiadomień urządzenia i zakłócając spokój użytkownika.</string>
   <string name="storage_sd_dock_card">Karta pamięci stacji dokującej</string>
   <string name="app_killed_message">Aplikacja została zabita</string>
   <string name="global_action_reboot">Uruchom ponownie</string>
@@ -77,6 +76,10 @@
   <string name="permdesc_changePhoneBlacklist">Umożliwia aplikacji zmianę numerów telefonów, od których przychodzące połączenia i wiadomości są blokowane.</string>
   <string name="permlab_accessThemeService">dostęp do usługi motywów</string>
   <string name="permdesc_accessThemeService">Umożliwia aplikacji dostęp do usługi motywów (nie powinno być wymagane przez standardowe aplikacje).</string>
+  <string name="permlab_readThemes">odczytanie informacji o motywie</string>
+  <string name="permdesc_readThemesDesc">Zezwala aplikacji na dostęp do twoich motywów i decydowanie, który z nich ma zostać użyty.</string>
+  <string name="permlab_writeThemes">modyfikowanie Twoich motywów</string>
+  <string name="permdesc_writeThemesDesc">Zezwala aplikacji na dodawanie nowych motywów i modyfikowanie tego, którego używasz.</string>
   <string name="permlab_setKeyguardWallpaper">Ustawianie tła ekranu blokady</string>
   <string name="permdesc_setKeyguardWallpaper">Umożliwia aplikacji zmianę tła ekranu blokady.</string>
   <string name="permlab_useHardwareFramework">Użyj sprzętowego frameworka</string>
@@ -130,8 +133,6 @@
   <string name="adb_net_active_notification_title">ADB przez sieć włączone</string>
   <string name="adb_both_active_notification_title">ADB przez USB &amp; sieć włączone</string>
   <string name="adb_active_generic_notification_message">Dotknij, aby wyłączyć debugowanie.</string>
-  <string name="extmedia_format_message_cm" product="nosdcard">Wszystkie dane z pamięci USB (w ścieżce \'%1$s\') zostaną usunięte. Nie można tego cofnąć!</string>
-  <string name="extmedia_format_message_cm" product="default">Wszystkie dane z karty pamięci (w ścieżce \'%1$s\') zostaną usunięte. Nie można tego cofnąć!</string>
   <string name="usb_storage_notification_manage_message">Dotknij, aby zarządzać</string>
   <string name="sd_ext_media_checking_notification_title">Przygotowywanie karty pamięci\u2026</string>
   <string name="sd_ext_media_checking_notification_message">Sprawdzanie błędów karty pamięci\u2026</string>

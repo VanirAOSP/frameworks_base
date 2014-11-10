@@ -41,6 +41,7 @@
   <string name="reboot_bootmenu">Käynnistysvalikko</string>
   <string name="reboot_fastboot">Fastboot-tila</string>
   <string name="reboot_download">Download-tila</string>
+  <string name="reboot_soft">Käynnistä uudelleen (soft)</string>
   <string name="reboot_progress">Käynnistetään uudelleen\u2026</string>
   <string name="reboot_confirm" product="tablet">Tabletti käynnistyy uudelleen.</string>
   <string name="reboot_confirm" product="default">Puhelin käynnistyy uudelleen.</string>
@@ -55,9 +56,9 @@
   <string name="toast_rotation_unlocked">Näytön asento avattu</string>
   <string name="toast_rotation_locked">Näytön asento lukittu</string>
   <string name="stylus_app_not_installed">%s ei ole asennettu</string>
-  <string name="permlab_changePrivacyGuardState">ota yksityisyyden suoja käyttöön tai poista se käytöstä</string>
+  <string name="permlab_changePrivacyGuardState">ota yksityisyyden suojaus käyttöön tai poista se käytöstä</string>
   <string name="permdesc_changePrivacyGuardState">Sallii sovelluksen valita, milloin muut sovellukset käyttävät yksityisyyden suojausta. Kun sovellus käyttää yksityisyyden suojausta, sillä ei ole pääsyä henkilökohtaisiin tietoihin kuten yhteystietoihin, puhelulokeihin tai viesteihin.</string>
-  <string name="privacy_guard_notification">Yksityisyyden suojaus aktiivinen</string>
+  <string name="privacy_guard_notification">Yksityisyyden suojaus käytössä</string>
   <string name="privacy_guard_notification_detail">Sovelluksella <xliff:g id="app">%1$s</xliff:g> ei ole pääsyä henkilökohtaisiin tietoihin</string>
   <string name="profile_picker_title">Profiilit</string>
   <string name="profile_none">Ei mitään</string>
@@ -76,8 +77,16 @@
   <string name="permdesc_changePhoneBlacklist">Sallii sovelluksen muokata puhelinnumeroita, joista saapuvat puhelut ja viestit on estetty.</string>
   <string name="permlab_accessThemeService">pääsy teemapalveluun</string>
   <string name="permdesc_accessThemeService">Sallii sovelluksen päästä teemapalveluun. Tavalliset sovellukset ei koskaan tarvitse tätä.</string>
+  <string name="permlab_readThemes">lue teeman tiedot</string>
+  <string name="permdesc_readThemesDesc">Sallii sovelluksen lukea teemojasi, ja tunnistaa käytössä olevan teeman.</string>
+  <string name="permlab_writeThemes">muokkaa teemoja</string>
+  <string name="permdesc_writeThemesDesc">Sallii sovelluksen asettaa uusia teemoja ja muokata käytössä olevaa teemaa.</string>
+  <string name="permlab_setKeyguardWallpaper">aseta näppäinlukon taustakuva</string>
+  <string name="permdesc_setKeyguardWallpaper">Sallii sovelluksen vaihtaa lukitusnäytön taustakuva.</string>
+  <string name="permlab_useHardwareFramework">käytä laitteiston kehystä</string>
+  <string name="permdesc_useHardwareFramework">Sallii sovelluksen pääsyn CM-laitteiston kehykseen.</string>
   <string name="permlab_keyguardApplicationWidget">aseta näppäinlukon sovelluswidget</string>
-  <string name="permdesc_keyguardApplicationWidget">Sallii sovelluksen asettaa sovelluswidgetin näppäinlukkoon.</string>
+  <string name="permdesc_keyguardApplicationWidget">Antaa sovelluksen asettaa widgetin näppäinlukkoon.</string>
   <string name="immersive_mode_confirmation_bottom">Pyyhkäise alhaalta ylös poistuaksesi koko näytön tilasta.</string>
   <string name="app_ops_access_camera">käyttää kameraa</string>
   <string name="app_ops_access_location">käyttää sijaintia</string>
@@ -127,6 +136,9 @@
   <string name="adb_net_active_notification_title">ADB verkon yli käytössä</string>
   <string name="adb_both_active_notification_title">ADB verkon &amp; USB:n kautta käytössä</string>
   <string name="adb_active_generic_notification_message">Paina poistaaksesi vianetsinnän käytöstä.</string>
+  <string name="usb_extmedia_format_message">Kaikki tiedot USB-muistiltasi (polussa \'%1$s\') poistetaan. Tätä toimintoa ei voi peruuttaa!</string>
+  <string name="sd_extmedia_format_message">Kaikki tiedot muistikortiltasi (polussa \'%1$s\') poistetaan. Tätä toimintoa ei voi peruuttaa!</string>
+  <string name="usb_storage_notification_manage_message">Paina hallitaksesi</string>
   <string name="sd_ext_media_checking_notification_title">Valmistellaan SD-korttia\u2026</string>
   <string name="sd_ext_media_checking_notification_message">Tarkistetaan SD-korttia virheiden varalta\u2026</string>
   <string name="sd_ext_media_nofs_notification_title">Tyhjä SD-kortti</string>
@@ -164,4 +176,19 @@
   <string name="stk_cc_ss_to_ss">SS-pyyntö muutetaan uudeksi SS-pyynnöksi.</string>
   <string name="theme_install_error_title">Teeman asennus epäonnistui</string>
   <string name="theme_install_error_message">Teeman \"%s\" asennus epäonnistui</string>
+  <string name="storage_uicc">UICC-muisti</string>
+  <string name="sd_progress_unmounting">Irroitetaan SD-korttia\u2026</string>
+  <string name="sd_progress_erasing">Tyhjennetään SD-korttia\u2026</string>
+  <string name="sd_format_error">SD-korttia ei voitu poistaa.</string>
+  <string name="sd_media_bad_removal">SD-kortti poistettiin ennen irroittamista.</string>
+  <string name="sd_media_checking">SD-korttia tarkistetaan.</string>
+  <string name="sd_media_removed">SD-kortti on poistettu.</string>
+  <string name="sd_media_shared">SD-kortti on käytössä tällä hetkellä tietokoneessa.</string>
+  <string name="usb_progress_unmounting">Irroitetaan USB-muistia\u2026</string>
+  <string name="usb_progress_erasing">Tyhjennetään USB-muistia\u2026</string>
+  <string name="usb_format_error">USB-muistia ei voitu tyhjentää.</string>
+  <string name="usb_media_bad_removal">USB-muisti poistettiin ennen irroittamista.</string>
+  <string name="usb_media_checking">USB-muistia tarkistetaan.</string>
+  <string name="usb_media_removed">USB-muisti on poistettu.</string>
+  <string name="usb_media_shared">USB-muisti on käytössä tällä hetkellä tietokoneessa.</string>
 </resources>

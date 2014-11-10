@@ -48,7 +48,6 @@
   <string name="permlab_preventpower">מניעת כפתור הכיבוי</string>
   <string name="permdesc_preventpower">מאפשר ליישום לעקוף את כפתור הכיבוי.</string>
   <string name="permlab_sendMockSms">שליחת הודעות SMS מדומות</string>
-  <string name="permdesc_sendMockSms">אפשר ליישום לשלוח הודעות SMS מזויפות. זה מאפשר ליישום לשלוח SMS ליישומים מורשים. יישומים זדוניים יכולים להשתמש בכך שישלחו הודעות ללא הפסקה, יעצרו את שירות ההודעות במערכת ויפריע למשתמש.</string>
   <string name="storage_sd_dock_card">כרטיס SD של תחנת עגינה</string>
   <string name="app_killed_message">התהליך נסגר</string>
   <string name="global_action_reboot">הפעלה מחדש</string>
@@ -77,6 +76,14 @@
   <string name="permdesc_changePhoneBlacklist">אפשר ליישום לשנות את המספרים המופיעים ברשימה השחורה, שעבורם נחסמות הודעות ושיחות נכנסות.</string>
   <string name="permlab_accessThemeService">גישה לשירות ערכת הצבעים</string>
   <string name="permdesc_accessThemeService">אפשר ליישום לגשת לשירות העיצוב. לא אמור להידרש ליישומים רגילים.</string>
+  <string name="permlab_readThemes">קריאת פרטי ערכת העיצוב</string>
+  <string name="permdesc_readThemesDesc">אפשר ליישום לקרוא את ערכות העיצוב ולקבוע איזו ערכה קבעת.</string>
+  <string name="permlab_writeThemes">שינוי ערכות העיצוב</string>
+  <string name="permdesc_writeThemesDesc">אפשר ליישום להוסיף ערכות עיצוב חדשות ולשנות אילו הוחלו.</string>
+  <string name="permlab_setKeyguardWallpaper">הגדר רקע ל-keyguard</string>
+  <string name="permdesc_setKeyguardWallpaper">אפשר ליישום לשנות את הרקע של מסך הנעילה.</string>
+  <string name="permlab_useHardwareFramework">השתמש במסגרת חומרתית</string>
+  <string name="permdesc_useHardwareFramework">אפשר ליישום לגשת למסגרת החומרתית של CM.</string>
   <string name="immersive_mode_confirmation_bottom">החלק למעלה מהתחתית כדי לצאת ממסך מלא.</string>
   <string name="app_ops_access_camera">גישה למצלמה</string>
   <string name="app_ops_access_location">גישה למיקום שלך</string>
