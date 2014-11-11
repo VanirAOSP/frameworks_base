@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013-2014 The CyanogenMod Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.android.systemui.quicksettings;
 
 import android.content.ContentResolver;
@@ -6,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.ExifInterface;
@@ -19,8 +34,6 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.MediaColumns;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -42,6 +55,7 @@ import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.PanelView;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.phone.QuickSettingsController;
+import com.android.systemui.statusbar.phone.QuickSettingsTileView;
 
 public class CameraTile extends QuickSettingsTile implements
         QuickSettingsTileView.OnPrepareListener, TextureView.SurfaceTextureListener,
@@ -98,8 +112,8 @@ public class CameraTile extends QuickSettingsTile implements
             // Use smallest preview size that is bigger than the tile view
             Camera.Size previewSize = mParams.getPreviewSize();
             for (Camera.Size size : mParams.getSupportedPreviewSizes()) {
-                if ((size.width > mTile.getWidth() && size.height > mTile.getHeight()) &&
-                        (size.width < previewSize.width && size.height < previewSize.height)) {
+                if (size.width > mTile.getWidth() && size.height > mTile.getHeight() &&
+                        size.width < previewSize.width && size.height < previewSize.height) {
                     previewSize = size;
                 }
             }
@@ -121,7 +135,7 @@ public class CameraTile extends QuickSettingsTile implements
                 mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             } else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
                 mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-            } else if (mParams.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+            } else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
 
@@ -130,17 +144,6 @@ public class CameraTile extends QuickSettingsTile implements
 
             final PanelView panel = getContainingPanel();
             final View parent = (View) mContainer.getParent();
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (panel.isFullyExpanded() && parent.getScaleX() == 1) {
-                        mHandler.postDelayed(this, 100);
-                    } else {
-                        mHandler.post(mReleaseCameraRunnable);
-                    }
-                }
-            }, 100);
 
             mIconContainer.setVisibility(View.GONE);
             mTextureView = new TextureView(mContext);
@@ -181,7 +184,7 @@ public class CameraTile extends QuickSettingsTile implements
                 }
             });
 
-            // Update the JPEG rotation\
+            // Update the JPEG rotation
             if (mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
                 mJpegRotation = (mCameraInfo.orientation - mOrientation + 360) % 360;
             } else {
@@ -199,7 +202,6 @@ public class CameraTile extends QuickSettingsTile implements
                         mCameraBusy = false;
 
                         long time = System.currentTimeMillis();
-
                         int orientation = (mOrientation + mDisplayRotation) % 360;
 
                         mStorage.addImage(mContext.getContentResolver(),
@@ -258,25 +260,6 @@ public class CameraTile extends QuickSettingsTile implements
         mHandler = handler;
         mDrawable = R.drawable.ic_qs_camera;
 
-        String imageFileNameFormat = DEFAULT_IMAGE_FILE_NAME_FORMAT;
-        try {
-            final Resources camRes = context.getPackageManager()
-                    .getResourcesForApplication("com.android.gallery3d");
-            int imageFileNameFormatResId = camRes.getIdentifier(
-                    "image_file_name_format", "string", "com.android.gallery3d");
-            imageFileNameFormat = camRes.getString(imageFileNameFormatResId);
-        } catch (PackageManager.NameNotFoundException ex) {
-            // Use default
-        } catch (Resources.NotFoundException ex) {
-            // Use default
-        }
-        mImageNameFormatter = new SimpleDateFormat(imageFileNameFormat);
-
-    }
-
-    @Override
-    void onPostCreate() {
-        updateTile();
         mOnLongClick = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -300,11 +283,33 @@ public class CameraTile extends QuickSettingsTile implements
             }
         };
 
+        String imageFileNameFormat = DEFAULT_IMAGE_FILE_NAME_FORMAT;
+        try {
+            final PackageManager pm = context.getPackageManager();
+            final Resources camRes = pm.getResourcesForApplication("com.android.gallery3d");
+            int imageFileNameFormatResId = camRes.getIdentifier(
+                    "image_file_name_format", "string", "com.android.gallery3d");
+            imageFileNameFormat = camRes.getString(imageFileNameFormatResId);
+        } catch (PackageManager.NameNotFoundException ex) {
+            // Use default
+        } catch (Resources.NotFoundException ex) {
+            // Use default
+        }
+
+        mImageNameFormatter = new SimpleDateFormat(imageFileNameFormat);
+    }
+
+    @Override
+    void onPostCreate() {
+        updateTile();
+
         mIconContainer = mTile.findViewById(R.id.icon_container);
         mSurfaceLayout = (FrameLayout) mTile.findViewById(R.id.camera_surface_holder);
         mFlashView = mTile.findViewById(R.id.camera_surface_flash_overlay);
 
         super.onPostCreate();
+
+        mTile.setOnPrepareListener(this);
     }
 
     @Override
@@ -314,6 +319,15 @@ public class CameraTile extends QuickSettingsTile implements
         } else {
             mHandler.post(mTakePictureRunnable);
         }
+    }
+
+    @Override
+    public void onPrepare() {
+    }
+
+    @Override
+    public void onUnprepare() {
+        mHandler.post(mReleaseCameraRunnable);
     }
 
     @Override
@@ -333,7 +347,7 @@ public class CameraTile extends QuickSettingsTile implements
         return null;
     }
 
-    private synchronized void updateTile() {
+    private void updateTile() {
         mLabel = mContext.getString(R.string.quick_settings_camera_label);
     }
 
