@@ -41,6 +41,8 @@ public class QSConstants {
         public static final String TILE_UPDATE = "toggleUpdate";
         public static final String TILE_NAVBAR = "toggleNavbar";
         public static final String TILE_GESTUREPANEL = "toggleGesturePanel";
+        public static final String TILE_THEMES = "toggleThemes";
+
         public static final String TILE_DELIMITER = "|";
         public static ArrayList<String> TILES_DEFAULT = new ArrayList<String>();
 

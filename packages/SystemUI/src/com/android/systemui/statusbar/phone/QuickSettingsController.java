@@ -38,6 +38,7 @@ import android.view.LayoutInflater;
 import com.android.internal.util.cm.QSUtils;
 import com.android.systemui.quicksettings.*;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.policy.NetworkController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -262,6 +263,8 @@ public class QuickSettingsController {
                 qs = new NavbarTile(mContext, this);
             } else if (tile.equals(TILE_GESTUREPANEL)) {
                 qs = new GesturePanelTile(mContext, this);
+            } else if (tile.equals(TILE_THEMES)) {
+                qs = new ThemesTile(mContext, this);
             }
 
             if (qs != null) {
