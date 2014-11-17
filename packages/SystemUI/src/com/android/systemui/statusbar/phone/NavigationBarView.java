@@ -644,7 +644,7 @@ public class NavigationBarView extends LinearLayout {
         final boolean showNotifs = disableHome && !disableSearch && mPrefLockscreen;
         // TODO(): Ideally we should integrate with DevicePolicyManager for application widget too.
         final boolean showApplicationWidget = showSearch &&
-                mApplicationWidgetPackageName != null && mLockPatternUtils.getApplicationWidgetEnabled();
+                mApplicationWidgetPackageName != null;
 
         setVisibleOrGone(getSearchLight(), showSearch);
         setVisibleOrGone(getCameraButton(), showCamera);
