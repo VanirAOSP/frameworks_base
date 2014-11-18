@@ -94,7 +94,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private static final String ANDROID_PROTECTED_APPS =
             "com.android.settings.applications.ProtectedAppsActivity";
     private PopupMenu mPopup;
-    private View mRecentsScrim;
+    private FrameLayout mRecentsScrim;
     private View mRecentsNoApps;
     private RecentsScrollView mRecentsContainer;
 
@@ -391,29 +391,32 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mProtectedApps.setVisibility(noProtectedApps() ? View.GONE : View.VISIBLE);
 
             if (!noApps) {
-/*                int clearAllButtonLocation = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLEAR_RECENTS_BUTTON_LOCATION, Constants.CLEAR_ALL_BUTTON_TOP_RIGHT);
-                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) mClearRecents.getLayoutParams();
+                int clearAllButtonLocation = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLEAR_RECENTS_BUTTON_LOCATION, Constants.CLEAR_ALL_BUTTON_TOP_RIGHT);
+                FrameLayout.LayoutParams layoutParams = null;
+                if (clearAllButtonLocation != Constants.CLEAR_ALL_BUTTON_TOP_RIGHT) 
+                    layoutParams = (FrameLayout.LayoutParams) mClearRecents.getLayoutParams();
             
-                if (clearAllButtonLocation != 0) {
-                    switch (clearAllButtonLocation) {
-                        case Constants.CLEAR_ALL_BUTTON_TOP_RIGHT:
-                        default:
-                            layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
-                            break;
-                        case Constants.CLEAR_ALL_BUTTON_TOP_LEFT:
-                            layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-                            break;
-                        case Constants.CLEAR_ALL_BUTTON_BOTTOM_RIGHT:
-                            layoutParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-                            break;
-                        case Constants.CLEAR_ALL_BUTTON_BOTTOM_LEFT:
-                            layoutParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                            break;
-                    }
+                switch (clearAllButtonLocation) {
+                    case Constants.CLEAR_ALL_BUTTON_TOP_LEFT:
+                        layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+                        break;
+                    case Constants.CLEAR_ALL_BUTTON_BOTTOM_RIGHT:
+                        layoutParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                        break;
+                    case Constants.CLEAR_ALL_BUTTON_BOTTOM_LEFT:
+                        layoutParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                        break;
+                    case Constants.CLEAR_ALL_BUTTON_TOP_RIGHT:
+                    default:
+                        ((ViewGroup)mClearRecents.getParent()).removeView(mClearRecents);
+                        mRecentsScrim.addView(mClearRecents);
+                        break;
+                }
+                if (layoutParams != null) {
                     mClearRecents.setLayoutParams(layoutParams);
-                } else {
-                    mClearRecents.setVisibility(View.GONE);
-                }*/
+                }
+            } else {
+                mClearRecents.setVisibility(View.GONE);
             }
 
             onAnimationEnd(null);
@@ -520,7 +523,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mRecentsContainer.setAdapter(mListAdapter);
         mRecentsContainer.setCallback(this);
 
-        mRecentsScrim = findViewById(R.id.recents_bg_protect);
+        mRecentsScrim = (FrameLayout)findViewById(R.id.recents_bg_protect);
         mRecentsNoApps = findViewById(R.id.recents_no_apps);
         memText = (TextView) findViewById(R.id.recents_memory_text);
         memBar = (ProgressBar) findViewById(R.id.recents_memory_bar);
