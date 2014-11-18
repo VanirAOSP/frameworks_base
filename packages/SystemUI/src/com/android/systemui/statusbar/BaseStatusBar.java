@@ -1305,7 +1305,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         return new NotificationClicker(intent, pkg, tag, id);
     }
 
-    public class NotificationClicker implements View.OnClickListener {
+    /*protected*/ public class NotificationClicker implements View.OnClickListener {
         public static final String ACTION_BROADCAST_RESULT =
                 "com.android.settings.applications.LockPatternActivity.ACTION_BROADCAST_RESULT";
 
@@ -1317,11 +1317,11 @@ public abstract class BaseStatusBar extends SystemUI implements
                         "com.android.settings.applications.LockPatternActivity");
 
 
-        private PendingIntent mIntent;
-        private String mPkg;
-        private String mTag;
-        private int mId;
-        private boolean mProtected;
+        public PendingIntent mIntent;
+        /*private*/ public String mPkg;
+        /*private*/ public String mTag;
+        /*private*/ public int mId;
+        /*private*/ public boolean mProtected;
         public boolean mFloat;
 
         private BroadcastReceiver mProtectedAppReceiver;
