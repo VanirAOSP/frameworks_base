@@ -391,8 +391,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mProtectedApps.setVisibility(noProtectedApps() ? View.GONE : View.VISIBLE);
 
             if (!noApps) {
-                int clearAllButtonLocation = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLEAR_RECENTS_BUTTON_LOCATION, Constants.CLEAR_ALL_BUTTON_TOP_RIGHT);
-                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mClearRecents.getLayoutParams();
+/*                int clearAllButtonLocation = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLEAR_RECENTS_BUTTON_LOCATION, Constants.CLEAR_ALL_BUTTON_TOP_RIGHT);
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) mClearRecents.getLayoutParams();
             
                 if (clearAllButtonLocation != 0) {
                     switch (clearAllButtonLocation) {
@@ -413,7 +413,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                     mClearRecents.setLayoutParams(layoutParams);
                 } else {
                     mClearRecents.setVisibility(View.GONE);
-                }
+                }*/
             }
 
             onAnimationEnd(null);
