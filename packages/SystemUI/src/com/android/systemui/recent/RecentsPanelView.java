@@ -36,6 +36,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -45,6 +46,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -67,6 +69,7 @@ import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -95,6 +98,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             "com.android.settings.applications.ProtectedAppsActivity";
     private PopupMenu mPopup;
     private FrameLayout mRecentsScrim;
+    private LinearLayout mButtonContainer;
     private View mRecentsNoApps;
     private RecentsScrollView mRecentsContainer;
 
@@ -119,6 +123,9 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private TextView memText;
     private ProgressBar memBar;
     private int totalMem;
+
+    private int mClearAllButtonLocation = -1;
+    private ContentObserver mSettingsObserver = null;
 
     private static Set<Integer> sLockedTasks = new HashSet<Integer>();
 
@@ -387,37 +394,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mRecentsNoApps.setAlpha(1f);
             mRecentsNoApps.setVisibility(noApps ? View.VISIBLE : View.INVISIBLE);
 
-            mClearRecents.setVisibility(noApps ? View.GONE : View.VISIBLE);
+            mClearRecents.setVisibility((noApps || mClearAllButtonLocation == 0) ? View.GONE : View.VISIBLE);
             mProtectedApps.setVisibility(noProtectedApps() ? View.GONE : View.VISIBLE);
-
-            if (!noApps) {
-                int clearAllButtonLocation = Settings.System.getInt(mContext.getContentResolver(), Settings.System.CLEAR_RECENTS_BUTTON_LOCATION, Constants.CLEAR_ALL_BUTTON_TOP_RIGHT);
-                FrameLayout.LayoutParams layoutParams = null;
-                if (clearAllButtonLocation != Constants.CLEAR_ALL_BUTTON_TOP_RIGHT) 
-                    layoutParams = (FrameLayout.LayoutParams) mClearRecents.getLayoutParams();
-            
-                switch (clearAllButtonLocation) {
-                    case Constants.CLEAR_ALL_BUTTON_TOP_LEFT:
-                        layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-                        break;
-                    case Constants.CLEAR_ALL_BUTTON_BOTTOM_RIGHT:
-                        layoutParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-                        break;
-                    case Constants.CLEAR_ALL_BUTTON_BOTTOM_LEFT:
-                        layoutParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                        break;
-                    case Constants.CLEAR_ALL_BUTTON_TOP_RIGHT:
-                    default:
-                        ((ViewGroup)mClearRecents.getParent()).removeView(mClearRecents);
-                        mRecentsScrim.addView(mClearRecents);
-                        break;
-                }
-                if (layoutParams != null) {
-                    mClearRecents.setLayoutParams(layoutParams);
-                }
-            } else {
-                mClearRecents.setVisibility(View.GONE);
-            }
 
             onAnimationEnd(null);
             setFocusable(true);
@@ -524,6 +502,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mRecentsContainer.setCallback(this);
 
         mRecentsScrim = (FrameLayout)findViewById(R.id.recents_bg_protect);
+        mButtonContainer = (LinearLayout)findViewById(R.id.button_container);
         mRecentsNoApps = findViewById(R.id.recents_no_apps);
         memText = (TextView) findViewById(R.id.recents_memory_text);
         memBar = (ProgressBar) findViewById(R.id.recents_memory_bar);
@@ -563,6 +542,57 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                 // In order to save space, we make the background texture repeat in the Y direction
                 ((BitmapDrawable) mRecentsScrim.getBackground()).setTileModeY(TileMode.REPEAT);
             }
+        }
+
+        //this is left active when not showing, because having everything lined up before the 2nd-nth show() calls is haut
+        if (mSettingsObserver == null) {
+            final ContentResolver r = mContext.getContentResolver();
+            mSettingsObserver = new ContentObserver(new Handler()) {
+                @Override
+                public void onChange(boolean selfChange) {
+                    mClearAllButtonLocation = Settings.System.getInt(r, Settings.System.CLEAR_RECENTS_BUTTON_LOCATION, Constants.CLEAR_ALL_BUTTON_TOP_RIGHT);
+
+                    //reparent?
+                    if (mClearAllButtonLocation == Constants.CLEAR_ALL_BUTTON_TOP_RIGHT) {
+                        ((ViewGroup)mClearRecents.getParent()).removeView(mClearRecents);
+                        mButtonContainer.addView(mClearRecents);
+                    } else if (mClearAllButtonLocation != Constants.CLEAR_ALL_BUTTON_TOP_RIGHT) {
+                        ((ViewGroup)mClearRecents.getParent()).removeView(mClearRecents);
+                        mRecentsScrim.addView(mClearRecents);
+                    }
+
+                    if (mClearAllButtonLocation != Constants.CLEAR_ALL_BUTTON_TOP_RIGHT) {
+                        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mClearRecents.getLayoutParams();
+
+                        switch (mClearAllButtonLocation) {
+                            case Constants.CLEAR_ALL_BUTTON_TOP_LEFT:
+                                layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+                                break;
+                            case Constants.CLEAR_ALL_BUTTON_BOTTOM_RIGHT:
+                                layoutParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                                break;
+                            case Constants.CLEAR_ALL_BUTTON_BOTTOM_LEFT:
+                                layoutParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (layoutParams != null) {
+                            mClearRecents.setLayoutParams(layoutParams);
+                        }
+                    } else {
+                        //the protected apps button (top right too) has Gravity.TOP
+                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) mClearRecents.getLayoutParams();
+                        layoutParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                        mClearRecents.setLayoutParams(layoutParams);
+                    }
+                }
+            };
+            r.registerContentObserver(Settings.System.getUriFor(Settings.System.CLEAR_RECENTS_BUTTON_LOCATION),
+                    false,
+                    mSettingsObserver);
+            mSettingsObserver.onChange(false);
         }
     }
 
