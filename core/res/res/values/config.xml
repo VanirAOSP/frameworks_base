@@ -2114,4 +2114,14 @@
     <!-- Setting to false will disable CM's IME switcher implementation for tablets -->
     <bool name="config_show_cmIMESwitcher">true</bool>
 
+    <!-- DISGUSTING HACK TO FIX MULTIPLE BUILDS -->
+    <bool name="config_enableTorch">true</bool>
+    <bool name="config_samsung_stk">false</bool>
+    <bool name="config_stylusGestures">false</bool>
+    <bool name="config_forceDisableHardwareKeyboard">false</bool>
+    <!-- LESS USEFUL STRINGS-->
+    <string name="config_perf_profile_prop">sys.perf.profile</string>
+    <string name="config_perf_profile_default_entry">1</string>
+    <integer name="config_panelAutoBrightnessValue">1</integer>
+
 </resources>
