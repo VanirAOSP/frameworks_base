@@ -2068,4 +2068,10 @@
     <!-- set to false if we dont need to consider data
          service state to display signal strength bars -->
     <bool name="config_combined_signal">true</bool>
+
+    <!-- DISGUSTING HACK TO FIX MULTIPLE BUILDS -->
+    <bool name="config_intrusiveBatteryLed">true</bool>
+    <bool name="config_multiColorBatteryLed">true</bool>
+    <bool name="config_enableTorch">true</bool>
+
 </resources>
