@@ -2101,6 +2101,7 @@
          service state to display signal strength bars -->
     <bool name="config_combined_signal">true</bool>
 
+
     <!-- Default value for proximity check on screen wake
          NOTE ! - Enable for devices that have a fast response proximity sensor (ideally < 300ms)
     -->
@@ -2110,5 +2111,15 @@
     <!-- Timeout in MS for how long you have to long-press the back key to
          kill the foreground app. -->
     <integer name="config_backKillTimeout">2000</integer>
+
+    <!-- DISGUSTING HACK TO FIX MULTIPLE BUILDS -->
+    <bool name="config_enableTorch">true</bool>
+    <bool name="config_samsung_stk">false</bool>
+    <bool name="config_stylusGestures">false</bool>
+    <bool name="config_forceDisableHardwareKeyboard">false</bool>
+    <!-- LESS USEFUL STRINGS-->
+    <string name="config_perf_profile_prop">sys.perf.profile</string>
+    <string name="config_perf_profile_default_entry">1</string>
+    <integer name="config_panelAutoBrightnessValue">1</integer>
 
 </resources>
