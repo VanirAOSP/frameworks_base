@@ -1753,6 +1753,8 @@
          on the current state of the device.
          Each item must be one of the following strings:
          "power" = Power off
+         "reboot" = Reboot options
+         "screenshot" = Take screenshot
          "settings" = An action to launch settings
          "airplane" = Airplane mode toggle
          "bugreport" = Take bug report, if available
@@ -1761,6 +1763,8 @@
          -->
     <string-array translatable="false" name="config_globalActionsList">
         <item>power</item>
+        <item>reboot</item>
+        <item>screenshot</item>
         <item>bugreport</item>
         <item>users</item>
     </string-array>
