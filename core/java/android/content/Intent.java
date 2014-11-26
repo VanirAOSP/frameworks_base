@@ -3292,6 +3292,12 @@ public class Intent implements Parcelable, Cloneable {
     public static final String EXTRA_BUG_REPORT = "android.intent.extra.BUG_REPORT";
 
     /**
+     * Intent used to launch gesture panel
+     * @hide
+     */
+    public static final String TOGGLE_GESTURE_ACTIONS = "vanir.android.TOGGLE_GESTURE_ACTIONS";
+
+    /**
      * Used in the extra field in the remote intent. It's astring token passed with the
      * remote intent.
      */

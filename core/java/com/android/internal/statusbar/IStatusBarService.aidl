@@ -34,6 +34,7 @@ interface IStatusBarService
     void setImeWindowStatus(in IBinder token, int vis, int backDisposition,
             boolean showImeSwitcher);
     void expandSettingsPanel();
+    void animateNotificationsOrSettingsPanel();
     void setCurrentUser(int newUserId);
 
     // ---- Methods below are for use by the status bar policy services ----
@@ -52,6 +53,7 @@ interface IStatusBarService
     void onNotificationExpansionChanged(in String key, in boolean userAction, in boolean expanded);
     void setSystemUiVisibility(int vis, int mask);
     void setWindowState(int window, int state);
+    void notifyLayoutChange(int direction);
 
     void showRecentApps(boolean triggeredFromAltTab);
     void hideRecentApps(boolean triggeredFromAltTab, boolean triggeredFromHomeKey);
