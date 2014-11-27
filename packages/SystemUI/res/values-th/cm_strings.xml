@@ -45,6 +45,7 @@
   <string name="quick_settings_network_adb_enabled_label">เปิด</string>
   <string name="quick_settings_heads_up_on">เปิดใช้งาน Heads up</string>
   <string name="quick_settings_heads_up_off">ไม่หยุดชะงัก</string>
+  <string name="quick_settings_themes">ชุดรูปแบบ</string>
   <string name="location_mode_high_accuracy_title">ความแม่นยำสูง</string>
   <string name="location_mode_battery_saving_title">ประหยัดแบตเตอรี่</string>
   <string name="location_mode_sensors_only_title">อุปกรณ์เท่านั้น</string>
@@ -71,4 +72,6 @@
   <string name="screenshot_delete_confirmation">ลบภาพจับหน้าจอเรียบร้อยแล้ว</string>
   <string name="accessibility_desc_add_quick_settings">เพิ่มแผงตั้งค่า</string>
   <string name="status_bar_notification_spam_item_title">ละเว้นข้อความแบบนี้</string>
+  <string name="protected_app_notification_title">การแจ้งเตือนของแอปที่ถูกป้องกัน</string>
+  <string name="protected_app_notification_summary">แตะเพื่อดูการแจ้งเตือนจากแอปที่ถูกป้องกัน</string>
 </resources>

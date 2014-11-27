@@ -48,6 +48,7 @@
   <string name="location_mode_sensors_only_title">По датчикам устройства</string>
   <string name="quick_settings_heads_up_on">Всплыв. уведомл.</string>
   <string name="quick_settings_heads_up_off">Уведомления выкл.</string>
+  <string name="quick_settings_themes">Темы</string>
   <string name="quick_settings_expanded_desktop">Расширенный</string>
   <string name="quick_settings_expanded_desktop_off">Обычный</string>
   <plurals name="quick_settings_bluetooth_multi_label">
@@ -79,4 +80,6 @@
   <string name="screenshot_delete_confirmation">Скриншот удалён.</string>
   <string name="accessibility_desc_add_quick_settings">Добавить Быстрые настройки</string>
   <string name="status_bar_notification_spam_item_title">Скрыть подобные сообщения</string>
+  <string name="protected_app_notification_title">Уведомление от заблок.приложения</string>
+  <string name="protected_app_notification_summary">Нажмите, чтобы открыть уведомление</string>
 </resources>
