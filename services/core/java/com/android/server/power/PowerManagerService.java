@@ -1310,6 +1310,10 @@ public final class PowerManagerService extends SystemService
         } finally {
             Trace.traceEnd(Trace.TRACE_TAG_POWER);
         }
+        /* make sure the buttons will be turned off if available */
+        if (mButtonsLight != null) {
+            mButtonsLight.turnOff();
+        }
         return true;
     }
 
@@ -1874,7 +1878,6 @@ public final class PowerManagerService extends SystemService
                         // to be draining faster than it is charging then stop dreaming
                         // and go to sleep.
                         Slog.i(TAG, "Stopping dream because the battery appears to "
-                                + "be draining faster than it is charging.  "
                                 + "Battery level when dream started: "
                                 + mBatteryLevelWhenDreamStarted + "%.  "
                                 + "Battery level now: " + mBatteryLevel + "%.");
