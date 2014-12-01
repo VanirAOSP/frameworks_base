@@ -1310,6 +1310,10 @@ public final class PowerManagerService extends SystemService
         } finally {
             Trace.traceEnd(Trace.TRACE_TAG_POWER);
         }
+        /* make sure the buttons will be turned off if available */
+        if (mButtonsLight != null) {
+            mButtonsLight.turnOff();
+        }
         return true;
     }
 
