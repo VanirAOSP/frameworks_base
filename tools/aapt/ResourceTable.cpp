@@ -2647,8 +2647,8 @@ ResourceTable::validateLocalizations(void)
 
         // Look for strings with no default localization
         if (configSrcMap.count(defaultLocale) == 0) {
-            SourcePos().warning("string '%s' has no default translation.",
-                    String8(nameIter->first).string());
+            NOISY(SourcePos().warning("string '%s' has no default translation.",
+                    String8(nameIter->first).string()));
             if (mBundle->getVerbose()) {
                 for (map<String8, SourcePos>::const_iterator locales = configSrcMap.begin();
                     locales != configSrcMap.end();
@@ -2704,10 +2704,10 @@ ResourceTable::validateLocalizations(void)
                      iter++) {
                     configStr.appendFormat(" %s", iter->string());
                 }
-                SourcePos().warning("string '%s' is missing %u required localizations:%s",
+                NOISY(SourcePos().warning("string '%s' is missing %u required localizations:%s",
                         String8(nameIter->first).string(),
                         (unsigned int)missingConfigs.size(),
-                        configStr.string());
+                        configStr.string()));
             }
         }
     }
