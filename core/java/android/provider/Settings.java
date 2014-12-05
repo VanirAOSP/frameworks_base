@@ -2945,6 +2945,86 @@ public final class Settings {
         public static final String POINTER_SPEED = "pointer_speed";
 
         /**
+         *
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
+
+        /**
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_HEIGHT_LANDSCAPE = "navigation_bar_height_landscape";
+
+        /**
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
+
+        /**
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
+
+        /**
+         * @hide
+         */
+        public static final String SOFTKEY_LONG_PRESS_CONFIGURATION = "softkey_long_press_configuration";
+
+        /**
+         * Alternate navigation bar layouts
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_ALTERNATE_LAYOUTS = "navigation_bar_alternate_layouts";
+
+        /**
+         * Alternate layout 2
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS_TWO = "navigation_bar_buttons_two";
+
+        /**
+         * Alternate layout 3
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS_THREE = "navigation_bar_buttons_three";
+
+        /**
+         * Alternate layout 4
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS_FOUR = "navigation_bar_buttons_four";
+
+        /**
+         * Alternate layout 5
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS_FIVE = "navigation_bar_buttons_five";
+
+        /**
+         * Allow navigation bar side keys
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_SIDEKEYS = "navigation_bar_sidekeys";
+
+        /**
+         * Allow navigation bar IME arrow keys
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_ARROWS = "navigation_bar_arrows";
+
+        /**
+         * Button layout for IME arrows
+         * @hide
+         */
+        public static final String NAVIGATION_IME_LAYOUT = "navigation_ime_layout";
+
+        /**
+         * Toggle for navigation ring
+         * @hide
+         */
+        public static final String ENABLE_NAVIGATION_RING = "enable_navigation_ring";
+
+        /**
          * Whether lock-to-app will be triggered by long-press on recents.
          * @hide
          */
@@ -3549,6 +3629,8 @@ public final class Settings {
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_ENABLED);
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_VISIBLE);
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED);
+            MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_GESTURE_ENABLED);
+            MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_GESTURE_VISIBLE);
 
             MOVED_TO_GLOBAL = new HashSet<String>();
             MOVED_TO_GLOBAL.add(Settings.Global.ADB_ENABLED);
@@ -4264,6 +4346,18 @@ public final class Settings {
         @Deprecated
         public static final String
                 LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
+
+        /**
+         * Whether autolock is enabled (0 = false, 1 = true)
+         * @hide
+         */
+        public static final String LOCK_GESTURE_ENABLED = "lock_gesture_autolock";
+
+        /**
+         * Whether lock gesture is visible as user enters (0 = false, 1 = true)
+         * @hide
+         */
+        public static final String LOCK_GESTURE_VISIBLE = "lock_gesture_visible_pattern";
 
         /**
          * This preference allows the device to be locked given time after screen goes off,
