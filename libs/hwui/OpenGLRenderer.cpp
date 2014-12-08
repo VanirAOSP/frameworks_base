@@ -2088,15 +2088,17 @@ status_t OpenGLRenderer::drawBitmapMesh(const SkBitmap* bitmap, int meshWidth, i
     float right = FLT_MIN;
     float bottom = FLT_MIN;
 
-    const uint32_t count = meshWidth * meshHeight * 2 + meshHeight * 4;
+    uint32_t vertexCountWidth = meshWidth + 1;
+    uint32_t vertexCountHeight = meshHeight + 1;
+    uint32_t vertexCount = vertexCountWidth * vertexCountHeight;
 
     Vector<ColorTextureVertex> mesh; // TODO: use C++11 unique_ptr
-    mesh.setCapacity(count);
+    mesh.setCapacity(vertexCount);
     ColorTextureVertex* vertex = mesh.editArray();
 
     bool cleanupColors = false;
     if (!colors) {
-        uint32_t colorsCount = (meshWidth + 1) * (meshHeight + 1);
+        uint32_t colorsCount = vertexCountWidth * vertexCountHeight;
         int* newColors = new int[colorsCount];
         memset(newColors, 0xff, colorsCount * sizeof(int));
         colors = newColors;
@@ -2107,54 +2109,54 @@ status_t OpenGLRenderer::drawBitmapMesh(const SkBitmap* bitmap, int meshWidth, i
     Texture* texture = mCaches.assetAtlas.getEntryTexture(bitmap);
     const UvMapper& mapper(getMapper(texture));
 
-    int deltaWidth = (meshWidth + 1) * 2;
-    for (int y = 0; y < meshHeight; y++) {
-        // init bx, by, cx, cy, ax, ay, dx, dy
-        int bx = y * deltaWidth;
-        int by = bx + 1;
-        int cx = by + 1;
-        int cy = cx + 1;
-        int ax = bx + deltaWidth;
-        int ay = ax + 1;
-        int dx = ay + 1;
-        int dy = dx + 1;
+    // Set vertices from Mesh's up to bottom (left to right in every row).
+    // Update V coordinate only once for every row.
+    for (uint32_t i = 0; i < vertexCountHeight; i++) {
+        float v = float(i) / meshHeight;
+        mapper.mapV(v);
+        for (uint32_t j = 0; j < vertexCountWidth; j++) {
+            uint32_t x = i * vertexCountWidth * 2 + j * 2;
+            uint32_t y = x + 1;
+            float u = float(j) / meshWidth;
+            mapper.mapU(u);
 
-        // init u1, v1, u2, v2
-        float u1 = 0.0f;
-        float u2 = 0.0f;
-        float v1 = float(y) / meshHeight;
-        float v2 = float(y + 1) / meshHeight;
-        mapper.map(u1, v1, u2, v2);
+            left = fminf(left, vertices[x]);
+            top = fminf(top, vertices[y]);
+            right = fmaxf(right, vertices[x]);
+            bottom = fmaxf(bottom, vertices[y]);
 
-        // add an extra vertex at the start of row
-        ColorTextureVertex::set(vertex++, vertices[bx], vertices[by], u1, v1, colors[bx / 2]);
-        ColorTextureVertex::set(vertex++, vertices[bx], vertices[by], u1, v1, colors[bx / 2]);
-        ColorTextureVertex::set(vertex++, vertices[ax], vertices[ay], u1, v2, colors[ax / 2]);
-        for (int x = 0; x < meshWidth; x++) {
-            // update u2
-            u2 = float(x + 1) / meshWidth;
-            mapper.mapU(u2);
-
-            ColorTextureVertex::set(vertex++, vertices[cx], vertices[cy], u2, v1, colors[cx / 2]);
-            ColorTextureVertex::set(vertex++, vertices[dx], vertices[dy], u2, v2, colors[dx / 2]);
-
-            left = fminf(left, fminf(vertices[ax], fminf(vertices[bx], vertices[cx])));
-            top = fminf(top, fminf(vertices[ay], fminf(vertices[by], vertices[cy])));
-            right = fmaxf(right, fmaxf(vertices[ax], fmaxf(vertices[bx], vertices[cx])));
-            bottom = fmaxf(bottom, fmaxf(vertices[ay], fmaxf(vertices[by], vertices[cy])));
-
-            // move right, update by, cx, cy, ax, ay, dx, dy
-            bx = cx;
-            by = cy;
-            ax = dx;
-            ay = dy;
-            cx = by + 1;
-            cy = cx + 1;
-            dx = ay + 1;
-            dy = dx + 1;
+            ColorTextureVertex::set(vertex++, vertices[x], vertices[y], u, v, colors[x/2]);
         }
-        // add an extra vertex at the end of row
-        ColorTextureVertex::set(vertex++, vertices[ax], vertices[ay], u2, v2, colors[ax / 2]);
+    }
+
+    // Set index order from mesh's bottom to up, So that
+    // construct the same triangle mesh with original implementation.
+    // Or, May result in diffrent interpolated color.
+    //
+    // For each row, add degenerate triangle for triangle strip
+    // Take below for example:
+    // v00 --- v01 --- v02 --- v03
+    //  |  ...  |  ...  |  ...  |
+    // v10 --- v11 --- v12 --- v13
+    //  |  ...  |  ...  |  ...  |
+    // v20 --- v21 --- v22 --- v23
+    // Indices are: v20, v20, v10, v21, v11, v22, v12, v23, v13, v13,
+    //              v10, v10, v00, v11, v01, v12, v02, v13, v03, v03
+    uint32_t indexCount = meshHeight * (meshWidth * 2 + 4);
+    uint16_t indices[indexCount];
+    uint32_t currVertexRow = meshHeight;
+    uint32_t index = 0;
+    while (currVertexRow > 0) {
+        uint32_t upVertexRow = currVertexRow - 1;
+        indices[index++] = currVertexRow * vertexCountWidth;
+        indices[index++] = currVertexRow * vertexCountWidth;
+        indices[index++] = upVertexRow * vertexCountWidth;
+        for (int i = 1; i <= meshWidth; i++) {
+            indices[index++] = currVertexRow * vertexCountWidth + i;
+            indices[index++] = upVertexRow * vertexCountWidth + i;
+        }
+        indices[index++] = upVertexRow * vertexCountWidth + meshWidth;
+        currVertexRow--;
     }
 
     if (quickRejectSetupScissor(left, top, right, bottom)) {
@@ -2197,7 +2199,7 @@ status_t OpenGLRenderer::drawBitmapMesh(const SkBitmap* bitmap, int meshWidth, i
     setupDrawColorFilterUniforms(getColorFilter(paint));
     setupDrawMesh(&mesh[0].x, &mesh[0].u, &mesh[0].r);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, count);
+    glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_SHORT, indices);
 
     int slot = mCaches.currentProgram->getAttrib("colors");
     if (slot >= 0) {
