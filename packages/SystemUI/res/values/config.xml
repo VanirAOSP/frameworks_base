@@ -142,6 +142,8 @@
     <!-- milliseconds before the heads up notification accepts touches. -->
     <integer name="heads_up_sensitivity_delay">700</integer>
 
+    <integer name="heads_up_snooze_time">300000</integer>
+
     <!-- Show emergency call label only without carrier label on expanded notification area -->
     <bool name="config_showEmergencyCallLabelOnly">true</bool>
     <bool name="config_showDataConnectionView">true</bool>
