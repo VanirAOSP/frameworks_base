@@ -18,11 +18,10 @@ package com.android.internal.util.vanir;
 
 import android.text.TextUtils;
 
-import com.android.internal.util.vanir.NavbarConstants.NavbarConstant;
+import static com.android.internal.util.vanir.NavbarConstants.*;
 
 public class KeyButtonInfo {
     public static final String TAG = "keybuttoninfo";
-    public static final String NULL_ACTION = NavbarConstant.ACTION_NULL.value();
 
     public String singleAction, doubleTapAction, longPressAction, iconUri;
 
@@ -40,21 +39,21 @@ public class KeyButtonInfo {
 
         if (singleAction != null) {
             if ((singleAction.isEmpty()
-                    || singleAction.equals(NULL_ACTION))) {
+                    || singleAction.equals(ACTION_NULL))) {
                 singleAction = null;
             }
         }
 
         if (doubleTapAction != null) {
             if ((doubleTapAction.isEmpty()
-                    || doubleTapAction.equals(NULL_ACTION))) {
+                    || doubleTapAction.equals(ACTION_NULL))) {
                 doubleTapAction = null;
             }
         }
 
         if (longPressAction != null) {
             if ((longPressAction.isEmpty()
-                    || longPressAction.equals(NULL_ACTION))) {
+                    || longPressAction.equals(ACTION_NULL))) {
                 longPressAction = null;
             }
         }

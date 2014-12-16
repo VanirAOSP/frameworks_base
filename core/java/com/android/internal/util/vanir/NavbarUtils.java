@@ -30,11 +30,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import com.android.internal.util.vanir.NavbarConstants;
+import static com.android.internal.util.vanir.NavbarConstants.*;
 import com.android.internal.util.vanir.NavbarConstants.NavbarConstant;
 
 public class NavbarUtils {
 	private static final String TAG = NavbarUtils.class.getSimpleName();
-	private static final String NULL_ACTION = NavbarConstant.ACTION_NULL.value();
 
     // These items are excluded from settings and cannot be set as targets
     private static final NavbarConstant[] EXCLUDED_FROM_NAVBAR = {
@@ -50,10 +50,7 @@ public class NavbarUtils {
             NavbarConstant.ACTION_ARROW_UP,
             NavbarConstant.ACTION_ARROW_DOWN,
             /* these are just not implemented yet: */
-            NavbarConstant.ACTION_WIDGETS,
-            NavbarConstant.ACTION_TORCH,
-            NavbarConstant.ACTION_VOICEASSIST,
-            NavbarConstant.ACTION_APP_WINDOW
+            NavbarConstant.ACTION_TORCH
     };
 
     private NavbarUtils() {
@@ -63,7 +60,7 @@ public class NavbarUtils {
         Drawable actionIcon;
 
         if (TextUtils.isEmpty(uri)) {
-			uri = NULL_ACTION;
+			uri = ACTION_NULL;
 		}
 
         if (uri.startsWith("**")) {
@@ -74,11 +71,11 @@ public class NavbarUtils {
             } catch (NameNotFoundException e) {
                 e.printStackTrace();
                 actionIcon = NavbarConstants.getActionIcon(mContext,
-                        NULL_ACTION);
+                        ACTION_NULL);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
                 actionIcon = NavbarConstants.getActionIcon(mContext,
-                        NULL_ACTION);
+                        ACTION_NULL);
             }
         }
         return actionIcon;
@@ -94,7 +91,7 @@ public class NavbarUtils {
         for (int i = 0; i < startLength; i++) {
             itemFound = false;
             for (int j = 0; j < excludeLength; j++) {
-                if (mActionStart[i].equals(EXCLUDED_FROM_NAVBAR[j].value())) {
+                if (mActionStart[i].equals(EXCLUDED_FROM_NAVBAR[j])) {
                     itemFound = true;
                 }
             }
@@ -102,7 +99,7 @@ public class NavbarUtils {
                 mActionList.add(mActionStart[i]);
             }
 //            if (!context.getResources().getBoolean(com.android.internal.R.bool.config_enableTorch)) {
-//                mActionList.remove(NavbarConstant.ACTION_TORCH.value());
+//                mActionList.remove(ACTION_TORCH);
 //            }
         }
         int actionSize = mActionList.size();
@@ -115,7 +112,7 @@ public class NavbarUtils {
 
     public static String getProperSummary(Context mContext, String uri) {
 		if (TextUtils.isEmpty(uri)) {
-			uri = NULL_ACTION;
+			uri = ACTION_NULL;
 		}
 
         if (uri.startsWith("**")) {
@@ -128,7 +125,7 @@ public class NavbarUtils {
                 }
                 return getFriendlyShortcutName(mContext, intent);
             } catch (URISyntaxException e) {
-                return NavbarConstants.getProperName(mContext, NULL_ACTION);
+                return NavbarConstants.getProperName(mContext, ACTION_NULL);
             }
         }
     }

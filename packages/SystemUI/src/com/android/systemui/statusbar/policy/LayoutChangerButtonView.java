@@ -33,18 +33,12 @@ import android.view.accessibility.AccessibilityEvent;
 import com.android.internal.util.vanir.KeyButtonInfo;
 import com.android.internal.util.vanir.NavbarUtils;
 import com.android.internal.util.vanir.NavbarConstants;
-import com.android.internal.util.vanir.NavbarConstants.NavbarConstant;
+import static com.android.internal.util.vanir.NavbarConstants.*;
 import com.android.internal.util.vanir.VanirActions;
 import com.android.systemui.R;
 
 public class LayoutChangerButtonView extends KeyButtonView {
     private static final String TAG = "StatusBar.LayoutChangerButtonView";
-
-    public static final String ACTION_MENU = NavbarConstant.ACTION_MENU.value();
-    public static final String ACTION_IME = NavbarConstant.ACTION_IME.value();
-    public static final String ACTION_IME_LAYOUT = NavbarConstant.ACTION_IME_LAYOUT.value();
-    public static final String LAYOUT_RIGHT = NavbarConstant.ACTION_LAYOUT_RIGHT.value();
-    public static final String LAYOUT_LEFT = NavbarConstant.ACTION_LAYOUT_LEFT.value();
 
     public LayoutChangerButtonView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -66,7 +60,7 @@ public class LayoutChangerButtonView extends KeyButtonView {
             mActions.singleAction = ACTION_IME_LAYOUT;
             setImageResource(R.drawable.ic_sysbar_ime_arrows);
         } else {
-            mActions.singleAction = LAYOUT_LEFT;
+            mActions.singleAction = ACTION_LAYOUT_LEFT;
             if (isTablet) {
                 setImageResource(R.drawable.ic_sysbar_layout_left);
             } else {
@@ -82,7 +76,7 @@ public class LayoutChangerButtonView extends KeyButtonView {
             mActions.singleAction = ACTION_IME;
             setImageResource(R.drawable.ic_ime_switcher_default);
         } else {
-            mActions.singleAction = LAYOUT_RIGHT;
+            mActions.singleAction = ACTION_LAYOUT_RIGHT;
             if (isTablet) {
                 setImageResource(R.drawable.ic_sysbar_layout_right);
             } else {
@@ -98,7 +92,7 @@ public class LayoutChangerButtonView extends KeyButtonView {
             mActions.singleAction = ACTION_MENU;
             setImageResource(R.drawable.ic_sysbar_menu);
         } else {
-            mActions.singleAction = LAYOUT_RIGHT;
+            mActions.singleAction = ACTION_LAYOUT_RIGHT;
             if (isTablet) {
                 setImageResource(R.drawable.ic_sysbar_layout_right);
             } else {
@@ -111,7 +105,7 @@ public class LayoutChangerButtonView extends KeyButtonView {
 
     @Override
     public void setImage() {
-        setImageDrawable(NavbarUtils.getIconImage(mContext, LAYOUT_RIGHT));
+        setImageDrawable(NavbarUtils.getIconImage(mContext, mActions.singleAction));
     }
 
     @Override

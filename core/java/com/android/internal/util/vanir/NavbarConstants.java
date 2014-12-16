@@ -28,9 +28,36 @@ import java.util.HashMap;
 public class NavbarConstants {
 	public static final int LAYOUT_IME = 666;
 
+	public static final String ACTION_APP = "**app**";
+	public static final String ACTION_BACK = "**back**";
+	public static final String ACTION_HOME = "**home**";
+	public static final String ACTION_RECENTS = "**recents**";
+	public static final String ACTION_BLANK = "**blank**";
+	public static final String ACTION_GESTURE_ACTIONS = "**gesture_actions**";
+	public static final String ACTION_KILL = "**kill**";
+	public static final String ACTION_LAST_APP = "**last_app**";
+	public static final String ACTION_MENU = "**menu**";
+	public static final String ACTION_NOTIFICATIONS = "**notifications**";
+	public static final String ACTION_IME = "**ime**";
+	public static final String ACTION_ASSIST = "**assist**";
+	public static final String ACTION_SEARCH = "**search**";
+	public static final String ACTION_VOICEASSIST = "**voiceassist**";
+	public static final String ACTION_RING_SILENT = "**ring_silent**";
+	public static final String ACTION_RING_VIB_SILENT = "**ring_vib_silent**";
+	public static final String ACTION_RING_VIB = "**ring_vib**";
+	public static final String ACTION_TORCH = "**torch**";
+	public static final String ACTION_LAYOUT_LEFT = "**layout_left**";
+	public static final String ACTION_LAYOUT_RIGHT = "**layout_right**";
+	public static final String ACTION_ARROW_LEFT = "**arrow_left**";
+	public static final String ACTION_ARROW_RIGHT = "**arrow_right**";
+	public static final String ACTION_ARROW_UP = "**arrow_up**";
+	public static final String ACTION_ARROW_DOWN = "**arrow_down**";
+	public static final String ACTION_IME_LAYOUT = "**ime_layout**";
+	public static final String ACTION_POWER = "**power**";
+	public static final String ACTION_NULL = "**null**";
+
     //not presently utilized, but gives the gist of NavbarConstants' methods without scrolling down (YAY)
     public interface AwesomeGuts {
-        String value();                            //returns the magic **something** string that is concatted in bar+ring settings
 
         int getStringId();                         //returns the resource id of this NavbarConstant's user-facing name
         String getProperName(Context mContext);          //getStrings ^
@@ -72,8 +99,6 @@ public class NavbarConstants {
 
         /* disabled or special actions?? */
         ACTION_POWER          ("**power**",           com.android.internal.R.string.action_null,          null),
-        ACTION_WIDGETS        ("**widgets**",         com.android.internal.R.string.action_null,          null),
-        ACTION_APP_WINDOW     ("**app_window**",      com.android.internal.R.string.action_null,          null),
         ACTION_NULL           ("**null**",            com.android.internal.R.string.action_null,          null);
 
         private final String mAction;
@@ -163,7 +188,6 @@ public class NavbarConstants {
             return NavbarConstant.ACTION_APP;
         }
 
-        //resource lookup... yadayada
         public String getProperName(Context context) { return context.getResources().getString(mStringId); }
 
         public int getStringId() { return mStringId; }
@@ -171,7 +195,6 @@ public class NavbarConstants {
         @Override
         public String toString() { return mAction; }
 
-        public String value() { return mAction; }
     }
 
     //returns a string array containing the actions of all NavbarConstants

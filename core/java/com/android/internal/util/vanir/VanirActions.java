@@ -173,12 +173,6 @@ public class VanirActions {
                 }});
                 break;
 
-            case ACTION_APP_WINDOW:
-                Intent appWindow = new Intent();
-                appWindow.setAction("com.android.systemui.ACTION_SHOW_APP_WINDOW");
-                mContext.sendBroadcast(appWindow);
-                break;
-
 			case ACTION_IME_LAYOUT:
 				try {
                     IStatusBarService.Stub.asInterface(

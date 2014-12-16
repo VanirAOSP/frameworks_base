@@ -60,7 +60,7 @@ import java.util.ArrayList;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.vanir.KeyButtonInfo;
-import com.android.internal.util.vanir.NavbarConstants.NavbarConstant;
+import static com.android.internal.util.vanir.NavbarConstants.*;
 import com.android.internal.util.vanir.NavbarUtils;
 import com.android.internal.util.vanir.VanirActions;
 import com.android.systemui.R;
@@ -79,14 +79,6 @@ public class KeyButtonView extends ImageView {
 
     private int mLongPressTimeout;
     private int mCode = 4;  // AOSP uses 4 for the back key
-
-    public static final String NULL_ACTION = NavbarConstant.ACTION_NULL.value();
-    public static final String BLANK_ACTION = NavbarConstant.ACTION_BLANK.value();
-    public static final String ARROW_UP = NavbarConstant.ACTION_ARROW_UP.value();
-    public static final String ARROW_LEFT = NavbarConstant.ACTION_ARROW_LEFT.value();
-    public static final String ARROW_RIGHT = NavbarConstant.ACTION_ARROW_RIGHT.value();
-    public static final String ARROW_DOWN = NavbarConstant.ACTION_ARROW_DOWN.value();
-    public static final String BACK_ACTION = NavbarConstant.ACTION_BACK.value();
 
     private long mDownTime;
     private long mUpTime;
@@ -151,15 +143,15 @@ public class KeyButtonView extends ImageView {
         mHasSingleAction = mActions != null && (mActions.singleAction != null);
         mHasLongAction = mActions != null && mActions.longPressAction != null;
         mHasDoubleAction = mActions != null && mActions.doubleTapAction != null;
-        mHasBlankSingleAction = mHasSingleAction && mActions.singleAction.equals(BLANK_ACTION);
+        mHasBlankSingleAction = mHasSingleAction && mActions.singleAction.equals(ACTION_BLANK);
 
         // TO DO: determine type of key prior to getting a keybuttonview instance to allow more specialized
         // and efficiently coded keybuttonview classes.
         mIsDPadAction = mHasSingleAction
-                && (mActions.singleAction.equals(ARROW_LEFT)
-                || mActions.singleAction.equals(ARROW_UP)
-                || mActions.singleAction.equals(ARROW_DOWN)
-                || mActions.singleAction.equals(ARROW_RIGHT));
+                && (mActions.singleAction.equals(ACTION_ARROW_LEFT)
+                || mActions.singleAction.equals(ACTION_ARROW_UP)
+                || mActions.singleAction.equals(ACTION_ARROW_DOWN)
+                || mActions.singleAction.equals(ACTION_ARROW_RIGHT));
 
         setImage();
         setLongClickable(mHasLongAction);

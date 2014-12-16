@@ -44,8 +44,6 @@
   <java-symbol type="string" name="action_null"/>
   <java-symbol type="string" name="action_app"/>
   <java-symbol type="string" name="action_ribbon"/>
-  <java-symbol type="string" name="action_widgets"/>
-  <java-symbol type="string" name="action_app_window"/>
   <java-symbol type="string" name="action_arrow_left" />
   <java-symbol type="string" name="action_arrow_right" />
   <java-symbol type="string" name="action_arrow_up" />
