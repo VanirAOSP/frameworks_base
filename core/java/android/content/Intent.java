@@ -723,13 +723,6 @@ public class Intent implements Parcelable, Cloneable {
      */
     public static final String EXTRA_SHORTCUT_NAME = "android.intent.extra.shortcut.NAME";
     /**
-     * GesturePanelView: Toggle the panel
-     *  <p>Input: nothing
-     *  <p>Output: nothing
-     *  @hide
-     */
-    public static final String TOGGLE_GESTURE_ACTIONS = "vanir.TOGGLE_GESTURE_PANEL";
-    /**
      * The name of the extra used to define the icon, as a Bitmap, of a shortcut.
      *
      * @see #ACTION_CREATE_SHORTCUT
