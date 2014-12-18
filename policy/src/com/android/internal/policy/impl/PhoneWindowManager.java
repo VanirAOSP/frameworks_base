@@ -1834,7 +1834,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (!mImmersiveState || !shouldEnable) {
             mImmersiveModeBehavior = 0;
         } else {
-            mImmersiveModeBehavior = Settings.System.getIntForUser(resolver,
+            mImmersiveModeBehavior = Settings.System.getIntForUser(mContext.getContentResolver(),
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2, UserHandle.USER_CURRENT);
         }
 
