@@ -11535,6 +11535,16 @@ public class WindowManagerService extends IWindowManager.Stub
         return mWindowMap;
     }
 
+    @Override
+    public void updateRotationStateForImmersive() {
+        mPolicy.updateRotationStateForImmersive();
+    }
+
+    @Override
+    public void addSystemUIVisibilityFlag(int flag) {
+        mLastStatusBarVisibility |= flag;
+    }
+
     private final class LocalService extends WindowManagerInternal {
         @Override
         public void requestTraversalFromDisplayManager() {
