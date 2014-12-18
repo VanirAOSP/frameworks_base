@@ -529,7 +529,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mGlobalImmersiveModeStyle = -1;
     int mImmersiveModeBehavior;
     boolean mExpandedDesktop = false;
-    boolean mLowProfile;
     boolean mImmersiveState = false;
     int mOrientationImmersiveState;
 
@@ -745,9 +744,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP), false, this,
-                    UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.IMMERSIVE_LOL_PROFILE), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.IMMERSIVE_MODE_CONFIRMATIONS), false, this,
@@ -1706,8 +1702,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mDevForceNavbar = devForceNavbar;
             }
 
-            mLowProfile = Settings.System.getIntForUser(resolver,
-                    Settings.System.IMMERSIVE_LOL_PROFILE, 0, UserHandle.USER_CURRENT) == 1;
             mImmersiveState = Settings.System.getIntForUser(resolver,
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
             mExpandedDesktop = Settings.System.getIntForUser(resolver,
@@ -6560,11 +6554,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         vis = updateImmersiveModeVisibility(vis);
         vis = mStatusBarController.applyTranslucentFlagLw(transWin, vis, oldVis);
         vis = mNavigationBarController.applyTranslucentFlagLw(transWin, vis, oldVis);
-
-        // low profile mode
-        if (mLowProfile) {
-            vis |= View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-        }
 
         // prevent status bar interaction from clearing certain flags
         boolean statusBarHasFocus = win.getAttrs().type == TYPE_STATUS_BAR;
