@@ -426,6 +426,9 @@ public interface WindowManagerPolicy {
 
         /** Unregister a system listener for touch events */
         void unregisterPointerEventListener(PointerEventListener listener);
+
+        /** Fast way to post time-critical systemui flags to window manaegr*/
+        void addSystemUIVisibilityFlag(int flag);
     }
 
     public interface PointerEventListener {
@@ -1198,6 +1201,12 @@ public interface WindowManagerPolicy {
      * Specifies whether the device needs a navigation bar (because it has no hardware buttons)
      */
     public boolean needsNavigationBar();
+
+    /**
+     * Updates the rotation state if Immersive is set to be orientation dependent.
+     * @hide
+     */
+    public void updateRotationStateForImmersive();
 
     /**
      * Lock the device now.

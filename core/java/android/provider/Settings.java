@@ -2845,6 +2845,57 @@ public final class Settings {
         public static final String LOCKSCREEN_DISABLED = "lockscreen.disabled";
 
         /**
+         * Whether power menu expanded desktop is enabled
+         * @hide
+         */
+        public static final String POWERMENU_IMMERSIVE_PREFS = "powermenu_immersive_prefs";
+
+        /**
+         * User disable/enable immersive mode in power menu
+         * @hide
+         */
+        public static final String POWER_MENU_IMMERSIVE = "power_menu_immersive";
+
+        /**
+         * Whether power menu expanded desktop is enabled
+         * @hide
+         */
+        public static final String POWER_MENU_GLOBAL_IMMERSIVE_MODE_ENABLED = "power_menu_global_immersive_mode_enabled";
+
+        /**
+         * Global immersive mode on/off state
+         * @hide
+         */
+        public static final String GLOBAL_IMMERSIVE_MODE_STATE = "global_immersive_mode_state";
+
+        /**
+         * Global immersive mode style (with status bar or without status bar)
+         * @hide
+         */
+        public static final String GLOBAL_IMMERSIVE_MODE_STYLE = "global_immersive_mode_style";
+
+        /**
+         * For rotation dependency
+         * 0 - Disabled
+         * 1 - Landscape
+         * 2 - Portrait
+         * @hide
+         */
+        public static final String IMMERSIVE_ORIENTATION = "immersive_orientation";
+
+        /**
+         * Expanded desktop
+         * @hide
+         */
+        public static final String EXPANDED_DESKTOP = "expanded_desktop";
+
+        /**
+         * immersive mode: low profile
+         * @hide
+         */
+        public static final String IMMERSIVE_LOL_PROFILE = "immersive_lol_profile";
+
+        /**
          * @deprecated Use {@link android.provider.Settings.Global#LOW_BATTERY_SOUND}
          * instead
          * @hide

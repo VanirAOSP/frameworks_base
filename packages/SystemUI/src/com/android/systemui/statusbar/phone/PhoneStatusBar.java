@@ -326,6 +326,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private DevForceNavbarObserver mDevForceNavbarObserver;
     boolean mSearchPanelAllowed = true;
 
+    // immersive booleans for onConfigurationChange
+    private boolean mImmersive = false;
+    private int mOrientationDependentImmersive;
+
     // task manager
     private TaskManager mTaskManager;
     private LinearLayout mTaskManagerPanel;
@@ -426,6 +430,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_RING), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.IMMERSIVE_ORIENTATION), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this);
             update();
         }
 
@@ -445,6 +453,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0) == 1;
             mSearchPanelAllowed = Settings.System.getIntForUser(
                     resolver, Settings.System.ENABLE_NAVIGATION_RING, 1, UserHandle.USER_CURRENT) == 1;
+
+            mImmersive = Settings.System.getIntForUser(resolver,
+                    Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0,
+                    UserHandle.USER_CURRENT) == 1;
+
+            mOrientationDependentImmersive = Settings.System.getIntForUser(resolver,
+                Settings.System.IMMERSIVE_ORIENTATION, 0,
+                UserHandle.USER_CURRENT);
         }
     }
 
@@ -549,11 +565,21 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private final Runnable mAutohide = new Runnable() {
         @Override
         public void run() {
-            int requested = mSystemUiVisibility & ~STATUS_OR_NAV_TRANSIENT;
-            if (mSystemUiVisibility != requested) {
-                notifyUiVisibilityChanged(requested);
-            }
+            doAutoHide();
         }};
+
+    private final Runnable mUserAutohide = new Runnable() {
+        @Override
+        public void run() {
+            doAutoHide();
+        }};
+
+    private void doAutoHide() {
+        int requested = mSystemUiVisibility & ~STATUS_OR_NAV_TRANSIENT;
+        if (mSystemUiVisibility != requested) {
+            notifyUiVisibilityChanged(requested);
+        }
+    }
 
     private boolean mVisible;
     private boolean mWaitingForKeyguardExit;
@@ -2978,7 +3004,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             // update low profile
             if ((diff & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) {
                 final boolean lightsOut = (vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0;
-                if (lightsOut) {
+                if (lightsOut && !mImmersive) {
                     animateCollapsePanels();
                     if (mTicking) {
                         haltTicker();
@@ -2996,8 +3022,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             final int nbMode = mNavigationBarView == null ? -1 : computeBarMode(
                     oldVal, newVal, mNavigationBarView.getBarTransitions(),
                     View.NAVIGATION_BAR_TRANSIENT, View.NAVIGATION_BAR_TRANSLUCENT);
-            final boolean sbModeChanged = sbMode != -1;
-            final boolean nbModeChanged = nbMode != -1;
+            boolean sbModeChanged = sbMode != -1;
+            boolean nbModeChanged = nbMode != -1;
             boolean checkBarModes = false;
             if (sbModeChanged && sbMode != mStatusBarMode) {
                 mStatusBarMode = sbMode;
@@ -3010,6 +3036,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             if (checkBarModes) {
                 checkBarModes();
             }
+
+            final boolean sbVisible = (newVal & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0
+                    || (newVal & View.STATUS_BAR_TRANSIENT) != 0;
+            final boolean nbVisible = (newVal & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0
+                    || (newVal & View.NAVIGATION_BAR_TRANSIENT) != 0;
+
+            sbModeChanged = sbModeChanged && sbVisible;
+            nbModeChanged = nbModeChanged && nbVisible;
+
             if (sbModeChanged || nbModeChanged) {
                 // update transient bar autohide
                 if (mStatusBarMode == MODE_SEMI_TRANSPARENT || mNavigationBarMode == MODE_SEMI_TRANSPARENT) {
@@ -3017,6 +3052,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 } else {
                     cancelAutohide();
                 }
+            } else if (!sbVisible && !nbVisible) {
+                cancelAutohide();
             }
 
             // ready to unhide
@@ -3110,6 +3147,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private void suspendAutohide() {
         mHandler.removeCallbacks(mAutohide);
+        mHandler.removeCallbacks(mUserAutohide);
         mHandler.removeCallbacks(mCheckBarModes);
         mAutohideSuspended = (mSystemUiVisibility & STATUS_OR_NAV_TRANSIENT) != 0;
     }
@@ -3135,7 +3173,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private void userAutohide() {
         cancelAutohide();
-        mHandler.postDelayed(mAutohide, 350); // longer than app gesture -> flag clear
+        mHandler.postDelayed(mUserAutohide, 350); // longer than app gesture -> flag clear
     }
 
     private boolean areLightsOn() {
@@ -3610,6 +3648,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         if (mGesturePanelView != null && mGesturePanelView.isGesturePanelAttached()) {
             removeGesturePanelView();
+        }
+        if (mImmersive && mOrientationDependentImmersive != 0) {
+            try {
+                mWindowManagerService.updateRotationStateForImmersive();
+            } catch (android.os.RemoteException ex) {
+            }
         }
 
         updateDisplaySize(); // populates mDisplayMetrics
