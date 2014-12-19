@@ -2078,7 +2078,6 @@
 
     <!-- DISGUSTING HACK TO FIX MULTIPLE BUILDS -->
     <bool name="config_enableTorch">true</bool>
-    <bool name="config_samsung_stk">false</bool>
     <bool name="config_stylusGestures">false</bool>
     <!-- LESS USEFUL STRINGS-->
     <string name="config_perf_profile_prop">sys.perf.profile</string>
@@ -2090,4 +2089,6 @@
     <string-array name="config_disabledComponents" translatable="false">
     </string-array>
 
+    <!-- Boolean to enable stk functionality on Samsung phones -->
+    <bool name="config_samsung_stk">false</bool>
 </resources>
