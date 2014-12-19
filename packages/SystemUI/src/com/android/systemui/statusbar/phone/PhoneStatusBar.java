@@ -1411,27 +1411,27 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
 
-		if (mNavigationBarView.getRecentsButton() != null) {
-			mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
-			mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
-			mNavigationBarView.getRecentsButton().setLongClickable(true);
-			mNavigationBarView.getRecentsButton().setOnLongClickListener(mLongPressBackRecentsListener);
-		}
+        if (mNavigationBarView.getRecentsButton() != null) {
+            mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
+            mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
+            mNavigationBarView.getRecentsButton().setLongClickable(true);
+            mNavigationBarView.getRecentsButton().setOnLongClickListener(mLongPressBackRecentsListener);
+        }
 
-		if (mNavigationBarView.getBackButton() != null) {
-			mNavigationBarView.getBackButton().setLongClickable(true);
-			mNavigationBarView.getBackButton().setOnLongClickListener(mLongPressBackRecentsListener);
-		}
-		setHomeActionListener();
-		updateSearchPanel();
-	}
+        if (mNavigationBarView.getBackButton() != null) {
+            mNavigationBarView.getBackButton().setLongClickable(true);
+            mNavigationBarView.getBackButton().setOnLongClickListener(mLongPressBackRecentsListener);
+        }
+        setHomeActionListener();
+        updateSearchPanel();
+    }
 
     @Override
     public void setHomeActionListener() {
-		if (mNavigationBarView.getHomeButton() != null) {
-			mNavigationBarView.getHomeButton().setOnTouchListener(mHomeActionListener);
-		}
-	}
+        if (mNavigationBarView.getHomeButton() != null) {
+            mNavigationBarView.getHomeButton().setOnTouchListener(mHomeActionListener);
+        }
+    }
 
     // For small-screen devices (read: phones) that lack hardware navigation buttons
     private void addNavigationBar() {
@@ -2695,14 +2695,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int getExpandedNotificationState() {
         if (mExpandedVisible) {
 
-			boolean expanded = mHeader.getExpanded();
-			boolean visibleSettingsButton = mHeader.getSettingsButtonVisibility();
+            boolean expanded = mHeader.getExpanded();
+            boolean visibleSettingsButton = mHeader.getSettingsButtonVisibility();
 
             // Notification button is on quick settings side
             if (expanded && !visibleSettingsButton) {
                 return 1;
+            }
             // Settings button is on notification side
-			}
             if (expanded && visibleSettingsButton) {
                 return 2;
             }
@@ -3719,11 +3719,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-	@Override
-	public void notifyLayoutChange(int direction) {
-		mNavigationBarView.notifyLayoutChange(direction);
-		mHandler.postDelayed(new Runnable() { public void run() { forceNavigationIconHints(); }}, 20);
-	}
+    @Override
+    public void notifyLayoutChange(int direction) {
+        mNavigationBarView.notifyLayoutChange(direction);
+        mHandler.postDelayed(new Runnable() { public void run() { forceNavigationIconHints(); }}, 20);
+    }
 
     protected void loadDimens() {
         final Resources res = mContext.getResources();
@@ -3859,7 +3859,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     @Override
     protected boolean shouldDisableNavbarGestures() {
-		if (!mSearchPanelAllowed) return true;
+        if (!mSearchPanelAllowed) return true;
         return !isDeviceProvisioned()
                 || mExpandedVisible
                 || (mDisabled & StatusBarManager.DISABLE_SEARCH) != 0;

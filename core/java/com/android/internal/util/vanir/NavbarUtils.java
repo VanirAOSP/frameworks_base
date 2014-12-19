@@ -34,7 +34,7 @@ import static com.android.internal.util.vanir.NavbarConstants.*;
 import com.android.internal.util.vanir.NavbarConstants.NavbarConstant;
 
 public class NavbarUtils {
-	private static final String TAG = NavbarUtils.class.getSimpleName();
+    private static final String TAG = NavbarUtils.class.getSimpleName();
 
     // These items are excluded from settings and cannot be set as targets
     private static final String[] EXCLUDED_FROM_NAVBAR = {
@@ -60,12 +60,12 @@ public class NavbarUtils {
         Drawable actionIcon;
 
         if (TextUtils.isEmpty(uri)) {
-			uri = ACTION_NULL;
-		}
+            uri = ACTION_NULL;
+        }
 
         if (uri.startsWith("**")) {
             return NavbarConstants.getActionIcon(mContext, uri);
-        } else {  // This must be an app 
+        } else {  // This must be an app
             try {
                 actionIcon = mContext.getPackageManager().getActivityIcon(Intent.parseUri(uri, 0));
             } catch (NameNotFoundException e) {
@@ -111,9 +111,9 @@ public class NavbarUtils {
     }
 
     public static String getProperSummary(Context mContext, String uri) {
-		if (TextUtils.isEmpty(uri)) {
-			uri = ACTION_NULL;
-		}
+        if (TextUtils.isEmpty(uri)) {
+            uri = ACTION_NULL;
+        }
 
         if (uri.startsWith("**")) {
             return NavbarConstants.getProperName(mContext, uri);

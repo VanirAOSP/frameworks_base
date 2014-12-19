@@ -208,9 +208,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int KEY_MASK_APP_SWITCH = 0x10;
     private static final int KEY_MASK_CAMERA = 0x20;
 
-	int mUserNavBarHeight;
-	int mUserNavBarHeightLand;
-	int mUserNavBarWidth;
+    int mUserNavBarHeight;
+    int mUserNavBarHeightLand;
+    int mUserNavBarWidth;
 
     /**
      * These are the system UI flags that, when changing, can cause the layout
@@ -754,15 +754,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.USE_EDGE_SERVICE_FOR_GESTURES), false, this,
                     UserHandle.USER_ALL);
-			resolver.registerContentObserver(Settings.System.getUriFor(
-					Settings.System.NAVIGATION_BAR_HEIGHT), false, this,
-					UserHandle.USER_ALL);
-			resolver.registerContentObserver(Settings.System.getUriFor(
-					Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE), false, this,
-					UserHandle.USER_ALL);
-			resolver.registerContentObserver(Settings.System.getUriFor(
-					Settings.System.NAVIGATION_BAR_WIDTH), false, this,
-					UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_HEIGHT), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_WIDTH), false, this,
+                    UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DEV_FORCE_SHOW_NAVBAR), false, this,
                     UserHandle.USER_ALL);
@@ -1670,18 +1670,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 updateWakeGestureListenerLp();
             }
 
-			int NavHeight = Settings.System.getInt(resolver,
-					Settings.System.NAVIGATION_BAR_HEIGHT, 0);
-			int NavHeightLand = Settings.System.getInt(resolver,
-					Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE, 0);
-			int NavWidth = Settings.System.getInt(resolver,
-					Settings.System.NAVIGATION_BAR_WIDTH, 0);
-			if (NavHeight != mUserNavBarHeight || NavHeightLand != mUserNavBarHeightLand || NavWidth != mUserNavBarWidth) {
-				mUserNavBarHeight = NavHeight;
-				mUserNavBarHeightLand = NavHeightLand;
-				mUserNavBarWidth = NavWidth;
-				resetScreenHelper();
-			}
+            int NavHeight = Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_HEIGHT, 0);
+            int NavHeightLand = Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE, 0);
+            int NavWidth = Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_WIDTH, 0);
+            if (NavHeight != mUserNavBarHeight
+                || NavHeightLand != mUserNavBarHeightLand
+                || NavWidth != mUserNavBarWidth) {
+                    mUserNavBarHeight = NavHeight;
+                    mUserNavBarHeightLand = NavHeightLand;
+                    mUserNavBarWidth = NavWidth;
+                    resetScreenHelper();
+            }
 
             final boolean useEdgeService = Settings.System.getIntForUser(resolver,
                     Settings.System.USE_EDGE_SERVICE_FOR_GESTURES, 1, UserHandle.USER_CURRENT) == 1;
