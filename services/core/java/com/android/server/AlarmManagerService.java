@@ -1585,6 +1585,7 @@ class AlarmManagerService extends SystemService {
                             maxTriggerTime(nowELAPSED, nextElapsed, alarm.repeatInterval),
                             alarm.repeatInterval, alarm.operation, batch.standalone, true,
                             alarm.workSource, alarm.alarmClock, alarm.userId, false);
+                }
 
                 if (alarm.wakeup) {
                     hasWakeup = true;
