@@ -34,6 +34,7 @@ public class NavbarConstants {
     public static final String ACTION_RECENTS = "**recents**";
     public static final String ACTION_BLANK = "**blank**";
     public static final String ACTION_GESTURE_ACTIONS = "**gesture_actions**";
+    public static final String ACTION_SCREENSHOT = "**screenshot**";
     public static final String ACTION_KILL = "**kill**";
     public static final String ACTION_LAST_APP = "**last_app**";
     public static final String ACTION_MENU = "**menu**";
@@ -80,6 +81,7 @@ public class NavbarConstants {
         ACTION_MENU           ("**menu**",            com.android.internal.R.string.action_menu,          "com.android.systemui:drawable/ic_sysbar_menu_big"),
         ACTION_NOTIFICATIONS  ("**notifications**",   com.android.internal.R.string.action_notifications, "com.android.systemui:drawable/ic_sysbar_notifications"),
         ACTION_IME            ("**ime**",             com.android.internal.R.string.action_ime,           "com.android.systemui:drawable/ic_sysbar_ime_switcher"),
+        ACTION_SCREENSHOT     ("**screenshot**",      com.android.internal.R.string.action_screenshot,    "com.android.systemui:drawable/ic_sysbar_screenshot"),
         ACTION_ASSIST         ("**assist**",          com.android.internal.R.string.action_assist,        "com.android.systemui:drawable/ic_sysbar_assist"),
         ACTION_SEARCH         ("**search**",          com.android.internal.R.string.action_search,        "com.android.systemui:drawable/ic_sysbar_search"),
         ACTION_VOICEASSIST    ("**voiceassist**",     com.android.internal.R.string.action_voiceassist,   "com.android.systemui:drawable/ic_sysbar_voiceassist"),
