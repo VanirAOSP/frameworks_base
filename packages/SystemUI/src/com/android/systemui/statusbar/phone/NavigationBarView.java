@@ -412,6 +412,8 @@ public class NavigationBarView extends LinearLayout {
 
         setMenuVisibility(mShowMenu, true);
         setDisabledFlags(mDisabledFlags, true);
+        mHandler.removeCallbacks(mAnimateLayoutAlpha);
+        mHandler.postDelayed(mAnimateLayoutAlpha, 100);
     }
 
     private void setLayoutChangerType(View v, int side) {
@@ -443,6 +445,18 @@ public class NavigationBarView extends LinearLayout {
         }
     }
 
+    final Runnable mAnimateLayoutAlpha = new Runnable() {
+		@Override
+		public void run() {
+			if (showingIME || mButtonLayouts == 1) return;
+
+            if (getButtonView(ACTION_LAYOUT_LEFT) != null) getButtonView(ACTION_LAYOUT_LEFT).setAlpha(0.18f);
+            if (!mShowMenu) {
+                if (getButtonView(ACTION_LAYOUT_RIGHT) != null) getButtonView(ACTION_LAYOUT_RIGHT).setAlpha(0.18f);
+            }
+        }
+    };
+
     final Runnable mNotifyImeLayoutChange = new Runnable() {
         @Override
         public void run() {
@@ -454,6 +468,8 @@ public class NavigationBarView extends LinearLayout {
         @Override
         public void run() {
             setupNavigationButtons(getCurrentButtonArray());
+            mHandler.removeCallbacks(mAnimateLayoutAlpha);
+            mHandler.postDelayed(mAnimateLayoutAlpha, 100);
         }
     };
 
@@ -528,6 +544,8 @@ public class NavigationBarView extends LinearLayout {
                 setVisibleOrInvisible(getButtonView(ACTION_LAYOUT_LEFT), allowLayoutArrows);
                 setVisibleOrInvisible(getButtonView(ACTION_LAYOUT_RIGHT), allowLayoutArrows);
             }
+            mHandler.removeCallbacks(mAnimateLayoutAlpha);
+            mHandler.postDelayed(mAnimateLayoutAlpha, 100);
         } else if (mButtonLayouts == 1) {
             if (mLegacyMenu) {
                 if (mImeLayout) {
