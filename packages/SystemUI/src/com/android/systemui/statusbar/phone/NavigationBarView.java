@@ -584,7 +584,7 @@ public class NavigationBarView extends LinearLayout {
                 ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_IME_SHOWN) == 0);
 
         if (mLegacyMenu && !showingIME) {
-			if (mButtonLayouts != 1) {
+            if (mButtonLayouts != 1) {
                 if (getButtonView(ACTION_LAYOUT_RIGHT) != null) {
                     ((LayoutChangerButtonView) getButtonView(ACTION_LAYOUT_RIGHT)).setMenuAction(
                             shouldShow, getResources().getConfiguration().orientation, mTablet);
@@ -594,7 +594,7 @@ public class NavigationBarView extends LinearLayout {
                 }
             } else {
                 if (!mImeLayout && (getButtonView(ACTION_MENU) != null)) setVisibleOrInvisible(getButtonView(ACTION_MENU), mShowMenu);
-			}
+            }
         }
     }
 
