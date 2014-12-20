@@ -594,11 +594,47 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /* The number of steps between min and max brightness */
     private static final int BRIGHTNESS_STEPS = 10;
 
-    SettingsObserver mSettingsObserver;
+    private SettingsObserver mSettingsObserver;
+    private NavbarActionReceiver mNavbarActionReceiver;
+
     ShortcutManager mShortcutManager;
     PowerManager.WakeLock mBroadcastWakeLock;
     PowerManager.WakeLock mQuickBootWakeLock;
     boolean mHavePendingMediaKeyRepeatWithWakeLock;
+
+    // Navbar action receiver
+    private final class NavbarActionReceiver extends BroadcastReceiver {
+        private boolean mIsRegistered = false;
+
+        public NavbarActionReceiver(Context context) {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (action.equals(Intent.ACTION_SCREENSHOT)) {
+                mHandler.removeCallbacks(mScreenshotRunnable);
+                mHandler.post(mScreenshotRunnable);
+            }
+        }
+
+        protected void register() {
+            if (!mIsRegistered) {
+                mIsRegistered = true;
+
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(Intent.ACTION_SCREENSHOT);
+                mContext.registerReceiver(mNavbarActionReceiver, filter);
+            }
+        }
+
+        protected void unregister() {
+            if (mIsRegistered) {
+                mContext.unregisterReceiver(this);
+                mIsRegistered = false;
+            }
+        }
+    }
 
     private int mCurrentUserId;
 
@@ -1312,7 +1348,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mBackKillTimeout = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_backKillTimeout);
 
-        updateKeyAssignments();
+        // update this part later to use broadcast receiver after after navbar actions
+        // can be assigned using AwesomeAction
+        if (mDeviceHardwareKeys != 0) {
+            updateKeyAssignments();
+        } else {
+            mNavbarActionReceiver = new NavbarActionReceiver(context);
+            mNavbarActionReceiver.register();
+        }
 
         mAccessibilityManager = (AccessibilityManager) context.getSystemService(
                 Context.ACCESSIBILITY_SERVICE);
@@ -5652,6 +5695,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         synchronized (mLock) {
             if (!mScreenOnEarly || mWindowManagerDrawComplete) {
                 return; // spurious
+            }
+            synchronized(mLock) {
+                    mLastSystemUiFlags = 0;
+                    updateSystemUiVisibilityLw();
             }
 
             mWindowManagerDrawComplete = true;
