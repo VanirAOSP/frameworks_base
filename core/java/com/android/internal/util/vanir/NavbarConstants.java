@@ -34,6 +34,7 @@ public class NavbarConstants {
     public static final String ACTION_RECENTS = "**recents**";
     public static final String ACTION_BLANK = "**blank**";
     public static final String ACTION_GESTURE_ACTIONS = "**gesture_actions**";
+    public static final String ACTION_SCREENSHOT = "**screenshot**";
     public static final String ACTION_KILL = "**kill**";
     public static final String ACTION_LAST_APP = "**last_app**";
     public static final String ACTION_MENU = "**menu**";
@@ -75,6 +76,7 @@ public class NavbarConstants {
         ACTION_RECENTS        ("**recents**",         com.android.internal.R.string.action_recents,       "com.android.systemui:drawable/ic_sysbar_recent"),
         ACTION_BLANK          ("**blank**",           com.android.internal.R.string.action_blank,         "com.android.systemui:drawable/ic_sysbar_blank"),
         ACTION_GESTURE_ACTIONS("**gesture_actions**", com.android.internal.R.string.gesture_actions,      "com.android.systemui:drawable/ic_sysbar_gesture"),
+        ACTION_SCREENSHOT     ("**screenshot**",      com.android.internal.R.string.action_screenshot,    "com.android.systemui:drawable/ic_sysbar_screenshot"),
         ACTION_KILL           ("**kill**",            com.android.internal.R.string.action_kill,          "com.android.systemui:drawable/ic_sysbar_killtask"),
         ACTION_LAST_APP       ("**last_app**",        com.android.internal.R.string.action_last_app,      "com.android.systemui:drawable/ic_sysbar_lastapp"),
         ACTION_MENU           ("**menu**",            com.android.internal.R.string.action_menu,          "com.android.systemui:drawable/ic_sysbar_menu_big"),

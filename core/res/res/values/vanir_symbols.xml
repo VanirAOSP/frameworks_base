@@ -48,6 +48,7 @@
   <java-symbol type="string" name="def_ime_layout" />
   <java-symbol type="string" name="def_navbar_layout" />
   <java-symbol type="string" name="gesture_actions" />
+  <java-symbol type="string" name="action_screenshot" />
 
   <!-- Power menu -->
   <java-symbol type="drawable" name="ic_lock_settings" />
