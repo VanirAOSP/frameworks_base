@@ -300,7 +300,7 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
     /** Check if Clear All Recents is enabled */
     public boolean clearAllRecentsNavbarEnabled() {
         return Settings.System.getInt(getContentResolver(),
-                Settings.System.CLEAR_ALL_RECENTS_NAVBAR_ENABLED, 1) != 0;
+                Settings.System.CLEAR_ALL_RECENTS_NAVBAR_ENABLED, 0) != 0;
     }
 
     private void updateNavigationBarIcon() {
