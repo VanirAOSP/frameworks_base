@@ -674,6 +674,9 @@ public class NavigationBarView extends LinearLayout {
             if (mButtonContainerStrings[j] == null) {
                 mButtonContainerStrings[j] = NavbarConstants.defaultNavbarLayout(mContext);
             }
+            if (mButtonContainerStrings[j] == null) {
+				mButtonContainerStrings[j] = NavbarConstants.defaultKeyLayout(mContext);
+			}
             mAllButtonContainers.add(getButtonsArray(mButtonContainerStrings[j].split("\\|")));
         }
         setupNavigationButtons(getCurrentButtonArray());
