@@ -376,7 +376,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         if (button == NavigationCallback.NAVBAR_RECENTS_HINT) {
             showingClearAll = true;
         } else {
-            showingClearAll = false
+            showingClearAll = false;
         }
 
         if ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0 && !showingIME) {
