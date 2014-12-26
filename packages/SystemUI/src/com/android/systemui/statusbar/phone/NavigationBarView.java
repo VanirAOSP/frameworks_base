@@ -36,6 +36,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -671,10 +672,18 @@ public class NavigationBarView extends LinearLayout {
     private void loadButtonArrays() {
         mAllButtonContainers.clear();
         for (int j = 0; j < mButtonLayouts; j++) {
-            if (mButtonContainerStrings[j] == null) {
-                mButtonContainerStrings[j] = NavbarConstants.defaultNavbarLayout(mContext);
+            if (mButtonContainerStrings[j] == null || TextUtils.isEmpty(mButtonContainerStrings[j])) {
+                if (j == mCurrentLayout) {
+                    android.widget.Toast.makeText(mContext,
+                            mContext.getResources().getString(R.string.def_navbar_layout_warning),
+                            200).show();
+                }
+
+                String defaultLayout = NavbarConstants.defaultNavbarLayout(mContext);
+                mAllButtonContainers.add(getButtonsArray(defaultLayout.split("\\|")));
+            } else {
+                mAllButtonContainers.add(getButtonsArray(mButtonContainerStrings[j].split("\\|")));
             }
-            mAllButtonContainers.add(getButtonsArray(mButtonContainerStrings[j].split("\\|")));
         }
         setupNavigationButtons(getCurrentButtonArray());
     }
