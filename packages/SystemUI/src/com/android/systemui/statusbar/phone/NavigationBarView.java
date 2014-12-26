@@ -373,6 +373,12 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         showingIME = (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0;
         showingClearAll = (hints & StatusBarManager.NAVIGATION_HINT_RECENT_ALT) != 0;
 
+        if (button == NavigationCallback.NAVBAR_RECENTS_HINT) {
+            showingClearAll = true;
+        } else {
+            showingClearAll = false
+        }
+
         if ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0 && !showingIME) {
             mTransitionListener.onBackAltCleared();
         }
@@ -422,9 +428,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
         if (getButtonView(ACTION_RECENTS) != null) {
             if (showingClearAll) {
-                if (button == NavigationCallback.NAVBAR_RECENTS_HINT) {
                     ((ImageView) getButtonView(ACTION_RECENTS)).setImageResource(R.drawable.ic_sysbar_recent_clear);
-                }
             } else {
                 ((KeyButtonView) getButtonView(ACTION_RECENTS)).setImage();
             }
