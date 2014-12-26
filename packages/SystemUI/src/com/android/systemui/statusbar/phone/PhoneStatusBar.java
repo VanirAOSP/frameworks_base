@@ -439,6 +439,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.IMMERSIVE_ORIENTATION), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.FLASH_NOTIFICATIONS), false, this);
             //resolver.registerContentObserver(Settings.System.getUriFor(
             //        Settings.System.STATUS_BAR_BATTERY_STYLE), false, this);
             //resolver.registerContentObserver(Settings.System.getUriFor(
@@ -462,6 +464,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0) == 1;
             mSearchPanelAllowed = Settings.System.getIntForUser(
                     resolver, Settings.System.ENABLE_NAVIGATION_RING, 1, UserHandle.USER_CURRENT) == 1;
+
+            boolean flashNotifications = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.FLASH_NOTIFICATIONS, 0) == 1;
+
+            if (flashNotifications) {
+                mFlash.registerListenerService();
+            } else {
+                mFlash.unregisterListenerService();
+            }
 
             mImmersive = Settings.System.getIntForUser(resolver,
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0,
@@ -1119,6 +1130,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         mFlashlightController = new FlashlightController(mContext);
+        mFlash = getFlashNotificationListener();
         mKeyguardBottomArea.setFlashlightController(mFlashlightController);
         mKeyguardBottomArea.setPhoneStatusBar(this);
         mAccessibilityController = new AccessibilityController(mContext);
