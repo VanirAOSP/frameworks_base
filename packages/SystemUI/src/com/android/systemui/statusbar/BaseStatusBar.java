@@ -99,6 +99,7 @@ import com.android.systemui.SearchPanelView;
 import com.android.systemui.SwipeHelper;
 import com.android.systemui.SystemUI;
 import com.android.systemui.cm.SpamMessageProvider;
+import com.android.systemui.vanir.FlashNotificationsController;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.phone.KeyguardTouchDelegate;
@@ -166,6 +167,9 @@ public abstract class BaseStatusBar extends SystemUI implements
     // all notifications
     protected NotificationData mNotificationData;
     protected NotificationStackScrollLayout mStackScroller;
+
+    // Flash notifications
+    protected FlashNotificationsController mFlash;
 
     // for heads up notifications
     protected HeadsUpNotificationView mHeadsUpNotificationView;
@@ -493,6 +497,10 @@ public abstract class BaseStatusBar extends SystemUI implements
                 Settings.Secure.getUriFor(Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS), false,
                 mSettingsObserver,
                 UserHandle.USER_ALL);
+        mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.FLASH_NOTIFICATIONS), false,
+                mSettingsObserver,
+                UserHandle.USER_ALL);
 
         mContext.getContentResolver().registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS),
@@ -655,6 +663,13 @@ public abstract class BaseStatusBar extends SystemUI implements
     @Override
     public String getCurrentMediaNotificationKey() {
         return null;
+    }
+
+    public FlashNotificationsController getFlashNotificationListener() {
+        if (mFlash == null) {
+            mFlash = new FlashNotificationsController(mContext);
+        }
+        return mFlash;
     }
 
     /**
