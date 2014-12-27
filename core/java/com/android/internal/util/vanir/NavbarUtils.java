@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.ArrayList;
 
 import com.android.internal.util.vanir.NavbarConstants;
@@ -82,31 +83,16 @@ public class NavbarUtils {
     }
 
     public static String[] getNavBarActions(Context context) {
-        boolean itemFound;
-        String[] mActions;
-        ArrayList<String> mActionList = new ArrayList<String>();
-        String[] mActionStart = NavbarConstants.NavbarActions();
-        int startLength = mActionStart.length;
-        int excludeLength = EXCLUDED_FROM_NAVBAR.length;
-        for (int i = 0; i < startLength; i++) {
-            itemFound = false;
-            for (int j = 0; j < excludeLength; j++) {
-                if (mActionStart[i].equals(EXCLUDED_FROM_NAVBAR[j])) {
-                    itemFound = true;
-                }
-            }
-            if (!itemFound) {
-                mActionList.add(mActionStart[i]);
-            }
-//            if (!context.getResources().getBoolean(com.android.internal.R.bool.config_enableTorch)) {
-//                mActionList.remove(ACTION_TORCH);
-//            }
+        ArrayList<String> mActionsArray = new ArrayList<String>();
+        String[] fullActionStringArray = NavbarConstants.NavbarActions();
+        // Perfection is achieved, not when there is nothing more to add,
+        // but when there is nothing left to take away. --Antoine de Saint-Exupéry, Airman's Odyssey 
+        for (String action : fullActionStringArray) {
+            if (Arrays.asList(EXCLUDED_FROM_NAVBAR).contains(action)) continue;
+            mActionsArray.add(action);
         }
-        int actionSize = mActionList.size();
-        mActions = new String[actionSize];
-        for (int i = 0; i < actionSize; i++) {
-            mActions[i] = mActionList.get(i);
-        }
+        String[] mActions = new String[mActionsArray.size()];
+        mActions = mActionsArray.toArray(mActions);
         return mActions;
     }
 
