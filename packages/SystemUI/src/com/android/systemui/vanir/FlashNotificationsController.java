@@ -67,17 +67,12 @@ public class FlashNotificationsController {
     Sensor mProximitySensor;
 
     // stats
-    volatile boolean mFlashing;
-    volatile boolean mLightOn;
     volatile boolean mDistanceFar = true;
     boolean mRegistered;
     boolean mAttached;
 
     // user customizable settings
     private SettingsObserver mSettingsObserver;
-    int mFlashCount = 4;
-    int mFlashOnTimeout = 50;
-    int mFlashOffTimeout = 150;
     volatile boolean mScreenIsOn = true;
     boolean mAllowWithScreenOn = true;
     boolean mAllowNonClearable;
@@ -104,6 +99,8 @@ public class FlashNotificationsController {
      */
     private final NotificationListenerService mNotificationListener =
             new NotificationListenerService() {
+        volatile boolean mFlashing = false;
+        volatile boolean mLightOn = false;
 
         @Override
         public void onNotificationPosted(final StatusBarNotification sbn,
@@ -125,38 +122,42 @@ public class FlashNotificationsController {
         @Override
         public void onNotificationRankingUpdate(final RankingMap rankingMap) {
         }
-    };
+        
+        final Runnable mFlashRunnable = new Runnable() {
+            private final Intent torch = new Intent("com.exodus.flash.TOGGLE_FLASHLIGHT")
+                    .addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+                    .putExtra("flash_notification", true);
+            private int flashTimeout;
+		    private int mFlashCount = 4;
+            private int mFlashOnTimeout = 50;
+            private int mFlashOffTimeout = 150;
 
-    final Runnable mFlashRunnable = new Runnable() {
-        private final Intent torch = new Intent("com.exodus.flash.TOGGLE_FLASHLIGHT")
-                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
-                .putExtra("flash_notification", true);
-        public void run() {
-            int flashTimeout;
-            for (int i = 0; i < mFlashCount; i++) {
-                mLightOn = !mLightOn;
-                mContext.sendBroadcast(torch);
-                if (mLightOn) {
-                    flashTimeout = mFlashOnTimeout;
-                } else {
-                    flashTimeout = mFlashOffTimeout;
+            public void run() {
+                for (int i = 0; i < mFlashCount; i++) {
+                    mLightOn = !mLightOn;
+                    mContext.sendBroadcast(torch);
+                    if (mLightOn) {
+                        flashTimeout = mFlashOnTimeout;
+                    } else {
+                        flashTimeout = mFlashOffTimeout;
+                    }
+                    try {
+                        Thread.sleep(flashTimeout);
+                    } catch (InterruptedException InternetExplorer) {
+                        Log.e(TAG, "Flash timeout exception: ", InternetExplorer);
+                    }
                 }
-                try {
-                    Thread.sleep(flashTimeout);
-                } catch (InterruptedException InternetExplorer) {
-                    Log.e(TAG, "Flash timeout exception: ", InternetExplorer);
-                }
+                // Delay subsequent flashes slightly in case of spamming
+                mHandler.removeCallbacks(mDelayedReset);
+                mHandler.postDelayed(mDelayedReset, 450);
             }
-            // Delay subsequent flashes slightly in case of spamming
-            mHandler.postDelayed(mDelayedReset, 350);
-        }
-    };
+        };
 
-    final Runnable mDelayedReset = new Runnable() {
-        public void run() {
-            mFlashing = false;
-            mLightOn = false;
-        }
+        final Runnable mDelayedReset = new Runnable() {
+            public void run() {
+                mFlashing = false;
+            }
+        };
     };
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -176,6 +177,7 @@ public class FlashNotificationsController {
             }
         }
     };
+
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -341,9 +343,18 @@ public class FlashNotificationsController {
                     // Ignore.
                 }
             }
-            if (mBroadcastReceiver != null) mContext.unregisterReceiver(mBroadcastReceiver);
-            mSettingsObserver.unobserve();
             mRegistered = false;
+
+            if (mUseProximitySensor) {
+                disableProximitySensor();
+                mSensorManager = null;
+                mProximitySensor = null;
+            }
+            mAttached = false;
+
+            if (mBroadcastReceiver != null) 
+                    mContext.unregisterReceiver(mBroadcastReceiver);
+            mSettingsObserver.unobserve();
         }
     }
 
