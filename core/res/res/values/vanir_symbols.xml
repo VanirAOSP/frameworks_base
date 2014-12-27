@@ -23,6 +23,7 @@
   <java-symbol type="string" name="action_recents"/>
   <java-symbol type="string" name="action_search"/>
   <java-symbol type="string" name="action_screenshot"/>
+  <java-symbol type="string" name="action_sleep"/>
   <java-symbol type="string" name="action_menu"/>
   <java-symbol type="string" name="action_ime"/>
   <java-symbol type="string" name="action_kill"/>

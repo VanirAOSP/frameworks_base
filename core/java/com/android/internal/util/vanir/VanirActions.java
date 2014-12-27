@@ -29,8 +29,10 @@ import android.media.ToneGenerator;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.SystemClock;
 import android.os.Vibrator;
 import android.provider.AlarmClock;
 import android.provider.CalendarContract;
@@ -288,6 +290,11 @@ public class VanirActions {
 
             case ACTION_SCREENSHOT:
                 mContext.sendBroadcast(new Intent(Intent.ACTION_SCREENSHOT));
+                break;
+
+            case ACTION_SLEEP:
+                final PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+                pm.goToSleep(SystemClock.uptimeMillis());
                 break;
 
             case ACTION_NULL:
