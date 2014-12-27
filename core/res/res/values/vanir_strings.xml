@@ -25,6 +25,7 @@
     <string name="action_recents">Default: Recents</string>
     <string name="action_search">Search: In-app search</string>
     <string name="action_screenshot">Screenshot</string>
+    <string name="action_sleep">Sleep</string>
     <string name="action_menu">Menu</string>
     <string name="action_ime">Open IME Switcher</string>
     <string name="action_kill">Kill task</string>
