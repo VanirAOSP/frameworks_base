@@ -5732,7 +5732,7 @@ public final class Settings {
             SLEEP_TIMEOUT,
             PRIVACY_GUARD_DEFAULT,
             ADVANCED_REBOOT,
-            DEVELOPMENT_SHORTCUT
+            DEVELOPMENT_SHORTCUT,
             LOCKSCREEN_QUICK_UNLOCK_CONTROL
         };
 
