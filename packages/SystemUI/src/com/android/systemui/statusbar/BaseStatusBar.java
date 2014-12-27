@@ -169,7 +169,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected NotificationStackScrollLayout mStackScroller;
 
     // Flash notifications
-    protected FlashNotificationsController mFlash;
+    protected static FlashNotificationsController mFlash;
 
     // for heads up notifications
     protected HeadsUpNotificationView mHeadsUpNotificationView;

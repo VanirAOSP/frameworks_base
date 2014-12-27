@@ -469,9 +469,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.FLASH_NOTIFICATIONS, 0) == 1;
 
             if (flashNotifications) {
-                mFlash.registerListenerService();
+                if (mFlash == null) {
+                    mFlash = getFlashNotificationListener();
+                    mFlash.registerListenerService();
+                }
             } else {
-                mFlash.unregisterListenerService();
+                if (mFlash != null) {
+                    mFlash.unregisterListenerService();
+                    mFlash = null;
+                }
             }
 
             mImmersive = Settings.System.getIntForUser(resolver,
@@ -1130,7 +1136,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         mFlashlightController = new FlashlightController(mContext);
-        mFlash = getFlashNotificationListener();
         mKeyguardBottomArea.setFlashlightController(mFlashlightController);
         mKeyguardBottomArea.setPhoneStatusBar(this);
         mAccessibilityController = new AccessibilityController(mContext);

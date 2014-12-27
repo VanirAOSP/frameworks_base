@@ -315,7 +315,6 @@ public class FlashNotificationsController {
 
     public void registerListenerService() {
         if (!mRegistered) {
-
             // Set up the initial notification state.
             try {
                 mNotificationListener.registerAsSystemService(mContext,
@@ -331,6 +330,7 @@ public class FlashNotificationsController {
             mContext.registerReceiver(mBroadcastReceiver, filter);
 
             mSettingsObserver.observe();
+            mRegistered = true;
         }
     }
 
