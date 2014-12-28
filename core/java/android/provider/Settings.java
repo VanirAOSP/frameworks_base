@@ -3135,6 +3135,11 @@ public final class Settings {
         public static final String LOCK_TO_APP_EXIT_LOCKED = "lock_to_app_exit_locked";
 
         /**
+         *@hide
+         */
+        public static final String HEADSET_CONNECT_PLAYER = "headset_connect_player";
+
+        /**
          * Enable looking up of phone numbers of nearby places
          *
          * @hide
