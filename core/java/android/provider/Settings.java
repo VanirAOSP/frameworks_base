@@ -3134,6 +3134,11 @@ public final class Settings {
          */
         public static final String LOCK_TO_APP_EXIT_LOCKED = "lock_to_app_exit_locked";
 
+        /** Weather to allow headsethook to launch voice commands
+         * @hide
+         */
+        public static final String HEADSETHOOK_LAUNCH_VOICE = "headsethook_launch_voice";
+
         /**
          * Enable looking up of phone numbers of nearby places
          *

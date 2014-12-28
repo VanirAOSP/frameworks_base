@@ -76,7 +76,7 @@ public class MediaFocusControl implements OnFinished {
     private final PowerManager.WakeLock mMediaEventWakeLock;
     private final MediaEventHandler mEventHandler;
     private final Context mContext;
-    private final ContentResolver mContentResolver;
+    private static ContentResolver mContentResolver;
     private final AudioService.VolumeController mVolumeController;
     private final AppOpsManager mAppOps;
     private final KeyguardManager mKeyguardManager;
@@ -918,7 +918,10 @@ public class MediaFocusControl implements OnFinished {
      * @return true if the key is one of the supported voice-based interaction triggers
      */
     private static boolean isValidVoiceInputKeyCode(int keyCode) {
-        if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK) {
+        boolean launchVoice = Settings.System.getInt(mContentResolver,
+                    Settings.System.HEADSETHOOK_LAUNCH_VOICE, 1) == 1;
+
+        if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK && launchVoice) {
             return true;
         } else {
             return false;
