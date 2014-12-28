@@ -260,7 +260,7 @@ class TelephonyIcons {
 
     static int[] mSelectedDataTypeIcon;
     static int[] mSelectedQSDataTypeIcon;
-    static String mSelectedDataTypeDesc;
+    static String[] mSelectedDataTypeDesc;
     static int[] mSelectedDataActivityIndex;
     static int[] mSelectedSignalStreagthIndex;
 
@@ -308,6 +308,10 @@ class TelephonyIcons {
         if (mSelectedQSDataTypeIcon == null
             && mDataTypeArray.length != 0) {
             mSelectedQSDataTypeIcon = new int[mDataTypeArray.length];
+        }
+        if (mSelectedDataTypeDesc == null
+            && mDataTypeArray.length != 0) {
+            mSelectedDataTypeDesc = new String[mDataTypeArray.length];
         }
         if (mSelectedDataActivityIndex == null
             && mDataActivityArray.length != 0) {
@@ -377,7 +381,7 @@ class TelephonyIcons {
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             dataTypeArray[type], null, NS);
                     mSelectedQSDataTypeIcon[sub] = 0;
-                    mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                    mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                     mSelectedDataActivityIndex[sub] = 0;
                     mSelectedSignalStreagthIndex[sub] = 0;
                     break;
@@ -389,7 +393,7 @@ class TelephonyIcons {
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             dataTypeArray[type], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_E[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                    mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                     mSelectedDataActivityIndex[sub] = DATA_TYPE_E;
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_E;
                     break;
@@ -402,7 +406,7 @@ class TelephonyIcons {
                 mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                         dataTypeArray[type], null, NS);
                 mSelectedQSDataTypeIcon[sub] = QS_DATA_3G[inetCondition];
-                mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                 mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_UMTS;
                 break;
             case TelephonyManager.NETWORK_TYPE_HSDPA:
@@ -413,14 +417,14 @@ class TelephonyIcons {
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             dataTypeArray[type], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_H[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                    mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_H;
                 } else {
                     mSelectedDataActivityIndex[sub] = DATA_TYPE_3G;
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             mDataTypeGenerationArray[0], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_3G[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeGenerationDescArray[0];
+                    mSelectedDataTypeDesc[sub] = mDataTypeGenerationDescArray[0];
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_3G;
 
                 }
@@ -430,7 +434,7 @@ class TelephonyIcons {
                 mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                         dataTypeArray[type], null, NS);
                 mSelectedQSDataTypeIcon[sub] = QS_DATA_HP[inetCondition];
-                mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                 mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_HP;
                 break;
             case TelephonyManager.NETWORK_TYPE_CDMA:
@@ -439,7 +443,7 @@ class TelephonyIcons {
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             dataTypeArray[type], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_1X[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                    mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_CDMA;
                     break;
                 } else {
@@ -451,7 +455,7 @@ class TelephonyIcons {
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             dataTypeArray[type], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_1X[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                    mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_1X;
                     break;
                 } else {
@@ -465,7 +469,7 @@ class TelephonyIcons {
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             dataTypeArray[type], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_3G[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                    mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_3G;
                 break;
             case TelephonyManager.NETWORK_TYPE_LTE:
@@ -474,14 +478,14 @@ class TelephonyIcons {
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             mDataTypeGenerationArray[1], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_4G[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeGenerationDescArray[1];
+                    mSelectedDataTypeDesc[sub] = mDataTypeGenerationDescArray[1];
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_4G;
                 } else {
                     mSelectedDataActivityIndex[sub] = DATA_TYPE_LTE;
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             dataTypeArray[type], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_LTE[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                    mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_4G;
                 }
                 break;
@@ -492,14 +496,14 @@ class TelephonyIcons {
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             dataTypeArray[type], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_G[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeDescriptionArray[type];
+                    mSelectedDataTypeDesc[sub] = mDataTypeDescriptionArray[type];
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_G;
                 } else {
                     mSelectedDataActivityIndex[sub] = DATA_TYPE_3G;
                     mSelectedDataTypeIcon[sub] = mRes.getIdentifier(
                             mDataTypeGenerationArray[0], null, NS);
                     mSelectedQSDataTypeIcon[sub] = QS_DATA_3G[inetCondition];
-                    mSelectedDataTypeDesc = mDataTypeGenerationDescArray[0];;
+                    mSelectedDataTypeDesc[sub] = mDataTypeGenerationDescArray[0];;
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_3G;
                 }
                 break;
@@ -507,7 +511,7 @@ class TelephonyIcons {
                     mSelectedDataActivityIndex[sub] = DATA_TYPE_UNKNOWN;
                     mSelectedDataTypeIcon[sub] = 0;
                     mSelectedQSDataTypeIcon[sub] = 0;
-                    mSelectedDataTypeDesc = "";
+                    mSelectedDataTypeDesc[sub] = "";
                     mSelectedSignalStreagthIndex[sub] = SIGNAL_STRENGTH_TYPE_G;
                 break;
         }
@@ -542,7 +546,11 @@ class TelephonyIcons {
     }
 
     static String getDataTypeDesc() {
-        return mSelectedDataTypeDesc;
+        return mSelectedDataTypeDesc[DEFAULT_SUB];
+    }
+
+    static String getDataTypeDesc(int sub) {
+        return mSelectedDataTypeDesc[sub];
     }
 
     static int getDataActivity(int activity){
