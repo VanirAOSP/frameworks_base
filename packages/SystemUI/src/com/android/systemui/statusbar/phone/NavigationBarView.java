@@ -97,8 +97,6 @@ public class NavigationBarView extends LinearLayout {
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
 
-    private BackButtonDrawable mBackIcon, mBackLandIcon;
-
     private NavigationBarViewTaskSwitchHelper mTaskSwitchHelper;
     private DelegateViewHelper mDelegateHelper;
     private DeadZone mDeadZone;
@@ -235,8 +233,6 @@ public class NavigationBarView extends LinearLayout {
         final Resources res = getContext().getResources();
         final ContentResolver cr = mContext.getContentResolver();
 
-        getIcons(res);
-
         mBarSize = res.getDimensionPixelSize(R.dimen.navigation_bar_size);
         mVertical = false;
         mShowMenu = false;
@@ -339,14 +335,8 @@ public class NavigationBarView extends LinearLayout {
         return mCurrentView.findViewWithTag(constant);
     }
 
-    private void getIcons(Resources res) {
-        mBackIcon = new BackButtonDrawable(res.getDrawable(R.drawable.ic_sysbar_back));
-        mBackLandIcon = new BackButtonDrawable(res.getDrawable(R.drawable.ic_sysbar_back_land));
-    }
-
     @Override
     public void setLayoutDirection(int layoutDirection) {
-        getIcons(getContext().getResources());
         super.setLayoutDirection(layoutDirection);
     }
 
@@ -398,12 +388,7 @@ public class NavigationBarView extends LinearLayout {
         }
 
         if (getButtonView(ACTION_BACK) != null) {
-/*          comment this out until backbuttondrawable is properly sizing images
-            ((KeyButtonView) getButtonView(ACTION_BACK)).setImageDrawable(null);
-            ((KeyButtonView) getButtonView(ACTION_BACK)).setImageDrawable(mVertical ? mBackLandIcon : mBackIcon);
-            mBackLandIcon.setImeVisible(showingIME);
-            mBackIcon.setImeVisible(showingIME);
-*/          if (showingIME) {
+          if (showingIME) {
                 ((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
             } else {
                 ((KeyButtonView) getButtonView(ACTION_BACK)).setImage();
