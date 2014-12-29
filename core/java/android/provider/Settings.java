@@ -3015,6 +3015,27 @@ public final class Settings {
         public static final String DIALER_OPENCNAM_ACCOUNT_SID = "dialer_opencnam_account_sid";
 
         /**
+         * Whether to show the clock in status bar
+         * of the stock battery icon
+         * 0: don't show the clock
+         * 1: right side clock
+         * 2: center clock
+         * default: 1
+            @hide
+         */
+        public static final String STATUS_BAR_CLOCK = "status_bar_show_clock";
+
+        /**
+         * How to display am/pm on statusbar
+         * 0: AM/PM
+         * 1: am/pm
+         * 2: don't
+         * default: 2
+            @hide
+         */
+        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
+
+        /**
          * The OpenCNAM authentication token
          *
          * @hide

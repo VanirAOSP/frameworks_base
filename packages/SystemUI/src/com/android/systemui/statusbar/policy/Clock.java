@@ -16,18 +16,27 @@
 
 package com.android.systemui.statusbar.policy;
 
+import android.app.ActivityManagerNative;
+import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.TypedArray;
+import android.database.ContentObserver;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
 import android.text.style.CharacterStyle;
 import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.android.systemui.DemoMode;
@@ -46,15 +55,59 @@ import libcore.icu.LocaleData;
 public class Clock extends TextView implements DemoMode {
     private boolean mAttached;
     private Calendar mCalendar;
-    private String mClockFormatString;
-    private SimpleDateFormat mClockFormat;
     private Locale mLocale;
+    private static String mClockFormatString;
+    private static SimpleDateFormat mClockFormat;
+    private static SettingsObserver settingsObserver;
+    private static Handler mHandler;
+    private static boolean mShowClock = true;
+
+    private static Clock mRightClock, mCenterClock;
+
+    //for memoization
+    private boolean mIsCenter;
+    private boolean mTagChecked;
+
+    private boolean mDemoMode;
 
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
+    private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
 
-    private final int mAmPmStyle;
+
+    private static final char MAGIC1 = '\uEF00';
+    private static final char MAGIC2 = '\uEF01';
+
+    public static final int STYLE_HIDE_CLOCK    = 0;
+    public static final int STYLE_CLOCK_RIGHT   = 1;
+    public static final int STYLE_CLOCK_CENTER  = 2;
+
+    private static int mClockStyle = STYLE_CLOCK_RIGHT;
+    private static int mAmPmStyle;
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_AM_PM), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_CLOCK), false, this);
+            updateSettings();
+        }
+
+        void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
+        @Override public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
 
     public Clock(Context context) {
         this(context, null);
@@ -66,14 +119,10 @@ public class Clock extends TextView implements DemoMode {
 
     public Clock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.Clock,
-                0, 0);
-        try {
-            mAmPmStyle = a.getInt(R.styleable.Clock_amPmStyle, AM_PM_STYLE_GONE);
-        } finally {
-            a.recycle();
+        if (IsCenter()) {
+            mCenterClock = this;
+        } else {
+            mRightClock = this;
         }
     }
 
@@ -101,7 +150,16 @@ public class Clock extends TextView implements DemoMode {
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
         // Make sure we update to the current time
-        updateClock();
+        //updateClock();
+        if (settingsObserver == null)
+        {
+            mHandler = new Handler();
+            settingsObserver = new SettingsObserver(mHandler);
+            settingsObserver.observe();
+        } else {
+            updateClockVisibility();
+            updateClock();
+        }
     }
 
     @Override
@@ -110,6 +168,13 @@ public class Clock extends TextView implements DemoMode {
         if (mAttached) {
             getContext().unregisterReceiver(mIntentReceiver);
             mAttached = false;
+        }
+
+        if (settingsObserver != null && !mRightClock.mAttached && !mCenterClock.mAttached)
+        {
+            settingsObserver.unobserve();
+            settingsObserver = null;
+            mHandler = null;
         }
     }
 
@@ -135,7 +200,7 @@ public class Clock extends TextView implements DemoMode {
     };
 
     final void updateClock() {
-        if (mDemoMode) return;
+        if (mDemoMode || mCalendar == null) return;
         mCalendar.setTimeInMillis(System.currentTimeMillis());
         setText(getSmallTime());
     }
@@ -186,6 +251,7 @@ public class Clock extends TextView implements DemoMode {
         } else {
             sdf = mClockFormat;
         }
+
         String result = sdf.format(mCalendar.getTime());
 
         if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
@@ -207,12 +273,93 @@ public class Clock extends TextView implements DemoMode {
                 return formatted;
             }
         }
-
         return result;
+    }
+
+    private SimpleDateFormat updateFormatString(String format)
+    {
+        SimpleDateFormat sdf = mClockFormat;
+
+        if (!format.equals(mClockFormatString)) {
+
+            if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
+                int a = -1;
+                boolean quoted = false;
+                for (int i = 0; i < format.length(); i++) {
+                    char c = format.charAt(i);
+
+                    if (c == '\'') {
+                        quoted = !quoted;
+                    }
+                    if (!quoted && c == 'a') {
+                        a = i;
+                        break;
+                    }
+                }
+
+                if (a >= 0) {
+                    // Move a back so any whitespace before AM/PM is also in the alternate size.
+                    final int b = a;
+                    while (a > 0 && Character.isWhitespace(format.charAt(a-1))) {
+                        a--;
+                    }
+                    format = format.substring(0, a) + MAGIC1 + format.substring(a, b)
+                        + "a" + MAGIC2 + format.substring(b + 1);
+                }
+            }
+            mClockFormat = sdf = new SimpleDateFormat(format);
+            mClockFormatString = format;
+        } else {
+            sdf = mClockFormat;
+        }
+        return sdf;
 
     }
 
-    private boolean mDemoMode;
+    private void updateSettings() {
+        updateSettings(mContext);
+    }
+
+    private static void updateSettings(Context mContext){
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mAmPmStyle = (Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_AM_PM, 
+                context.getTheme().obtainStyledAttributes(
+                    attrs,
+                    com.android.internal.R.styleable.Clock,
+                    0, 0).getInt(com.android.internal.R.styleable.Clock_amPmStyle, AM_PM_STYLE_GONE)));
+
+        mClockStyle = Settings.System.getInt(resolver, Settings.System.STATUS_BAR_CLOCK, STYLE_CLOCK_RIGHT);
+
+        if (mAmPmStyle != AM_PM_STYLE) {
+            AM_PM_STYLE = mAmPmStyle;
+            mClockFormatString = "";
+        }
+
+        updateClockVisibility();
+        updateClock();
+    }
+
+    private void CheckTag()
+    {
+        final Object o = getTag();
+        mIsCenter = (o != null && o.toString().equals("center"));
+        mTagChecked = true;
+    }
+
+    public boolean IsCenter()
+    {
+        if (!mTagChecked) {
+            CheckTag();
+        }
+        return mIsCenter;
+    }
+
+    public void forceUpdate()
+    {
+        updateSettings();
+    }
 
     @Override
     public void dispatchDemoCommand(String command, Bundle args) {
@@ -235,5 +382,24 @@ public class Clock extends TextView implements DemoMode {
             setText(getSmallTime());
         }
     }
-}
 
+    /*
+     * @hide
+     */
+    protected void updateClockVisibility() {
+        boolean c = IsCenter();
+        if (mShowClock && mClockStyle == STYLE_CLOCK_RIGHT && !c || mShowClock && mClockStyle == STYLE_CLOCK_CENTER && c)
+            setVisibility(View.VISIBLE);
+        else
+            setVisibility(View.GONE);
+    }
+
+    /*
+     * Updates this specific instance of clock's visibility for the current clock mode
+     * @hide
+     */
+    public void updateClockVisibility(boolean showClockFlag) {
+        mShowClock = showClockFlag;
+        updateClockVisibility();
+    }
+}
