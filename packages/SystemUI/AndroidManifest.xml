@@ -119,6 +119,9 @@
     <!-- Weather -->
     <uses-permission android:name="com.cyanogenmod.lockclock.permission.READ_WEATHER" />
 
+    <!-- Flash notifications -->
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+
     <application
         android:name=".SystemUIApplication"
         android:persistent="true"
@@ -350,6 +353,14 @@
                 <category android:name="android.intent.category.DESK_DOCK" />
             </intent-filter>
         </activity>
+
+        <!-- flash notifications -->
+        <service android:enabled="true" android:name=".vanir.TorchService" />
+        <receiver android:name=".vanir.TorchSwitch" android:enabled="true" android:label="@string/flash_receiver_name" >
+            <intent-filter>
+                <action android:name="com.exodus.flash.TOGGLE_FLASHLIGHT"></action>
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".settings.BrightnessDialog"
