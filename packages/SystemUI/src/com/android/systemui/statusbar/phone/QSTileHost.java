@@ -39,6 +39,7 @@ import com.android.systemui.qs.tiles.CellularTile;
 import com.android.systemui.qs.tiles.ColorInversionTile;
 import com.android.systemui.qs.tiles.DataTile;
 import com.android.systemui.qs.tiles.DdsTile;
+import com.android.systemui.qs.tiles.ExodusUpdaterTile;
 import com.android.systemui.qs.tiles.FlashlightTile;
 import com.android.systemui.qs.tiles.HotspotTile;
 import com.android.systemui.qs.tiles.IntentTile;
@@ -290,6 +291,7 @@ public class QSTileHost implements QSTile.Host {
             return new DdsTile(this);
         else if (tileSpec.equals("apn")) return new ApnTile(this);
         else if (tileSpec.startsWith(IntentTile.PREFIX)) return IntentTile.create(this,tileSpec);
+        else if (tileSpec.equals("updater")) return new ExodusUpdaterTile(this);
         else throw new IllegalArgumentException("Bad tile spec: " + tileSpec);
     }
 

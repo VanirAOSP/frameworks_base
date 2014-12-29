@@ -17,6 +17,10 @@
 */
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Exodus updater -->
+    <string name="title_tile_update">Exodus updates</string>
+    <string name="update_check_failed">A data connection is required.</string>
+
     <!-- Gesture panel -->
     <string name="gesture_panel_add">Add</string>
 
