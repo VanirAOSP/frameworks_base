@@ -28,13 +28,16 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.hardware.ITorchService;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.IBinder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.UserHandle;
@@ -47,6 +50,10 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.android.systemui.R;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -61,12 +68,20 @@ public class FlashNotificationsController {
     Context mContext;
     Handler mHandler = new Handler();
 
+    ITorchService mTorchService;
+    String mFlashDevice;
+
     TelephonyManager mTM;
-    PowerManager mPm;
+
     SensorManager mSensorManager;
     Sensor mProximitySensor;
 
-    // stats
+    PowerManager mPm;
+    WakeLock mWakeLock;
+
+    // operation stats
+    volatile boolean mFlashing = false;
+    volatile boolean mLightOn = false;
     volatile boolean mDistanceFar = true;
     boolean mRegistered;
     boolean mAttached;
@@ -94,18 +109,22 @@ public class FlashNotificationsController {
         return mPm;
     }
 
+    public static class InitializationException extends RuntimeException {
+        public InitializationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     /**
      * Listen to notification events here:
      */
     private final NotificationListenerService mNotificationListener =
             new NotificationListenerService() {
-        volatile boolean mFlashing = false;
-        volatile boolean mLightOn = false;
 
         @Override
         public void onNotificationPosted(final StatusBarNotification sbn,
                 final RankingMap rankingMap) {
-            if (isOnCall() || (mUseProximitySensor && !flashForPocketMode())) return;
+            if (isOnCall() || (mUseProximitySensor && mDistanceFar)) return;
             if ((mAllowWithScreenOn || !mScreenIsOn) && !mFlashing && isValidNotification(sbn)) {
                 mPm.cpuBoost(650000);
                 mFlashing = true;
@@ -122,42 +141,6 @@ public class FlashNotificationsController {
         @Override
         public void onNotificationRankingUpdate(final RankingMap rankingMap) {
         }
-        
-        final Runnable mFlashRunnable = new Runnable() {
-            private final Intent torch = new Intent("com.exodus.flash.TOGGLE_FLASHLIGHT")
-                    .addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
-                    .putExtra("flash_notification", true);
-            private int flashTimeout;
-		    private int mFlashCount = 4;
-            private int mFlashOnTimeout = 50;
-            private int mFlashOffTimeout = 150;
-
-            public void run() {
-                for (int i = 0; i < mFlashCount; i++) {
-                    mLightOn = !mLightOn;
-                    mContext.sendBroadcast(torch);
-                    if (mLightOn) {
-                        flashTimeout = mFlashOnTimeout;
-                    } else {
-                        flashTimeout = mFlashOffTimeout;
-                    }
-                    try {
-                        Thread.sleep(flashTimeout);
-                    } catch (InterruptedException InternetExplorer) {
-                        Log.e(TAG, "Flash timeout exception: ", InternetExplorer);
-                    }
-                }
-                // Delay subsequent flashes slightly in case of spamming
-                mHandler.removeCallbacks(mDelayedReset);
-                mHandler.postDelayed(mDelayedReset, 450);
-            }
-        };
-
-        final Runnable mDelayedReset = new Runnable() {
-            public void run() {
-                mFlashing = false;
-            }
-        };
     };
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -177,7 +160,6 @@ public class FlashNotificationsController {
             }
         }
     };
-
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -243,22 +225,15 @@ public class FlashNotificationsController {
     public FlashNotificationsController(Context context) {
         mContext = context;
 
+        IBinder torchBinder = ServiceManager.getService(Context.TORCH_SERVICE);
+        mTorchService = ITorchService.Stub.asInterface(torchBinder);
+        mFlashDevice = context.getResources().getString(R.string.flashDevice);
+
         mTM = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         mPm = getPowerManagerService(context);
+        this.mWakeLock = mPm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Flash");
 
         mSettingsObserver = new SettingsObserver(mHandler);
-    }
-
-    /**
-     * Determine if we should show notifications or not.
-     * @return True if we should show this view.
-     */
-    protected boolean flashForPocketMode() {
-        if (mDistanceFar) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private SensorEventListener mSensorListener = new SensorEventListener() {
@@ -276,6 +251,115 @@ public class FlashNotificationsController {
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
+    final Runnable mFlashRunnable = new Runnable() {
+        private static final int OFF = 0;
+        private static final int ON = 1;
+        private static final int FLASH_COUNT = 4;
+        private static final int FLASH_ON_TIMEOUT = 50;
+        private static final int FLASH_OFF_TIMEOUT = 150;
+
+        private FileWriter mFlashDeviceWriter = null;
+        private int mFlashTimeout;
+        private int mFlashValue;
+
+        public void run() {
+            try {
+                if (mFlashDeviceWriter == null) {
+                    mFlashDeviceWriter = new FileWriter(mFlashDevice);
+                }
+            } catch (IOException e) {
+                throw new InitializationException("Can't open flash device", e);
+            }
+
+            if (mFlashDeviceWriter != null) {
+                try {
+                    mWakeLock.acquire();
+                    onStartTorch(-1);
+
+                    for (int i = 0; i < FLASH_COUNT; i++) {
+                        mLightOn = !mLightOn;
+                        setFlashMode(mLightOn);
+                        if (mLightOn) {
+                            mFlashTimeout = FLASH_ON_TIMEOUT;
+                        } else {
+                            mFlashTimeout = FLASH_OFF_TIMEOUT;
+                        }
+                        if (i != FLASH_COUNT) {
+                            try {
+                                Thread.sleep(mFlashTimeout);
+                            } catch (InterruptedException InternetExplorer) {
+                                Log.e(TAG, "Flash timeout exception: ", InternetExplorer);
+                            }
+                        } else {
+                            mFlashValue = OFF;
+                        }
+                    }
+                } finally {
+                    try {
+                        if (mFlashDeviceWriter != null) {
+                            mFlashDeviceWriter.close();
+                            mFlashDeviceWriter = null;
+                        }
+                    } catch (IOException e) {
+                        throw new InitializationException("Can't open flash device", e);
+                    }
+                    if (mWakeLock.isHeld()) {
+                        mWakeLock.release();
+                    }
+                    onStopTorch();
+                }
+            } else {
+                Log.e(TAG, "No flash writer present");
+            }
+
+            // Delay subsequent flashes slightly in case of spamming
+            mHandler.removeCallbacks(mDelayedReset);
+            mHandler.postDelayed(mDelayedReset, 450);
+        }
+            
+        public synchronized void setFlashMode(boolean mode) {
+            if (mode) {
+                mFlashValue = 1;
+            } else {
+                mFlashValue = 0;
+            }
+
+            try {
+                // Write to sysfs only if not already on
+                mFlashDeviceWriter.write(String.valueOf(mFlashValue));
+                mFlashDeviceWriter.flush();
+            } catch (IOException e) {
+                throw new InitializationException("Can't open flash device", e);
+            }
+        }
+
+        private void onStartTorch(int cameraId) {
+            boolean result = false;
+            try {
+                result = mTorchService.onStartingTorch(cameraId);
+            } catch (RemoteException e) {
+            }
+            if (!result) {
+                throw new InitializationException("Camera is busy", null);
+            }
+        }
+
+        private void onStopTorch() {
+            try {
+                mTorchService.onStopTorch();
+            } catch (RemoteException e) {
+                // ignore
+            }
+        }
+    };
+
+    final Runnable mDelayedReset = new Runnable() {
+        public void run() {
+            mHandler.removeCallbacks(mFlashRunnable);
+            mFlashing = false;
         }
     };
 
