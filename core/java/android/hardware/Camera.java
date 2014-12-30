@@ -193,7 +193,7 @@ public class Camera {
     private CameraDataCallback mCameraDataCallback;
     private CameraMetaDataCallback mCameraMetaDataCallback;
     /* ### QC ADD-ONS: END */
-    private Binder mTorchToken;
+    private Binder mTorchToken = new Binder();
 
     /**
      * Broadcast Action:  A new picture is taken by the camera, and the entry of
@@ -480,7 +480,6 @@ public class Camera {
         mCameraDataCallback = null;
         mCameraMetaDataCallback = null;
         /* ### QC ADD-ONS: END */
-        mTorchToken = new Binder();
 
         Looper looper;
         if ((looper = Looper.myLooper()) != null) {
