@@ -2851,7 +2851,7 @@ public final class Settings {
          * Flash notifications: on/off
          * @hide
          */
-        public static final String FLASH_NOTIFICATIONS = "flash_notifications";
+        public static final String FLASH_NOTIFICATIONS_ALPHA = "flash_notifications_alpha";
 
         /**
          * Flash notifications proximity sensor

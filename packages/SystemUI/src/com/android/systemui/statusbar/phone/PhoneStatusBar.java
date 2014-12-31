@@ -437,7 +437,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.FLASH_NOTIFICATIONS), false, this);
+                    Settings.System.FLASH_NOTIFICATIONS_ALPHA), false, this);
             update();
         }
 
@@ -459,7 +459,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.ENABLE_NAVIGATION_RING, 1, UserHandle.USER_CURRENT) == 1;
 
             boolean flashNotifications = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.FLASH_NOTIFICATIONS, 0) == 1;
+                    Settings.System.FLASH_NOTIFICATIONS_ALPHA, 0) == 1;
 
             if (flashNotifications) {
                 if (mFlash == null) {
