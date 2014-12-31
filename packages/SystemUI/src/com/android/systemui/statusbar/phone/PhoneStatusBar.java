@@ -436,8 +436,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.IMMERSIVE_ORIENTATION), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.FLASH_NOTIFICATIONS), false, this);
             update();
         }
 
@@ -457,21 +455,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0) == 1;
             mSearchPanelAllowed = Settings.System.getIntForUser(
                     resolver, Settings.System.ENABLE_NAVIGATION_RING, 1, UserHandle.USER_CURRENT) == 1;
-
-            boolean flashNotifications = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.FLASH_NOTIFICATIONS, 0) == 1;
-
-            if (flashNotifications) {
-                if (mFlash == null) {
-                    mFlash = getFlashNotificationListener();
-                    mFlash.registerListenerService();
-                }
-            } else {
-                if (mFlash != null) {
-                    mFlash.unregisterListenerService();
-                    mFlash = null;
-                }
-            }
 
             mImmersive = Settings.System.getIntForUser(resolver,
                     Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0,

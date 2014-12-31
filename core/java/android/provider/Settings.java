@@ -2848,43 +2848,6 @@ public final class Settings {
         public static final String WIFI_NETWORK_NOTIFICATIONS = "wifi_network_notifications";
 
         /**
-         * Flash notifications: on/off
-         * @hide
-         */
-        public static final String FLASH_NOTIFICATIONS = "flash_notifications";
-
-        /**
-         * Flash notifications proximity sensor
-         * @hide
-         */
-        public static final String FLASH_NOTIFICATIONS_POCKET_MODE = "flash_notifications_pocket_mode";
-
-        /**
-         * Flash with screen on
-         * @hide
-         */
-        public static final String FLASH_NOTIFICATIONS_ALLOW_WITH_SCREEN_ON = "flash_notifications_with_screen_on";
-
-        /**
-         * A list of packages to exclude from activating flash notifications.
-         * This should be a string of packages separated by |
-         * @hide
-         */
-        public static final String FLASH_NOTIFICATIONS_EXCLUDED_APPS = "flash_notifications_excluded_apps";
-
-        /**
-         * Flash non-clearable notifications
-         * @hide
-         */
-        public static final String FLASH_NOTIFICATIONS_NON_CLEARABLE = "flash_notifications_non_clearable";
-
-        /**
-         * Flash low-priority notifications
-         * @hide
-         */
-        public static final String FLASH_NOTIFICATIONS_LOW_PRIORITY = "flash_notifications_low_priority";
-
-        /**
          * Whether to play sounds when the keyguard is shown and dismissed.
          * @hide
          */
