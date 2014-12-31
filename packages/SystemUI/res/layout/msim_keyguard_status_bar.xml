@@ -60,8 +60,7 @@
             android:paddingEnd="@dimen/battery_level_padding_end"
             android:textColor="#ffffff"
             android:visibility="gone"
-            android:textSize="@dimen/battery_level_text_size"
-            android:importantForAccessibility="noHideDescendants"/>
+            android:textSize="12sp"/>
     </LinearLayout>
 
     <com.android.keyguard.CarrierText
