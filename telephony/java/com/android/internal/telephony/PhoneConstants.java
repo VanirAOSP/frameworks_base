@@ -156,9 +156,6 @@ public class PhoneConstants {
 
     public static final String SUB_SETTING  = "subSettings";
 
-    public static final int SUCCESS = 0;
-    public static final int FAILURE = 1;
-
     public static final int SUB1 = 0;
     public static final int SUB2 = 1;
     public static final int SUB3 = 2;

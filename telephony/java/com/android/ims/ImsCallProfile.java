@@ -132,7 +132,6 @@ public class ImsCallProfile implements Parcelable {
     public static final String EXTRA_OIR = "oir";
     public static final String EXTRA_CNAP = "cnap";
     public static final String EXTRA_DIALSTRING = "dialstring";
-    public static final String EXTRA_CALL_DOMAIN = "call_domain";
 
     /**
      * Values for EXTRA_OIR / EXTRA_CNAP
@@ -150,18 +149,6 @@ public class ImsCallProfile implements Parcelable {
     public static final int DIALSTRING_SS_CONF = 1;
     // Call for USSD message
     public static final int DIALSTRING_USSD = 2;
-
-    /**
-     * Values for causes that restricts that restrict call types
-     */
-    // Default cause not restricted at peer and HD is supported
-    public static final int CALL_RESTRICT_CAUSE_NONE = 0;
-    // Service not supported by RAT at peer
-    public static final int CALL_RESTRICT_CAUSE_RAT = 1;
-    // Service Disabled at peer
-    public static final int CALL_RESTRICT_CAUSE_DISABLED = 2;
-    // HD is not supported
-    public static final int CALL_RESTRICT_CAUSE_HD = 3;
 
     /**
      * String extra properties
@@ -191,9 +178,10 @@ public class ImsCallProfile implements Parcelable {
 
     public int mServiceType;
     public int mCallType;
-    public int mRestrictCause = CALL_RESTRICT_CAUSE_NONE;
     public Bundle mCallExtras;
     public ImsStreamMediaProfile mMediaProfile;
+
+
 
     public ImsCallProfile(Parcel in) {
         readFromParcel(in);
@@ -323,31 +311,22 @@ public class ImsCallProfile implements Parcelable {
      * @param callType The call type.
      * @return The video state.
      */
-    public static int getVideoStateFromImsCallProfile(ImsCallProfile callProfile) {
-        int videostate = VideoProfile.VideoState.AUDIO_ONLY;
-        switch (callProfile.mCallType) {
+    public static int getVideoStateFromCallType(int callType) {
+        switch (callType) {
+            case CALL_TYPE_VT_NODIR:
+                return VideoProfile.VideoState.PAUSED |
+                        VideoProfile.VideoState.BIDIRECTIONAL;
             case CALL_TYPE_VT_TX:
-                videostate = VideoProfile.VideoState.TX_ENABLED;
-                break;
+                return VideoProfile.VideoState.TX_ENABLED;
             case CALL_TYPE_VT_RX:
-                videostate = VideoProfile.VideoState.RX_ENABLED;
-                break;
+                return VideoProfile.VideoState.RX_ENABLED;
             case CALL_TYPE_VT:
-                videostate = VideoProfile.VideoState.BIDIRECTIONAL;
-                break;
+                return VideoProfile.VideoState.BIDIRECTIONAL;
             case CALL_TYPE_VOICE:
-                videostate = VideoProfile.VideoState.AUDIO_ONLY;
-                break;
+                return VideoProfile.VideoState.AUDIO_ONLY;
             default:
-                videostate = VideoProfile.VideoState.AUDIO_ONLY;
-                break;
+                return VideoProfile.VideoState.AUDIO_ONLY;
         }
-        if (callProfile.isVideoPaused() && videostate != VideoProfile.VideoState.AUDIO_ONLY) {
-            videostate |= VideoProfile.VideoState.PAUSED;
-        } else {
-            videostate &= ~VideoProfile.VideoState.PAUSED;
-        }
-        return videostate;
     }
 
     /**
@@ -403,14 +382,6 @@ public class ImsCallProfile implements Parcelable {
             default:
                 return PhoneConstants.PRESENTATION_UNKNOWN;
         }
-    }
-
-    /**
-     * Checks if video call is paused
-     * @return true if call is video paused
-     */
-    public boolean isVideoPaused() {
-        return mMediaProfile.mVideoDirection == ImsStreamMediaProfile.DIRECTION_INACTIVE;
     }
 
     /**
