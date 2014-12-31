@@ -20,6 +20,7 @@ package com.android.systemui;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
@@ -40,7 +41,6 @@ import android.util.DisplayMetrics;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.content.ContentResolver;
 
 import com.android.systemui.statusbar.policy.BatteryController;
 
@@ -314,10 +314,11 @@ public class BatteryMeterView extends View implements DemoMode,
         switch (mode) {
             case BATTERY_METER_CIRCLE:
                 return new CircleBatteryMeterDrawable(res);
-            case BATTERY_METER_TEXT:
-                return null;
             case BATTERY_METER_ICON_LANDSCAPE:
                 return new NormalBatteryMeterDrawable(res, true);
+            case BATTERY_METER_TEXT:
+            case BATTERY_METER_GONE:
+                return null;
             default:
                 return new NormalBatteryMeterDrawable(res, false);
         }

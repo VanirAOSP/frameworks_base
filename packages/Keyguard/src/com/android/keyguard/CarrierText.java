@@ -111,8 +111,7 @@ public class CarrierText extends LinearLayout {
         SimPukLocked, // SIM card is PUK locked because SIM entered wrong too many times
         SimLocked, // SIM card is currently locked
         SimPermDisabled, // SIM card is permanently disabled due to PUK unlock failure
-        SimNotReady, // SIM is not ready yet. May never be on devices w/o a SIM.
-        SimIoError; //The sim card is faulty
+        SimNotReady; // SIM is not ready yet. May never be on devices w/o a SIM.
     }
 
     public CarrierText(Context context) {
@@ -249,11 +248,6 @@ public class CarrierText extends LinearLayout {
                         getContext().getText(R.string.keyguard_sim_puk_locked_message),
                         plmn);
                 break;
-            case SimIoError:
-                carrierText = makeCarrierStringOnEmergencyCapable(
-                        getContext().getText(R.string.lockscreen_sim_error_message_short),
-                        plmn);
-                break;
         }
 
         if (DEBUG) Log.d(TAG, "getCarrierTextForSimState: carrierText=" + carrierText);
@@ -304,8 +298,6 @@ public class CarrierText extends LinearLayout {
                 return StatusMode.SimPermDisabled;
             case UNKNOWN:
                 return StatusMode.SimMissing;
-            case CARD_IO_ERROR:
-                return StatusMode.SimIoError;
         }
         return StatusMode.SimMissing;
     }
