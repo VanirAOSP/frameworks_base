@@ -311,6 +311,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // the icons themselves
     IconMerger mNotificationIcons;
     View mNotificationIconArea;
+    TextView mExodusLabel;
 
     // [+>
     View mMoreIcon;
@@ -366,6 +367,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mStatusBarHeaderHeight;
 
     private boolean mShowCarrierInPanel = false;
+    private boolean mShowLabel;
 
     // position
     int[] mPositionTmp = new int[2];
@@ -896,6 +898,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mStatusIcons = (LinearLayout)mStatusBarView.findViewById(R.id.statusIcons);
         mNotificationIconArea = mStatusBarView.findViewById(R.id.notification_icon_area_inner);
         mNotificationIcons = (IconMerger)mStatusBarView.findViewById(R.id.notificationIcons);
+        mExodusLabel = (TextView)mStatusBarView.findViewById(R.id.exodus_custom_label);
         mMoreIcon = mStatusBarView.findViewById(R.id.moreIcon);
         mNotificationIcons.setOverflowIndicator(mMoreIcon);
         mStatusBarContents = (LinearLayout)mStatusBarView.findViewById(R.id.status_bar_contents);
@@ -2302,7 +2305,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     /**
      * State is one or more of the DISABLE constants from StatusBarManager.
      */
-    public void disable(int state, boolean animate) {
+    public void disable(int state, final boolean animate) {
         mDisabledUnmodified = state;
         state = adjustDisableFlags(state);
         final int old = mDisabled;
@@ -2384,7 +2387,33 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
                 animateStatusBarHide(mNotificationIconArea, animate);
             } else {
-                animateStatusBarShow(mNotificationIconArea, animate);
+				if (mShowLabel) {
+					mExodusLabel.animate()
+                            .alpha(1f)
+                            .setDuration(320)
+                            .setInterpolator(ALPHA_IN)
+                            .setStartDelay(50)
+                            .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            mExodusLabel.animate()
+									.alpha(0f)
+									.setDuration(200)
+									.setStartDelay(750)
+									.setInterpolator(ALPHA_OUT)
+									.withEndAction(new Runnable() {
+										@Override
+										public void run() {
+											mExodusLabel.setVisibility(View.GONE);
+											animateStatusBarShow(mNotificationIconArea, animate);
+										}
+                            });
+                        }
+                    });
+                    mShowLabel = false;
+                } else {
+                    animateStatusBarShow(mNotificationIconArea, animate);
+				}
             }
         }
 
@@ -3606,6 +3635,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
             else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 mScreenOn = false;
+                mShowLabel = true;
                 notifyNavigationBarScreenOn(false);
                 notifyHeadsUpScreenOn(false);
                 finishBarAnimations();
