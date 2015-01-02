@@ -2094,6 +2094,7 @@
     <!-- DISGUSTING HACK TO FIX MULTIPLE BUILDS -->
     <bool name="config_enableTorch">true</bool>
     <bool name="config_stylusGestures">false</bool>
+
     <integer name="config_panelAutoBrightnessValue">1</integer>
     <bool name="config_enableScreenrecordChord">false</bool>
 
