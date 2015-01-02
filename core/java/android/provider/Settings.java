@@ -2848,6 +2848,12 @@ public final class Settings {
         public static final String WIFI_NETWORK_NOTIFICATIONS = "wifi_network_notifications";
 
         /**
+         * Custom carrier label
+         * @hide
+         */
+        public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
+
+        /**
          * Whether to play sounds when the keyguard is shown and dismissed.
          * @hide
          */

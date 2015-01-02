@@ -174,6 +174,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
     private Locale mLocale = null;
     private Locale mLastLocale = null;
 
+    protected String mCustomLabel;
+
     // our ui
     protected Context mContext;
     ArrayList<ImageView> mPhoneSignalIconViews = new ArrayList<ImageView>();
@@ -259,6 +261,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
         // broadcasts
         IntentFilter filter = new IntentFilter();
         filter.addAction("cm.UPDATE_WIFI_NOTIFICATION_PREFERENCE");
+        filter.addAction(Intent.CARRIER_LABEL_CHANGED);
         filter.addAction(Intent.ACTION_BOOT_COMPLETED);
         filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -631,7 +634,15 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 action.equals(WimaxManagerConstants.WIMAX_NETWORK_STATE_CHANGED_ACTION)) {
             updateWimaxState(intent);
             refreshViews();
-        }
+        } else if (action.equals(Intent.CARRIER_LABEL_CHANGED)) {
+			String customLabel = Settings.System.getString(
+			        mContext.getContentResolver(), Settings.System.CUSTOM_CARRIER_LABEL);
+
+			if (customLabel != null && customLabel.length() > 0) {
+                mNetworkName = customLabel;
+			}
+			refreshViews();
+		}
     }
 
 
@@ -1508,6 +1519,12 @@ public class NetworkControllerImpl extends BroadcastReceiver
             mPhoneSignalIconId = mDataSignalIconId = mDataTypeIconId = mQSDataTypeIconId = 0;
             mQSPhoneSignalIconId = 0;
         }
+
+        if (customLabel != null && customLabel.length() > 0) {
+            combinedLabel = mCustomLabel;
+            mobileLabel = mCustomLabel;
+            wifiLabel = mCustomLabel;
+		}
 
         if (DEBUG) {
             Log.d(TAG, "refreshViews connected={"

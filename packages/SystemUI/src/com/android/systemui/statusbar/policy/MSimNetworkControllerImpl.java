@@ -26,7 +26,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -446,7 +445,11 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
             updateTelephonySignalStrength(phoneId);
             updateDataNetType(phoneId);
             refreshViews(phoneId);
-        }
+        } else if (action.equals(Intent.CARRIER_LABEL_CHANGED)) {
+			mCustomLabel = Settings.System.getString(
+			        mContext.getContentResolver(), Settings.System.CUSTOM_CARRIER_LABEL);
+			refreshViews(phoneId);
+		}
     }
 
     public void addSubsLabelView(TextView v) {
@@ -1230,6 +1233,12 @@ public class MSimNetworkControllerImpl extends NetworkControllerImpl {
             mMSimPhoneSignalIconId[phoneId] = mMSimDataSignalIconId[phoneId]
                 = mMSimDataTypeIconId[phoneId] = 0;
         }
+
+        if (customLabel != null && customLabel.length() > 0) {
+            combinedLabel = mCustomLabel;
+            mobileLabel = mCustomLabel;
+            wifiLabel = mCustomLabel;
+		}
 
         if (DEBUG) {
             Slog.d(TAG, "refreshViews connected={"

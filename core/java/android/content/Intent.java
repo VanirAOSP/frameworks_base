@@ -1609,6 +1609,11 @@ public class Intent implements Parcelable, Cloneable {
      */
     public static final String UPDATE_POWER_MENU = "android.intent.action.UPDATE_POWER_MENU";
     /**
+     * Broadcast action to update custom carrier label
+     * @hide
+     */
+    public static final String CARRIER_LABEL_CHANGED = "android.intent.action.CARRIER_LABEL_CHANGED";
+    /**
      * Broadcast Action: Trigger the download and eventual installation
      * of a package.
      * <p>Input: {@link #getData} is the URI of the package file to download.
