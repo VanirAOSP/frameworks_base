@@ -602,7 +602,11 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         builder.appendPath("time");
         ContentUris.appendId(builder, System.currentTimeMillis());
         Intent intent = new Intent(Intent.ACTION_VIEW).setData(builder.build());
-        mActivityStarter.startActivity(intent, true /* dismissShade */);
+        try {
+            mActivityStarter.startActivity(intent, true /* dismissShade */);
+        } catch (Exception e) {
+			// Install a calendar FFS
+		}
     }
 
     private void startForecastActivity() {
