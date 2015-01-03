@@ -76,7 +76,7 @@ public class MediaFocusControl implements OnFinished {
     private final PowerManager.WakeLock mMediaEventWakeLock;
     private final MediaEventHandler mEventHandler;
     private final Context mContext;
-    private final ContentResolver mContentResolver;
+    private static ContentResolver mContentResolver;
     private final AudioService.VolumeController mVolumeController;
     private final AppOpsManager mAppOps;
     private final KeyguardManager mKeyguardManager;
