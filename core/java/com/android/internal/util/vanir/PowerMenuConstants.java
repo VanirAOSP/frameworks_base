@@ -25,6 +25,8 @@ public class PowerMenuConstants {
     public static final String GLOBAL_ACTION_KEY_SILENT = "silent";
     public static final String GLOBAL_ACTION_KEY_USERS = "users";
     public static final String GLOBAL_ACTION_KEY_SETTINGS = "settings";
+    public static final String GLOBAL_ACTION_KEY_SCREENSHOT = "screenshot";
+    public static final String GLOBAL_ACTION_KEY_SCREENRECORD = "screenrecord";
     public static final String GLOBAL_ACTION_KEY_LOCKDOWN = "lockdown";
     public static final String GLOBAL_ACTION_KEY_PROFILE = "profile";
     public static final String GLOBAL_ACTION_KEY_IMMERSIVE = "immersive";
@@ -36,6 +38,8 @@ public class PowerMenuConstants {
         GLOBAL_ACTION_KEY_BUGREPORT,
         GLOBAL_ACTION_KEY_USERS,
         GLOBAL_ACTION_KEY_SETTINGS,
+        GLOBAL_ACTION_KEY_SCREENSHOT,
+        GLOBAL_ACTION_KEY_SCREENRECORD,
         GLOBAL_ACTION_KEY_LOCKDOWN,
         GLOBAL_ACTION_KEY_PROFILE,
         GLOBAL_ACTION_KEY_IMMERSIVE,
