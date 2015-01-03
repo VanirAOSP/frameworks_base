@@ -35,6 +35,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -46,6 +47,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.WindowManagerGlobal;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -120,10 +122,12 @@ public class NavigationBarView extends LinearLayout {
 
     // Navigation bar customizations
     final boolean mTablet = isTablet(mContext);
+    private boolean mNeedsNav;
     private boolean mLegacyMenu;
     private boolean mImeLayout;
     private int mLongPressTimeout = LONGPRESS_TIMEOUT;
     private String mIMEKeyLayout;
+    private String mDefaultLayout;
     private boolean showingIME;
     private int mButtonLayouts;
     private int mCurrentLayout = 0; //the first one
@@ -247,6 +251,11 @@ public class NavigationBarView extends LinearLayout {
         mMenuButtonWidth = res.getDimensionPixelSize(R.dimen.navigation_menu_key_width);
         mLayoutChangerWidth = res.getDimensionPixelSize(R.dimen.navigation_layout_changer_width);
 
+        try {
+            mNeedsNav = WindowManagerGlobal.getWindowManagerService().needsNavigationBar();
+        } catch (RemoteException ex) {
+        }
+
         mLegacyMenu = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_SIDEKEYS, 1) == 1;
         mImeLayout = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_ARROWS, 0) == 1;
         mButtonLayouts = Settings.System.getInt(cr, Settings.System.NAVIGATION_BAR_ALTERNATE_LAYOUTS, 1);
@@ -255,6 +264,7 @@ public class NavigationBarView extends LinearLayout {
         if (mButtonLayouts == 1)
             mCurrentLayout = 0; //1;
         mIMEKeyLayout = NavbarConstants.defaultIMEKeyLayout(mContext);
+        mDefaultLayout = NavbarConstants.defaultNavbarLayout(mContext);
         mLongPressTimeout = Settings.System.getInt(cr,
                 Settings.System.SOFTKEY_LONG_PRESS_CONFIGURATION, LONGPRESS_TIMEOUT);
 
@@ -363,6 +373,19 @@ public class NavigationBarView extends LinearLayout {
         if (!force && hints == mNavigationIconHints) return;
         showingIME = (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0;
 
+        if (!mShowingImeLayout && showingIME && mNeedsNav
+                && ((mButtonLayouts > 1 && mImeLayout) || mButtonLayouts == 1)
+                && getButtonView(ACTION_BACK) == null
+                && getButtonView(ACTION_HOME) == null) {
+			mHandler.removeCallbacks(mGotStuckLayoutChange);
+            mHandler.post(mGotStuckLayoutChange);
+
+			mNavigationIconHints = hints;
+			setMenuVisibility(mShowMenu, true);
+            setDisabledFlags(mDisabledFlags, true);
+            return;
+		}
+
         if ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0 && !showingIME) {
             mTransitionListener.onBackAltCleared();
         }
@@ -394,20 +417,20 @@ public class NavigationBarView extends LinearLayout {
                     setLayoutChangerType(getButtonView(ACTION_MENU), CHANGER_RIGHT_SIDE);
                 }
             }
-            if (!showingIME) notifyLayoutChange(0);
-        }
-
-        if (getButtonView(ACTION_BACK) != null) {
-/*          comment this out until backbuttondrawable is properly sizing images
-            ((KeyButtonView) getButtonView(ACTION_BACK)).setImageDrawable(null);
-            ((KeyButtonView) getButtonView(ACTION_BACK)).setImageDrawable(mVertical ? mBackLandIcon : mBackIcon);
-            mBackLandIcon.setImeVisible(showingIME);
-            mBackIcon.setImeVisible(showingIME);
-*/          if (showingIME) {
-                ((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
-            } else {
-                ((KeyButtonView) getButtonView(ACTION_BACK)).setImage();
-            }
+            if (!showingIME) {
+				notifyLayoutChange(0);
+			} else {
+				if (getButtonView(ACTION_BACK) != null)
+				        ((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
+			}
+        } else {
+			if (getButtonView(ACTION_BACK) != null) {
+				if (showingIME) {
+					((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
+				} else {
+					((KeyButtonView) getButtonView(ACTION_BACK)).setImage();
+				}
+			}
         }
 
         setMenuVisibility(mShowMenu, true);
@@ -447,6 +470,15 @@ public class NavigationBarView extends LinearLayout {
         @Override
         public void run() {
             setupNavigationButtons(getButtonsArray(mIMEKeyLayout.split("\\|")));
+        }
+    };
+
+    final Runnable mGotStuckLayoutChange = new Runnable() {
+        @Override
+        public void run() {
+            setupNavigationButtons(getButtonsArray(mDefaultLayout.split("\\|")));
+            if (getButtonView(ACTION_BACK) != null)
+                    ((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
         }
     };
 
@@ -673,9 +705,7 @@ public class NavigationBarView extends LinearLayout {
                             mContext.getResources().getString(R.string.def_navbar_layout_warning),
                             200).show();
                 }
-
-                String defaultLayout = NavbarConstants.defaultNavbarLayout(mContext);
-                mAllButtonContainers.add(getButtonsArray(defaultLayout.split("\\|")));
+                mAllButtonContainers.add(getButtonsArray(mDefaultLayout.split("\\|")));
             } else {
                 mAllButtonContainers.add(getButtonsArray(mButtonContainerStrings[j].split("\\|")));
             }
