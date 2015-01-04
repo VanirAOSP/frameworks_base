@@ -336,14 +336,14 @@ public class NavigationBarView extends LinearLayout {
 
     /* Views to return for for PhoneStatusBar */
     public View getHomeButton() {
-		return getButtonView(ACTION_HOME);
-	}
+        return getButtonView(ACTION_HOME);
+    }
     public View getRecentsButton() {
-		return getButtonView(ACTION_RECENTS);
-	}
+        return getButtonView(ACTION_RECENTS);
+    }
     public View getBackButton() {
-		return getButtonView(ACTION_BACK);
-	}
+        return getButtonView(ACTION_BACK);
+    }
 
     public View getButtonView(String constant) {
         return mCurrentView.findViewWithTag(constant);
@@ -377,14 +377,14 @@ public class NavigationBarView extends LinearLayout {
                 && ((mButtonLayouts > 1 && mImeLayout) || mButtonLayouts == 1)
                 && getButtonView(ACTION_BACK) == null
                 && getButtonView(ACTION_HOME) == null) {
-			mHandler.removeCallbacks(mGotStuckLayoutChange);
+            mHandler.removeCallbacks(mGotStuckLayoutChange);
             mHandler.post(mGotStuckLayoutChange);
 
-			mNavigationIconHints = hints;
-			setMenuVisibility(mShowMenu, true);
+            mNavigationIconHints = hints;
+            setMenuVisibility(mShowMenu, true);
             setDisabledFlags(mDisabledFlags, true);
             return;
-		}
+        }
 
         if ((mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0 && !showingIME) {
             mTransitionListener.onBackAltCleared();
@@ -418,19 +418,19 @@ public class NavigationBarView extends LinearLayout {
                 }
             }
             if (!showingIME) {
-				notifyLayoutChange(0);
-			} else {
-				if (getButtonView(ACTION_BACK) != null)
-				        ((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
-			}
+                notifyLayoutChange(0);
+            } else {
+                if (getButtonView(ACTION_BACK) != null)
+                        ((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
+            }
         } else {
-			if (getButtonView(ACTION_BACK) != null) {
-				if (showingIME) {
-					((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
-				} else {
-					((KeyButtonView) getButtonView(ACTION_BACK)).setImage();
-				}
-			}
+            if (getButtonView(ACTION_BACK) != null) {
+                if (showingIME) {
+                    ((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
+                } else {
+                    ((KeyButtonView) getButtonView(ACTION_BACK)).setImage();
+                }
+            }
         }
 
         setMenuVisibility(mShowMenu, true);
@@ -805,10 +805,10 @@ public class NavigationBarView extends LinearLayout {
                 button.setLayoutParams(getLayoutParams(landscape, mButtonWidth, mTablet ? 1f : 0.5f));
 
                 if (!button.mHasBlankSingleAction) {
-					addButton(navButtons, button, landscape);
+                    addButton(navButtons, button, landscape);
                     addLightsOutButton(lightsOut, button, landscape, false);
                 } else {
-					addSeparator(navButtons, landscape, (int) mButtonWidth, mTablet ? 1f : 0.5f);
+                    addSeparator(navButtons, landscape, (int) mButtonWidth, mTablet ? 1f : 0.5f);
                     addSeparator(lightsOut, landscape, (int) mButtonWidth, mTablet ? 1f : 0.5f);
                 }
             }
