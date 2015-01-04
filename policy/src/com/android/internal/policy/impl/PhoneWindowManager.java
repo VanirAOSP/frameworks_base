@@ -627,11 +627,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             } else if (action.equals("com.android.vanir.RECORD_SCREEN")) {
                 mHandler.removeCallbacks(mScreenRecordRunnable);
                 mHandler.post(new Runnable() {
-					public void run() {
-					    performScreenRecord();
-					}
-				});
-			}
+                    public void run() {
+                        performScreenRecord();
+                    }
+                });
+            }
         }
 
         protected void register() {
@@ -5210,8 +5210,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         if (interactive && !mVolumeUpKeyTriggered
                                 && (event.getFlags() & KeyEvent.FLAG_FALLBACK) == 0) {
                             mVolumeUpKeyTriggered = true;
- 			    mVolumeUpKeyTime = event.getDownTime();
- 			    mVolumeUpKeyConsumedByScreenRecordChord = false;
+                            mVolumeUpKeyTime = event.getDownTime();
+                            mVolumeUpKeyConsumedByScreenRecordChord = false;
                             cancelPendingPowerKeyAction();
                             interceptScreenRecordChord();
                         }
