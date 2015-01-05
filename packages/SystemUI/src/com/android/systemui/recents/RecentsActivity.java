@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.util.Pair;
@@ -180,6 +181,24 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
         }
     });
 
+    /**
+     * Enable/disable recents search widget.
+     */
+    private boolean isRecentsSearchbarEnabled() {
+        boolean recentsSearchbarEnabled = Settings.System.getInt(
+            getContentResolver(), Settings.System.RECENTS_SEARCH_BAR, 1) == 1;
+
+        // Update search bar space height
+        Resources res = getResources();
+        if (!recentsSearchbarEnabled) {
+            RecentsConfiguration.searchBarSpaceHeightPx = 0;
+        } else {
+            RecentsConfiguration.searchBarSpaceHeightPx =
+                res.getDimensionPixelSize(R.dimen.recents_search_bar_space_height);
+        }
+        return recentsSearchbarEnabled;
+    }
+
     /** Updates the set of recent tasks */
     void updateRecentsTasks(Intent launchIntent) {
         // Update the configuration based on the launch intent
@@ -250,7 +269,11 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
             }
             findViewById(R.id.clear_recents).setVisibility(View.VISIBLE);
             if (mRecentsView.hasSearchBar()) {
+<<<<<<< HEAD
                 mRecentsView.setSearchBarVisibility(View.VISIBLE);
+=======
+                mRecentsView.setSearchBarVisibility(isRecentsSearchbarEnabled() ? View.VISIBLE : View.GONE);
+>>>>>>> 4695929... SystemUI: clean up hiding search bar
             } else {
                 addSearchBarAppWidgetView();
             }
