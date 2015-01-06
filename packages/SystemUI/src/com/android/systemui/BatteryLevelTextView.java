@@ -39,6 +39,9 @@ public class BatteryLevelTextView extends TextView implements
     private BatteryController mBatteryController;
     private boolean mBatteryCharging;
     private boolean mShow;
+    private boolean mForceShow;
+    private boolean mAttached;
+    private int mRequestedVisibility;
 
     private ContentObserver mObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange, Uri uri) {
@@ -48,39 +51,26 @@ public class BatteryLevelTextView extends TextView implements
 
     public BatteryLevelTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mRequestedVisibility = getVisibility();
         loadShowBatteryTextSetting();
     }
 
-    private void loadShowBatteryTextSetting() {
-        ContentResolver resolver = getContext().getContentResolver();
-        int currentUserId = ActivityManager.getCurrentUser();
-
-        boolean showInsidePercent = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0, currentUserId) == 1;
-
-        boolean showNextPercent = ((mBatteryCharging && showInsidePercent) ||
-                Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0, currentUserId) == 2);
-
-        int batteryStyle = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_BATTERY_STYLE, 0, currentUserId);
-        switch (batteryStyle) {
-            case 4: //BATTERY_METER_GONE
-                showNextPercent = false;
-                break;
-            case 6: //BATTERY_METER_TEXT
-                showNextPercent = true;
-                break;
-            default:
-                break;
-        }
-
-        setShowPercent(showNextPercent);
+    public void setForceShown(boolean forceShow) {
+        mForceShow = forceShow;
+        updateVisibility();
     }
 
-    public void setShowPercent(boolean show) {
-        mShow = show;
-        setVisibility(mShow ? View.VISIBLE : View.GONE);
+    public void setBatteryController(BatteryController batteryController) {
+        mBatteryController = batteryController;
+        if (mAttached) {
+            mBatteryController.addStateChangedCallback(this);
+        }
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        mRequestedVisibility = visibility;
+        updateVisibility();
     }
 
     @Override
@@ -102,11 +92,6 @@ public class BatteryLevelTextView extends TextView implements
         }
     }
 
-    public void setBatteryController(BatteryController batteryController) {
-        mBatteryController = batteryController;
-        mBatteryController.addStateChangedCallback(this);
-    }
-
     @Override
     public void onPowerSaveChanged() {
         // Not used
@@ -116,18 +101,57 @@ public class BatteryLevelTextView extends TextView implements
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+        if (mBatteryController != null) {
+            mBatteryController.addStateChangedCallback(this);
+        }
         getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
                 STATUS_BAR_BATTERY_STYLE), false, mObserver);
         getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
                 STATUS_BAR_SHOW_BATTERY_PERCENT), false, mObserver);
+        mAttached = true;
     }
 
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mAttached = false;
+        getContext().getContentResolver().unregisterContentObserver(mObserver);
 
         if (mBatteryController != null) {
             mBatteryController.removeStateChangedCallback(this);
         }
+    }
+
+    private void updateVisibility() {
+        if (mShow || mForceShow) {
+            super.setVisibility(mRequestedVisibility);
+        } else {
+            super.setVisibility(GONE);
+        }
+    }
+
+    private void loadShowBatteryTextSetting() {
+        ContentResolver resolver = getContext().getContentResolver();
+        int currentUserId = ActivityManager.getCurrentUser();
+        int mode = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0, currentUserId);
+
+        boolean showNextPercent = (mBatteryCharging && mode == 1) || mode == 2;
+        int batteryStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_BATTERY_STYLE, 0, currentUserId);
+
+        switch (batteryStyle) {
+            case 4: //BATTERY_METER_GONE
+                showNextPercent = false;
+                break;
+            case 6: //BATTERY_METER_TEXT
+                showNextPercent = true;
+                break;
+            default:
+                break;
+        }
+
+        mShow = showNextPercent;
+        updateVisibility();
     }
 }

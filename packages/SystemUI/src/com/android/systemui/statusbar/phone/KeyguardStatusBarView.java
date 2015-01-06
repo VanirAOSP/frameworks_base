@@ -48,6 +48,7 @@ public class KeyguardStatusBarView extends RelativeLayout
     private View mSystemIconsSuperContainer;
     private MultiUserSwitch mMultiUserSwitch;
     private ImageView mMultiUserAvatar;
+    private BatteryLevelTextView mBatteryLevel;
 
     private BatteryController mBatteryController;
     private KeyguardUserSwitcher mKeyguardUserSwitcher;
@@ -65,10 +66,12 @@ public class KeyguardStatusBarView extends RelativeLayout
         mSystemIconsSuperContainer = findViewById(R.id.system_icons_super_container);
         mMultiUserSwitch = (MultiUserSwitch) findViewById(R.id.multi_user_switch);
         mMultiUserAvatar = (ImageView) findViewById(R.id.multi_user_avatar);
+        mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
         loadDimens();
         mFastOutSlowInInterpolator = AnimationUtils.loadInterpolator(getContext(),
                 android.R.interpolator.fast_out_slow_in);
         updateUserSwitcher();
+        updateVisibilities();
     }
 
     private void loadDimens() {
@@ -85,6 +88,7 @@ public class KeyguardStatusBarView extends RelativeLayout
         } else if (mMultiUserSwitch.getParent() == this && mKeyguardUserSwitcherShowing) {
             removeView(mMultiUserSwitch);
         }
+        mBatteryLevel.setVisibility(View.VISIBLE);
     }
 
     private void updateSystemIconsLayoutParams() {
@@ -119,8 +123,7 @@ public class KeyguardStatusBarView extends RelativeLayout
     public void setBatteryController(BatteryController batteryController) {
         mBatteryController = batteryController;
         ((BatteryMeterView) findViewById(R.id.battery)).setBatteryController(batteryController);
-        ((BatteryLevelTextView) findViewById(R.id.battery_level_text))
-                .setBatteryController(batteryController);
+        mBatteryLevel.setBatteryController(batteryController);
     }
 
     public void setUserInfoController(UserInfoController userInfoController) {
