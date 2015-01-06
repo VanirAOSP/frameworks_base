@@ -36,6 +36,7 @@ import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.provider.Settings.Global;
+import android.provider.Settings.System;
 import android.telecom.TelecomManager;
 import android.util.Log;
 
@@ -81,6 +82,7 @@ public class PhoneStatusBarPolicy implements Callback {
     private final UserInfoController mUserInfoController;
     private boolean mAlarmIconVisible;
     private final SuController mSuController;
+    private boolean mSuIndicatorVisible;
 
     // Assume it's all good unless we hear otherwise.  We don't always seem
     // to get broadcasts that it *is* there.
@@ -185,6 +187,9 @@ public class PhoneStatusBarPolicy implements Callback {
         mService.setIcon(SLOT_SU, R.drawable.stat_sys_su, 0, null);
         mService.setIconVisibility(SLOT_SU, false);
         mSuController.addCallback(mSuCallback);
+        mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.SHOW_SU_INDICATOR), false, mSuIconObserver);
+
 
         // managed profile
         mService.setIcon(SLOT_MANAGED_PROFILE, R.drawable.stat_sys_managed_profile_status, 0,
@@ -206,7 +211,21 @@ public class PhoneStatusBarPolicy implements Callback {
         }
     };
 
-    public void setZenMode(int zen) {
+    private ContentObserver mSuIconObserver = new ContentObserver(null) {
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            mSuIndicatorVisible = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.SHOW_SU_INDICATOR, 1) == 1;
+            updateSu();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            onChange(selfChange, null);
+        }
+   };
+
+   public void setZenMode(int zen) {
         mZen = zen;
         updateVolumeZen();
     }
@@ -424,7 +443,7 @@ public class PhoneStatusBarPolicy implements Callback {
     };
 
     private void updateSu() {
-        mService.setIconVisibility(SLOT_SU, mSuController.hasActiveSessions());
+        mService.setIconVisibility(SLOT_SU, mSuController.hasActiveSessions() && mSuIndicatorVisible);
     }
 
     private final CastController.Callback mCastCallback = new CastController.Callback() {
