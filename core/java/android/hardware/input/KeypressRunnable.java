@@ -16,7 +16,6 @@
 
 package android.hardware.input;
 
-import android.os.Handler;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.KeyCharacterMap;
@@ -29,26 +28,32 @@ import java.util.ArrayList;
  * used internally by InputManager
  * @hide
  */
-public final class KeypressRunnable implements Runnable
+public class KeypressRunnable implements Runnable
 {
     private final int keyCode;
     private final int keyFlags;
-    private int keyAction = KeyEvent.ACTION_DOWN;
+    private KeyEvent keyEvent;
     public KeypressRunnable(final int code, final int flags) {
         keyCode = code;
         keyFlags = flags;
     }
 
+    @Override
     public void run() {
-        long now = SystemClock.uptimeMillis();
-
-        final KeyEvent event = new KeyEvent(now, now, keyAction,
+        final long now = SystemClock.uptimeMillis();
+        if (keyEvent == null) {
+            // null ==> down
+            keyEvent = new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
                 keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
                 keyFlags, InputDevice.SOURCE_KEYBOARD);
-
-        InputManager.getInstance().injectInputEvent(event, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
-
-        if (keyAction == KeyEvent.ACTION_DOWN)
-            keyAction = KeyEvent.ACTION_UP;
+            InputManager.getInstance().injectInputEvent(keyEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+        } else {
+            // not null ==> up, then reset to null
+            InputManager.getInstance().injectInputEvent(KeyEvent.changeAction(
+                    KeyEvent.changeTimeRepeat(
+                            keyEvent, now, keyEvent.getRepeatCount()),
+                    KeyEvent.ACTION_UP), InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+            keyEvent = null;
+        }
     }
 }
