@@ -125,7 +125,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     // Power menu customizations
     String mActions;
     boolean mProfilesEnabled;
-    boolean mImmersiveAllowed;
 
     /**
      * @param context everything needs a context :(
@@ -302,9 +301,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
             } else if (GLOBAL_ACTION_KEY_USERS.equals(actionKey)) {
                 addUsersToMenu(mItems);
-            } else if (GLOBAL_ACTION_KEY_IMMERSIVE.equals(actionKey)) {
-                if (!mImmersiveAllowed) continue;
-                mItems.add(getImmersiveDesktopAction());
             } else if (GLOBAL_ACTION_KEY_SETTINGS.equals(actionKey)) {
                 mItems.add(getSettingsAction());
             } else if (GLOBAL_ACTION_KEY_LOCKDOWN.equals(actionKey)) {
@@ -594,31 +590,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             @Override
             public boolean showBeforeProvisioning() {
                 return true;
-            }
-        };
-    }
-
-    private Action getImmersiveDesktopAction() {
-        return new SinglePressAction(com.android.internal.R.drawable.ic_lock_immersive_mode_on,
-                R.string.global_actions_toggle_global_immersive_mode) {
-
-            @Override
-            public void onPress() {
-                 boolean immersiveState = Settings.System.getIntForUser(mContext.getContentResolver(),
-                         Settings.System.GLOBAL_IMMERSIVE_MODE_STATE, 0, UserHandle.USER_CURRENT) == 1;
-                 Settings.System.putInt(mContext.getContentResolver(),
-                         Settings.System.GLOBAL_IMMERSIVE_MODE_STATE,
-                         immersiveState ? 0 : 1);
-            }
-
-            @Override
-            public boolean showDuringKeyguard() {
-                return true;
-            }
-
-            @Override
-            public boolean showBeforeProvisioning() {
-                return false;
             }
         };
     }
@@ -1186,8 +1157,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.Global.POWER_MENU_ACTIONS, UserHandle.USER_CURRENT);
         mProfilesEnabled = Settings.System.getInt(resolver,
                 Settings.System.SYSTEM_PROFILES_ENABLED, 1) != 0;
-        mImmersiveAllowed = Settings.System.getInt(resolver,
-                Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 2) != 0;
     }
 
     PhoneStateListener mPhoneStateListener = new PhoneStateListener() {

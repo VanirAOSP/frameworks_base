@@ -27,7 +27,6 @@ public class PowerMenuConstants {
     public static final String GLOBAL_ACTION_KEY_SETTINGS = "settings";
     public static final String GLOBAL_ACTION_KEY_LOCKDOWN = "lockdown";
     public static final String GLOBAL_ACTION_KEY_PROFILE = "profile";
-    public static final String GLOBAL_ACTION_KEY_IMMERSIVE = "immersive";
 
     private static String[] ALL_ACTIONS = {
         GLOBAL_ACTION_KEY_POWER,
@@ -38,7 +37,6 @@ public class PowerMenuConstants {
         GLOBAL_ACTION_KEY_SETTINGS,
         GLOBAL_ACTION_KEY_LOCKDOWN,
         GLOBAL_ACTION_KEY_PROFILE,
-        GLOBAL_ACTION_KEY_IMMERSIVE,
         GLOBAL_ACTION_KEY_SILENT
     };
 
