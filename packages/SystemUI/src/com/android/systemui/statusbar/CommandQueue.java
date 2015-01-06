@@ -151,12 +151,12 @@ public class CommandQueue extends IStatusBar.Stub {
         }
     }
 
-	public void animateNotificationsOrSettingsPanel() {
-		synchronized (mList) {
-		mHandler.removeMessages(MSG_ANIMATE_PANEL_FROM_NAVBAR);
-		mHandler.sendEmptyMessage(MSG_ANIMATE_PANEL_FROM_NAVBAR);
-		}
-	}
+    public void animateNotificationsOrSettingsPanel() {
+        synchronized (mList) {
+        mHandler.removeMessages(MSG_ANIMATE_PANEL_FROM_NAVBAR);
+        mHandler.sendEmptyMessage(MSG_ANIMATE_PANEL_FROM_NAVBAR);
+        }
+    }
 
     public void setSystemUiVisibility(int vis, int mask) {
         synchronized (mList) {

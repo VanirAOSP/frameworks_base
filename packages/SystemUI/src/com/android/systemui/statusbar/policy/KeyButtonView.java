@@ -97,9 +97,9 @@ public class KeyButtonView extends ImageView {
     public boolean mHasBlankSingleAction = false, mHasDoubleAction, mHasLongAction;
 
     public static PowerManager getPowerManagerService(Context context) {
-		if (mPm == null) mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-		return mPm;
-	}
+        if (mPm == null) mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        return mPm;
+    }
 
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
@@ -135,7 +135,7 @@ public class KeyButtonView extends ImageView {
         mPm = getPowerManagerService(context);
     }
 
-	public void setButtonActions(KeyButtonInfo actions) {
+    public void setButtonActions(KeyButtonInfo actions) {
         this.mActions = actions;
 
         setTag(mActions.singleAction); // should be OK even if it's null
@@ -162,7 +162,7 @@ public class KeyButtonView extends ImageView {
         mLongPressTimeout = lpTimeout;
     }
 
-	/* @hide */
+    /* @hide */
     public void setImage() {
         setImage(getResources());
     }
@@ -261,7 +261,7 @@ public class KeyButtonView extends ImageView {
                 break;
             case MotionEvent.ACTION_CANCEL:
                 setPressed(false);
-				if (mIsDPadAction) {
+                if (mIsDPadAction) {
                     mShouldClick = true;
                     removeCallbacks(mDPadKeyRepeater);
                 }
@@ -351,9 +351,9 @@ public class KeyButtonView extends ImageView {
         mAudioManager.playSoundEffect(soundConstant, ActivityManager.getCurrentUser());
     };
 
-	public void sendEvent(int action, int flags) {
-		sendEvent(action, flags, SystemClock.uptimeMillis());
-	}
+    public void sendEvent(int action, int flags) {
+        sendEvent(action, flags, SystemClock.uptimeMillis());
+    }
 
     void sendEvent(int action, int flags, long when) {
         final int repeatCount = (flags & KeyEvent.FLAG_LONG_PRESS) != 0 ? 1 : 0;
