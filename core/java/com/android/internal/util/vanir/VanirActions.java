@@ -89,15 +89,15 @@ public class VanirActions {
                 }
                 break;
 
-			case ACTION_RECENTS:
-				try {
-					IStatusBarService.Stub.asInterface(
-							ServiceManager.getService(mContext.STATUS_BAR_SERVICE))
-							.toggleRecentApps();
-				} catch (RemoteException e) {
-					Log.e(TAG, "RECENTS ACTION FAILED");
-				}
-				break;
+            case ACTION_RECENTS:
+                try {
+                    IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService(mContext.STATUS_BAR_SERVICE))
+                            .toggleRecentApps();
+                } catch (RemoteException e) {
+                    Log.e(TAG, "RECENTS ACTION FAILED");
+                }
+                break;
 
             case ACTION_BACK:
                 InputManager.triggerVirtualKeypress(KeyEvent.KEYCODE_BACK, STANDARD_FLAGS);
@@ -173,8 +173,8 @@ public class VanirActions {
                 }});
                 break;
 
-			case ACTION_IME_LAYOUT:
-				try {
+            case ACTION_IME_LAYOUT:
+                try {
                     IStatusBarService.Stub.asInterface(
                             ServiceManager.getService(mContext.STATUS_BAR_SERVICE)).notifyLayoutChange(LAYOUT_IME);
                 } catch (RemoteException e) {
