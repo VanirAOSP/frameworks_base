@@ -60,9 +60,6 @@ public final class InputManager {
 
     private static InputManager sInstance;
 
-    private static Handler mHandler;
-    private static Thread mHandlerThread;
-
     private final IInputManager mIm;
 
     // Guarded by mInputDevicesLock
@@ -191,22 +188,15 @@ public final class InputManager {
      * @hide
      */
     public static void triggerVirtualKeypress(int keyCode, int flags) {
-        final KeypressRunnable kr = new KeypressRunnable(keyCode, flags);
-        if (mHandlerThread == null) {
-            mHandlerThread = new Thread() {
-                public void run() {
-                    Looper.prepare();
-                    mHandler = new Handler();
-                    mHandler.post(kr);
-                    mHandler.postDelayed(kr, 10);
-                    Looper.loop();
-                }
-            };
-            mHandlerThread.start();
-        } else {
-            mHandler.post(kr);
-            mHandler.postDelayed(kr, 10);
-        }
+
+        final long now = SystemClock.uptimeMillis();
+        final InputManager im = InputManager.getInstance();
+        final KeyEvent down = KeyEvent(now, now, KeyEvent.ACTION_DOWN,
+                keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                flags, InputDevice.SOURCE_KEYBOARD);
+        final KeyEvent up = KeyEvent.changeAction(KeyEvent.changeTimeRepeat(down, now+1, 0), KeyEvent.ACTION_UP);
+        im.injectInputEvent(down, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+        im.injectInputEvent(up, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }
 
     /**
