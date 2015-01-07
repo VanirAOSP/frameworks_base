@@ -1962,6 +1962,12 @@ public final class Settings {
         public static final String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED =
             "lock_pattern_tactile_feedback_enabled";
 
+        /**
+         * Whether to scramble a pin unlock layout
+         * @hide
+         */
+        public static final String LOCKSCREEN_PIN_SCRAMBLE_LAYOUT =
+                "lockscreen_scramble_pin_layout";
 
         /**
          * A formatted string of the next alarm that is set, or the empty string
@@ -3206,6 +3212,18 @@ public final class Settings {
          * @hide
          */
         public static final String MENU_WAKE_SCREEN = "menu_wake_screen";
+
+        /**
+         * Whether to wake the screen with the assist key, the value is boolean.
+         * @hide
+         */
+        public static final String ASSIST_WAKE_SCREEN = "assist_wake_screen";
+
+        /**
+         * Whether to wake the screen with the app switch key, the value is boolean.
+         * @hide
+         */
+        public static final String APP_SWITCH_WAKE_SCREEN = "app_switch_wake_screen";
 
         /**
          * Whether to wake the screen with the volume keys, the value is boolean.
