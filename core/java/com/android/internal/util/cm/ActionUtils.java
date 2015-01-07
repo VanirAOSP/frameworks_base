@@ -1,8 +1,6 @@
 package com.android.internal.util.cm;
 
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.app.ActivityManagerNative;
 import android.app.ActivityOptions;
 import android.app.IActivityManager;
@@ -14,6 +12,10 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.util.Log;
+
+import android.view.HapticFeedbackConstants;
+import android.widget.Toast;
+import com.android.internal.R;
 
 import java.util.List;
 
@@ -41,19 +43,42 @@ public class ActionUtils {
 
     private static boolean killForegroundAppInternal(Context context, int userId)
             throws RemoteException {
-        String defaultHomePackage = resolveCurrentLauncherPackage(context, userId);
+        try {
+            final Intent intent = new Intent(Intent.ACTION_MAIN);
+            String defaultHomePackage = "com.android.launcher";
+            intent.addCategory(Intent.CATEGORY_HOME);
+            final ResolveInfo res = context.getPackageManager().resolveActivity(intent, 0);
 
-        final ActivityManager am = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
+            if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
+                defaultHomePackage = res.activityInfo.packageName;
+            }
 
-        RunningTaskInfo info = am.getRunningTasks(1).get(0);
-
-        if (info.topActivity.getPackageName().equals(SYSTEMUI_PACKAGE)) return false;
-
-        if (!defaultHomePackage.equals(info.topActivity.getPackageName())) {
-                am.removeTask(info.id, ActivityManager.REMOVE_TASK_KILL_PROCESS);
-                return true;
+            IActivityManager am = ActivityManagerNative.getDefault();
+            List<ActivityManager.RunningAppProcessInfo> apps = am.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo appInfo : apps) {
+                int uid = appInfo.uid;
+                // Make sure it's a foreground user application (not system,
+                // root, phone, etc.)
+                if (uid >= Process.FIRST_APPLICATION_UID && uid <= Process.LAST_APPLICATION_UID
+                        && appInfo.importance ==
+                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
+                        for (String pkg : appInfo.pkgList) {
+                            if (!pkg.equals("com.android.systemui")
+                                    && !pkg.equals(defaultHomePackage)) {
+                                am.forceStopPackage(pkg, UserHandle.USER_CURRENT);
+                                return true;
+                            }
+                        }
+                    } else {
+                        Process.killProcess(appInfo.pid);
+                        return true;
+                    }
+                }
+            }
+        } catch (RemoteException remoteException) {
+            // Do nothing; just let it go.
         }
-
         return false;
     }
 
@@ -87,7 +112,6 @@ public class ActionUtils {
                 com.android.internal.R.anim.last_app_out);
 
         if (DEBUG) Log.d(TAG, "switching to " + packageName);
-        sendCloseSystemWindows(context, null);
         am.moveTaskToFront(lastTask.id, ActivityManager.MOVE_TASK_NO_USER_ACTION, opts.toBundle());
 
         return true;
@@ -121,14 +145,5 @@ public class ActionUtils {
         final PackageManager pm = context.getPackageManager();
         final ResolveInfo launcherInfo = pm.resolveActivityAsUser(launcherIntent, 0, userId);
         return launcherInfo.activityInfo.packageName;
-    }
-
-    private static void sendCloseSystemWindows(Context context, String reason) {
-        if (ActivityManagerNative.isSystemReady()) {
-            try {
-                ActivityManagerNative.getDefault().closeSystemDialogs(reason);
-            } catch (RemoteException e) {
-            }
-        }
     }
 }
