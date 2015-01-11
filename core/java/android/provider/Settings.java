@@ -1970,13 +1970,6 @@ public final class Settings {
                 "lockscreen_scramble_pin_layout";
 
         /**
-         * Whether to use the custom quick unlock screen control
-         * @hide
-         */
-        public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL =
-                "lockscreen_quick_unlock_control";
-
-        /**
          * A formatted string of the next alarm that is set, or the empty string
          * if there is no alarm set.
          *
@@ -2033,6 +2026,12 @@ public final class Settings {
         public static final String SCREEN_BRIGHTNESS = "screen_brightness";
 
         /**
+         * Brightness adjustment sliders
+         * @hide
+         */
+        public static final String BRIGHTNESS_ADJUSTMENT = "brightness_adjustment";
+
+        /**
          * Control whether to enable automatic brightness mode.
          */
         public static final String SCREEN_BRIGHTNESS_MODE = "screen_brightness_mode";
@@ -2053,13 +2052,6 @@ public final class Settings {
          * SCREEN_BRIGHTNESS_MODE value for automatic mode.
          */
         public static final int SCREEN_BRIGHTNESS_MODE_AUTOMATIC = 1;
-
-        /**
-         * Whether to control brightness from status bar
-         *
-         * @hide
-         */
-        public static final String STATUS_BAR_BRIGHTNESS_CONTROL = "status_bar_brightness_control";
 
         /**
          * Whether to show the IME switcher in the status bar
