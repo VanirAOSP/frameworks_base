@@ -119,6 +119,18 @@ public class QSPanel extends ViewGroup {
         mDetailSettingsButton.setText(R.string.quick_settings_more_settings);
     }
 
+    public void updateBrightnessSlider(boolean show) {
+        ToggleSlider brightnessSlider = (ToggleSlider) findViewById(R.id.brightness_slider);
+        ImageView iconImage = (ImageView) findViewById(R.id.brightness_icon);
+        if (show) {
+            brightnessSlider.setVisibility(View.VISIBLE);
+            iconImage.setVisibility(View.VISIBLE);
+        } else {
+            brightnessSlider.setVisibility(View.GONE);
+            iconImage.setVisibility(View.GONE);
+        }
+    }
+
     public void setBrightnessMirror(BrightnessMirrorController c) {
         super.onFinishInflate();
         ToggleSlider brightnessSlider = (ToggleSlider) findViewById(R.id.brightness_slider);
