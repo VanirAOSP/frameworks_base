@@ -118,9 +118,6 @@ public class KeyguardPasswordView extends KeyguardAbsKeyInputView
 
         boolean imeOrDeleteButtonVisible = false;
 
-        final boolean quickUnlock = (Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, 0) == 1);
-
         mImm = (InputMethodManager) getContext().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
 

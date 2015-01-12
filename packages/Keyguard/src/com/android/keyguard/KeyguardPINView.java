@@ -29,8 +29,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.android.keyguard.PasswordTextView.QuickUnlockListener;
-
 /**
  * Displays a PIN pad for unlocking.
  */
@@ -82,9 +80,6 @@ public class KeyguardPINView extends KeyguardPinBasedInputView {
         mRow3 = (ViewGroup) findViewById(R.id.row3);
         mDivider = findViewById(R.id.divider);
 
-        boolean quickUnlock = (Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, 0) == 1);
-
         boolean scramblePin = (Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.LOCKSCREEN_PIN_SCRAMBLE_LAYOUT, 0) == 1);
 
@@ -110,16 +105,6 @@ public class KeyguardPINView extends KeyguardPinBasedInputView {
                 NumPadKey view = views.get(i);
                 view.setDigit(sNumbers.get(i));
             }
-        }
-
-        if (quickUnlock) {
-            mPasswordEntry.setQuickUnlockListener(new QuickUnlockListener() {
-                public void onValidateQuickUnlock(String password) {
-                    validateQuickUnlock(password);
-                }
-            });
-        } else {
-            mPasswordEntry.setQuickUnlockListener(null);
         }
     }
 
@@ -192,16 +177,5 @@ public class KeyguardPINView extends KeyguardPinBasedInputView {
     @Override
     public boolean hasOverlappingRendering() {
         return false;
-    }
-
-    private void validateQuickUnlock(String password) {
-        if (password != null) {
-            if (password.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT
-                    && mLockPatternUtils.checkPassword(password)) {
-                mCallback.reportUnlockAttempt(true);
-                mCallback.dismiss(true);
-                resetPasswordText(true);
-            }
-        }
     }
 }
