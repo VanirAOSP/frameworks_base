@@ -4846,7 +4846,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         try {
             ActivityManagerNative.getDefault().showBootMessage(
                     mContext.getResources().getString(messageRes,
-                            curr, total), true);
+                            curr, total, pkgname), true);
         } catch (RemoteException e) {
         }
 
