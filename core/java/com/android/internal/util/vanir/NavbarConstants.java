@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class NavbarConstants {
-    public static final int LAYOUT_IME = 666;
+    public static final int LAYOUT_IME = -1;
 
     public static final String ACTION_APP = "**app**";
     public static final String ACTION_BACK = "**back**";

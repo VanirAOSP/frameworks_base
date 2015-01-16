@@ -67,6 +67,7 @@ import com.android.systemui.statusbar.policy.LayoutChangerButtonView;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import android.util.SparseArray;
 
 public class NavigationBarView extends LinearLayout {
     final static boolean DEBUG = false;
@@ -126,16 +127,17 @@ public class NavigationBarView extends LinearLayout {
     private boolean mLegacyMenu;
     private boolean mImeLayout;
     private int mLongPressTimeout;
-    private String mIMEKeyLayout;
-    private String mDefaultLayout;
     private boolean showingIME;
     private int mButtonLayouts;
     private int mCurrentLayout = 0; //the first one
     private float mButtonWidth, mMenuButtonWidth, mLayoutChangerWidth;
-    private boolean mShowingImeLayout;
+
+    //for slightly de-derped layout handling
+    private int mNextLayoutIndex;
+    private int mDisplayingLayoutIndex;
 
     private String[] mButtonContainerStrings = new String[5];
-    ArrayList<ArrayList<KeyButtonInfo>> mAllButtonContainers = new ArrayList<ArrayList<KeyButtonInfo>>();
+    SparseArray<ArrayList<KeyButtonInfo>> mAllButtonContainers = new SparseArray<ArrayList<KeyButtonInfo>>();
 
     private static final String[] buttonSettings = new String[] {
         Settings.System.NAVIGATION_BAR_BUTTONS,
@@ -260,9 +262,7 @@ public class NavigationBarView extends LinearLayout {
         for(int i=0;i<mButtonLayouts;i++)
             mButtonContainerStrings[i] = Settings.System.getString(cr, buttonSettings[i]);
         if (mButtonLayouts == 1)
-            mCurrentLayout = 0; //1;
-        mIMEKeyLayout = NavbarConstants.defaultIMEKeyLayout(mContext);
-        mDefaultLayout = NavbarConstants.defaultNavbarLayout(mContext);
+            mCurrentLayout = 0; //1; //LOL
         mLongPressTimeout = Settings.System.getInt(cr,
                 Settings.System.SOFTKEY_LONG_PRESS_CONFIGURATION, ViewConfiguration.getLongPressTimeout());
 
@@ -391,7 +391,6 @@ public class NavigationBarView extends LinearLayout {
 
     @Override
     public void setLayoutDirection(int layoutDirection) {
-
         super.setLayoutDirection(layoutDirection);
     }
 
@@ -408,13 +407,10 @@ public class NavigationBarView extends LinearLayout {
         if (!force && hints == mNavigationIconHints) return;
         showingIME = (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0;
 
-        if (!mShowingImeLayout && showingIME && mNeedsNav
+        if (mDisplayingLayoutIndex != NavbarConstants.LAYOUT_IME && showingIME && mNeedsNav
                 && ((mButtonLayouts > 1 && mImeLayout) || mButtonLayouts == 1)
                 && getButtonView(ACTION_BACK) == null
                 && getButtonView(ACTION_HOME) == null) {
-            mHandler.removeCallbacks(mGotStuckLayoutChange);
-            mHandler.post(mGotStuckLayoutChange);
-
             mNavigationIconHints = hints;
             setMenuVisibility(mShowMenu, true);
             setDisabledFlags(mDisabledFlags, true);
@@ -486,41 +482,36 @@ public class NavigationBarView extends LinearLayout {
     }
 
     public void notifyLayoutChange(int direction) {
+        setNextLayout(direction);
         if (direction == NavbarConstants.LAYOUT_IME) {
-            if (!mShowingImeLayout) {
-                mHandler.post(mNotifyImeLayoutChange);
-                mShowingImeLayout = true;
+            if (mDisplayingLayoutIndex == NavbarConstants.LAYOUT_IME) {
+                setNextLayout(mCurrentLayout);
             } else {
-                mHandler.post(mNotifyLayoutChanged);
-                mShowingImeLayout = false;
+                setNextLayout(NavbarConstants.LAYOUT_IME);
             }
         } else {
             mCurrentLayout = (mCurrentLayout + direction + mButtonLayouts) % mButtonLayouts;
-            mHandler.post(mNotifyLayoutChanged);
-            mShowingImeLayout = false;
+            if (mCurrentLayout >= mButtonLayouts) mCurrentLayout = mButtonLayouts - 1;
+            setNextLayout(mCurrentLayout);
         }
     }
 
-    final Runnable mNotifyImeLayoutChange = new Runnable() {
-        @Override
-        public void run() {
-            setupNavigationButtons(getButtonsArray(mIMEKeyLayout));
+    private void setNextLayout(int index) {
+        synchronized(this) {
+            mNextLayoutIndex = index;
+            mHandler.post(mNotifyLayoutChanged);
         }
-    };
-
-    final Runnable mGotStuckLayoutChange = new Runnable() {
-        @Override
-        public void run() {
-            setupNavigationButtons(getButtonsArray(mDefaultLayout));
-            if (getButtonView(ACTION_BACK) != null)
-                    ((ImageView) getButtonView(ACTION_BACK)).setImageResource(R.drawable.ic_sysbar_back_ime);
-        }
-    };
+    }
 
     final Runnable mNotifyLayoutChanged = new Runnable() {
         @Override
         public void run() {
-            setupNavigationButtons(getCurrentButtonArray());
+            int localNextLayout;
+            synchronized(this) {
+                localNextLayout = mNextLayoutIndex;
+            }
+            mDisplayingLayoutIndex = localNextLayout;
+            setupNavigationButtons(mAllButtonContainers.get(localNextLayout));
         }
     };
 
@@ -733,6 +724,7 @@ public class NavigationBarView extends LinearLayout {
 
     private void loadButtonArrays() {
         mAllButtonContainers.clear();
+        mAllButtonContainers.put(NavbarConstants.LAYOUT_IME, getButtonsArray(NavbarConstants.defaultIMEKeyLayout(mContext)));
         for (int j = 0; j < mButtonLayouts; j++) {
             if (mButtonContainerStrings[j] == null || TextUtils.isEmpty(mButtonContainerStrings[j])) {
                 if (j == mCurrentLayout) {
@@ -740,9 +732,9 @@ public class NavigationBarView extends LinearLayout {
                             mContext.getResources().getString(R.string.def_navbar_layout_warning),
                             200).show();
                 }
-                mAllButtonContainers.add(getButtonsArray(mDefaultLayout));
+                mAllButtonContainers.put(j,getButtonsArray(NavbarConstants.defaultNavbarLayout(mContext)));
             } else {
-                mAllButtonContainers.add(getButtonsArray(mButtonContainerStrings[j]));
+                mAllButtonContainers.put(j,getButtonsArray(mButtonContainerStrings[j]));
             }
         }
         setupNavigationButtons(getCurrentButtonArray());
@@ -759,7 +751,6 @@ public class NavigationBarView extends LinearLayout {
     }
 
     private ArrayList<KeyButtonInfo> getCurrentButtonArray() {
-        if (mCurrentLayout >= mButtonLayouts) mCurrentLayout = mButtonLayouts - 1;
         return mAllButtonContainers.get(mCurrentLayout);
     }
 
