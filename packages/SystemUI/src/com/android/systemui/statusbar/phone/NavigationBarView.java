@@ -74,7 +74,6 @@ public class NavigationBarView extends LinearLayout {
 
     private static final int CHANGER_LEFT_SIDE = 0;
     private static final int CHANGER_RIGHT_SIDE = 1;
-    private static final int LAYOUT_IME = NavbarConstants.LAYOUT_IME;
 
     // slippery nav bar when everything is disabled, e.g. during setup
     final static boolean SLIPPERY_WHEN_DISABLED = true;
@@ -489,7 +488,7 @@ public class NavigationBarView extends LinearLayout {
     }
 
     public void notifyLayoutChange(int direction) {
-        if (direction == LAYOUT_IME) {
+        if (direction == NavbarConstants.LAYOUT_IME) {
             if (!mShowingImeLayout) {
                 mHandler.post(mNotifyImeLayoutChange);
                 mShowingImeLayout = true;
