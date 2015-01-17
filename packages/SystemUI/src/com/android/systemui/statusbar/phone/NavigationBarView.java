@@ -411,7 +411,6 @@ public class NavigationBarView extends LinearLayout {
                 && ((mButtonLayouts > 1 && mImeLayout) || mButtonLayouts == 1)
                 && getButtonView(ACTION_BACK) == null
                 && getButtonView(ACTION_HOME) == null) {
-            mNavigationIconHints = hints;
             setMenuVisibility(mShowMenu, true);
             setDisabledFlags(mDisabledFlags, true);
             return;
