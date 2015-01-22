@@ -4470,6 +4470,12 @@ public final class Settings {
         public static final String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
 
         /**
+         * Launch actions for left/right lockscreen targets
+         * @hide
+         */
+        public static final String LOCKSCREEN_TARGETS = "lockscreen_target_actions";
+
+        /**
          * Comma-separated list of location providers that activities may access. Do not rely on
          * this value being present in settings.db or on ContentObserver notifications on the
          * corresponding Uri.
@@ -7571,7 +7577,7 @@ public final class Settings {
         /**
          * Defines global runtime overrides to window policy.
          *
-         * See {@link com.android.internal.policy.impl.PolicyControl} for value format.
+         * See {@link android.view.WindowManagerPolicyControl} for value format.
          *
          * @hide
          */
