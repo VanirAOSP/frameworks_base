@@ -2415,6 +2415,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadHeadsUpSetting(stmt);
 
+            loadIntegerSetting(stmt, Settings.System.ENABLE_PEOPLE_LOOKUP,
+                    R.integer.def_people_lookup);
+
         } finally {
             if (stmt != null) stmt.close();
         }
