@@ -124,9 +124,16 @@ public class KeyguardServiceDelegate {
     }
 
     private void sendStateChangeBroadcast(boolean bound) {
-        Intent i = new Intent(ACTION_STATE_CHANGE);
-        i.putExtra(EXTRA_ACTIVE, bound);
-        mScrim.getContext().sendStickyBroadcast(i);
+        if (mKeyguardService.onSystemReady) {
+            Intent i = new Intent(ACTION_STATE_CHANGE);
+            i.putExtra(EXTRA_ACTIVE, bound);
+            mScrim.getContext().sendStickyBroadcast(i);
+        } else {
+            mKeyguardService.onSystemReady();
+            Intent i = new Intent(ACTION_STATE_CHANGE);
+            i.putExtra(EXTRA_ACTIVE, bound);
+            mScrim.getContext().sendStickyBroadcast(i);
+        }
     }
 
     private final ServiceConnection mKeyguardConnection = new ServiceConnection() {
