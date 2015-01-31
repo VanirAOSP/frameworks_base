@@ -530,9 +530,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         @Override
         public void onChange(boolean selfChange) {
             boolean wasUsing = mUseHeadsUp;
-            mUseHeadsUp = ENABLE_HEADS_UP && !mDisableNotificationAlerts && Settings.System.getIntForUser(
-                    mContext.getContentResolver(),
-                    Settings.System.HEADS_UP_NOTIFICATION, 0, UserHandle.USER_CURRENT) == 1;
+            mUseHeadsUp = ENABLE_HEADS_UP && !mDisableNotificationAlerts
+                    && Settings.Global.HEADS_UP_OFF != Settings.Global.getInt(
+                    mContext.getContentResolver(), Settings.Global.HEADS_UP_NOTIFICATIONS_ENABLED,
+                    Settings.Global.HEADS_UP_OFF);
             mHeadsUpTicker = mUseHeadsUp && 0 != Settings.Global.getInt(
                     mContext.getContentResolver(), SETTING_HEADS_UP_TICKER, 0);
             Log.d(TAG, "heads up is " + (mUseHeadsUp ? "enabled" : "disabled"));
@@ -759,8 +760,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mHeadsUpObserver.onChange(true); // set up
         if (ENABLE_HEADS_UP) {
             mContext.getContentResolver().registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.HEADS_UP_NOTIFICATION), true,
-                    mHeadsUpObserver, mCurrentUserId);
+                    Settings.Global.getUriFor(Settings.Global.HEADS_UP_NOTIFICATIONS_ENABLED), true,
+                    mHeadsUpObserver);
             mContext.getContentResolver().registerContentObserver(
                     Settings.Global.getUriFor(SETTING_HEADS_UP_TICKER), true,
                     mHeadsUpObserver);
@@ -1675,12 +1676,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     @Override
-    public void hideHeadsUp() {
-        mHandler.removeMessages(MSG_HIDE_HEADS_UP);
-        mHandler.sendEmptyMessage(MSG_HIDE_HEADS_UP);
-    }
-
-    @Override
     public void scheduleHeadsUpOpen() {
         mHandler.sendEmptyMessage(MSG_SHOW_HEADS_UP);
     }
@@ -2390,7 +2385,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if ((diff & StatusBarManager.DISABLE_EXPAND) != 0) {
             if ((state & StatusBarManager.DISABLE_EXPAND) != 0) {
                 animateCollapsePanels();
-                hideHeadsUp();
             }
         }
 
