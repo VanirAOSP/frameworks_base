@@ -6034,6 +6034,12 @@ public final class Settings {
                 "navigation_ring_targets_2",
         };
 
+        /**         
+         * Whether to show four tiles per row.
+         * @hide
+         */
+        public static final String QS_USE_FOUR_COLUMNS = "qs_use_four_columns";
+
         /**
          * The global recents long press activity chosen by the user.
          * This setting is stored as a flattened component name as
