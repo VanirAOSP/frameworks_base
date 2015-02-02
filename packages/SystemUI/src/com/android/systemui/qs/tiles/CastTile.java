@@ -86,6 +86,7 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
     @Override
     protected void handleClick() {
         showDetail(true);
+        qsCollapsePanel();
     }
 
     @Override

@@ -87,6 +87,7 @@ public class IntentTile extends QSTile<QSTile.State> {
         } catch (Throwable t) {
             Log.w(TAG, "Error sending click intent", t);
         }
+        qsCollapsePanel();
     }
 
     @Override

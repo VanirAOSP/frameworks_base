@@ -74,6 +74,7 @@ public class CompassTile extends QSTile<QSTile.BooleanState> implements SensorEv
         mActive = !mActive;
         refreshState();
         setListeningSensors(mActive);
+        qsCollapsePanel();
     }
 
     private void setListeningSensors(boolean listening) {

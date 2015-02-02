@@ -81,6 +81,7 @@ public class UserDetailView extends PseudoGridView {
             UserSwitcherController.UserRecord tag =
                     (UserSwitcherController.UserRecord) view.getTag();
             switchTo(tag);
+            qsCollapsePanel();
         }
     }
 }
