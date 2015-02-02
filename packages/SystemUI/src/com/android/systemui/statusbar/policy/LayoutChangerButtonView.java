@@ -114,6 +114,8 @@ public class LayoutChangerButtonView extends KeyButtonView {
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         final int action = ev.getAction();
+        mPm.cpuBoost(750000);
+
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 setPressed(true);
