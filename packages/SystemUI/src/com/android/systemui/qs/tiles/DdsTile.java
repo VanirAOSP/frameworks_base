@@ -76,6 +76,7 @@ public class DdsTile extends QSTile<QSTile.State> {
     @Override
     public void handleClick() {
         switchDdsToNext();
+        qsCollapsePanel();
     }
 
     @Override
