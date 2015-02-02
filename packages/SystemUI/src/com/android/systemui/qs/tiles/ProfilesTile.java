@@ -61,6 +61,7 @@ public class ProfilesTile extends QSTile<QSTile.State> {
     @Override
     protected void handleClick() {
         showDetail(true);
+        qsCollapsePanel();
     }
 
     @Override

@@ -112,6 +112,7 @@ public class ScreenTimeoutTile extends QSTile<ScreenTimeoutTile.TimeoutState> {
             mAnimationList.clear();
             showDetail(true);
         }
+        qsCollapsePanel();
     }
 
     @Override
