@@ -87,6 +87,7 @@ public class NotificationsTile extends QSTile<NotificationsTile.NotificationsSta
     @Override
     protected void handleClick() {
         showDetail(true);
+        qsCollapsePanel();
     }
 
     @Override
