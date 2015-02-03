@@ -107,6 +107,9 @@ public class KeyButtonView extends ImageView {
             if (isPressed()) {
                 removeCallbacks(mSingleTap);
                 doLongPress();
+                } else {
+                    sendEvent(KeyEvent.ACTION_DOWN, KeyEvent.FLAG_LONG_PRESS);
+                    sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
             }
         }
     };

@@ -329,7 +329,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private QSPanel mQSPanel;
     private DevForceNavbarObserver mDevForceNavbarObserver;
     boolean mSearchPanelAllowed = true;
-
     // top bar
     StatusBarHeaderView mHeader;
     KeyguardStatusBarView mKeyguardStatusBar;
