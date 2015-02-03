@@ -63,7 +63,7 @@ public class VanirActions {
     private static final int LAYOUT_RIGHT = 1;
     private static final int LAYOUT_IME = NavbarConstants.LAYOUT_IME;
 
-    private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY;
+    private static final int STANDARD_FLAGS = KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_SOFT_KEYBOARD;
     private static final int CURSOR_FLAGS = KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE;
 
     private static int mCurrentUserId = 0;
