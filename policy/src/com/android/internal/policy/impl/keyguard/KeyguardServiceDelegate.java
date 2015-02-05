@@ -147,10 +147,10 @@ public class KeyguardServiceDelegate {
                 mKeyguardService.onSystemReady();
                 // This is used to hide the scrim once keyguard displays.
                 mKeyguardService.onScreenTurnedOn(new KeyguardShowDelegate(null));
-                sendStateChangeBroadcast(true);
             }
             if (mKeyguardState.bootCompleted) {
                 mKeyguardService.onBootCompleted();
+                sendStateChangeBroadcast(true);
             }
         }
 
@@ -274,7 +274,6 @@ public class KeyguardServiceDelegate {
         } else {
             mKeyguardState.systemIsReady = true;
         }
-        sendStateChangeBroadcast(true);
     }
 
     public void doKeyguardTimeout(Bundle options) {
@@ -355,6 +354,7 @@ public class KeyguardServiceDelegate {
             mKeyguardService.onBootCompleted();
         }
         mKeyguardState.bootCompleted = true;
+        sendStateChangeBroadcast(true);
     }
 
     public void onActivityDrawn() {
