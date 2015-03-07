@@ -23,10 +23,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.os.Handler;
 import android.os.UserHandle;
 import android.os.Message;
-import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -69,6 +69,7 @@ public class QSPanel extends ViewGroup {
     private int mPanelPaddingBottom;
     private int mDualTileUnderlap;
     private int mBrightnessPaddingTop;
+    private int mTranslationTop;
     private boolean mExpanded;
     private boolean mListening;
 
@@ -81,6 +82,9 @@ public class QSPanel extends ViewGroup {
     private boolean mGridContentVisible = true;
 
     private boolean mUseMainTiles = false;
+
+    private DetailCallback mDetailCallback;
+    private int mContainerTop;
 
     public QSPanel(Context context) {
         this(context, null);
@@ -152,6 +156,14 @@ public class QSPanel extends ViewGroup {
 
     public void setCallback(Callback callback) {
         mCallback = callback;
+    }
+
+    public void setDetailCallback(DetailCallback callback) {
+        mDetailCallback = callback;
+    }
+
+    public void setTopOfContainer(int t) {
+        mContainerTop = t;
     }
 
     public void setHost(QSTileHost host) {
@@ -364,7 +376,7 @@ public class QSPanel extends ViewGroup {
         }
         int x = r.tileView.getLeft() + r.tileView.getWidth() / 2;
         int y = r.tileView.getTop() + r.tileView.getHeight() / 2;
-        handleShowDetailImpl(r, show, x, y);
+        handleShowDetailImpl(r, show, x, y - mTranslationTop);
     }
 
     private void handleShowDetailImpl(Record r, boolean show, int x, int y) {
@@ -448,9 +460,22 @@ public class QSPanel extends ViewGroup {
         if (mFooter.hasFooter()) {
             h += mFooter.getView().getMeasuredHeight();
         }
+
         mDetail.measure(exactly(width), MeasureSpec.UNSPECIFIED);
-        if (mDetail.getMeasuredHeight() < h) {
-            mDetail.measure(exactly(width), exactly(h));
+        if (isShowingDetail()) {
+            Point size = new Point();
+            getDisplay().getSize(size);
+            final int panelBottom = (mContainerTop - mTranslationTop + h);
+            final int detailMinHeight = size.y - mContainerTop - mPanelPaddingBottom;
+
+            if (size.y > panelBottom) {
+                int delta = size.y - panelBottom;
+                // panel is smaller than screen size
+                mDetail.measure(exactly(width), exactly(detailMinHeight - delta));
+            } else {
+                // panel is hanging below the screen
+                mDetail.measure(exactly(width), exactly(detailMinHeight));
+            }
         }
         setMeasuredDimension(width, Math.max(h, mDetail.getMeasuredHeight()));
     }
@@ -484,7 +509,7 @@ public class QSPanel extends ViewGroup {
             record.tileView.layout(left, top, right, top + record.tileView.getMeasuredHeight());
         }
         final int dh = Math.max(mDetail.getMeasuredHeight(), getMeasuredHeight());
-        mDetail.layout(0, 0, mDetail.getMeasuredWidth(), dh);
+        mDetail.layout(0, mTranslationTop, mDetail.getMeasuredWidth(), dh + mTranslationTop);
         if (mFooter.hasFooter()) {
             View footer = mFooter.getView();
             footer.layout(0, getMeasuredHeight() - footer.getMeasuredHeight(),
@@ -512,6 +537,10 @@ public class QSPanel extends ViewGroup {
         if (mCallback != null) {
             mCallback.onShowingDetail(detail);
         }
+        if (mDetailCallback != null && detail != null) {
+            // don't notify when hiding, wait for animation to finish
+            mDetailCallback.onDetailChanged(true);
+        }
     }
 
     private void fireToggleStateChanged(boolean state) {
@@ -532,6 +561,12 @@ public class QSPanel extends ViewGroup {
         final boolean scanState = mDetailRecord instanceof TileRecord
                 && ((TileRecord) mDetailRecord).scanState;
         fireScanStateChanged(scanState);
+    }
+
+    public void setDetailOffset(int translationY) {
+        if (!isShowingDetail()) {
+            mTranslationTop = translationY;
+        }
     }
 
     private class H extends Handler {
@@ -564,6 +599,9 @@ public class QSPanel extends ViewGroup {
         public void onAnimationEnd(Animator animation) {
             mDetailContent.removeAllViews();
             setDetailRecord(null);
+            if (mDetailCallback != null) {
+                mDetailCallback.onDetailChanged(false);
+            }
         };
     };
 
@@ -579,6 +617,10 @@ public class QSPanel extends ViewGroup {
             setGridContentVisibility(false);
         }
     };
+
+    public interface DetailCallback {
+        void onDetailChanged(boolean showing);
+    }
 
     public interface Callback {
         void onShowingDetail(QSTile.DetailAdapter detail);
