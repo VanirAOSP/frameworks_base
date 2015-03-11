@@ -1208,12 +1208,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mBroadcastReceiver.onReceive(mContext,
                 new Intent(pm.isScreenOn() ? Intent.ACTION_SCREEN_ON : Intent.ACTION_SCREEN_OFF));
-
-        // Gesture actions panel
-        filter = new IntentFilter();
-        filter.addAction(Intent.TOGGLE_GESTURE_ACTIONS);
-        mContext.registerReceiver(mGestureToggleReceiver, filter);
-
+ 
         startGlyphRasterizeHack();
         return mStatusBarView;
     }
@@ -3557,6 +3552,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         packageFilter.addDataScheme("package");
         mContext.registerReceiver(mPackageBroadcastReceiver, packageFilter);
+
+        // Gesture actions panel
+        IntentFilter gestureFilter = new IntentFilter();
+        gestureFilter.addAction(Intent.TOGGLE_GESTURE_ACTIONS);
+        mContext.registerReceiver(mGestureToggleReceiver, gestureFilter);
     }
 
     private void addStatusBarWindow() {
