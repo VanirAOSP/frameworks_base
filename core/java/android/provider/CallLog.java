@@ -538,7 +538,7 @@ public class CallLog {
 
                 // We should prefer normalized one (probably coming from
                 // Phone.NORMALIZED_NUMBER column) first. If it isn't available try others.
-		        if (ci.normalizedNumber != null) {
+                if (ci.normalizedNumber != null) {
                     final String normalizedPhoneNumber = ci.normalizedNumber;
                     cursor = resolver.query(Phone.CONTENT_URI,
                         new String[] { Phone._ID },
@@ -557,7 +557,7 @@ public class CallLog {
                 }
 
                 if (cursor != null) {
-					try {
+                    try {
                         if (cursor.getCount() > 0 && cursor.moveToFirst()) {
                             final String dataId = cursor.getString(0);
                             updateDataUsageStatForData(resolver, dataId);

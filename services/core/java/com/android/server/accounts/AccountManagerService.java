@@ -391,7 +391,7 @@ public class AccountManagerService
             boolean accountDeleted = false;
             Cursor cursor = null;
             try {
-				cursor = db.query(TABLE_ACCOUNTS,
+                cursor = db.query(TABLE_ACCOUNTS,
                     new String[]{ACCOUNTS_ID, ACCOUNTS_TYPE, ACCOUNTS_NAME},
                     null, null, null, null, null);
 
@@ -433,9 +433,9 @@ public class AccountManagerService
                     accounts.accountCache.put(accountType, accountsForType);
                 }
             } finally {
-				if (cursor != null) {
+                if (cursor != null) {
                     cursor.close();
-				}
+                }
                 if (accountDeleted) {
                     sendAccountsChangedBroadcast(accounts.userId);
                 }
@@ -528,7 +528,7 @@ public class AccountManagerService
             final SQLiteDatabase db = accounts.openHelper.getReadableDatabase();
             Cursor cursor = null;
             try {
-				cursor = db.query(TABLE_ACCOUNTS, new String[]{ACCOUNTS_PASSWORD},
+                cursor = db.query(TABLE_ACCOUNTS, new String[]{ACCOUNTS_PASSWORD},
                     ACCOUNTS_NAME + "=? AND " + ACCOUNTS_TYPE+ "=?",
                     new String[]{account.name, account.type}, null, null, null);
                 if (cursor.moveToNext()) {
@@ -536,7 +536,7 @@ public class AccountManagerService
                 }
                 return null;
             } finally {
-				if (cursor != null)
+                if (cursor != null)
                     cursor.close();
             }
         }
@@ -1269,7 +1269,7 @@ public class AccountManagerService
         }
         Cursor cursor = null;
         try {
-			cursor = cursor = db.rawQuery(
+            cursor = cursor = db.rawQuery(
                 "SELECT " + TABLE_AUTHTOKENS + "." + AUTHTOKENS_ID
                         + ", " + TABLE_ACCOUNTS + "." + ACCOUNTS_NAME
                         + ", " + TABLE_AUTHTOKENS + "." + AUTHTOKENS_TYPE
@@ -1290,7 +1290,7 @@ public class AccountManagerService
                         authTokenType, null);
             }
         } finally {
-			if (cursor != null) {
+            if (cursor != null) {
                 cursor.close();
             }
         }
@@ -2386,23 +2386,23 @@ public class AccountManagerService
     private long getAccountIdLocked(SQLiteDatabase db, Account account) {
         Cursor cursor = null;
         try {
-			cursor = db.query(TABLE_ACCOUNTS, new String[]{ACCOUNTS_ID},
+            cursor = db.query(TABLE_ACCOUNTS, new String[]{ACCOUNTS_ID},
                 "name=? AND type=?", new String[]{account.name, account.type}, null, null, null);
             if (cursor.moveToNext()) {
                 return cursor.getLong(0);
             }
             return -1;
         } finally {
-			if (cursor != null) {
+            if (cursor != null) {
             cursor.close();
-		    }
+            }
         }
     }
 
     private long getExtrasIdLocked(SQLiteDatabase db, long accountId, String key) {
         Cursor cursor = null;
         try {
-			cursor = db.query(TABLE_EXTRAS, new String[]{EXTRAS_ID},
+            cursor = db.query(TABLE_EXTRAS, new String[]{EXTRAS_ID},
                 EXTRAS_ACCOUNTS_ID + "=" + accountId + " AND " + EXTRAS_KEY + "=?",
                 new String[]{key}, null, null, null);
             if (cursor.moveToNext()) {
@@ -2410,7 +2410,7 @@ public class AccountManagerService
             }
             return -1;
         } finally {
-			if (cursor != null) {
+            if (cursor != null) {
                 cursor.close();
             }
         }
@@ -2940,7 +2940,7 @@ public class AccountManagerService
                 // This is a checkin request. *Only* upload the account types and the count of each.
                 Cursor cursor = null;
                 try {
-					cursor = db.query(TABLE_ACCOUNTS, ACCOUNT_TYPE_COUNT_PROJECTION,
+                    cursor = db.query(TABLE_ACCOUNTS, ACCOUNT_TYPE_COUNT_PROJECTION,
                         null, null, ACCOUNTS_TYPE, null, null);
                     while (cursor.moveToNext()) {
                         // print type,count
@@ -3469,7 +3469,7 @@ public class AccountManagerService
         HashMap<String, String> userDataForAccount = new HashMap<String, String>();
         Cursor cursor = null;
         try {
-			cursor = db.query(TABLE_EXTRAS,
+            cursor = db.query(TABLE_EXTRAS,
                 COLUMNS_EXTRAS_KEY_AND_VALUE,
                 SELECTION_USERDATA_BY_ACCOUNT,
                 new String[]{account.name, account.type},
@@ -3480,7 +3480,7 @@ public class AccountManagerService
                 userDataForAccount.put(tmpkey, value);
             }
         } finally {
-			if (cursor != null) {
+            if (cursor != null) {
                 cursor.close();
             }
         }
@@ -3492,7 +3492,7 @@ public class AccountManagerService
         HashMap<String, String> authTokensForAccount = new HashMap<String, String>();
         Cursor cursor = null;
         try {
-			cursor = db.query(TABLE_AUTHTOKENS,
+            cursor = db.query(TABLE_AUTHTOKENS,
                 COLUMNS_AUTHTOKENS_TYPE_AND_AUTHTOKEN,
                 SELECTION_AUTHTOKENS_BY_ACCOUNT,
                 new String[]{account.name, account.type},
@@ -3503,9 +3503,9 @@ public class AccountManagerService
                 authTokensForAccount.put(type, authToken);
             }
         } finally {
-			if (cursor != null) {
+            if (cursor != null) {
                 cursor.close();
-		    }
+            }
         }
         return authTokensForAccount;
     }
