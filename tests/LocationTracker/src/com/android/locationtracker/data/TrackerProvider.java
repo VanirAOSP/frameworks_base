@@ -114,15 +114,15 @@ public class TrackerProvider extends ContentProvider {
         // TODO: extract limit from URI ?
         Cursor cursor = null;
         try {
-			cursor = db.query(TABLE_NAME, projection, selection,
+            cursor = db.query(TABLE_NAME, projection, selection,
                 selectionArgs, null, null, sortOrder);
             getContext().getContentResolver().notifyChange(uri, null);
             return cursor;
-		} finally {
-			if (cursor != null) {
-				cursor.close();
-			}
-		}
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     @Override

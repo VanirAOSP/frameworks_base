@@ -204,14 +204,14 @@ public class Contacts {
             }
             Cursor cursor = null;
             try {
-				cursor = cr.query(Settings.CONTENT_URI, new String[]{VALUE},
+                cursor = cr.query(Settings.CONTENT_URI, new String[]{VALUE},
                     selectString, selectArgs, null);
                 if (!cursor.moveToNext()) return null;
                 return cursor.getString(0);
             } finally {
-				if (cursor != null) {
+                if (cursor != null) {
                     cursor.close();
-				}
+                }
             }
         }
 

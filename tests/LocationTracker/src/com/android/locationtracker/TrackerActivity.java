@@ -175,7 +175,7 @@ public class TrackerActivity extends ListActivity {
         BufferedWriter exportWriter = null;
         Cursor cursor = null;
         try {
-			cursor = trackerData.query(tagFilter);
+            cursor = trackerData.query(tagFilter);
             exportWriter = new BufferedWriter(new FileWriter(exportFileName));
             exportWriter.write(trackerData.getOutputHeader());
 
