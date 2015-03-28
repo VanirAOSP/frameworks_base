@@ -132,9 +132,9 @@ public class TaskStack {
             return false;
         }
 
-        mDimLayer.setBounds(bounds);
-        mAnimationBackgroundSurface.setBounds(bounds);
-        mBlurLayer.setBounds(bounds);
+        mDimLayer.setBounds(bounds, false);
+        mAnimationBackgroundSurface.setBounds(bounds, false);
+        mBlurLayer.setBounds(bounds, false);
         mBounds.set(bounds);
 
         return true;
