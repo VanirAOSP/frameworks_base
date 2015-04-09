@@ -18,7 +18,6 @@ package com.android.systemui.egg;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.android.systemui.R;
@@ -29,11 +28,10 @@ public class LLandActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.lland);
+        setContentView( R.layout.lland);
         mLand = (LLand) findViewById(R.id.world);
         mLand.setScoreField((TextView) findViewById(R.id.score));
         mLand.setSplash(findViewById(R.id.welcome));
-        //Log.v(LLand.TAG, "focus: " + mLand.requestFocus());
     }
 
     @Override
