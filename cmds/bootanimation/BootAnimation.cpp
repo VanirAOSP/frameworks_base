@@ -771,6 +771,8 @@ bool BootAnimation::movie()
                 ((animation.width * animation.height * fcount) > 48 * 1024 * 1024) ? 1 : 0;
         #endif
 
+        glBindTexture(GL_TEXTURE_2D, 0);
+
         /*calculate if we need to runtime save memory
         * condition: runtime free memory is less than the textures that will used.
         * needSaveMem default to be false
@@ -802,7 +804,6 @@ bool BootAnimation::movie()
                 mAudioPlayer->playFile(part.audioFile);
             }
 
-            glBindTexture(GL_TEXTURE_2D, 0);
             glClearColor(
                     part.backgroundColor[0],
                     part.backgroundColor[1],
@@ -813,9 +814,19 @@ bool BootAnimation::movie()
                 const Animation::Frame& frame(part.frames[j]);
                 nsecs_t lastFrame = systemTime();
 
-                initTexture(
-                        frame.map->getDataPtr(),
-                        frame.map->getDataLength());
+                if (r > 0 && !needSaveMem) {
+                    glBindTexture(GL_TEXTURE_2D, frame.tid);
+                } else {
+                    if (!needSaveMem && part.count != 1) {
+                        glGenTextures(1, &frame.tid);
+                        glBindTexture(GL_TEXTURE_2D, frame.tid);
+                        glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                        glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                    }
+                    initTexture(
+                            frame.map->getDataPtr(),
+                            frame.map->getDataLength());
+                }
 
                 if (!clearReg.isEmpty()) {
                     Region::const_iterator head(clearReg.begin());
@@ -856,6 +867,19 @@ bool BootAnimation::movie()
             if(exitPending() && !part.count)
                 break;
         }
+
+        // free the textures for this part
+        if (!needSaveMem && part.count != 1) {
+            for (size_t j=0 ; j<fcount ; j++) {
+                const Animation::Frame& frame(part.frames[j]);
+                glDeleteTextures(1, &frame.tid);
+            }
+        }
+
+        if (needSaveMem) {
+            glDeleteTextures(1, &mTextureid);
+        }
+
     }
 
     if (isMPlayerPrepared) {
