@@ -32,4 +32,5 @@
     <bool name="target_honeycomb_needs_options_menu">true</bool>
     <!-- Whether to enable softap extention feature -->
     <bool name="config_softap_extention">true</bool>
+    <bool name="skip_gps_init">false</bool>
 </resources>
