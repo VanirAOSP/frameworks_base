@@ -245,17 +245,19 @@ public class Camera {
      * If {@link #getNumberOfCameras()} returns N, the valid id is 0 to N-1.
      */
     public static void getCameraInfo(int cameraId, CameraInfo cameraInfo) {
-        _getCameraInfo(cameraId, cameraInfo);
-        IBinder b = ServiceManager.getService(Context.AUDIO_SERVICE);
-        IAudioService audioService = IAudioService.Stub.asInterface(b);
-        try {
-            if (audioService.isCameraSoundForced()) {
-                // Only set this when sound is forced; otherwise let native code
-                // decide.
-                cameraInfo.canDisableShutterSound = false;
+        if(cameraInfo != null) {
+            _getCameraInfo(cameraId, cameraInfo);
+            IBinder b = ServiceManager.getService(Context.AUDIO_SERVICE);
+            IAudioService audioService = IAudioService.Stub.asInterface(b);
+            try {
+                if (audioService.isCameraSoundForced()) {
+                    // Only set this when sound is forced; otherwise let native
+                    // code decide.
+                    cameraInfo.canDisableShutterSound = false;
+                }
+            } catch (RemoteException e) {
+                Log.e(TAG, "Audio service is unavailable for queries");
             }
-        } catch (RemoteException e) {
-            Log.e(TAG, "Audio service is unavailable for queries");
         }
     }
     private native static void _getCameraInfo(int cameraId, CameraInfo cameraInfo);
