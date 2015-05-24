@@ -16,3 +16,7 @@ LOCAL_JAVA_LIBRARIES += services.accessibility
 LOCAL_JAVA_LIBRARIES += org.cyanogenmod.hardware
 
 include $(BUILD_STATIC_JAVA_LIBRARY)
+
+ifeq ($(OPT_OUT_GPS_FIX), )
+  LOCAL_CFLAGS += -DLEGACY_GPS
+endif

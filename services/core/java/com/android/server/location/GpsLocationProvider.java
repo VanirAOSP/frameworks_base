@@ -1119,11 +1119,13 @@ public class GpsLocationProvider implements LocationProviderInterface {
                 Log.e(TAG, "unable to parse SUPL_PORT: " + portString);
             }
         }
-       /* if (mSuplServerHost != null
+#ifdef LEGACY_GPS
+       if (mSuplServerHost != null
                 && mSuplServerPort > TCP_MIN_PORT
                 && mSuplServerPort <= TCP_MAX_PORT) {
             native_set_agps_server(AGPS_TYPE_SUPL, mSuplServerHost, mSuplServerPort);
-        }*/
+        }
+#endif
     }
 
     /**
