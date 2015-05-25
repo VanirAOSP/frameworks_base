@@ -1119,12 +1119,17 @@ public class GpsLocationProvider implements LocationProviderInterface {
                 Log.e(TAG, "unable to parse SUPL_PORT: " + portString);
             }
         }
-        if (mSuplServerHost != null
+        if(skipGpsInit() != true) {
+            if (mSuplServerHost != null
                 && mSuplServerPort > TCP_MIN_PORT
                 && mSuplServerPort <= TCP_MAX_PORT) {
-            native_set_agps_server(AGPS_TYPE_SUPL, mSuplServerHost, mSuplServerPort);
+                native_set_agps_server(AGPS_TYPE_SUPL, mSuplServerHost, mSuplServerPort);
+            }
         }
     }
+        private static boolean skipGpsInit() {
+            return SystemProperties.getBoolean("ro.gps.init", false);
+        }
 
     /**
      * Checks what SUPL mode to use, according to the AGPS mode as well as the
