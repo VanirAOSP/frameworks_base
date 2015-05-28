@@ -871,7 +871,7 @@ public class AppOpsManager {
             false, //DELETE_CALL_LOG
             false, //DATA_CONNECT_CHANGE
             true, //ALARM_WAKEUP
-            false, //SU
+            true, //SU
     };
 
     /**
