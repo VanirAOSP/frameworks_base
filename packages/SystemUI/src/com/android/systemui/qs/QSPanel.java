@@ -265,7 +265,7 @@ public class QSPanel extends ViewGroup {
                 Settings.Secure.QS_USE_MAIN_TILES, 1, UserHandle.myUserId()) == 1;
         for (int i = 0; i < mRecords.size(); i++) {
             TileRecord r = mRecords.get(i);
-            r.tileView.setDual(mUseMainTiles && i < 2);
+            r.tileView.setDual(mUseMainTiles && i < mColumns - 2);
             r.tile.refreshState();
         }
         mFooter.refreshState();
