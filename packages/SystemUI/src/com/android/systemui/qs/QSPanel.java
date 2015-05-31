@@ -201,8 +201,8 @@ public class QSPanel extends ViewGroup {
         final double dimensionScale = 3.0 / (1.0 * maxColumns);
         mCellHeight = res.getDimensionPixelSize(R.dimen.qs_tile_height);
         mCellWidth = (int)(dimensionScale * mCellHeight * TILE_ASPECT);
-        mLargeCellHeight = res.getDimensionPixelSize(R.dimen.qs_dual_tile_height);
         mLargeCellWidth = (int)(dimensionScale * mLargeCellHeight * TILE_ASPECT);
+        mLargeCellHeight = res.getDimensionPixelSize(R.dimen.qs_dual_tile_height);
         mPanelPaddingBottom = res.getDimensionPixelSize(R.dimen.qs_panel_padding_bottom);
         mDualTileUnderlap = res.getDimensionPixelSize(R.dimen.qs_dual_tile_padding_vertical);
         mBrightnessPaddingTop = res.getDimensionPixelSize(R.dimen.qs_brightness_padding_top);
