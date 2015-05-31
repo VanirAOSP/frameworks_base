@@ -201,8 +201,8 @@ public class QSPanel extends ViewGroup {
         final double dimensionScale = 3.0 / (1.0 * maxColumns);
         mCellHeight = res.getDimensionPixelSize(R.dimen.qs_tile_height);
         mCellWidth = (int)(dimensionScale * mCellHeight * TILE_ASPECT);
-        mLargeCellWidth = (int)(dimensionScale * mLargeCellHeight * TILE_ASPECT);
         mLargeCellHeight = res.getDimensionPixelSize(R.dimen.qs_dual_tile_height);
+        mLargeCellWidth = (int)(dimensionScale * mLargeCellHeight * TILE_ASPECT);
         mPanelPaddingBottom = res.getDimensionPixelSize(R.dimen.qs_panel_padding_bottom);
         mDualTileUnderlap = res.getDimensionPixelSize(R.dimen.qs_dual_tile_padding_vertical);
         mBrightnessPaddingTop = res.getDimensionPixelSize(R.dimen.qs_brightness_padding_top);
@@ -487,7 +487,7 @@ public class QSPanel extends ViewGroup {
         for (TileRecord record : mRecords) {
             if (record.tileView.getVisibility() == GONE) continue;
             // wrap to next column if we've reached the max # of columns
-            if (mUseMainTiles && r == 0 && c == 1) {
+            if (mUseMainTiles && r == 0 && c == mColumns-2) {
                 r = 1;
                 c = 0;
             } else if (r == -1 || c == (mColumns - 1)) {
