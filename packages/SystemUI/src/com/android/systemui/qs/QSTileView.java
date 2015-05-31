@@ -29,7 +29,6 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.Settings;
 import android.util.MathUtils;
 import android.util.TypedValue;
 import android.view.Gravity;

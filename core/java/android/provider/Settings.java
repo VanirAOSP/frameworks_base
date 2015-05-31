@@ -6034,7 +6034,7 @@ public final class Settings {
                 "navigation_ring_targets_2",
         };
 
-        /**         
+        /**    
          * Whether to show four tiles per row.
          * @hide
          */
