@@ -64,8 +64,6 @@ public class QSPanel extends ViewGroup {
     private final H mHandler = new H();
 
     private int mColumns;
-    private int mNumberOfColumns;
-    private boolean mUseFourColumns;
     private int mCellWidth;
     private int mCellHeight;
     private int mLargeCellWidth;
@@ -151,17 +149,14 @@ public class QSPanel extends ViewGroup {
     /**
      * Use three or four columns.
      */
-    private int useFourColumns() {
+    private int getMaxColumns() {
         final Resources res = mContext.getResources();
-        mUseFourColumns = Settings.Secure.getInt(
+        if (Settings.Secure.getInt(
             mContext.getContentResolver(), Settings.Secure.QS_USE_FOUR_COLUMNS,
-                0) == 1;
-        if (mUseFourColumns) {
-            mNumberOfColumns = 4;
-        } else {
-            mNumberOfColumns = res.getInteger(R.integer.quick_settings_num_columns);
+                0) == 1) {
+            return 4;
         }
-        return mNumberOfColumns;
+        return res.getInteger(R.integer.quick_settings_num_columns);
     }
 
     private void updateDetailText() {
@@ -201,16 +196,13 @@ public class QSPanel extends ViewGroup {
 
     public void updateResources() {
         final Resources res = mContext.getResources();
-        final int columns = Math.max(1, useFourColumns());
+        final int maxColumns = getMaxColumns();
+        final int columns = Math.max(1, maxColumns);
+        final double dimensionScale = 3.0 / (1.0 * maxColumns);
         mCellHeight = res.getDimensionPixelSize(R.dimen.qs_tile_height);
-        if (mUseFourColumns) {
-            mCellWidth = (int)(mCellHeight * 0.8f);
-            mLargeCellWidth = (int)(mLargeCellHeight * 0.8f);
-        } else {
-            mCellWidth = (int)(mCellHeight * TILE_ASPECT);
-            mLargeCellWidth = (int)(mLargeCellHeight * TILE_ASPECT);
-        }
+        mCellWidth = (int)(dimensionScale * mCellHeight * TILE_ASPECT);
         mLargeCellHeight = res.getDimensionPixelSize(R.dimen.qs_dual_tile_height);
+        mLargeCellWidth = (int)(dimensionScale * mLargeCellHeight * TILE_ASPECT);
         mPanelPaddingBottom = res.getDimensionPixelSize(R.dimen.qs_panel_padding_bottom);
         mDualTileUnderlap = res.getDimensionPixelSize(R.dimen.qs_dual_tile_padding_vertical);
         mBrightnessPaddingTop = res.getDimensionPixelSize(R.dimen.qs_brightness_padding_top);
