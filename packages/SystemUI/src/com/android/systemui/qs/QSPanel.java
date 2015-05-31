@@ -487,7 +487,7 @@ public class QSPanel extends ViewGroup {
         for (TileRecord record : mRecords) {
             if (record.tileView.getVisibility() == GONE) continue;
             // wrap to next column if we've reached the max # of columns
-            if (mUseMainTiles && r == 0 && c == 1) {
+            if (mUseMainTiles && r == 0 && c == mColumns-2) {
                 r = 1;
                 c = 0;
             } else if (r == -1 || c == (mColumns - 1)) {
