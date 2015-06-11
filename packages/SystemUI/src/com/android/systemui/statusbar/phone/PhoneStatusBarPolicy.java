@@ -431,10 +431,6 @@ public class PhoneStatusBarPolicy {
         }
     };
 
-    private void updateSu() {
-        mService.setIconVisibility(SLOT_SU, mSuController.hasActiveSessions());
-    }
-
     private final SuController.Callback mSuCallback = new SuController.Callback() {
         @Override
         public void onSuSessionsChanged() {
