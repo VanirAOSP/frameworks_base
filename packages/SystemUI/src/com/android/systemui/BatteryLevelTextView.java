@@ -73,7 +73,11 @@ public class BatteryLevelTextView extends TextView implements
 
     @Override
     public void onBatteryLevelChanged(int level, boolean pluggedIn, boolean charging) {
-        setText(getResources().getString(R.string.battery_level_template, level));
+        String text = getResources().getString(R.string.battery_level_template, level);
+        if (shouldIndicateCharging()) {
+            text = getResources().getString(R.string.battery_level_template_charging, text);
+        }
+        setText(text);
         if (mBatteryCharging != charging) {
             mBatteryCharging = charging;
             updateVisibility();
