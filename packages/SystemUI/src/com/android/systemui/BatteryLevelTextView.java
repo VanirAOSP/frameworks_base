@@ -27,6 +27,8 @@ import com.android.systemui.tuner.TunerService;
 
 import cyanogenmod.providers.CMSettings;
 
+import com.android.systemui.R;
+
 public class BatteryLevelTextView extends TextView implements
         BatteryController.BatteryStateChangeCallback, TunerService.Tunable {
 
@@ -39,13 +41,24 @@ public class BatteryLevelTextView extends TextView implements
 
     private boolean mRequestedVisibility;
 
+    private int mStyle = BatteryMeterDrawable.BATTERY_STYLE_PORTRAIT;
+
     public BatteryLevelTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     public void onBatteryLevelChanged(int level, boolean pluggedIn, boolean charging) {
-        setText(NumberFormat.getPercentInstance().format((double) level / 100.0));
+        String percentage = NumberFormat.getPercentInstance().format((double) level / 100.0);
+        //if we're in text-only mode, AND we're in the system icons view
+        if (mStyle == BatteryMeterDrawable.BATTERY_STYLE_TEXT) {
+            //prepend a '+' if the phone is charging
+            if (charging && level < 100) {
+                percentage = getResources().getString(R.string.battery_level_template_charging, percentage);
+            }
+        }
+
+        setText(percentage);
     }
 
     public void setBatteryController(BatteryController batteryController) {
@@ -80,6 +93,7 @@ public class BatteryLevelTextView extends TextView implements
             case STATUS_BAR_BATTERY_STYLE:
                 final int value = newValue == null ?
                         BatteryMeterDrawable.BATTERY_STYLE_PORTRAIT : Integer.parseInt(newValue);
+                mStyle = value;
                 switch (value) {
                     case BatteryMeterDrawable.BATTERY_STYLE_TEXT:
                         setVisibility(View.VISIBLE);
