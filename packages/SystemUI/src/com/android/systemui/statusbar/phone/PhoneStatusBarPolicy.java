@@ -435,7 +435,13 @@ public class PhoneStatusBarPolicy {
     }
 
     private void updateSu() {
-        mService.setIconVisibility(SLOT_SU, mSuController.hasActiveSessions() && mSuIndicatorVisible);
+        boolean show = mSuController.hasActiveSessions() && mSuIndicatorVisible;
+        mService.setIconVisibility(SLOT_SU, show);
+        if (show) {
+            publishSuCustomTile();
+        } else {
+            unpublishSuCustomTile();
+        }
     }
 
     private final HotspotController.Callback mHotspotCallback = new HotspotController.Callback() {
@@ -453,11 +459,6 @@ public class PhoneStatusBarPolicy {
         }
     };
 
-        if (mSuController.hasActiveSessions()) {
-            publishSuCustomTile();
-        } else {
-            unpublishSuCustomTile();
-        }
     private final SuController.Callback mSuCallback = new SuController.Callback() {
         @Override
         public void onSuSessionsChanged() {
