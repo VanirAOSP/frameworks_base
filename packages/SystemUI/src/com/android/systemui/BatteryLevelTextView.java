@@ -33,7 +33,7 @@ public class BatteryLevelTextView extends TextView implements
         BatteryController.BatteryStateChangeCallback{
 
     private BatteryStateRegistar mBatteryStateRegistar;
-    private boolean mBatteryPluggedIn;
+    private boolean mBatteryPresent;
     private boolean mBatteryCharging;
     private boolean mForceShow;
     private boolean mAttached;
@@ -76,8 +76,9 @@ public class BatteryLevelTextView extends TextView implements
      }
 
     @Override
-    public void onBatteryLevelChanged(int level, boolean pluggedIn, boolean charging) {
-        String text = getResources().getString(R.string.battery_level_template, level);
+    public void onBatteryLevelChanged(boolean present, int level, boolean pluggedIn,
+            boolean charging) {
+            String text = getResources().getString(R.string.battery_level_template, level);
 
         //if we're in text-only mode, AND we're in the system icons view
         if (mParentId == R.id.system_icons &&
@@ -89,8 +90,8 @@ public class BatteryLevelTextView extends TextView implements
         }
 
         setText(text);
-        if (mBatteryPluggedIn != pluggedIn || mBatteryCharging != charging) {
-            mBatteryPluggedIn = pluggedIn;
+        if (mBatteryPresent != present || mBatteryCharging != charging) {
+            mBatteryPresent = present;
             mBatteryCharging = charging;
             updateVisibility();
         }
@@ -141,7 +142,7 @@ public class BatteryLevelTextView extends TextView implements
     }
 
     private void updateVisibility() {
-        boolean showNextPercent = mBatteryPluggedIn && (
+        boolean showNextPercent = mBatteryPresent && (
                 mPercentMode == BatteryController.PERCENTAGE_MODE_OUTSIDE
                 || (mBatteryCharging && mPercentMode == BatteryController.PERCENTAGE_MODE_INSIDE));
         if (mStyle == BatteryController.STYLE_GONE) {
