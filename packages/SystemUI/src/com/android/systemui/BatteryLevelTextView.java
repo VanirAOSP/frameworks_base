@@ -39,7 +39,6 @@ public class BatteryLevelTextView extends TextView implements
     private int mRequestedVisibility;
     private int mStyle;
     private int mPercentMode;
-    private int mParentId;
 
     public BatteryLevelTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -77,10 +76,8 @@ public class BatteryLevelTextView extends TextView implements
     public void onBatteryLevelChanged(int level, boolean pluggedIn, boolean charging) {
         String percentage = NumberFormat.getPercentInstance().format((double) level / 100.0);
 
-        //if we're in text-only mode, AND we're in the statusbar or expanded statusbar
-        if ((mParentId == R.id.system_icon_area ||
-                mParentId == R.id.system_icons_super_container) &&
-                mStyle == BatteryController.STYLE_TEXT) {
+        //if we're in text-only mode, AND we're in the system icons view
+        if (mStyle == BatteryController.STYLE_TEXT) {
             //prepend a '+' if the phone is charging
             if (charging && level < 100) {
                 percentage = getResources().getString(R.string.battery_level_template_charging, percentage);
@@ -117,8 +114,6 @@ public class BatteryLevelTextView extends TextView implements
             Log.e("BatteryLevelTextView", ex.toString());
         }
 
-        mParentId = parent == null ? 0 : parent.getId();
-
         if (mBatteryController != null) {
             mBatteryController.addStateChangedCallback(this);
         }
@@ -130,8 +125,6 @@ public class BatteryLevelTextView extends TextView implements
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mAttached = false;
-
-        mParentId = 0;
 
         if (mBatteryController != null) {
             mBatteryController.removeStateChangedCallback(this);
