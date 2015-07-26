@@ -2339,4 +2339,12 @@
     <string name="config_defaultQuickSettingsTiles">wifi,bt,cell,airplane,rotation,flashlight,location,cast,visualizer,hotspot,live_display</string>
 
     <string-array name="config_externalCMServices"></string-array>
+
+    <!-- BEGIN Vanirial config -->
+
+    <!-- PPP: Use client ip address as default gateway -->
+    <bool name="config_telephony_pppUseClientIp">false</bool>
+
+    <!-- END Vanirial config -->
+
 </resources>
