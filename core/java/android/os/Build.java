@@ -658,7 +658,7 @@ public class Build {
             return false;
         }
 
-        if (!TextUtils.isEmpty(vendor)) {
+        if (vendor != null && !TextUtils.isEmpty(vendor)) {
             if (!Objects.equals(system, vendor)) {
                 Slog.e(TAG, "Mismatched fingerprints; system reported " + system
                         + " but vendor reported " + vendor);
