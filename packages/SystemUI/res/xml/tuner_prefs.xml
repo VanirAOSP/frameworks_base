@@ -25,8 +25,35 @@
         android:key="demo_mode"
         android:title="@string/demo_mode" />
 
-    <Preference
-        android:summary="@string/tuner_persistent_warning"
-        android:selectable="false" />
+        <com.android.systemui.tuner.StatusBarSwitch
+            android:key="bluetooth"
+            android:title="@string/quick_settings_bluetooth_label" />
 
+        <com.android.systemui.tuner.StatusBarSwitch
+            android:key="zen"
+            android:title="@string/quick_settings_dnd_label" />
+
+        <com.android.systemui.tuner.StatusBarSwitch
+            android:key="alarm_clock"
+            android:title="@string/status_bar_alarm" />
+
+        <com.android.systemui.tuner.StatusBarSwitch
+            android:key="managed_profile"
+            android:title="@string/status_bar_work" />
+
+        <com.android.systemui.tuner.StatusBarSwitch
+            android:key="wifi"
+            android:title="@string/quick_settings_wifi_label" />
+
+        <com.android.systemui.tuner.StatusBarSwitch
+            android:key="ethernet"
+            android:title="@string/status_bar_ethernet" />
+
+        <com.android.systemui.tuner.StatusBarSwitch
+            android:key="mobile"
+            android:title="@string/quick_settings_cellular_detail_title" />
+
+        <com.android.systemui.tuner.StatusBarSwitch
+            android:key="airplane"
+            android:title="@string/status_bar_airplane" />
 </PreferenceScreen>
