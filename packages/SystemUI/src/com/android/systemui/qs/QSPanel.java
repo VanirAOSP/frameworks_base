@@ -162,8 +162,8 @@ public class QSPanel extends ViewGroup {
      */
     private int getMaxColumns() {
         final Resources res = mContext.getResources();
-        if (Settings.Secure.getInt(
-            mContext.getContentResolver(), Settings.Secure.QS_USE_FOUR_COLUMNS,
+        if (android.provider.Settings.Secure.getInt(
+            mContext.getContentResolver(), android.provider.Settings.Secure.QS_USE_FOUR_COLUMNS,
                 0) == 1) {
             return 4;
         }
