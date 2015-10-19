@@ -1525,11 +1525,13 @@
   <java-symbol type="integer" name="config_carDockRotation" />
   <java-symbol type="integer" name="config_defaultUiModeType" />
   <java-symbol type="integer" name="config_deskDockRotation" />
+  <java-symbol type="integer" name="config_deviceHardwareKeys" />
   <java-symbol type="integer" name="config_doubleTapOnHomeBehavior" />
   <java-symbol type="integer" name="config_lidKeyboardAccessibility" />
   <java-symbol type="integer" name="config_lidNavigationAccessibility" />
   <java-symbol type="integer" name="config_lidOpenRotation" />
   <java-symbol type="integer" name="config_longPressOnHomeBehavior" />
+  <java-symbol type="integer" name="config_longPressOnMenuBehavior" />
   <java-symbol type="layout" name="global_actions_item" />
   <java-symbol type="layout" name="global_actions_silent_mode" />
   <java-symbol type="layout" name="recent_apps_dialog" />
@@ -1708,6 +1710,9 @@
   <java-symbol type="integer" name="config_screenBrightnessDark" />
   <java-symbol type="integer" name="config_screenBrightnessDim" />
   <java-symbol type="integer" name="config_screenBrightnessDoze" />
+  <java-symbol type="integer" name="config_buttonBrightnessSettingDefault" />
+  <java-symbol type="integer" name="config_keyboardBrightnessSettingDefault" />
+  <java-symbol type="bool" name="config_deviceHasVariableButtonBrightness" />
   <java-symbol type="integer" name="config_shutdownBatteryTemperature" />
   <java-symbol type="integer" name="config_undockedHdmiRotation" />
   <java-symbol type="integer" name="config_virtualKeyQuietTimeMillis" />
@@ -2034,6 +2039,10 @@
   <java-symbol type="layout" name="time_picker_header_material" />
   <java-symbol type="layout" name="year_label_text_view" />
   <java-symbol type="layout" name="date_picker_material" />
+
+  <!-- Config.xml entries -->
+  <java-symbol type="string" name="config_deviceKeyHandlerLib" />
+  <java-symbol type="string" name="config_deviceKeyHandlerClass" />
 
   <java-symbol type="id" name="time_header" />
   <java-symbol type="id" name="hours" />
@@ -2369,4 +2378,16 @@
   <!-- Data Connectivity Error Configurations -->
   <java-symbol type="bool" name="config_reject_ggsn_perm_failure" />
   <java-symbol type="bool" name="config_protocol_errors_perm_failure" />
+
+  <!-- Gesture Sensor -->
+  <java-symbol type="bool" name="config_enableGestureService" />
+
+  <!-- Notification and battery light -->
+  <java-symbol type="bool" name="config_intrusiveNotificationLed" />
+  <java-symbol type="bool" name="config_multiColorNotificationLed" />
+  <java-symbol type="bool" name="config_intrusiveBatteryLed" />
+  <java-symbol type="bool" name="config_multiColorBatteryLed" />
+  <java-symbol type="array" name="notification_light_package_mapping" />
+  <java-symbol type="array" name="config_notificationNoAlertsVibePattern" />
+
 </resources>
