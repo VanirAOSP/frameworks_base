@@ -1119,7 +1119,15 @@ public final class ContactsContract {
         public static final String SORT_KEY_ALTERNATIVE = "sort_key_alt";
     }
 
-    interface ContactCounts {
+    /**
+     * URI parameter and cursor extras that return counts of rows grouped by the
+     * address book index, which is usually the first letter of the sort key.
+     * When this parameter is supplied, the row counts are returned in the
+     * cursor extras bundle.
+     *
+     * @hide
+     */
+    public interface ContactCounts {
 
         /**
          * Add this query parameter to a URI to get back row counts grouped by the address book

@@ -135,6 +135,9 @@
     <!-- LiveDisplay -->
     <uses-permission android:name="android.permission.HARDWARE_ABSTRACTION_ACCESS" />
 
+    <!-- Weather -->
+    <uses-permission android:name="com.cyanogenmod.lockclock.permission.READ_WEATHER" />
+
     <application
         android:name=".SystemUIApplication"
         android:persistent="true"
@@ -411,5 +414,11 @@
                 <action android:name="com.android.systemui.action.CLEAR_TUNER" />
             </intent-filter>
         </receiver>
+
+        <provider android:name=".cm.SpamMessageProvider"
+                  android:permission="android.permission.INTERACT_ACROSS_USERS_FULL"
+                  android:exported="true"
+                  android:authorities="com.cyanogenmod.spam" />
+
     </application>
 </manifest>
