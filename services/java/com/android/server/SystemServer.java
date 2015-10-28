@@ -524,7 +524,7 @@ public final class SystemServer {
             Slog.i(TAG, "Window Manager");
             wm = WindowManagerService.main(context, inputManager,
                     mFactoryTestMode != FactoryTest.FACTORY_TEST_LOW_LEVEL,
-                    !mFirstBoot, mOnlyCore);
+                    true, mOnlyCore);
             ServiceManager.addService(Context.WINDOW_SERVICE, wm);
             ServiceManager.addService(Context.INPUT_SERVICE, inputManager);
 
@@ -1152,14 +1152,14 @@ public final class SystemServer {
         }
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_APP_LAUNCH_FAILURE);
-        filter.addAction(Intent.ACTION_APP_LAUNCH_FAILURE_RESET);
+        filter.addAction(Intent.ACTION_APP_FAILURE);
+        filter.addAction(Intent.ACTION_APP_FAILURE_RESET);
         filter.addAction(Intent.ACTION_PACKAGE_ADDED);
         filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         filter.addAction(ThemeUtils.ACTION_THEME_CHANGED);
         filter.addCategory(Intent.CATEGORY_THEME_PACKAGE_INSTALLED_STATE_CHANGE);
         filter.addDataScheme("package");
-        context.registerReceiver(new AppsLaunchFailureReceiver(), filter);
+        context.registerReceiver(new AppsFailureReceiver(), filter);
 
         // These are needed to propagate to the runnable below.
         final NetworkManagementService networkManagementF = networkManagement;

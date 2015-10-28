@@ -27,6 +27,10 @@
     <!-- External CM specific core services -->
     <java-symbol type="array" name="config_externalCMServices" />
 
+    <java-symbol type="bool" name="config_singleStageCameraKey" />
+    <java-symbol type="integer" name="config_longPressOnMenuBehavior" />
+    <java-symbol type="integer" name="config_longPressOnAppSwitchBehavior" />
+
     <!-- Proximity check on screen on -->
     <java-symbol type="bool" name="config_proximityCheckOnWake" />
 
@@ -39,6 +43,9 @@
     <!-- Package Manager -->
     <java-symbol type="array" name="config_disabledComponents" />
     <java-symbol type="array" name="config_forceEnabledComponents" />
+
+    <java-symbol type="string" name="global_action_current_user" />
+    <java-symbol type="dimen" name="global_actions_avatar_size" />
 
     <!-- LiveDisplay -->
     <java-symbol type="string" name="live_display_title" />
@@ -68,4 +75,16 @@
     <java-symbol type="bool" name="config_stylusGestures" />
     <java-symbol type="string" name="stylus_app_not_installed" />
 
+    <!-- Theme reset notification -->
+    <java-symbol type="string" name="theme_reset_notification_title" />
+    <java-symbol type="string" name="theme_reset_notification_body" />
+
+    <!-- global actions (zen mode buttons) -->
+    <java-symbol type="id" name="option4" />
+
+    <!-- LED pulse -->
+    <java-symbol type="bool" name="config_ledCanPulse" />
+
+    <!-- Non-themeable packages -->
+    <java-symbol type="array" name="non_themeable_packages" />
 </resources>

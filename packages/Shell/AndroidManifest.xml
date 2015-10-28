@@ -107,6 +107,7 @@
     <uses-permission android:name="android.permission.REGISTER_CONNECTION_MANAGER" />
     <uses-permission android:name="android.permission.REGISTER_SIM_SUBSCRIPTION" />
     <uses-permission android:name="android.permission.GET_APP_OPS_STATS" />
+    <uses-permission android:name="android.permission.ACCESS_THEME_MANAGER" />
 
     <application android:label="@string/app_label">
         <provider
@@ -142,6 +143,7 @@
             android:name=".BugreportReceiver"
             android:permission="android.permission.DUMP">
             <intent-filter>
+                <action android:name="android.intent.action.BUGREPORT_STARTED" />
                 <action android:name="android.intent.action.BUGREPORT_FINISHED" />
             </intent-filter>
         </receiver>
