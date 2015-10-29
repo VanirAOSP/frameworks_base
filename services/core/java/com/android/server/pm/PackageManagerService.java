@@ -44,6 +44,7 @@ import static android.content.pm.PackageManager.INSTALL_FAILED_INVALID_APK;
 import static android.content.pm.PackageManager.INSTALL_FAILED_INVALID_INSTALL_LOCATION;
 import static android.content.pm.PackageManager.INSTALL_FAILED_MISSING_SHARED_LIBRARY;
 import static android.content.pm.PackageManager.INSTALL_FAILED_PACKAGE_CHANGED;
+import static android.content.pm.PackageManager.INSTALL_FAILED_REGION_LOCKED_PREBUNDLE;
 import static android.content.pm.PackageManager.INSTALL_FAILED_REPLACE_COULDNT_DELETE;
 import static android.content.pm.PackageManager.INSTALL_FAILED_SHARED_USER_INCOMPATIBLE;
 import static android.content.pm.PackageManager.INSTALL_FAILED_TEST_ONLY;
@@ -87,12 +88,17 @@ import static com.android.server.pm.PermissionsState.PERMISSION_OPERATION_SUCCES
 import static com.android.server.pm.PermissionsState.PERMISSION_OPERATION_SUCCESS_GIDS_CHANGED;
 import static com.android.internal.util.ArrayUtils.removeInt;
 
+import android.content.res.Configuration;
+
 import android.Manifest;
+
+import cyanogenmod.app.suggest.AppSuggestManager;
 
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.AppGlobals;
 import android.app.ComposedIconInfo;
+import android.app.AppOpsManager;
 import android.app.IActivityManager;
 import android.app.IconPackHelper;
 import android.app.PackageInstallObserver;
@@ -215,6 +221,7 @@ import android.util.SparseIntArray;
 import android.util.Xml;
 import android.view.Display;
 
+import cyanogenmod.providers.CMSettings;
 import dalvik.system.DexFile;
 import dalvik.system.VMRuntime;
 
@@ -328,6 +335,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     private static final boolean DEBUG_VERIFY = false;
     private static final boolean DEBUG_DEXOPT = false;
     private static final boolean DEBUG_ABI_SELECTION = false;
+    private static final boolean DEBUG_PREBUNDLED_SCAN = false;
 
     static final boolean CLEAR_RUNTIME_PERMISSIONS_ON_UPGRADE = false;
 
@@ -544,6 +552,8 @@ public class PackageManagerService extends IPackageManager.Stub {
 
     final Settings mSettings;
     boolean mRestoredSettings;
+
+    private Resources mCustomResources;
 
     // System configuration read by SystemConfig.
     final int[] mGlobalGids;
@@ -872,6 +882,8 @@ public class PackageManagerService extends IPackageManager.Stub {
     private ThemeConfig mBootThemeConfig;
 
     ArrayList<ComponentName> mDisabledComponentsList;
+
+    private AppOpsManager mAppOps;
 
     // Set of pending broadcasts for aggregating enable/disable of components.
     static class PendingPackageBroadcasts {
@@ -1494,6 +1506,17 @@ public class PackageManagerService extends IPackageManager.Stub {
                                     }
                                 }
                             }
+                            if (!update && !isSystemApp(res.pkg)) {
+                                boolean privacyGuard = CMSettings.Secure.getIntForUser(
+                                        mContext.getContentResolver(),
+                                        CMSettings.Secure.PRIVACY_GUARD_DEFAULT,
+                                        0, UserHandle.USER_CURRENT) == 1;
+                                if (privacyGuard) {
+                                    mAppOps.setPrivacyGuardSettingForPackage(
+                                            res.pkg.applicationInfo.uid,
+                                            res.pkg.applicationInfo.packageName, true);
+                                }
+                            }
                             // Log current value of "unknown sources" setting
                             EventLog.writeEvent(EventLogTags.UNKNOWN_SOURCES_ENABLED,
                                 getUnknownSourcesSettings());
@@ -1894,6 +1917,8 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         mDexOptLRUThresholdInMills = dexOptLRUThresholdInMinutes * 60 * 1000;
 
+        mAppOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+
         String separateProcesses = SystemProperties.get("debug.separate_processes");
         if (separateProcesses != null && separateProcesses.length() > 0) {
             if ("*".equals(separateProcesses)) {
@@ -1972,10 +1997,13 @@ public class PackageManagerService extends IPackageManager.Stub {
             mFoundPolicyFile = SELinuxMMAC.readInstallPolicy();
 
             mRestoredSettings = mSettings.readLPw(this, sUserManager.getUsers(false),
-                    mSdkVersion, mOnlyCore);
+                    mSdkVersion, mOnlyCore, mInstaller);
 
-            String customResolverActivity = Resources.getSystem().getString(
-                    R.string.config_customResolverActivity);
+            String customResolverActivity = SystemProperties.get("ro.custom.resolver.activity");
+            if (TextUtils.isEmpty(customResolverActivity)) {
+                customResolverActivity = Resources.getSystem().getString(
+                        R.string.config_customResolverActivity);
+            }
             if (TextUtils.isEmpty(customResolverActivity)) {
                 customResolverActivity = null;
             } else {
@@ -2133,24 +2161,24 @@ public class PackageManagerService extends IPackageManager.Stub {
             // overlay packages if they reside in VENDOR_OVERLAY_DIR.
             File vendorOverlayDir = new File(VENDOR_OVERLAY_DIR);
             scanDirLI(vendorOverlayDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags | SCAN_TRUSTED_OVERLAY, 0);
+                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags | SCAN_TRUSTED_OVERLAY, 0, null);
 
             // Find base frameworks (resource packages without code).
             scanDirLI(frameworkDir, PackageParser.PARSE_IS_SYSTEM
                     | PackageParser.PARSE_IS_SYSTEM_DIR
                     | PackageParser.PARSE_IS_PRIVILEGED,
-                    scanFlags | SCAN_NO_DEX, 0);
+                    scanFlags | SCAN_NO_DEX, 0, null);
 
             // Collected privileged system packages.
             final File privilegedAppDir = new File(Environment.getRootDirectory(), "priv-app");
             scanDirLI(privilegedAppDir, PackageParser.PARSE_IS_SYSTEM
                     | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
+                    | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0, null);
 
             // Collect ordinary system packages.
             final File systemAppDir = new File(Environment.getRootDirectory(), "app");
             scanDirLI(systemAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0, null);
 
             // Collect all vendor packages.
             File vendorAppDir = new File("/vendor/app");
@@ -2160,16 +2188,19 @@ public class PackageManagerService extends IPackageManager.Stub {
                 // failed to look up canonical path, continue with original one
             }
             scanDirLI(vendorAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0, null);
 
             // Collect all OEM packages.
             final File oemAppDir = new File(Environment.getOemDirectory(), "app");
             scanDirLI(oemAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0, null);
 
             // Collect all prebundled packages.
+            createAndSetCustomResources();
             scanDirLI(Environment.getPrebundledDirectory(),
-                    PackageParser.PARSE_IS_PREBUNDLED_DIR, scanFlags, 0);
+                    PackageParser.PARSE_IS_PREBUNDLED_DIR, scanFlags, 0, UserHandle.OWNER);
+            // Clean up
+            mCustomResources = null;
 
             if (DEBUG_UPGRADE) Log.v(TAG, "Running installd update commands");
             mInstaller.moveFiles();
@@ -2244,10 +2275,10 @@ public class PackageManagerService extends IPackageManager.Stub {
             if (!mOnlyCore) {
                 EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_DATA_SCAN_START,
                         SystemClock.uptimeMillis());
-                scanDirLI(mAppInstallDir, 0, scanFlags | SCAN_REQUIRE_KNOWN, 0);
+                scanDirLI(mAppInstallDir, 0, scanFlags | SCAN_REQUIRE_KNOWN, 0, null);
 
                 scanDirLI(mDrmAppPrivateInstallDir, PackageParser.PARSE_FORWARD_LOCK,
-                        scanFlags | SCAN_REQUIRE_KNOWN, 0);
+                        scanFlags | SCAN_REQUIRE_KNOWN, 0, null);
 
                 /**
                  * Remove disable package settings for any updated system
@@ -4370,6 +4401,17 @@ public class PackageManagerService extends IPackageManager.Stub {
                 if (ri.activityInfo.metaData == null) ri.activityInfo.metaData = new Bundle();
                 ri.activityInfo.metaData.putBoolean(Intent.METADATA_DOCK_HOME, true);
                 return ri;
+            } else if (shouldIncludeResolveActivity(intent)) {
+                if (userId != 0) {
+                    ResolveInfo ri = new ResolveInfo(mResolveInfo);
+                    ri.activityInfo = new ActivityInfo(ri.activityInfo);
+                    ri.activityInfo.applicationInfo = new ApplicationInfo(
+                            ri.activityInfo.applicationInfo);
+                    ri.activityInfo.applicationInfo.uid = UserHandle.getUid(userId,
+                            UserHandle.getAppId(ri.activityInfo.applicationInfo.uid));
+                    return ri;
+                }
+                return mResolveInfo;
             }
         }
         return null;
@@ -4628,6 +4670,13 @@ public class PackageManagerService extends IPackageManager.Stub {
             return resolver.queryIntent(intent, resolvedType, false, userId);
         }
         return null;
+    }
+
+    private boolean shouldIncludeResolveActivity(Intent intent) {
+        synchronized(mPackages) {
+            AppSuggestManager suggest = AppSuggestManager.getInstance(mContext);
+            return mResolverReplaced && (suggest != null) ? suggest.handles(intent) : false;
+        }
     }
 
     @Override
@@ -5724,7 +5773,8 @@ public class PackageManagerService extends IPackageManager.Stub {
         return true;
     }
 
-    private void scanDirLI(File dir, int parseFlags, int scanFlags, long currentTime) {
+    private void scanDirLI(File dir, int parseFlags, int scanFlags, long currentTime,
+            UserHandle user) {
         final File[] files = dir.listFiles();
         if (ArrayUtils.isEmpty(files)) {
             Log.d(TAG, "No files in app dir " + dir);
@@ -5736,10 +5786,13 @@ public class PackageManagerService extends IPackageManager.Stub {
                     + " flags=0x" + Integer.toHexString(parseFlags));
         }
 
+        int prebundledUserId = user == null ? UserHandle.USER_OWNER : user.getIdentifier();
         boolean isPrebundled = (parseFlags & PackageParser.PARSE_IS_PREBUNDLED_DIR) != 0;
         if (isPrebundled) {
             synchronized (mPackages) {
-                mSettings.readPrebundledPackagesLPr();
+                if (DEBUG_PREBUNDLED_SCAN) Log.d(TAG, "Reading prebundled packages for user "
+                        + prebundledUserId);
+                mSettings.readPrebundledPackagesLPr(prebundledUserId);
             }
         }
 
@@ -5752,7 +5805,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
             try {
                 scanPackageLI(file, parseFlags | PackageParser.PARSE_MUST_BE_APK,
-                        scanFlags, currentTime, null);
+                        scanFlags, currentTime, user);
                 if (isPrebundled) {
                     final PackageParser.Package pkg;
                     try {
@@ -5761,7 +5814,16 @@ public class PackageManagerService extends IPackageManager.Stub {
                         throw PackageManagerException.from(e);
                     }
                     synchronized (mPackages) {
-                        mSettings.markPrebundledPackageInstalledLPr(pkg.packageName);
+                        if (DEBUG_PREBUNDLED_SCAN) Log.d(TAG,
+                                "Marking prebundled packages for user " + prebundledUserId);
+                        mSettings.markPrebundledPackageInstalledLPr(prebundledUserId,
+                                pkg.packageName);
+                        // do this for every other user
+                        for (UserInfo userInfo : sUserManager.getUsers(true)) {
+                            if (userInfo.id == prebundledUserId) continue;
+                            mSettings.markPrebundledPackageInstalledLPr(userInfo.id,
+                                    pkg.packageName);
+                        }
                     }
                 }
             } catch (PackageManagerException e) {
@@ -5782,7 +5844,9 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         if (isPrebundled) {
             synchronized (mPackages) {
-                mSettings.writePrebundledPackagesLPr();
+                if (DEBUG_PREBUNDLED_SCAN) Log.d(TAG, "Writing prebundled packages for user "
+                        + prebundledUserId);
+                mSettings.writePrebundledPackagesLPr(prebundledUserId);
             }
         }
     }
@@ -5888,12 +5952,19 @@ public class PackageManagerService extends IPackageManager.Stub {
         if ((parseFlags & PackageParser.PARSE_IS_PREBUNDLED_DIR) != 0) {
             synchronized (mPackages) {
                 PackageSetting existingSettings = mSettings.peekPackageLPr(pkg.packageName);
-                if (mSettings.wasPrebundledPackageInstalledLPr(pkg.packageName) &&
-                        existingSettings == null) {
+                if (mSettings.wasPrebundledPackageInstalledLPr(user.getIdentifier()
+                        , pkg.packageName) && existingSettings == null) {
                     // The prebundled app was installed at some point in time, but now it is
                     // gone.  Assume that the user uninstalled it intentionally: do not reinstall.
                     throw new PackageManagerException(INSTALL_FAILED_UNINSTALLED_PREBUNDLE,
                             "skip reinstall for " + pkg.packageName);
+                } else if (existingSettings == null &&
+                        !mSettings.shouldPrebundledPackageBeInstalled(mContext.getResources(),
+                                pkg.packageName, mCustomResources)) {
+                    // The prebundled app is not needed for the default mobile country code,
+                    // skip installing it
+                    throw new PackageManagerException(INSTALL_FAILED_REGION_LOCKED_PREBUNDLE,
+                            "skip install for " + pkg.packageName);
                 } else if (existingSettings != null
                         && existingSettings.versionCode >= pkg.mVersionCode
                         && !existingSettings.codePathString.contains(
@@ -16849,6 +16920,14 @@ public class PackageManagerService extends IPackageManager.Stub {
             mSettings.createNewUserLILPw(this, mInstaller, userHandle);
             applyFactoryDefaultBrowserLPw(userHandle);
             primeDomainVerificationsLPw(userHandle);
+            // Set flag to monitor and not change apk file paths when
+            // scanning install directories.
+            final int scanFlags = SCAN_NO_PATHS | SCAN_DEFER_DEX | SCAN_BOOTING;
+            createAndSetCustomResources();
+            scanDirLI(Environment.getPrebundledDirectory(),
+                    PackageParser.PARSE_IS_PREBUNDLED_DIR, scanFlags, 0,
+                    new UserHandle(userHandle));
+            mCustomResources = null;
         }
     }
 
@@ -17473,6 +17552,16 @@ public class PackageManagerService extends IPackageManager.Stub {
                 (ThemeManager) mContext.getSystemService(Context.THEME_SERVICE);
         if (tm != null) {
             tm.processThemeResources(pkgName);
+        }
+    }
+
+    private void createAndSetCustomResources() {
+        Configuration tempConfiguration = new Configuration();
+        String mcc = SystemProperties.get("ro.prebundled.mcc");
+        if (!TextUtils.isEmpty(mcc)) {
+            tempConfiguration.mcc = Integer.parseInt(mcc);
+            mCustomResources = new Resources(new AssetManager(), new DisplayMetrics(),
+                    tempConfiguration);
         }
     }
 
