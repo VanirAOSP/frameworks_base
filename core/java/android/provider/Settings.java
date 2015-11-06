@@ -3993,7 +3993,6 @@ public final class Settings {
             DOCK_SOUNDS_ENABLED,        // moved to global
             LOCKSCREEN_SOUNDS_ENABLED,
             SHOW_WEB_SUGGESTIONS,
-            NOTIFICATION_LIGHT_PULSE,
             SIP_CALL_OPTIONS,
             SIP_RECEIVE_CALLS,
             POINTER_SPEED,
@@ -6517,16 +6516,6 @@ public final class Settings {
         public static final String LIVE_DISPLAY_COLOR_MATRIX = "live_display_color_matrix";
 
         /**
-         * The global recents long press activity chosen by the user.
-         * This setting is stored as a flattened component name as
-         * per {@link ComponentName#flattenToString()}.
-         *
-         * @hide
-         */
-        public static final String RECENTS_LONG_PRESS_ACTIVITY = "recents_long_press_activity";
-
-
-        /**
          * Whether to include options in power menu for rebooting into recovery or bootloader
          * @hide
          */
@@ -6596,6 +6585,22 @@ public final class Settings {
         public static final String THEME_PREV_BOOT_API_LEVEL = "theme_prev_boot_api_level";
 
         /**
+         * Whether the camera launch gesture should be disabled.
+         *
+         * @hide
+         */
+        public static final String CAMERA_GESTURE_DISABLED = "camera_gesture_disabled";
+
+        /**
+         * Whether the camera launch gesture to double tap the power button when the screen is off
+         * should be disabled.
+         *
+         * @hide
+         */
+        public static final String CAMERA_DOUBLE_TAP_POWER_GESTURE_DISABLED =
+                "camera_double_tap_power_gesture_disabled";
+
+        /**
          * This are the settings to be backed up.
          *
          * NOTE: Settings are backed up and restored in the order they appear
@@ -6651,7 +6656,8 @@ public final class Settings {
             MOUNT_UMS_NOTIFY_ENABLED,
             SLEEP_TIMEOUT,
             DOUBLE_TAP_TO_WAKE,
-            ADVANCED_REBOOT
+            ADVANCED_REBOOT,
+            CAMERA_GESTURE_DISABLED,
         };
 
         /**
