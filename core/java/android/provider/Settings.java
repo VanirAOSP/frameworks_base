@@ -3618,18 +3618,6 @@ public final class Settings {
          */
 
         /**
-         *  Enable statusbar double tap gesture on to put device to sleep
-         * @hide
-         */
-        public static final String DOUBLE_TAP_SLEEP_GESTURE = "double_tap_sleep_gesture";
-
-        /**
-         * Boolean value on whether to show weather in the statusbar
-         * @hide
-         */
-        public static final String STATUS_BAR_SHOW_WEATHER = "status_bar_show_weather";
-
-        /**
           * Volume keys control cursor in text fields (default is 0)
           * 0 - Disabled
           * 1 - Volume up/down moves cursor left/right
@@ -3637,12 +3625,6 @@ public final class Settings {
           * @hide
           */
          public static final String VOLUME_KEY_CURSOR_CONTROL = "volume_key_cursor_control";
-
-        /**
-         * Show search bar in recents
-         * @hide
-         */
-        public static final String RECENTS_SHOW_SEARCH_BAR = "recents_show_search_bar";
 
         /**
          * Whether to enable voice wakeup.  The value is boolean (1 or 0).
@@ -3657,18 +3639,6 @@ public final class Settings {
          * @hide
          */
         public static final String VOICE_LAUNCH_INTENT = "voice_launch_intent";
-
-        /**
-         * Whether navigation bar is placed on the left side in landscape mode
-         * @hide
-         */
-        public static final String NAVBAR_LEFT_IN_LANDSCAPE = "navigation_bar_left";
-
-        /**
-         * Locale for secondary overlay on dialer for t9 search input
-         * @hide
-         */
-        public static final String T9_SEARCH_INPUT_LOCALE = "t9_search_input_locale";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
