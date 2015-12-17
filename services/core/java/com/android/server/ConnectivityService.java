@@ -955,13 +955,13 @@ public class ConnectivityService extends IConnectivityManager.Stub
             uidRules = mUidRules.get(uid, RULE_ALLOW_ALL);
         }
 
-        if (uidRules == RULE_REJECT_ALL) {
+        if ((uidRules & RULE_REJECT_ALL) != 0
+                || (networkCostly && (uidRules & RULE_REJECT_METERED) != 0)) {
             return true;
-        } else if ((uidRules == RULE_REJECT_METERED) && networkCostly) {
-            return true;
-        } else {
-            return false;
         }
+
+        // no restrictive rules; network is visible
+        return false;
     }
 
     /**
@@ -1456,7 +1456,10 @@ public class ConnectivityService extends IConnectivityManager.Stub
     }
 
     private void enforceChangePermission() {
-        ConnectivityManager.enforceChangePermission(mContext);
+        int uid = Binder.getCallingUid();
+        Settings.checkAndNoteChangeNetworkStateOperation(mContext, uid, Settings
+                .getPackageNameForUid(mContext, uid), true);
+
     }
 
     private void enforceTetherAccessPermission() {
@@ -3254,11 +3257,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
             final String profileName = new String(mKeyStore.get(Credentials.LOCKDOWN_VPN));
             final VpnProfile profile = VpnProfile.decode(
                     profileName, mKeyStore.get(Credentials.VPN + profileName));
-            if (profile == null) {
-                Slog.e(TAG, "Lockdown VPN configured invalid profile " + profileName);
-                setLockdownTracker(null);
-                return true;
-            }
             int user = UserHandle.getUserId(Binder.getCallingUid());
             synchronized(mVpns) {
                 setLockdownTracker(new LockdownVpnTracker(mContext, mNetd, this, mVpns.get(user),
@@ -3405,7 +3403,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
                     .setPriority(highPriority ?
                             Notification.PRIORITY_HIGH :
                             Notification.PRIORITY_DEFAULT)
-                    .setDefaults(highPriority ? Notification.DEFAULT_ALL : 0)
+                    .setDefaults(Notification.DEFAULT_ALL)
                     .setOnlyAlertOnce(true)
                     .build();
 
@@ -3771,7 +3769,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
             synchronized(mRulesLock) {
                 uidRules = mUidRules.get(uid, RULE_ALLOW_ALL);
             }
-            if (uidRules != RULE_ALLOW_ALL) {
+            if ((uidRules & (RULE_REJECT_METERED | RULE_REJECT_ALL)) != 0) {
                 // we could silently fail or we can filter the available nets to only give
                 // them those they have access to.  Chose the more useful
                 networkCapabilities.addCapability(NET_CAPABILITY_NOT_METERED);
