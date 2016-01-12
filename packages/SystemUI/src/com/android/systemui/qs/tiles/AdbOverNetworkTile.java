@@ -26,13 +26,13 @@ import android.net.wifi.WifiManager;
 import android.os.UserHandle;
 import android.provider.Settings;
 
+import com.android.internal.logging.MetricsConstants;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
 
 import java.net.InetAddress;
 
 import cyanogenmod.providers.CMSettings;
-import org.cyanogenmod.internal.logging.CMMetricsLogger;
 
 public class AdbOverNetworkTile extends QSTile<QSTile.BooleanState> {
 
@@ -87,7 +87,7 @@ public class AdbOverNetworkTile extends QSTile<QSTile.BooleanState> {
 
     @Override
     public int getMetricsCategory() {
-        return CMMetricsLogger.TILE_ADB_OVER_NETWORK;
+        return MetricsConstants.DONT_TRACK_ME_BRO;
     }
 
     private boolean isAdbEnabled() {

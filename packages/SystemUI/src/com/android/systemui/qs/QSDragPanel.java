@@ -68,7 +68,6 @@ import com.android.systemui.tuner.QsTuner;
 import com.viewpagerindicator.CirclePageIndicator;
 import cyanogenmod.app.StatusBarPanelCustomTile;
 import cyanogenmod.providers.CMSettings;
-import org.cyanogenmod.internal.logging.CMMetricsLogger;
 import org.cyanogenmod.internal.util.QSUtils;
 
 import java.util.ArrayList;
@@ -2008,7 +2007,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
 
         @Override
         public int getMetricsCategory() {
-            return CMMetricsLogger.DONT_LOG;
+            return MetricsLogger.DONT_TRACK_ME_BRO;
         }
 
         public void showBroadcastTileDialog() {
