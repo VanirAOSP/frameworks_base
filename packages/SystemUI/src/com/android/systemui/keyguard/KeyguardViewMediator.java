@@ -290,7 +290,7 @@ public class KeyguardViewMediator extends SystemUI {
     /**
      * Whether we are disabling the lock screen internally
      */
-    private Boolean mInternallyDisabled = null;
+    private boolean mInternallyDisabled = false;
 
     /**
      * we send this intent when the keyguard is dismissed.
@@ -690,20 +690,9 @@ public class KeyguardViewMediator extends SystemUI {
                         CMSettings.Secure.LOCKSCREEN_INTERNALLY_ENABLED,
                         getPersistedDefaultOldSetting() ? 1 : 0,
                         UserHandle.USER_CURRENT) == 0;
-
-                if (mKeyguardBound) {
-                    if (mInternallyDisabled == null) {
-                        // if it's enabled on boot, don't go through the notions of
-                        // setting it enabled, as it might cause a flicker, just set the state
-                        if (newDisabledState) {
-                            setKeyguardEnabledInternal(false); // will set mInternallyDisabled
-                        } else {
-                            mInternallyDisabled = false;
-                        }
-                    } else if (newDisabledState != mInternallyDisabled) {
-                        // it was updated,
-                        setKeyguardEnabledInternal(!newDisabledState);
-                    }
+                if (newDisabledState != mInternallyDisabled && mKeyguardBound) {
+                    // it was updated,
+                    setKeyguardEnabledInternal(!newDisabledState);
                 }
             }
         };
