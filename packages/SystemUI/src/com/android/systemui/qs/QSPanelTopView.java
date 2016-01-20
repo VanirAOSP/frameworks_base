@@ -25,8 +25,8 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.systemui.R;
 
@@ -48,7 +48,6 @@ public class QSPanelTopView extends FrameLayout {
     private boolean mDisplayingToast = false;
 
     private AnimatorSet mAnimator;
-    private ImageView mDropTargetIcon;
 
     public QSPanelTopView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
@@ -61,7 +60,6 @@ public class QSPanelTopView extends FrameLayout {
     public QSPanelTopView(Context context, @Nullable AttributeSet attrs, int defStyleAttr,
                           int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        setFocusable(true);
     }
 
     @Override
@@ -71,10 +69,6 @@ public class QSPanelTopView extends FrameLayout {
 
     public View getDropTarget() {
         return mDropTarget;
-    }
-
-    public ImageView getDropTargetIcon() {
-        return mDropTargetIcon;
     }
 
     public View getBrightnessView() {
@@ -89,7 +83,6 @@ public class QSPanelTopView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mDropTarget = findViewById(R.id.delete_container);
-        mDropTargetIcon = (ImageView) findViewById(R.id.delete_target);
         mEditTileInstructionView = findViewById(R.id.edit_container);
         mBrightnessView = findViewById(R.id.brightness_container);
         mToastView = (TextView) findViewById(R.id.qs_toast);
@@ -99,14 +92,14 @@ public class QSPanelTopView extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
-        mBrightnessView.measure(QSDragPanel.exactly(width), MeasureSpec.UNSPECIFIED);
+        mBrightnessView.measure(exactly(width), MeasureSpec.UNSPECIFIED);
         int dh = mBrightnessView.getMeasuredHeight();
 
-        mDropTarget.measure(QSDragPanel.exactly(width), QSDragPanel.atMost(dh));
-        mEditTileInstructionView.measure(QSDragPanel.exactly(width), QSDragPanel.atMost(dh));
-        mToastView.measure(QSDragPanel.exactly(width), QSDragPanel.atMost(dh));
+        mDropTarget.measure(exactly(width), atMost(dh));
+        mEditTileInstructionView.measure(exactly(width), atMost(dh));
+        mToastView.measure(exactly(width), atMost(dh));
 
-        setMeasuredDimension(width, QSDragPanel.exactly(mBrightnessView.getMeasuredHeight()));
+        setMeasuredDimension(width, mBrightnessView.getMeasuredHeight());
     }
 
     @Override
@@ -117,6 +110,14 @@ public class QSPanelTopView extends FrameLayout {
             Log.e(TAG, "first layout animating to state!");
             animateToState();
         }
+    }
+
+    private static int atMost(int height) {
+        return MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
+    }
+
+    private static int exactly(int size) {
+        return MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
     }
 
     public void setEditing(boolean editing) {
