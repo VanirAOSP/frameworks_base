@@ -23,6 +23,8 @@ public class QSPage extends ViewGroup {
 
     private int mPage;
 
+    private boolean mAdapterEditingState;
+
     public QSPage(Context context, QSDragPanel panel, int page) {
         super(context);
         mPanel = panel;
@@ -95,7 +97,7 @@ public class QSPage extends ViewGroup {
             record.tileView.measure(exactly(cw), exactly(ch));
             previousView = record.tileView.updateAccessibilityOrder(previousView);
         }
-        setMeasuredDimension(width, mGridHeight);
+        setMeasuredDimension(width, exactly(mGridHeight));
     }
 
     @Override
@@ -135,6 +137,14 @@ public class QSPage extends ViewGroup {
 
             record.tileView.layout(left, top, right, top + record.tileView.getMeasuredHeight());
         }
+    }
+
+    public boolean getAdapterEditingState() {
+        return mAdapterEditingState;
+    }
+
+    public void setAdapterEditingState(boolean editing) {
+        this.mAdapterEditingState = editing;
     }
 
     public boolean dualRecord(QSPanel.TileRecord record) {
