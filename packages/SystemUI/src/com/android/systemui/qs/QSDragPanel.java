@@ -201,8 +201,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
                 } else {
                     final int adjustedPosition = mEditing ? position - 1 : position;
                     QSPage page = mPages.get(adjustedPosition);
-
-                    container.addView(page, position);
+                    container.addView(page);
                     return page;
                 }
             }
@@ -2143,6 +2142,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
                     CMSettings.Secure.QS_USE_MAIN_TILES, 1, currentUserId) == 1;
             if (firstRowLarge != mFirstRowLarge) {
                 mFirstRowLarge = firstRowLarge;
+                setTiles(new ArrayList<QSTile<?>>()); // clear out states
                 setTiles(mHost.getTiles());
             }
         }
