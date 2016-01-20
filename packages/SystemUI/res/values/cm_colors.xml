@@ -111,6 +111,9 @@
     <color name="qs_detailed_title_text_color">@color/qs_title_text_color</color>
     <color name="qs_detailed_icon_tint_color">@color/qs_title_text_color</color>
 
+    <!-- Quick tile text color when the tile is disabled -->
+    <color name="qs_tile_text_disabled">#ff747474</color>
+
     <!-- Active color for volume slider -->
     <color name="volume_slider_active">@color/system_accent_color</color>
 </resources>
