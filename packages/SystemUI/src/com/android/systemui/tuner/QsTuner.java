@@ -155,10 +155,6 @@ public class QsTuner extends Fragment implements Callback {
     public void goToSettingsPage() {
     }
 
-    @Override
-    public void resetTiles() {
-    }
-
     private static class CustomHost extends QSTileHost {
 
         public CustomHost(Context context) {
