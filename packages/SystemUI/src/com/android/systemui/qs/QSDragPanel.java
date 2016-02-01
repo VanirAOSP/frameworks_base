@@ -1242,6 +1242,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
         float destinationY = mDraggingRecord.destination.y + mViewPager.getTop();
 
         mDraggingRecord.tileView.animate()
+                .withLayer()
                 .x(destinationX)
                 .y(destinationY) // part of the viewpager now
                 .setListener(new AnimatorListenerAdapter() {
@@ -1492,13 +1493,10 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
 
                 tilePageSource.addTransientView(ti.tileView, 0);
                 ti.tileView.animate()
+                        .withLayer()
                         .x(ti.destination.x + getWidth())
                         .y(ti.destination.y)
                         .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                            }
-
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 tilePageSource.removeTransientView(ti.tileView);
@@ -1514,12 +1512,21 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
 
             } else {
                 ti.tileView.animate()
+                        .withLayer()
                         .x(ti.destination.x)
                         .y(ti.destination.y)
                         .setListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 mCurrentlyAnimating.remove(ti);
+                                final boolean dual = getPage(ti.destinationPage).dualRecord(ti);
+                                if (ti.tileView.setDual(dual, ti.tile.hasDualTargetsDetails())) {
+                                    if (DEBUG_DRAG) {
+                                        Log.w(TAG, ti + " changed dual state to : "
+                                                + ti.tileView.isDual());
+                                    }
+                                }
+                                requestLayout();
                             }
                         });
             }
@@ -1540,6 +1547,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
             tilePageSource.addTransientView(last.tileView, 0);
 
             last.tileView.animate()
+                    .withLayer()
                     .x(last.destination.x + getWidth())
                     .y(last.destination.y)
                     .setListener(new AnimatorListenerAdapter() {
@@ -1561,6 +1569,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
                     });
         } else {
             last.tileView.animate()
+                    .withLayer()
                     .x(last.destination.x)
                     .y(last.destination.y)
                     .setListener(new AnimatorListenerAdapter() {
@@ -1571,6 +1580,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
                             }
 
                             mCurrentlyAnimating.remove(last);
+                            requestLayout();
                         }
                     });
         }
@@ -1618,7 +1628,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
             ti.col = lastCol;
 
             ti.destination.x = getLeft(lastRow, lastCol, columnCountF,
-                    lastPage == 0 && lastRow == 0);
+                    lastPage == 0 && lastRow == 0 && mFirstRowLarge);
             ti.destination.y = getRowTop(lastRow);
 
             final boolean dual = getPage(ti.destinationPage).dualRecord(ti);
@@ -1635,6 +1645,7 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
                 originalPage.removeView(ti.tileView);
 
                 ti.tileView.animate()
+                        .withLayer()
                         .x(ti.destination.x)
                         .y(ti.destination.y)
                         .setListener(new AnimatorListenerAdapter() {
@@ -1655,21 +1666,19 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
                         });
             } else {
                 ti.tileView.animate()
+                        .withLayer()
                         .x(ti.destination.x)
                         .y(ti.destination.y)
                         .setListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
+                                mCurrentlyAnimating.remove(ti);
                                 if (ti.tileView.setDual(dual, ti.tile.hasDualTargetsDetails())) {
                                     if (DEBUG_DRAG) {
                                         Log.w(TAG, ti + " changed dual state to : "
                                                 + ti.tileView.isDual());
                                     }
-                                    ti.tileView.handleStateChanged(ti.tile.getState());
-                                    ti.tileView.invalidate();
                                 }
-
-                                mCurrentlyAnimating.remove(ti);
                                 requestLayout();
                             }
                         });
