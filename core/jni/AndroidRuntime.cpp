@@ -1038,11 +1038,10 @@ void AndroidRuntime::start(const char* className, const Vector<String8>& options
     if (prebundledDir == NULL) {
         if (hasDir("/system/bundled-app")) {
             prebundledDir = "/system/bundled-app";
-            setenv("PREBUNDLED_ROOT", prebundledDir, 1);
         } else {
             prebundledDir = "/vendor/bundled-app";
-            setenv("PREBUNDLED_ROOT", prebundledDir, 1);
         }
+        setenv("PREBUNDLED_ROOT", prebundledDir, 1);
     }
 
     //const char* kernelHack = getenv("LD_ASSUME_KERNEL");
