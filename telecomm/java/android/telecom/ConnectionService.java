@@ -105,6 +105,8 @@ public abstract class ConnectionService extends Service {
     private static final int MSG_SILENCE = 21;
     //Proprietary values starts after this.
     private static final int MSG_ADD_PARTICIPANT_WITH_CONFERENCE = 30;
+    private static final int MSG_SET_LOCAL_HOLD = 31;
+    private static final int MSG_EXPLICIT_TRANSFER = 32;
 
     private static Connection sNullConnection;
 
