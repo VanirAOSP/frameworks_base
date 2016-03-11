@@ -283,10 +283,10 @@ public abstract class Connection extends Conferenceable {
      * relying on SMS.
      * @hide
      */
-    public static final int CAPABILITY_CAN_SEND_RESPONSE_VIA_CONNECTION = 0x00400000;
+    public static final int CAPABILITY_CAN_SEND_RESPONSE_VIA_CONNECTION = 0x08000000;
 
     //**********************************************************************************************
-    // Next CAPABILITY value: 0x00800000
+    // Next CAPABILITY value: 0x10000000
     //**********************************************************************************************
 
     /**
