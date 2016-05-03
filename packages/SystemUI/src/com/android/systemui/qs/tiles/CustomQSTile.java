@@ -19,6 +19,7 @@ package com.android.systemui.qs.tiles;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.ThemeConfig;
 import android.net.Uri;
@@ -52,6 +53,8 @@ import java.util.Arrays;
 
 public class CustomQSTile extends QSTile<QSTile.State> {
 
+    private static final String HIDDEN_TILES_PREF_NAME = "user_hidden_qs_tiles";
+
     private CustomTile.ExpandedStyle mExpandedStyle;
     private PendingIntent mOnClick;
     private PendingIntent mOnLongClick;
@@ -60,10 +63,36 @@ public class CustomQSTile extends QSTile<QSTile.State> {
     private StatusBarPanelCustomTile mTile;
     private CustomQSDetailAdapter mDetailAdapter;
     private boolean mCollapsePanel;
+    private boolean mUserRemoved;
 
     public CustomQSTile(Host host, StatusBarPanelCustomTile tile) {
         super(host);
         mTile = tile;
+        mUserRemoved = getIsUserRemovedPersisted();
+    }
+
+    private boolean getIsUserRemovedPersisted() {
+        return getCustomQSTilePrefs(mContext).getBoolean(getTile().getKey(), false);
+    }
+
+    public boolean isUserRemoved() {
+        return mUserRemoved;
+    }
+
+    public void setUserRemoved(boolean removed) {
+        if (mUserRemoved != removed) {
+            if (removed) {
+                getCustomQSTilePrefs(mContext).edit().putBoolean(getTile().getKey(), true).apply();
+            } else {
+                getCustomQSTilePrefs(mContext).edit().remove(getTile().getKey()).apply();
+            }
+            mUserRemoved = removed;
+            refreshState();
+        }
+    }
+
+    public static SharedPreferences getCustomQSTilePrefs(Context context) {
+        return context.getSharedPreferences(HIDDEN_TILES_PREF_NAME, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -137,11 +166,12 @@ public class CustomQSTile extends QSTile<QSTile.State> {
     protected void handleUpdateState(State state, Object arg) {
         if (arg instanceof StatusBarPanelCustomTile) {
             mTile = (StatusBarPanelCustomTile) arg;
+            mUserRemoved = getIsUserRemovedPersisted();
         }
         final CustomTile customTile = mTile.getCustomTile();
         state.contentDescription = customTile.contentDescription;
         state.label = customTile.label;
-        state.visible = true;
+        state.visible = !mUserRemoved;
         final int iconId = customTile.icon;
         if (iconId != 0 && (customTile.remoteIcon == null)) {
             final String iconPackage = mTile.getResPkg();
