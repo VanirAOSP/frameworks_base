@@ -43,6 +43,8 @@ import com.android.systemui.qs.QSDetailItemsList;
 import cyanogenmod.app.CustomTile;
 import cyanogenmod.app.StatusBarPanelCustomTile;
 
+import com.android.internal.logging.MetricsLogger;
+
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
 
