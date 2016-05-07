@@ -77,6 +77,7 @@ import java.text.NumberFormat;
 
 import cyanogenmod.app.StatusBarPanelCustomTile;
 import cyanogenmod.providers.CMSettings;
+import cyanogenmod.weather.util.WeatherUtils;
 
 /**
  * The view to manage the header area in the expanded status bar.
@@ -517,12 +518,12 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
     @Override
     public void onWeatherChanged(WeatherController.WeatherInfo info) {
-        if (info.temp == null || info.condition == null) {
+        if (Double.isNaN(info.temp) || info.condition == null) {
             mWeatherLine1.setText(null);
         } else {
             mWeatherLine1.setText(mContext.getString(
                     R.string.status_bar_expanded_header_weather_format,
-                    info.temp,
+                    WeatherUtils.formatTemperature(info.temp, info.tempUnit),
                     info.condition));
         }
         mWeatherLine2.setText(info.city);
