@@ -2812,6 +2812,7 @@ status_t
 ResourceTable::validateLocalizations(void)
 {
     status_t err = NO_ERROR;
+#if defined(SHOW_DEFAULT_TRANSLATION_WARNINGS) || defined(SHOW_TRANSLATION_WARNINGS)
     const String8 defaultLocale;
 
     // For all strings...
@@ -2883,6 +2884,7 @@ ResourceTable::validateLocalizations(void)
         }
 #endif
     }
+#endif
 
     return err;
 }
