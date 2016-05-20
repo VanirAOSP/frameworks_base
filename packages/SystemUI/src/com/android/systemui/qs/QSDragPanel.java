@@ -1868,10 +1868,11 @@ public class QSDragPanel extends QSPanel implements View.OnDragListener, View.On
             for (TileRecord r : mRecords) {
                 r.tile.clearState();
             }
+            updateDetailText();
+            mQsPanelTop.updateResources();
             if (mListening) {
                 refreshAllTiles();
             }
-            updateDetailText();
         }
     }
 
