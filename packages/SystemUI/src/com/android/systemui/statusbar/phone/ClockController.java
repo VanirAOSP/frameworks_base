@@ -4,6 +4,7 @@ import com.android.systemui.FontSizeUtils;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.UserHandle;
@@ -27,7 +28,6 @@ public class ClockController {
     private final IconMerger mNotificationIcons;
     private final Context mContext;
     private final SettingsObserver mSettingsObserver;
-    private final StatusBarIconController mController;
     private Clock mRightClock, mCenterClock, mLeftClock, mActiveClock;
 
     private int mClockLocation;
@@ -47,7 +47,7 @@ public class ClockController {
                     CMSettings.System.STATUS_BAR_AM_PM), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(CMSettings.System.getUriFor(
                     CMSettings.System.STATUS_BAR_CLOCK), false, this, UserHandle.USER_ALL);
-            updateSettings(true);
+            updateSettings();
         }
 
         @Override
@@ -58,19 +58,17 @@ public class ClockController {
 
         @Override
         public void update() {
-            updateSettings(false);
+            updateSettings();
         }
     }
 
-    public ClockController(View statusBar, IconMerger notificationIcons, Handler handler,
-            StatusBarIconController statusBarIconController) {
+    public ClockController(View statusBar, IconMerger notificationIcons, Handler handler) {
         mRightClock = (Clock) statusBar.findViewById(R.id.clock);
         mCenterClock = (Clock) statusBar.findViewById(R.id.center_clock);
         mLeftClock = (Clock) statusBar.findViewById(R.id.left_clock);
         mNotificationIcons = notificationIcons;
         mContext = statusBar.getContext();
 
-        mController = statusBarIconController;
         mActiveClock = mRightClock;
         mSettingsObserver = new SettingsObserver(handler);
         mSettingsObserver.observe();
@@ -109,23 +107,14 @@ public class ClockController {
         updateFontSize();
     }
 
-    private void updateSettings(boolean selfUpdate) {
+    private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         mAmPmStyle = CMSettings.System.getIntForUser(resolver,
                 CMSettings.System.STATUS_BAR_AM_PM, Clock.AM_PM_STYLE_GONE,
                 UserHandle.USER_CURRENT);
-
-        int clockLocation = CMSettings.System.getIntForUser(
+        mClockLocation = CMSettings.System.getIntForUser(
                 resolver, CMSettings.System.STATUS_BAR_CLOCK, STYLE_CLOCK_RIGHT,
                 UserHandle.USER_CURRENT);
-        if (mClockLocation != clockLocation) {
-            mClockLocation = clockLocation;
-            if (!selfUpdate) {
-                // Both center clock + AM/PM visibility require
-                // dimensions to be calculated for overflow of icons
-                mController.recreateStatusIcons();
-            }
-        }
         updateActiveClock();
     }
 
@@ -156,9 +145,5 @@ public class ClockController {
 
     public void cleanup() {
         mSettingsObserver.unobserve();
-    }
-
-    public boolean isClockCenter() {
-        return mClockLocation == STYLE_CLOCK_CENTER;
     }
 }
