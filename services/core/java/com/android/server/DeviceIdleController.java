@@ -100,7 +100,7 @@ public class DeviceIdleController extends SystemService
         implements AnyMotionDetector.DeviceIdleCallback {
     private static final String TAG = "DeviceIdleController";
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final boolean COMPRESS_TIME = false;
 
@@ -1150,6 +1150,7 @@ public class DeviceIdleController extends SystemService
         synchronized (this) {
             int callingAppId = UserHandle.getAppId(callingUid);
             if (callingAppId >= Process.FIRST_APPLICATION_UID) {
+                Slog.i(TAG, "callingAppId >= Process.FIRST_APPLICATION_UID : " + callingAppId +" >= "+Process.FIRST_APPLICATION_UID);
                 if (!mPowerSaveWhitelistSystemAppIds.get(callingAppId)) {
                     throw new SecurityException("Calling app " + UserHandle.formatUid(callingUid)
                             + " is not on whitelist");
