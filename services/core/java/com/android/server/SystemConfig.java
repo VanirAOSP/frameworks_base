@@ -158,12 +158,12 @@ public class SystemConfig {
         return mLinkedApps;
     }
 
-    public ArraySet<ComponentName> getBackupTransportWhitelist() {
-        return mBackupTransportWhitelist;
-    }
-
     public ArrayMap<Signature, ArraySet<String>> getSignatureAllowances() {
         return mSignatureAllowances;
+    }
+
+    public ArraySet<ComponentName> getBackupTransportWhitelist() {
+        return mBackupTransportWhitelist;
     }
 
     SystemConfig() {
