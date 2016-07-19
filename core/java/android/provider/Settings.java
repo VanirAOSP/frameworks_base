@@ -3286,6 +3286,12 @@ public final class Settings {
         public static final Validator LOCKSCREEN_DISABLED_VALIDATOR = sBooleanValidator;
 
         /**
+         * enable /disable charging current on lockscreen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_CURRENT = "lock_screen_current";
+
+        /**
          * @deprecated Use {@link android.provider.Settings.Global#LOW_BATTERY_SOUND}
          * instead
          * @hide
