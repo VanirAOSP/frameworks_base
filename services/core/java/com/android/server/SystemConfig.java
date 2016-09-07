@@ -113,6 +113,9 @@ public class SystemConfig {
     // These are the permitted backup transport service components
     final ArraySet<ComponentName> mBackupTransportWhitelist = new ArraySet<>();
 
+    // These are the permitted backup transport service components
+    final ArraySet<ComponentName> mBackupTransportWhitelist = new ArraySet<>();
+
     public static SystemConfig getInstance() {
         synchronized (SystemConfig.class) {
             if (sInstance == null) {
