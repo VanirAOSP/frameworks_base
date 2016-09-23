@@ -26,6 +26,8 @@
 #include <EGL/egl.h>
 #include <GLES/gl.h>
 
+#include <utils/Thread.h>
+
 class SkBitmap;
 
 namespace android {
@@ -34,11 +36,17 @@ class AudioPlayer;
 class Surface;
 class SurfaceComposerClient;
 class SurfaceControl;
+#ifdef MULTITHREAD_DECODE
+class FrameManager;
+#endif
 
 // ---------------------------------------------------------------------------
 
 class BootAnimation : public Thread, public IBinder::DeathRecipient
 {
+#ifdef MULTITHREAD_DECODE
+    friend class FrameManager;
+#endif
 public:
                 BootAnimation();
     virtual     ~BootAnimation();
@@ -94,8 +102,12 @@ private:
      */
     enum ImageID { IMG_OEM = 0, IMG_SYS = 1, IMG_ENC = 2 };
     const char *getAnimationFileName(ImageID image);
+    const char *getBootRingtoneFileName(ImageID image);
+    void playBackgroundMusic();
+    bool checkBootState();
     status_t initTexture(Texture* texture, AssetManager& asset, const char* name);
     status_t initTexture(const Animation::Frame& frame);
+    status_t initTexture(SkBitmap *bitmap);
     bool android();
     bool movie();
     void drawTime(const Texture& clockTex, const int yPos);
@@ -107,10 +119,12 @@ private:
 
     void checkExit();
 
+    static SkBitmap *decode(const Animation::Frame& frame);
+
     sp<SurfaceComposerClient>       mSession;
     sp<AudioPlayer>                 mAudioPlayer;
     AssetManager mAssets;
-    Texture     mAndroid[2];
+    Texture     mAndroid[3];
     Texture     mClock;
     int         mWidth;
     int         mHeight;
@@ -123,6 +137,49 @@ private:
     String8     mZipFileName;
     SortedVector<String8> mLoadedFiles;
 };
+
+#ifdef MULTITHREAD_DECODE
+class FrameManager {
+public:
+    struct DecodeWork {
+        const BootAnimation::Animation::Frame *frame;
+        SkBitmap *bitmap;
+        size_t idx;
+    };
+
+    FrameManager(int numThreads, size_t maxSize,
+            const SortedVector<BootAnimation::Animation::Frame>& frames);
+    virtual ~FrameManager();
+
+    SkBitmap* next();
+
+protected:
+    DecodeWork getWork();
+    void completeWork(DecodeWork work);
+
+private:
+
+    class DecodeThread : public Thread {
+    public:
+        DecodeThread(FrameManager* manager);
+        virtual ~DecodeThread() {}
+    private:
+        virtual bool threadLoop();
+        FrameManager *mManager;
+    };
+
+    size_t mMaxSize;
+    size_t mFrameCounter;
+    size_t mNextIdx;
+    const SortedVector<BootAnimation::Animation::Frame>& mFrames;
+    Vector<DecodeWork> mDecodedFrames;
+    pthread_mutex_t mBitmapsMutex;
+    pthread_cond_t mSpaceAvailableCondition;
+    pthread_cond_t mBitmapReadyCondition;
+    bool mExit;
+    Vector<sp<DecodeThread> > mThreads;
+};
+#endif
 
 // ---------------------------------------------------------------------------
 
