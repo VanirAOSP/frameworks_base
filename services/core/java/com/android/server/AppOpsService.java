@@ -1345,8 +1345,9 @@ public class AppOpsService extends IAppOpsService.Stub {
                 try {
                     int pkgUid = -1;
                     try {
+                        int userHandleUid = UserHandle.getUserId(uid);
                         ApplicationInfo appInfo = ActivityThread.getPackageManager()
-                                .getApplicationInfo(packageName, 0, UserHandle.getUserId(uid));
+                                .getApplicationInfo(packageName, 0, userHandleUid);
                         if (appInfo != null) {
                             pkgUid = appInfo.uid;
                             isPrivileged = (appInfo.privateFlags
@@ -1355,6 +1356,8 @@ public class AppOpsService extends IAppOpsService.Stub {
                             if ("media".equals(packageName)) {
                                 pkgUid = Process.MEDIA_UID;
                                 isPrivileged = false;
+                            } else {
+                                Slog.d(TAG, "[NUKE] Got NULL appInfo from getApplicationInfo("+packageName+", 0, "+userHandleUid);
                             }
                         }
                     } catch (RemoteException e) {
