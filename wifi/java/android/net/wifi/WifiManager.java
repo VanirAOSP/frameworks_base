@@ -575,6 +575,12 @@ public class WifiManager {
     public static final String ACTION_PICK_WIFI_NETWORK = "android.net.wifi.PICK_WIFI_NETWORK";
 
     /**
+     * Internally used Wi-Fi lock mode representing the case were no locks are held.
+     * @hide
+     */
+    public static final int WIFI_MODE_NO_LOCKS_HELD = 0;
+
+    /**
      * In this Wi-Fi lock mode, Wi-Fi will be kept active,
      * and will behave normally, i.e., it will attempt to automatically
      * establish a connection to a remembered access point that is
@@ -2680,21 +2686,6 @@ public class WifiManager {
             return mService.getAllowScansWithTraffic();
         } catch (RemoteException e) {
             throw e.rethrowFromSystemServer();
-        }
-    }
-
-    /**
-     * get concurrency support
-     *
-     * @return true if concurrency is allowed.
-     *
-     * @hide no intent to publish
-     */
-    public boolean getWifiStaSapConcurrency() {
-        try {
-            return mService.getWifiStaSapConcurrency();
-        } catch (RemoteException e) {
-             throw e.rethrowFromSystemServer();
         }
     }
 

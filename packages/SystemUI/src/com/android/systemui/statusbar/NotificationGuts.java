@@ -186,7 +186,7 @@ public class NotificationGuts extends LinearLayout implements TunerService.Tunab
         try {
             final PackageInfo info =
                     pm.getPackageInfo(sbn.getPackageName(), PackageManager.GET_SIGNATURES);
-            systemApp = Utils.isSystemPackage(pm, info);
+            systemApp = Utils.isSystemPackage(getResources(), pm, info);
         } catch (PackageManager.NameNotFoundException e) {
             // unlikely.
         }
@@ -266,7 +266,7 @@ public class NotificationGuts extends LinearLayout implements TunerService.Tunab
     }
 
     private void bindSlider(final View importanceSlider, final boolean systemApp) {
-        mActiveSliderTint = loadColorStateList(R.color.notification_guts_slider_color);
+        mActiveSliderTint = ColorStateList.valueOf(Utils.getColorAccent(mContext));
         mInactiveSliderTint = loadColorStateList(R.color.notification_guts_disabled_slider_color);
 
         mImportanceSummary = ((TextView) importanceSlider.findViewById(R.id.summary));
@@ -339,36 +339,36 @@ public class NotificationGuts extends LinearLayout implements TunerService.Tunab
     }
 
     private void updateTitleAndSummary(int progress) {
-        mImportanceTitle.setText(String.format(mContext.getString(
-                R.string.importance_level_title), progress));
         switch (progress) {
             case Ranking.IMPORTANCE_NONE:
                 mImportanceSummary.setText(mContext.getString(
                         R.string.notification_importance_blocked));
+                mImportanceTitle.setText(mContext.getString(R.string.blocked_importance));
                 break;
             case Ranking.IMPORTANCE_MIN:
                 mImportanceSummary.setText(mContext.getString(
                         R.string.notification_importance_min));
-                break;
-            case Ranking.IMPORTANCE_VERY_LOW:
-                mImportanceSummary.setText(mContext.getString(
-                        R.string.notification_importance_very_low));
+                mImportanceTitle.setText(mContext.getString(R.string.min_importance));
                 break;
             case Ranking.IMPORTANCE_LOW:
                 mImportanceSummary.setText(mContext.getString(
                         R.string.notification_importance_low));
+                mImportanceTitle.setText(mContext.getString(R.string.low_importance));
                 break;
             case Ranking.IMPORTANCE_DEFAULT:
                 mImportanceSummary.setText(mContext.getString(
                         R.string.notification_importance_default));
+                mImportanceTitle.setText(mContext.getString(R.string.default_importance));
                 break;
             case Ranking.IMPORTANCE_HIGH:
                 mImportanceSummary.setText(mContext.getString(
                         R.string.notification_importance_high));
+                mImportanceTitle.setText(mContext.getString(R.string.high_importance));
                 break;
             case Ranking.IMPORTANCE_MAX:
                 mImportanceSummary.setText(mContext.getString(
                         R.string.notification_importance_max));
+                mImportanceTitle.setText(mContext.getString(R.string.max_importance));
                 break;
         }
     }
