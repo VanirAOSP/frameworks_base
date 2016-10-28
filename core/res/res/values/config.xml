@@ -302,7 +302,8 @@
     <string-array translatable="false" name="config_tether_dhcp_range">
     </string-array>
 
-    <!-- Regex of wired ethernet ifaces -->
+    <!-- Regex of wired ethernet ifaces -->    <!-- Enable blur support -->
+    <bool name="config_ui_blur_enabled">true</bool>
     <string translatable="false" name="config_ethernet_iface_regex">eth\\d</string>
 
     <!-- If the mobile hotspot feature requires provisioning, a package name and class name
@@ -428,7 +429,8 @@
     <bool translatable="false" name="config_wifi_revert_country_code_on_cellular_loss">false</bool>
 
     <!-- Boolean indicating whether or not wifi firmware debugging is enabled -->
-    <bool translatable="false" name="config_wifi_enable_wifi_firmware_debugging">true</bool>
+    <bool translatable="false" name="config_wifi_enable_wifi_firmware_debuggin    <!-- Enable blur support -->
+    <bool name="config_ui_blur_enabled">true</bool>g">true</bool>
 
     <!-- IpReachability monitor enable/Disable -->
     <bool translatable="false" name="config_wifi_ipreachability_monitor">false</bool>
@@ -2746,6 +2748,9 @@
          the Emergency Call while the device is non-interactive. -->
     <bool name="config_emergencyCallOnPowerkeyTapGestureEnabled">false</bool>
     <bool name="config_volte_preferred">false</bool>
+
+    <!-- Bandaid blur support -->
+    <bool name="config_ui_blur_enabled">false</bool>
 
     <!-- Boolean to enable stk functionality on Samsung phones -->
     <bool name="config_samsung_stk">false</bool>
