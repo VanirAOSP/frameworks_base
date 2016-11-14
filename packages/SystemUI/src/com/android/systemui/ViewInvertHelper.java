@@ -92,7 +92,7 @@ public class ViewInvertHelper {
     }
 
     public void update(boolean invert) {
-        if (invert) {
+        if (invert && mThemeInvert) {
             updateInvertPaint(1f);
             for (int i = 0; i < mTargets.size(); i++) {
                 mTargets.get(i).setLayerType(View.LAYER_TYPE_HARDWARE, mDarkPaint);
