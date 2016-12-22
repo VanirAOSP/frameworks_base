@@ -3493,7 +3493,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     public void setLightsOn(boolean on) {
-        Log.v(TAG, "setLightsOn(" + on + ")");
+        if (DEBUG) Log.v(TAG, "setLightsOn(" + on + ")");
         if (on) {
             setSystemUiVisibility(0, 0, 0, View.SYSTEM_UI_FLAG_LOW_PROFILE,
                     mLastFullscreenStackBounds, mLastDockedStackBounds);
