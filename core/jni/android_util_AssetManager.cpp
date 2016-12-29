@@ -1999,22 +1999,6 @@ static jintArray android_content_AssetManager_getStyleAttributes(JNIEnv* env, jo
 
 static void android_content_AssetManager_init(JNIEnv* env, jobject clazz, jboolean isSystem)
 {
-    if (isSystem) {
-        // Load frameworks-res.apk's overlay through regionalization environment
-        if (Environment::isSupported()) {
-            Environment* environment = new Environment();
-            if (environment != NULL) {
-                const char* overlay_dir = environment->getOverlayDir();
-                if (overlay_dir != NULL && strcmp(overlay_dir, "") != 0) {
-                    ALOGD("Regionalization - getOverlayDir:%s", overlay_dir);
-                    verifySystemIdmaps(overlay_dir);
-                }
-                delete environment;
-            }
-        }
-
-        verifySystemIdmaps(AssetManager::OVERLAY_DIR);
-    }
     AssetManager* am = new AssetManager();
     if (am == NULL) {
         jniThrowException(env, "java/lang/OutOfMemoryError", "");
