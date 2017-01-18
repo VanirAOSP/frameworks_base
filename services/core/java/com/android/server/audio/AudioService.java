@@ -5379,7 +5379,7 @@ public class AudioService extends IAudioService.Stub {
             intent.setAction(Intent.ACTION_HEADSET_PLUG);
             intent.putExtra("microphone", 1);
             if (state == 1) {
-                startMusicPlayer();
+                launchMusicPlayer();
             }
         } else if (device == AudioSystem.DEVICE_OUT_WIRED_HEADPHONE ||
                    device == AudioSystem.DEVICE_OUT_LINE) {
@@ -5388,7 +5388,7 @@ public class AudioService extends IAudioService.Stub {
             intent.setAction(Intent.ACTION_HEADSET_PLUG);
             intent.putExtra("microphone", 0);
             if (state == 1) {
-                startMusicPlayer();
+                launchMusicPlayer();
             }
         } else if (device == AudioSystem.DEVICE_OUT_HDMI ||
                 device == AudioSystem.DEVICE_OUT_HDMI_ARC) {
@@ -5422,20 +5422,26 @@ public class AudioService extends IAudioService.Stub {
         }
     }
 
-    private void startMusicPlayer() {
-        boolean launchPlayer = CMSettings.System.getIntForUser(mContext.getContentResolver(),
-                CMSettings.System.HEADSET_CONNECT_PLAYER, 0, UserHandle.USER_CURRENT) != 0;
-        TelecomManager tm = (TelecomManager) mContext.getSystemService(Context.TELECOM_SERVICE);
+    private void launchMusicPlayer() {
+        boolean shouldLaunch = CMSettings.System.getIntForUser(mContext.getContentResolver(),
+                CMSettings.System.HEADSET_CONNECT_PLAYER, 0, UserHandle.USER_CURRENT) == 1;
+        if (!shouldLaunch) {
+            return;
+        }
 
-        if (launchPlayer && !tm.isInCall()) {
-            try {
-                Intent playerIntent = new Intent(Intent.ACTION_MAIN);
-                playerIntent.addCategory(Intent.CATEGORY_APP_MUSIC);
-                playerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(playerIntent);
-            } catch (ActivityNotFoundException | IllegalArgumentException e) {
-                Log.w(TAG, "No music player Activity could be found");
-            }
+        TelecomManager tm = (TelecomManager) mContext.getSystemService(Context.TELECOM_SERVICE);
+        if (tm.isInCall()) {
+            return;
+        }
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_APP_MUSIC);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        try {
+            mContext.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.w(TAG, "No music player Activity was found");
         }
     }
 
