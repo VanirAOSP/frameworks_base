@@ -1816,7 +1816,7 @@ final class ActivityStack {
                     // them. However, when they don't have the wallpaper behind them, we want to
                     // show activities in the next application stack behind them vs. another
                     // task in the home stack like recents.
-                    behindFullscreenActivity = true;
+                    behindFullscreenActivity = task.getTopActivity() != null;
                 } else if (task.isRecentsTask()
                         && task.getTaskToReturnTo() == APPLICATION_ACTIVITY_TYPE) {
                     if (DEBUG_VISIBILITY) Slog.v(TAG_VISIBILITY,
@@ -3274,7 +3274,23 @@ final class ActivityStack {
                 return;
             } else {
                 final TaskRecord task = r.task;
-                if (r.frontOfTask && task == topTask() && task.isOverHomeStack()) {
+                boolean adjust = false;
+                if ((next == null || next.task != task) && r.frontOfTask) {
+                    if (task.isOverHomeStack() && task == topTask()) {
+                        adjust = true;
+                    } else {
+                        for (int taskNdx = mTaskHistory.size() - 1; taskNdx >= 0; --taskNdx) {
+                            final TaskRecord tr = mTaskHistory.get(taskNdx);
+                            if (tr.getTopActivity() != null) {
+                                break;
+                            } else if (tr.isOverHomeStack()) {
+                                adjust = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (adjust) {
                     final int taskToReturnTo = task.getTaskToReturnTo();
 
                     // For non-fullscreen stack, we want to move the focus to the next visible
@@ -4254,7 +4270,7 @@ final class ActivityStack {
                         hasVisibleActivities = true;
                     }
                     final boolean remove;
-                    if ((!r.haveState && !r.stateNotNeeded) || r.finishing) {
+                    if ((!r.haveState && !r.stateNotNeeded) || r.finishing || app.removed) {
                         // Don't currently have state for the activity, or
                         // it is finishing -- always remove it.
                         remove = true;

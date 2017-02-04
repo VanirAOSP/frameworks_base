@@ -1073,7 +1073,7 @@ public class AppOpsService extends IAppOpsService.Stub {
     public int checkPackage(int uid, String packageName) {
         Preconditions.checkNotNull(packageName);
         synchronized (this) {
-            if (getOpsRawLocked(uid, packageName, true) != null) {
+            if (packageName != null && getOpsRawLocked(uid, packageName, true) != null) {
                 return AppOpsManager.MODE_ALLOWED;
             } else {
                 return AppOpsManager.MODE_ERRORED;
@@ -1454,10 +1454,13 @@ public class AppOpsService extends IAppOpsService.Stub {
                     if (pkgUid != uid) {
                         // Oops!  The package name is not valid for the uid they are calling
                         // under.  Abort.
-                        RuntimeException ex = new RuntimeException("here");
-                        ex.fillInStackTrace();
-                        Slog.w(TAG, "Bad call: specified package " + packageName
-                                + " under uid " + uid + " but it is really " + pkgUid, ex);
+                        if (!"com.google.android.gms".equals(packageName)) {
+                            // Google GMS is our overlord. Don't spam the log
+                            RuntimeException ex = new RuntimeException("Package uid doesn't match or it is not valid");
+                            ex.fillInStackTrace();
+                            Slog.w(TAG, "Bad call: specified package " + packageName
+                                    + " under uid " + uid + " but it is really " + pkgUid, ex);
+                        }
                         return null;
                     }
                 } finally {

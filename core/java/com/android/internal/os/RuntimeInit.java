@@ -19,6 +19,7 @@ package com.android.internal.os;
 import android.app.ActivityManagerNative;
 import android.app.ActivityThread;
 import android.app.ApplicationErrorReport;
+import android.app.IActivityManager;
 import android.os.Build;
 import android.os.DeadObjectException;
 import android.os.Debug;
@@ -36,6 +37,7 @@ import java.lang.reflect.Modifier;
 import java.util.TimeZone;
 import java.util.logging.LogManager;
 import org.apache.harmony.luni.internal.util.TimezoneGetter;
+import android.system.Os;
 
 /**
  * Main entry point for runtime initialization.  Not for
@@ -94,8 +96,11 @@ public class RuntimeInit {
                 }
 
                 // Bring up crash dialog, wait for it to be dismissed
-                ActivityManagerNative.getDefault().handleApplicationCrash(
-                        mApplicationObject, new ApplicationErrorReport.CrashInfo(e));
+                final IActivityManager mgr = ActivityManagerNative.getDefault();
+                if (mgr != null) {
+                    mgr.handleApplicationCrash(
+                            mApplicationObject, new ApplicationErrorReport.CrashInfo(e));
+                }
             } catch (Throwable t2) {
                 if (t2 instanceof DeadObjectException) {
                     // System process is dead; ignore
@@ -306,7 +311,20 @@ public class RuntimeInit {
             throws ZygoteInit.MethodAndArgsCaller {
         if (DEBUG) Slog.d(TAG, "RuntimeInit: Starting application from wrapper");
 
-        applicationInit(targetSdkVersion, argv, null);
+        ClassLoader cl = null;
+        for (int i = 0; i < argv.length; i++) {
+            // if it's SystemServer, then follow ZygoteInit.handleSystemServerProcess to provide class loader
+            if (ZygoteInit.SYSTEMSERVER_CLASSNAME.equals(argv[i])) {
+                final String systemServerClasspath = Os.getenv("SYSTEMSERVERCLASSPATH");
+                if (systemServerClasspath != null) {
+                    cl = ZygoteInit.createSystemServerClassLoader(systemServerClasspath, targetSdkVersion);
+                    Thread.currentThread().setContextClassLoader(cl);
+                }
+                break;
+            }
+        }
+
+        applicationInit(targetSdkVersion, argv, cl);
     }
 
     private static void applicationInit(int targetSdkVersion, String[] argv, ClassLoader classLoader)

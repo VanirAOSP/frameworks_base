@@ -378,6 +378,21 @@ public final class ActivityThread {
             return activityInfo.persistableMode == ActivityInfo.PERSIST_ACROSS_REBOOTS;
         }
 
+        public boolean isInStack() {
+            try {
+                int stackId = ActivityManagerNative.getDefault().getActivityStackId(token);
+                int taskId = ActivityManagerNative.getDefault().getTaskForActivity(token, false);
+                // INVALID_STACK_ID = -1 and INVALID_TASK_ID = -1
+                if (stackId != -1 && taskId != -1) {
+                    return true;
+                }
+            } catch (RemoteException e) {
+                Log.w(TAG, "remote exception occur while check the task and stack of activity:"
+                        + this.toString(), e);
+            }
+            return false;
+        }
+
         public String toString() {
             ComponentName componentName = intent != null ? intent.getComponent() : null;
             return "ActivityRecord{"
@@ -2704,6 +2719,12 @@ public final class ActivityThread {
     }
 
     private void handleLaunchActivity(ActivityClientRecord r, Intent customIntent, String reason) {
+        // can not launch the activity that its taskId or stackId is invalid.
+        if (!r.isInStack()) {
+            Log.w(TAG,"handleLaunchActivity stack or task is invalid, can not launch it, r:" + r);
+            return;
+        }
+
         // If we are getting ready to gc after going to the background, well
         // we are back active so skip it.
         unscheduleGcIdler();
@@ -3906,6 +3927,10 @@ public final class ActivityThread {
 
     private void handleStopActivity(IBinder token, boolean show, int configChanges, int seq) {
         ActivityClientRecord r = mActivities.get(token);
+        if (r == null) {
+            Log.w(TAG, "handleStopActivity: no activity for token:" + token);
+            return;
+        }
         if (!checkAndUpdateLifecycleSeq(seq, r, "stopActivity")) {
             return;
         }
@@ -5949,7 +5974,9 @@ public final class ActivityThread {
             RuntimeInit.setApplicationObject(mAppThread.asBinder());
             final IActivityManager mgr = ActivityManagerNative.getDefault();
             try {
-                mgr.attachApplication(mAppThread);
+                if (mgr != null) {
+                    mgr.attachApplication(mAppThread);
+                }
             } catch (RemoteException ex) {
                 throw ex.rethrowFromSystemServer();
             }
@@ -5968,7 +5995,9 @@ public final class ActivityThread {
                                 + " used=" + (dalvikUsed/1024));
                         mSomeActivitiesChanged = false;
                         try {
-                            mgr.releaseSomeActivities(mAppThread);
+                            if (mgr != null) {
+                                mgr.releaseSomeActivities(mAppThread);
+                            }
                         } catch (RemoteException e) {
                             throw e.rethrowFromSystemServer();
                         }

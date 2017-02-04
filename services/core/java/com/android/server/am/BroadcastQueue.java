@@ -266,7 +266,7 @@ public final class BroadcastQueue {
 
         r.receiver = app.thread.asBinder();
         r.curApp = app;
-        app.curReceiver = r;
+        app.curReceivers.add(r);
         app.forceProcessStateUpTo(ActivityManager.PROCESS_STATE_RECEIVER);
         mService.updateLruProcessLocked(app, false, null);
         mService.updateOomAdjLocked();
@@ -294,7 +294,7 @@ public final class BroadcastQueue {
                         "Process cur broadcast " + r + ": NOT STARTED!");
                 r.receiver = null;
                 r.curApp = null;
-                app.curReceiver = null;
+                app.curReceivers.remove(r);
             }
         }
     }
@@ -395,8 +395,8 @@ public final class BroadcastQueue {
         }
         r.receiver = null;
         r.intent.setComponent(null);
-        if (r.curApp != null && r.curApp.curReceiver == r) {
-            r.curApp.curReceiver = null;
+        if (r.curApp != null && r.curApp.curReceivers.contains(r)) {
+            r.curApp.curReceivers.remove(r);
         }
         if (r.curFilter != null) {
             r.curFilter.receiverList.curBroadcast = null;
@@ -421,7 +421,8 @@ public final class BroadcastQueue {
             ActivityInfo nextReceiver;
             if (r.nextReceiver < r.receivers.size()) {
                 Object obj = r.receivers.get(r.nextReceiver);
-                nextReceiver = (obj instanceof ActivityInfo) ? (ActivityInfo)obj : null;
+                nextReceiver = (obj instanceof ResolveInfo) ?
+                        ((ResolveInfo) obj).activityInfo : null;
             } else {
                 nextReceiver = null;
             }
@@ -649,7 +650,7 @@ public final class BroadcastQueue {
                 // things that directly call the IActivityManager API, which
                 // are already core system stuff so don't matter for this.
                 r.curApp = filter.receiverList.app;
-                filter.receiverList.app.curReceiver = r;
+                filter.receiverList.app.curReceivers.add(r);
                 mService.updateOomAdjLocked(r.curApp);
             }
         }
@@ -677,7 +678,7 @@ public final class BroadcastQueue {
                 r.curFilter = null;
                 filter.receiverList.curBroadcast = null;
                 if (filter.receiverList.app != null) {
-                    filter.receiverList.app.curReceiver = null;
+                    filter.receiverList.app.curReceivers.remove(r);
                 }
             }
         }
@@ -1432,6 +1433,14 @@ public final class BroadcastQueue {
 
         for (int i = mOrderedBroadcasts.size() - 1; i >= 0; i--) {
             didSomething |= mOrderedBroadcasts.get(i).cleanupDisabledPackageReceiversLocked(
+                    packageName, filterByClasses, userId, doit);
+            if (!doit && didSomething) {
+                return true;
+            }
+        }
+
+        if (mPendingBroadcast != null) {
+            didSomething |= mPendingBroadcast.cleanupDisabledPackageReceiversLocked(
                     packageName, filterByClasses, userId, doit);
             if (!doit && didSomething) {
                 return true;

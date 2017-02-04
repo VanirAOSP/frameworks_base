@@ -541,7 +541,7 @@ public class UserManagerService extends IUserManager.Stub {
             final int userSize = mUsers.size();
             for (int i = 0; i < userSize; i++) {
                 UserInfo ui = mUsers.valueAt(i).info;
-                if (ui.partial) {
+                if (ui.partial || ui.guestToRemove) {
                     continue;
                 }
                 if (!excludeDying || !mRemovingUserIds.get(ui.id)) {
@@ -573,7 +573,7 @@ public class UserManagerService extends IUserManager.Stub {
     @Override
     public int[] getProfileIds(int userId, boolean enabledOnly) {
         if (userId != UserHandle.getCallingUserId()) {
-            checkManageUsersPermission("getting profiles related to user " + userId);
+            checkManageOrCreateUsersPermission("getting profiles related to user " + userId);
         }
         final long ident = Binder.clearCallingIdentity();
         try {
@@ -1444,7 +1444,7 @@ public class UserManagerService extends IUserManager.Stub {
         }
         synchronized(mUsersLock) {
             UserInfo userInfo = getUserInfoLU(userId);
-            if (!userInfo.canHaveProfile()) {
+            if (userInfo == null || !userInfo.canHaveProfile()) {
                 return false;
             }
             int usersCountAfterRemoving = getAliveUsersExcludingGuestsCountLU()
