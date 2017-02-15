@@ -463,21 +463,6 @@ public class NetworkManagementService extends INetworkManagementService.Stub
     }
 
     /**
-     * Notify our observers of a change in the data activity state of the interface
-     */
-    private void notifyInterfaceMessage(String message) {
-        final int length = mObservers.beginBroadcast();
-        for (int i = 0; i < length; i++) {
-            try {
-                mObservers.getBroadcastItem(i). interfaceMessageRecevied(message);
-            } catch (RemoteException e) {
-            } catch (RuntimeException e) {
-            }
-        }
-        mObservers.finishBroadcast();
-    }
-
-    /**
      * Notify our observers of an interface removal.
      */
     private void notifyInterfaceRemoved(String iface) {
@@ -1322,6 +1307,26 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
         try {
             mConnector.execute("ipfwd", enable ? "enable" : "disable", "tethering");
+        } catch (NativeDaemonConnectorException e) {
+            throw e.rethrowAsParcelableException();
+        }
+    }
+
+    @Override
+    public void createSoftApInterface(String wlanIface) {
+        mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+        try {
+            mConnector.execute("softap", "create", wlanIface);
+        } catch (NativeDaemonConnectorException e) {
+            throw e.rethrowAsParcelableException();
+        }
+    }
+
+    @Override
+    public void deleteSoftApInterface(String wlanIface) {
+        mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+        try {
+            mConnector.execute("softap", "remove", wlanIface);
         } catch (NativeDaemonConnectorException e) {
             throw e.rethrowAsParcelableException();
         }

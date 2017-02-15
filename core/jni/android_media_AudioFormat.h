@@ -145,8 +145,6 @@ static inline int audioFormatFromNative(audio_format_t nativeFormat)
         return ENCODING_EVRC_WB;
     case AUDIO_FORMAT_EVRCNW:
         return ENCODING_EVRC_NW;
-    case AUDIO_FORMAT_DOLBY_TRUEHD:
-        return ENCODING_DOLBY_TRUEHD;
     case AUDIO_FORMAT_DEFAULT:
         return ENCODING_DEFAULT;
     default:

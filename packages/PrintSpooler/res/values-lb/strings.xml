@@ -108,6 +108,7 @@
   <string name="print_no_printers">Keen Drécker fonnt</string>
   <!-- Add printer activity -->
   <!-- Subtitle for services that cannot add printers. [CHAR LIMIT=50] -->
+  <!-- Subtitle for services that can add printers. [CHAR LIMIT=50] -->
   <!-- Subtitle for disabled services. [CHAR LIMIT=50] -->
   <!-- Header for the list of enabled print services. [CHAR LIMIT=50] -->
   <!-- Header for the list of recommended print services. [CHAR LIMIT=50] -->

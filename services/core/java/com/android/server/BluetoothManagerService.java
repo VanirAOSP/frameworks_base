@@ -156,11 +156,6 @@ class BluetoothManagerService extends IBluetoothManager.Stub {
     private final Map <Integer, ProfileServiceConnections> mProfileServices =
             new HashMap <Integer, ProfileServiceConnections>();
 
-    // Save a ProfileServiceConnections object for each of the bound
-    // bluetooth profile services
-    private final Map <Integer, ProfileServiceConnections> mProfileServices =
-            new HashMap <Integer, ProfileServiceConnections>();
-
     private void registerForAirplaneMode(IntentFilter filter) {
         final ContentResolver resolver = mContext.getContentResolver();
         final String airplaneModeRadios = Settings.Global.getString(resolver,

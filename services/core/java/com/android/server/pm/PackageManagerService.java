@@ -553,7 +553,6 @@ public class PackageManagerService extends IPackageManager.Stub {
     final boolean mIsPreNUpgrade;
     final boolean mIsAlarmBoot;
     final boolean mIsPreNMR1Upgrade;
-    final boolean mIsAlarmBoot;
 
     @GuardedBy("mPackages")
     private boolean mDexOptDialogShown;
@@ -11585,7 +11584,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
                 if (savedInfo.second == info) {
                     // circled back to the highest ordered item; remove from order list
-                    mOrderResult.remove(packageName);
+                    mOrderResult.remove(savedInfo);
                     if (mOrderResult.size() == 0) {
                         // no more ordered items
                         break;

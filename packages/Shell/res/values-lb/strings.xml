@@ -30,21 +30,6 @@
   <!-- Toast message sent when the bugreport file could be read. -->
   <!-- Toast message sent when the bugreport details could not be added to the zip file. -->
   <!-- Title for bug reports received from dumpstate without a name. [CHAR LIMIT=30]-->
-<<<<<<< HEAD
-  <string name="bugreport_unnamed">onbenannt</string>
-  <!-- Title of the notification action that opens the dialog for the user-defined bug report details. -->
-  <string name="bugreport_info_action">Detailer</string>
-  <!-- Title of the notification action that takes aditional screenshots. -->
-  <string name="bugreport_screenshot_action">Schiermfoto</string>
-  <!-- Toast message sent when the a screenshot for the bug report was taken successfully. -->
-  <string name="bugreport_screenshot_taken">Schiermfoto erfollegräich opgeholl.</string>
-  <!-- Toast message sent when the a screenshot for the bug report was not taken due to an error. -->
-  <string name="bugreport_screenshot_failed">Schiermfoto konnt net opgeholl ginn.</string>
-  <!--  Title of the dialog asking for user-defined bug report details like name, title, and description. -->
-  <!-- Text of the label identifying the bug report name, which when set will define a suffix in the
-         bug report file names. [CHAR LIMIT=30] -->
-  <string name="bugreport_info_name">Fichiersnumm</string>
-=======
   <!-- Title of the notification action that opens the dialog for the user-defined bug report details. -->
   <!-- Title of the notification action that takes aditional screenshots. -->
   <!-- Toast message sent when the a screenshot for the bug report was taken successfully. -->
@@ -52,14 +37,9 @@
   <!--  Title of the dialog asking for user-defined bug report details like name, title, and description. -->
   <!-- Text of the label identifying the bug report name, which when set will define a suffix in the
          bug report file names. [CHAR LIMIT=30] -->
->>>>>>> cm/cm-14.1
   <!-- Text of the label identifying the bug report title, which when set will define the
          Subject of the email message. [CHAR LIMIT=60] -->
   <!-- Text of the label identifying the bug report description, which when set will describe
          what the bug report is about. [CHAR LIMIT=NONE] -->
   <!-- Label of button that save bugreport details.  -->
-<<<<<<< HEAD
-  <string name="save">Späicheren</string>
-=======
->>>>>>> cm/cm-14.1
 </resources>

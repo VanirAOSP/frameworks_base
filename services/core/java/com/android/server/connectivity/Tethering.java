@@ -46,7 +46,6 @@ import android.net.RouteInfo;
 import android.net.wifi.WifiDevice;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.net.wifi.WifiConfiguration;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -81,9 +80,6 @@ import com.android.server.connectivity.tethering.IPv6TetheringCoordinator;
 import com.android.server.connectivity.tethering.TetherInterfaceStateMachine;
 import com.android.server.net.BaseNetworkObserver;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
@@ -96,18 +92,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-
-
-import static android.net.wifi.WifiManager.WIFI_AP_STATE_CHANGED_ACTION;
-import static android.net.wifi.WifiManager.WIFI_AP_STATE_DISABLED;
-import static android.net.wifi.WifiManager.WIFI_AP_STATE_ENABLED;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;

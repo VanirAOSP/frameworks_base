@@ -972,28 +972,6 @@ public class NotificationManagerService extends SystemService {
                 mMaxPackageEnqueueRate = Settings.Global.getFloat(resolver,
                             Settings.Global.MAX_NOTIFICATION_ENQUEUE_RATE, mMaxPackageEnqueueRate);
             }
-
-            // Notification LED brightness
-            if (mAdjustableNotificationLedBrightness) {
-                mNotificationLedBrightnessLevel = CMSettings.System.getIntForUser(resolver,
-                        CMSettings.System.NOTIFICATION_LIGHT_BRIGHTNESS_LEVEL,
-                        LIGHT_BRIGHTNESS_MAXIMUM, UserHandle.USER_CURRENT);
-            }
-
-            // Multiple LEDs enabled
-            if (mMultipleNotificationLeds) {
-                mMultipleLedsEnabledSetting = (CMSettings.System.getIntForUser(resolver,
-                        CMSettings.System.NOTIFICATION_LIGHT_MULTIPLE_LEDS_ENABLE,
-                        mMultipleNotificationLeds ? 1 : 0, UserHandle.USER_CURRENT) != 0);
-            }
-
-            // Notification lights with screen on
-            mScreenOnEnabled = (CMSettings.System.getIntForUser(resolver,
-                    CMSettings.System.NOTIFICATION_LIGHT_SCREEN_ON,
-                    mScreenOnDefault ? 1 : 0, UserHandle.USER_CURRENT) != 0);
-
-            updateNotificationPulse();
-
             if (uri == null || NOTIFICATION_SOUND_URI.equals(uri)) {
                 mSystemNotificationSound = Settings.System.getString(resolver,
                         Settings.System.NOTIFICATION_SOUND);
@@ -2938,9 +2916,15 @@ public class NotificationManagerService extends SystemService {
                     StatusBarNotification oldSbn = (old != null) ? old.sbn : null;
                     mListeners.notifyPostedLocked(n, oldSbn);
                 } else {
+                    Slog.e(TAG, "Not posting notification without small icon: " + notification);
                     if (old != null && !old.isCanceled) {
                         mListeners.notifyRemovedLocked(n);
                     }
+                    // ATTENTION: in a future release we will bail out here
+                    // so that we do not play sounds, show lights, etc. for invalid
+                    // notifications
+                    Slog.e(TAG, "WARNING: In a future release this will crash the app: "
+                            + n.getPackageName());
                 }
 
                 buzzBeepBlinkLocked(r);
