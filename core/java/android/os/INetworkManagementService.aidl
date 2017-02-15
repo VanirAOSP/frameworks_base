@@ -459,6 +459,11 @@ interface INetworkManagementService
     /**
      * Restrict UID from accessing data/wifi
      */
+    void deleteSoftApInterface(String wlanIface);
+
+    /**
+     * Restrict UID from accessing data/wifi
+     */
     void restrictAppOnData(int uid, boolean restrict);
     void restrictAppOnWifi(int uid, boolean restrict);
 }

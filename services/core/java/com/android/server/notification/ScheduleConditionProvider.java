@@ -135,7 +135,9 @@ public class ScheduleConditionProvider extends SystemConditionProviderService {
     @Override
     public void onUnsubscribe(Uri conditionId) {
         if (DEBUG) Slog.d(TAG, "onUnsubscribe " + conditionId);
-        mSubscriptions.remove(conditionId);
+        synchronized (mSubscriptions) {
+            mSubscriptions.remove(conditionId);
+        }
         removeSnoozed(conditionId);
         evaluateSubscriptions();
     }

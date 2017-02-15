@@ -311,6 +311,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Keep track of all those APKs everywhere.
@@ -550,6 +551,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     final String[] mSeparateProcesses;
     final boolean mIsUpgrade;
     final boolean mIsPreNUpgrade;
+    final boolean mIsAlarmBoot;
     final boolean mIsPreNMR1Upgrade;
     final boolean mIsAlarmBoot;
 
@@ -2170,6 +2172,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         mSystemPermissions = systemConfig.getSystemPermissions();
         mAvailableFeatures = systemConfig.getAvailableFeatures();
         mSignatureAllowances = systemConfig.getSignatureAllowances();
+
         mProtectedPackages = new ProtectedPackages(mContext);
 
 //        synchronized (mInstallLock) {
@@ -2783,7 +2786,11 @@ public class PackageManagerService extends IPackageManager.Stub {
                         PackageManager.SYSTEM_SHARED_LIBRARY_SHARED);
             } else {
                 mRequiredVerifierPackage = null;
-                mRequiredInstallerPackage = null;
+                if (mOnlyPowerOffAlarm) {
+                    mRequiredInstallerPackage = getRequiredInstallerLPr();
+                } else {
+                    mRequiredInstallerPackage = null;
+                }
                 mRequiredUninstallerPackage = null;
                 mIntentFilterVerifierComponent = null;
                 mIntentFilterVerifier = null;

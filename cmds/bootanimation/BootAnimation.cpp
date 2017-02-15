@@ -59,9 +59,10 @@
 #include <EGL/eglext.h>
 
 #include "BootAnimation.h"
-#include "audioplay.h"
 
 #include <private/regionalization/Environment.h>
+
+#include "audioplay.h"
 
 namespace android {
 

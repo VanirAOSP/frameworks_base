@@ -134,6 +134,9 @@ public class SystemConfig {
     final ArrayMap<String, List<String>> mDisabledUntilUsedPreinstalledCarrierAssociatedApps =
             new ArrayMap<>();
 
+    final ArrayMap<Signature, ArraySet<String>> mSignatureAllowances =
+            new ArrayMap<Signature, ArraySet<String>>();
+
     public static SystemConfig getInstance() {
         synchronized (SystemConfig.class) {
             if (sInstance == null) {
@@ -195,12 +198,12 @@ public class SystemConfig {
         return mBackupTransportWhitelist;
     }
 
-    public ArrayMap<Signature, ArraySet<String>> getSignatureAllowances() {
-        return mSignatureAllowances;
-    }
-
     public ArrayMap<String, List<String>> getDisabledUntilUsedPreinstalledCarrierAssociatedApps() {
         return mDisabledUntilUsedPreinstalledCarrierAssociatedApps;
+    }
+
+    public ArrayMap<Signature, ArraySet<String>> getSignatureAllowances() {
+        return mSignatureAllowances;
     }
 
     SystemConfig() {

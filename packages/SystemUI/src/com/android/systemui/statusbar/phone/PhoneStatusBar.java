@@ -359,8 +359,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     FingerprintUnlockController mFingerprintUnlockController;
     LightStatusBarController mLightStatusBarController;
     protected LockscreenWallpaper mLockscreenWallpaper;
-    WeatherControllerImpl mWeatherController;
     SuControllerImpl mSuController;
+    WeatherControllerImpl mWeatherController;
 
     int mNaturalBarHeight = -1;
 
@@ -1087,8 +1087,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mKeyguardStatusBar.setBatteryController(mBatteryController);
         mHeader.setWeatherController(mWeatherController);
 
-        mNotificationPanel.setWeatherController(mWeatherController);
-
         mReportRejectedTouch = mStatusBarWindow.findViewById(R.id.report_rejected_touch);
         if (mReportRejectedTouch != null) {
             updateReportRejectedTouchVisibility();
@@ -1118,6 +1116,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             });
         }
 
+
+        mNotificationPanel.setWeatherController(mWeatherController);
 
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mBroadcastReceiver.onReceive(mContext,

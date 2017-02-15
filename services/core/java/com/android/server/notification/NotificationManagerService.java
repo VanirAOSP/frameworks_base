@@ -96,6 +96,7 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
@@ -997,6 +998,27 @@ public class NotificationManagerService extends SystemService {
                 mSystemNotificationSound = Settings.System.getString(resolver,
                         Settings.System.NOTIFICATION_SOUND);
             }
+
+            // Notification LED brightness
+            if (mAdjustableNotificationLedBrightness) {
+                mNotificationLedBrightnessLevel = CMSettings.System.getIntForUser(resolver,
+                        CMSettings.System.NOTIFICATION_LIGHT_BRIGHTNESS_LEVEL,
+                        LIGHT_BRIGHTNESS_MAXIMUM, UserHandle.USER_CURRENT);
+            }
+
+            // Multiple LEDs enabled
+            if (mMultipleNotificationLeds) {
+                mMultipleLedsEnabledSetting = (CMSettings.System.getIntForUser(resolver,
+                        CMSettings.System.NOTIFICATION_LIGHT_MULTIPLE_LEDS_ENABLE,
+                        mMultipleNotificationLeds ? 1 : 0, UserHandle.USER_CURRENT) != 0);
+            }
+
+            // Notification lights with screen on
+            mScreenOnEnabled = (CMSettings.System.getIntForUser(resolver,
+                    CMSettings.System.NOTIFICATION_LIGHT_SCREEN_ON,
+                    mScreenOnDefault ? 1 : 0, UserHandle.USER_CURRENT) != 0);
+
+            updateNotificationPulse();
         }
     }
 

@@ -625,6 +625,21 @@ public class NetworkManagementService extends INetworkManagementService.Stub
     }
 
     /**
+     * Notify our observers of a change in the data activity state of the interface
+     */
+    private void notifyInterfaceMessage(String message) {
+        final int length = mObservers.beginBroadcast();
+        for (int i = 0; i < length; i++) {
+            try {
+                mObservers.getBroadcastItem(i).interfaceMessageRecevied(message);
+            } catch (RemoteException e) {
+            } catch (RuntimeException e) {
+            }
+        }
+        mObservers.finishBroadcast();
+    }
+
+    /**
      * Prepare native daemon once connected, enabling modules and pushing any
      * existing in-memory rules.
      */
@@ -888,7 +903,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
                     }
                     throw new IllegalStateException(errorMessage);
                     // break;
-             case NetdResponseCode.InterfaceMessage:
+            case NetdResponseCode.InterfaceMessage:
                     /*
                      * An message arrived in network interface.
                      * Format: "NNN IfaceMessage <3>AP-STA-CONNECTED 00:08:22:64:9d:84
@@ -903,7 +918,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
                         notifyInterfaceMessage(cooked[4]);
                     }
                     return true;
-                // break;
+                    // break;
             case NetdResponseCode.InterfaceClassActivity:
                     /*
                      * An network interface class state changed (active/idle)
@@ -1598,7 +1613,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
                     SOFT_AP_COMMAND_SUCCESS, logMsg);
 
             logMsg = "startAccessPoint Error starting softap";
-            args = new Object[] {"startap"};
+            args = new Object[] {"startap", wlanIface};
             executeOrLogWithMessage(SOFT_AP_COMMAND, args, NetdResponseCode.SoftapStatusResult,
                     SOFT_AP_COMMAND_SUCCESS, logMsg);
         } catch (NativeDaemonConnectorException e) {
@@ -2984,7 +2999,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
             }
         }
     };
-
+	
     @Override
     public int removeRoutesFromLocalNetwork(List<RouteInfo> routes) {
         int failures = 0;
