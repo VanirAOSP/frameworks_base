@@ -822,8 +822,8 @@ void AssetManager::addSystemOverlays(const char* pathOverlaysList,
         if (oap.path.find(OVERLAY_DIR) != -1) {
            const_cast<AssetManager*>(this)->mZipSet.closeZipFromPath(oap.path);
            ALOGD("close: %s and reset entry\n", oap.path.string());
-        }
-    }
+      }
+  }
 
 #ifndef _WIN32
     TEMP_FAILURE_RETRY(flock(fileno(fin), LOCK_UN));
