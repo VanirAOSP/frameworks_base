@@ -1615,6 +1615,7 @@ final class Settings {
                                 false,  // suspended
                                 null, null, null,
                                 false, // blockUninstall
+
                                 INTENT_FILTER_DOMAIN_VERIFICATION_STATUS_UNDEFINED, 0, null,
                                 null,
                                 null
