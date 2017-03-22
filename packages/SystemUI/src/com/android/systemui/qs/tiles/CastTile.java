@@ -35,8 +35,6 @@ import com.android.systemui.statusbar.policy.CastController;
 import com.android.systemui.statusbar.policy.CastController.CastDevice;
 import com.android.systemui.statusbar.policy.KeyguardMonitor;
 
-import cyanogenmod.app.StatusBarPanelCustomTile;
-
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -204,11 +202,6 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
         @Override
         public int getMetricsCategory() {
             return MetricsEvent.QS_CAST_DETAILS;
-        }
-
-        @Override
-        public StatusBarPanelCustomTile getCustomTile() {
-            return null;
         }
 
         @Override

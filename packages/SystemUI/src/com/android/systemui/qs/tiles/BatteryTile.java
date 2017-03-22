@@ -44,8 +44,6 @@ import com.android.systemui.qs.QSIconView;
 import com.android.systemui.qs.QSTile;
 import com.android.systemui.statusbar.policy.BatteryController;
 
-import cyanogenmod.app.StatusBarPanelCustomTile;
-
 import java.text.NumberFormat;
 
 public class BatteryTile extends QSTile<QSTile.State> implements BatteryController.BatteryStateChangeCallback {
@@ -285,11 +283,6 @@ public class BatteryTile extends QSTile<QSTile.State> implements BatteryControll
         @Override
         public int getMetricsCategory() {
             return MetricsEvent.QS_BATTERY_DETAIL;
-        }
-
-        @Override
-        public StatusBarPanelCustomTile getCustomTile() {
-            return null;
         }
 
         @Override
