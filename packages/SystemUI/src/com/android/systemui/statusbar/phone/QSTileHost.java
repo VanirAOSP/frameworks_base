@@ -461,7 +461,7 @@ public class QSTileHost implements QSTile.Host, Tunable {
         final int NA = newTiles.size();
         for (int i = 0; i < NP; i++) {
             String tileSpec = previousTiles.get(i);
-            if (!tileSpec.startsWith(CustomTile.PREFIX)) continue;
+            if (tileSpec == null || !tileSpec.startsWith(CustomTile.PREFIX)) continue;
             if (!newTiles.contains(tileSpec)) {
                 ComponentName component = CustomTile.getComponentFromSpec(tileSpec);
                 Intent intent = new Intent().setComponent(component);
