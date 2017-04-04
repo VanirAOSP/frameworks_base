@@ -593,6 +593,7 @@ public class NavigationBarView extends LinearLayout implements TunerService.Tuna
 
         mDeadZone = (DeadZone) mCurrentView.findViewById(R.id.deadzone);
         mDeadZone.setStartFromRight(mLeftInLandscape);
+        mDeadZone.setDisplayRotation(mCurrentRotation);
 
         // force the low profile & disabled states into compliance
         mBarTransitions.init();
@@ -605,6 +606,8 @@ public class NavigationBarView extends LinearLayout implements TunerService.Tuna
 
         updateTaskSwitchHelper();
         setNavigationIconHints(mNavigationIconHints, true);
+
+        getHomeButton().setVertical(mVertical);
     }
 
     private void updateTaskSwitchHelper() {

@@ -24,6 +24,7 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Slog;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 
 import com.android.systemui.R;
@@ -55,6 +56,7 @@ public class DeadZone extends View {
     private boolean mVertical;
     private boolean mStartFromRight;
     private long mLastPokeTime;
+    private int mDisplayRotation;
 
     private final Runnable mDebugFlash = new Runnable() {
         @Override
@@ -133,19 +135,21 @@ public class DeadZone extends View {
                 Slog.v(TAG, this + " ACTION_DOWN: " + event.getX() + "," + event.getY());
             }
             int size = (int) getSize(event.getEventTime());
-            boolean isCaptured;
+            boolean consumeEvent;
             if (mVertical && mStartFromRight) {
                 // Landscape on the left side of the screen
                 float pixelsFromRight = getWidth() - event.getX();
-                isCaptured = 0 <= pixelsFromRight && pixelsFromRight < size;
+                consumeEvent = 0 <= pixelsFromRight && pixelsFromRight < size;
             } else if (mVertical) {
-                // Landscape
-                isCaptured = event.getX() < size;
+                if (mDisplayRotation == Surface.ROTATION_270) {
+                    consumeEvent = event.getX() > getWidth() - size;
+                } else {
+                    consumeEvent = event.getX() < size;
+                }
             } else {
-                // Portrait
-                isCaptured = event.getY() < size;
+                consumeEvent = event.getY() < size;
             }
-            if (isCaptured) {
+            if (consumeEvent) {
                 if (CHATTY) {
                     Slog.v(TAG, "consuming errant click: (" + event.getX() + "," + event.getY() + ")");
                 }
@@ -191,10 +195,12 @@ public class DeadZone extends View {
             // Landscape on the left side of the screen
             can.clipRect(can.getWidth() - size, 0, can.getWidth(), can.getHeight());
         } else if (mVertical) {
-            // Landscape
-            can.clipRect(0, 0, size, can.getHeight());
+            if (mDisplayRotation == Surface.ROTATION_270) {
+                can.clipRect(can.getWidth() - size, 0, can.getWidth(), can.getHeight());
+            } else {
+                can.clipRect(0, 0, size, can.getHeight());
+            }
         } else {
-            // Portrait
             can.clipRect(0, 0, can.getWidth(), size);
         }
 
@@ -204,5 +210,9 @@ public class DeadZone extends View {
         if (DEBUG && size > mSizeMin)
             // crazy aggressive redrawing here, for debugging only
             postInvalidateDelayed(100);
+    }
+
+    public void setDisplayRotation(int rotation) {
+        mDisplayRotation = rotation;
     }
 }
