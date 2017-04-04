@@ -135,19 +135,21 @@ public class DeadZone extends View {
                 Slog.v(TAG, this + " ACTION_DOWN: " + event.getX() + "," + event.getY());
             }
             int size = (int) getSize(event.getEventTime());
-            boolean isCaptured;
+            boolean consumeEvent;
             if (mVertical && mStartFromRight) {
                 // Landscape on the left side of the screen
                 float pixelsFromRight = getWidth() - event.getX();
-                isCaptured = 0 <= pixelsFromRight && pixelsFromRight < size;
+                consumeEvent = 0 <= pixelsFromRight && pixelsFromRight < size;
             } else if (mVertical) {
-                // Landscape
-                isCaptured = event.getX() < size;
+                if (mDisplayRotation == Surface.ROTATION_270) {
+                    consumeEvent = event.getX() > getWidth() - size;
+                } else {
+                    consumeEvent = event.getX() < size;
+                }
             } else {
-                // Portrait
-                isCaptured = event.getY() < size;
+                consumeEvent = event.getY() < size;
             }
-            if (isCaptured) {
+            if (consumeEvent) {
                 if (CHATTY) {
                     Slog.v(TAG, "consuming errant click: (" + event.getX() + "," + event.getY() + ")");
                 }
@@ -193,10 +195,12 @@ public class DeadZone extends View {
             // Landscape on the left side of the screen
             can.clipRect(can.getWidth() - size, 0, can.getWidth(), can.getHeight());
         } else if (mVertical) {
-            // Landscape
-            can.clipRect(0, 0, size, can.getHeight());
+            if (mDisplayRotation == Surface.ROTATION_270) {
+                can.clipRect(can.getWidth() - size, 0, can.getWidth(), can.getHeight());
+            } else {
+                can.clipRect(0, 0, size, can.getHeight());
+            }
         } else {
-            // Portrait
             can.clipRect(0, 0, can.getWidth(), size);
         }
 

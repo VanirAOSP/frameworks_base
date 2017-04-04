@@ -84,10 +84,6 @@
     <protected-broadcast android:name="android.intent.action.USER_INITIALIZE" />
     <protected-broadcast android:name="android.intent.action.INTENT_FILTER_NEEDS_VERIFICATION" />
     <protected-broadcast android:name="android.intent.action.SU_SESSION_CHANGED" />
-    <protected-broadcast android:name="android.intent.action.OVERLAY_ADDED" />
-    <protected-broadcast android:name="android.intent.action.OVERLAY_CHANGED" />
-    <protected-broadcast android:name="android.intent.action.OVERLAY_REMOVED" />
-    <protected-broadcast android:name="android.intent.action.OVERLAY_PRIORITY_CHANGED" />
 
     <protected-broadcast android:name="Auth_password_wrong" />
     <protected-broadcast android:name="android.os.action.POWER_SAVE_MODE_CHANGED" />
@@ -519,7 +515,6 @@
     <protected-broadcast android:name="com.android.server.retaildemo.ACTION_RESET_DEMO" />
 
     <protected-broadcast android:name="cyanogenmod.intent.action.LID_STATE_CHANGED" />
-
     <!-- ====================================================================== -->
     <!--                          RUNTIME PERMISSIONS                           -->
     <!-- ====================================================================== -->
@@ -3168,13 +3163,6 @@
     <permission android:name="android.permission.SUBSTITUTE_NOTIFICATION_APP_NAME"
                 android:protectionLevel="signature|privileged" />
 
-    <!-- Allows an application to make calls to OverlayManagerService.
-         @hide -->
-    <permission android:name="android.permission.MODIFY_OVERLAYS"
-        android:label="@string/permlab_modifyOverlays"
-        android:description="@string/permdesc_modifyOverlays"
-        android:protectionLevel="normal" />
-
     <application android:process="system"
                  android:persistent="true"
                  android:hasCode="false"
@@ -3221,7 +3209,7 @@
                 android:label="@string/managed_profile_label">
         </activity-alias>
         <activity android:name="com.android.internal.app.HeavyWeightSwitcherActivity"
-                android:theme="@style/HeavyWeightSwitcherActivityTheme"
+                android:theme="@style/Theme.DeviceDefault.Light.Dialog"
                 android:label="@string/heavy_weight_switcher_title"
                 android:finishOnCloseSystemDialogs="true"
                 android:excludeFromRecents="true"
@@ -3254,7 +3242,7 @@
         <activity android:name="android.accounts.ChooseAccountActivity"
                 android:excludeFromRecents="true"
                 android:exported="true"
-                android:theme="@style/ChooseAccountActivityTheme"
+                android:theme="@style/Theme.DeviceDefault.Light.Dialog"
                 android:label="@string/choose_account_label"
                 android:process=":ui">
         </activity>
@@ -3262,14 +3250,14 @@
         <activity android:name="android.accounts.ChooseTypeAndAccountActivity"
                 android:excludeFromRecents="true"
                 android:exported="true"
-                android:theme="@style/ChooseTypeAndAccountActivityTheme"
+                android:theme="@style/Theme.DeviceDefault.Light.Dialog"
                 android:label="@string/choose_account_label"
                 android:process=":ui">
         </activity>
 
         <activity android:name="android.accounts.ChooseAccountTypeActivity"
                 android:excludeFromRecents="true"
-                android:theme="@style/ChooseAccountTypeActivityTheme"
+                android:theme="@style/Theme.DeviceDefault.Light.Dialog"
                 android:label="@string/choose_account_label"
                 android:process=":ui">
         </activity>
@@ -3277,19 +3265,19 @@
         <activity android:name="android.accounts.CantAddAccountActivity"
                 android:excludeFromRecents="true"
                 android:exported="true"
-                android:theme="@style/CantAddAccountActivityTheme"
+                android:theme="@style/Theme.DeviceDefault.Light.Dialog.NoActionBar"
                 android:process=":ui">
         </activity>
 
         <activity android:name="android.accounts.GrantCredentialsPermissionActivity"
                 android:excludeFromRecents="true"
                 android:exported="true"
-                android:theme="@style/GrantCredentialsPermissionActivityTheme"
+                android:theme="@style/Theme.DeviceDefault.Light.DialogWhenLarge"
                 android:process=":ui">
         </activity>
 
         <activity android:name="android.content.SyncActivityTooManyDeletes"
-               android:theme="@style/SyncActivityTooManyDeletesTheme"
+               android:theme="@style/Theme.DeviceDefault.Light.Dialog"
                android:label="@string/sync_too_many_deletes"
                android:process=":ui">
         </activity>
@@ -3309,7 +3297,7 @@
         </activity>
 
         <activity android:name="com.android.internal.app.NetInitiatedActivity"
-                android:theme="@style/NetInitiatedActivityTheme"
+                android:theme="@style/Theme.DeviceDefault.Light.Dialog.Alert"
                 android:excludeFromRecents="true"
                 android:process=":ui">
         </activity>
@@ -3330,7 +3318,7 @@
         <activity android:name="com.android.internal.app.ConfirmUserCreationActivity"
                 android:excludeFromRecents="true"
                 android:process=":ui"
-                android:theme="@style/ConfirmUserCreationActivityTheme">
+                android:theme="@style/Theme.DeviceDefault.Light.Dialog.Alert">
             <intent-filter android:priority="1000">
                 <action android:name="android.os.action.CREATE_USER" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -3338,7 +3326,7 @@
         </activity>
 
         <activity android:name="com.android.internal.app.UnlaunchableAppActivity"
-                android:theme="@style/UnlaunchableAppActivityTheme"
+                android:theme="@style/Theme.DeviceDefault.Light.Dialog.Alert"
                 android:excludeFromRecents="true"
                 android:process=":ui">
         </activity>

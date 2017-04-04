@@ -73,7 +73,6 @@ public class PowerUI extends SystemUI {
 
     // For filtering ACTION_POWER_DISCONNECTED on boot
     private boolean mIgnoredFirstPowerBroadcast;
-
     private float mThresholdTemp;
     private float[] mRecentTemps = new float[MAX_RECENT_TEMPS];
     private int mNumTemps;

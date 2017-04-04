@@ -109,7 +109,7 @@ public class ZygoteInit {
     private static final String PRELOADED_CLASSES = "/system/etc/preloaded-classes";
 
     /** Controls whether we should preload resources during zygote init. */
-    public static final boolean PRELOAD_RESOURCES = false;
+    public static final boolean PRELOAD_RESOURCES = true;
 
     /**
      * Registers a server socket for zygote command connections
@@ -440,8 +440,6 @@ public class ZygoteInit {
                     Log.i(TAG, "...preloaded " + N + " resource in "
                             + (SystemClock.uptimeMillis() - startTime) + "ms.");
                 }
-            } else {
-                Log.i(TAG, "Preload resources disabled, skipped.");
             }
             mResources.finishPreloading();
         } catch (RuntimeException e) {

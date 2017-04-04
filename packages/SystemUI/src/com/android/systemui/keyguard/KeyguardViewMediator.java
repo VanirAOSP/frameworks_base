@@ -67,9 +67,9 @@ import android.view.animation.AnimationUtils;
 
 import cyanogenmod.app.Profile;
 import cyanogenmod.app.ProfileManager;
+
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
-
 import com.android.internal.policy.IKeyguardDrawnCallback;
 import com.android.internal.policy.IKeyguardExitCallback;
 import com.android.internal.policy.IKeyguardStateCallback;
@@ -669,6 +669,7 @@ public class KeyguardViewMediator extends SystemUI {
         mShowKeyguardWakeLock = mPM.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "show keyguard");
         mShowKeyguardWakeLock.setReferenceCounted(false);
         mProfileManager = ProfileManager.getInstance(mContext);
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(DELAYED_KEYGUARD_ACTION);
         filter.addAction(DELAYED_LOCK_PROFILE_ACTION);

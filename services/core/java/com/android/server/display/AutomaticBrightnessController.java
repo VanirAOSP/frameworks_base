@@ -47,12 +47,18 @@ class AutomaticBrightnessController {
     // If true, enables the use of the screen auto-brightness adjustment setting.
     private static final boolean USE_SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT = true;
 
+    // Hysteresis constraints for brightening or darkening.
+    // The recent lux must have changed by at least this fraction relative to the
+    // current ambient lux before a change will be considered.
+    private static final float BRIGHTENING_LIGHT_HYSTERESIS = 0.10f;
+    private static final float DARKENING_LIGHT_HYSTERESIS = 0.20f;
+
     // Threshold (in lux) to select between normal and fast debounce time.
     // If the difference between last sample and weighted value is larger than this value,
     // fast debounce is used.
     private static final float BRIGHTENING_FAST_THRESHOLD = 1000f;
 
-   // How long the current sensor reading is assumed to be valid beyond the current time.
+    // How long the current sensor reading is assumed to be valid beyond the current time.
     // This provides a bit of prediction, as well as ensures that the weight for the last sample is
     // non-zero, which in turn ensures that the total weight is non-zero.
     private static final long AMBIENT_LIGHT_PREDICTION_TIME_MILLIS = 100;
@@ -336,6 +342,7 @@ class AutomaticBrightnessController {
     private void handleLightSensorEvent(long time, float lux) {
         mHandler.removeMessages(MSG_UPDATE_AMBIENT_LUX);
 
+        if (DEBUG) Slog.d(TAG, "handleLightSensorEvent: time=" + time + ", lux=" + lux);
         if (mAmbientLightRingBuffer.size() == 0) {
             // switch to using the steady-state sample rate after grabbing the initial light sample
             adjustLightSensorRate(mNormalLightSensorRate);

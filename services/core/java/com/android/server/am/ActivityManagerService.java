@@ -190,7 +190,6 @@ import android.os.UpdateLock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.WorkSource;
-import android.provider.Downloads;
 import android.os.storage.IMountService;
 import android.os.storage.MountServiceInternal;
 import android.os.storage.StorageManager;
@@ -512,8 +511,6 @@ public final class ActivityManagerService extends ActivityManagerNative
     // Assumes logcat entries average around 100 bytes; that's not perfect stack traces count
     // as one line, but close enough for now.
     static final int RESERVED_BYTES_PER_LOGCAT_LINE = 100;
-
-    static final String PROP_REFRESH_THEME = "sys.refresh_theme";
 
     // Access modes for handleIncomingUser.
     static final int ALLOW_NON_FULL = 0;
@@ -3958,13 +3955,6 @@ public final class ActivityManagerService extends ActivityManagerNative
                 mNativeDebuggingApp = null;
             }
 
-            //Check if zygote should refresh its fonts
-            boolean refreshTheme = false;
-            if (SystemProperties.getBoolean(PROP_REFRESH_THEME, false)) {
-                SystemProperties.set(PROP_REFRESH_THEME, "false");
-                refreshTheme = true;
-            }
-
             String requiredAbi = (abiOverride != null) ? abiOverride : app.info.primaryCpuAbi;
             if (requiredAbi == null) {
                 requiredAbi = Build.SUPPORTED_ABIS[0];
@@ -3989,7 +3979,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             Process.ProcessStartResult startResult = Process.start(entryPoint,
                     app.processName, uid, uid, gids, debugFlags, mountExternal,
                     app.info.targetSdkVersion, app.info.seinfo, requiredAbi, instructionSet,
-                    app.info.dataDir, refreshTheme, entryPointArgs);
+                    app.info.dataDir, entryPointArgs);
             checkTime(startTime, "startProcess: returned from zygote!");
             Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
 
@@ -8772,12 +8762,6 @@ public final class ActivityManagerService extends ActivityManagerNative
                     // Only inspect grants matching package
                     if (packageName == null || perm.sourcePkg.equals(packageName)
                             || perm.targetPkg.equals(packageName)) {
-                        // Hacky solution as part of fixing a security bug; ignore
-                        // grants associated with DownloadManager so we don't have
-                        // to immediately launch it to regrant the permissions
-                        if (Downloads.Impl.AUTHORITY.equals(perm.uri.uri.getAuthority())
-                                && !persistable) continue;
-
                         persistChanged |= perm.revokeModes(persistable
                                 ? ~0 : ~Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION, true);
 
@@ -10619,46 +10603,6 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
         }
         return providers;
-    }
-
-    /**
-     * Check if the calling UID has a possible chance at accessing the provider
-     * at the given authority and user.
-     */
-    public String checkContentProviderAccess(String authority, int userId) {
-        if (userId == UserHandle.USER_ALL) {
-            mContext.enforceCallingOrSelfPermission(
-                    Manifest.permission.INTERACT_ACROSS_USERS_FULL, TAG);
-            userId = UserHandle.getCallingUserId();
-        }
-
-        ProviderInfo cpi = null;
-        try {
-            cpi = AppGlobals.getPackageManager().resolveContentProvider(authority,
-                    STOCK_PM_FLAGS | PackageManager.GET_URI_PERMISSION_PATTERNS
-                            | PackageManager.MATCH_DIRECT_BOOT_AWARE
-                            | PackageManager.MATCH_DIRECT_BOOT_UNAWARE,
-                    userId);
-        } catch (RemoteException ignored) {
-        }
-        if (cpi == null) {
-            // TODO: make this an outright failure in a future platform release;
-            // until then anonymous content notifications are unprotected
-            //return "Failed to find provider " + authority + " for user " + userId;
-            return null;
-        }
-
-        ProcessRecord r = null;
-        synchronized (mPidsSelfLocked) {
-            r = mPidsSelfLocked.get(Binder.getCallingPid());
-        }
-        if (r == null) {
-            return "Failed to find PID " + Binder.getCallingPid();
-        }
-
-        synchronized (this) {
-            return checkContentProviderPermissionLocked(cpi, r, userId, true);
-        }
     }
 
     /**
@@ -19385,57 +19329,6 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     /**
-     * @hide
-     */
-    @Override
-    public void updateAssets(final int userId, @NonNull final List<String> packageNames) {
-        enforceCallingPermission(android.Manifest.permission.CHANGE_CONFIGURATION, "updateAssets()");
-
-        synchronized(this) {
-            final long origId = Binder.clearCallingIdentity();
-            try {
-                updateAssetsLocked(userId, packageNames);
-            } finally {
-                Binder.restoreCallingIdentity(origId);
-            }
-        }
-    }
-
-    void updateAssetsLocked(final int userId, @NonNull final List<String> packagesToUpdate) {
-        final IPackageManager pm = AppGlobals.getPackageManager();
-        final Map<String, ApplicationInfo> cache = new ArrayMap<>();
-
-        final boolean updateFrameworkRes = packagesToUpdate.contains("android");
-        for (int i = mLruProcesses.size() - 1; i >= 0; i--) {
-            final ProcessRecord app = mLruProcesses.get(i);
-            if (app.userId != userId || app.thread == null) {
-                continue;
-            }
-
-            for (final String packageName : app.pkgList.keySet()) {
-                if (updateFrameworkRes || packagesToUpdate.contains(packageName)) {
-                    try {
-                        final ApplicationInfo ai;
-                        if (cache.containsKey(packageName)) {
-                            ai = cache.get(packageName);
-                        } else {
-                            ai = pm.getApplicationInfo(packageName, 0, userId);
-                            cache.put(packageName, ai);
-                        }
-
-                        if (ai != null) {
-                            app.thread.scheduleAssetsChanged(packageName, ai);
-                        }
-                    } catch (RemoteException e) {
-                        Slog.w(TAG, String.format("Failed to update %s assets for %s",
-                                    packageName, app));
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Decide based on the configuration whether we should shouw the ANR,
      * crash, etc dialogs.  The idea is that if there is no affordence to
      * press the on-screen buttons, or the user experience would be more
@@ -22267,11 +22160,6 @@ public final class ActivityManagerService extends ActivityManagerNative
                 ActivityManagerService.this.grantUriPermissionFromIntentLocked(callingUid,
                         targetPkg, intent, null, targetUserId);
             }
-        }
-
-        @Override
-        public String checkContentProviderAccess(String authority, int userId) {
-            return ActivityManagerService.this.checkContentProviderAccess(authority, userId);
         }
 
         @Override

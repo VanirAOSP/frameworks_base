@@ -60,7 +60,6 @@ public abstract class ActivityManagerInternal {
      */
     public static final int APP_TRANSITION_TIMEOUT = 3;
 
-    /**
      * Grant Uri permissions from one app to another. This method only extends
      * permission grants if {@code callingUid} has permission to them.
      */
@@ -68,10 +67,6 @@ public abstract class ActivityManagerInternal {
             Intent intent, int targetUserId);
 
     /**
-     * Verify that calling app has access to the given provider.
-     */
-    public abstract String checkContentProviderAccess(String authority, int userId);
-
     // Called by the power manager.
     public abstract void onWakefulnessChanged(int wakefulness);
 

@@ -767,12 +767,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // (See Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR.)
     int mIncallPowerBehavior;
 
-    // Behavior of Back button while in-call and screen on
-    int mIncallBackBehavior;
-
     // Behavior of HOME button during an incoming call.
     // (See CMSettings.Secure.RING_HOME_BUTTON_BEHAVIOR.)
     private int mRingHomeBehavior;
+
+    // Behavior of Back button while in-call and screen on
+    int mIncallBackBehavior;
 
     Display mDisplay;
 
@@ -865,10 +865,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int MSG_SHOW_TV_PICTURE_IN_PICTURE_MENU = 17;
     private static final int MSG_BACK_LONG_PRESS = 18;
     private static final int MSG_DISPOSE_INPUT_CONSUMER = 19;
-    private static final int MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK = 20;
-    private static final int MSG_CAMERA_LONG_PRESS = 21;
-    private static final int MSG_TOGGLE_TORCH = 22;
-    private static final int MSG_BACK_DELAYED_PRESS = 23;
+    private static final int MSG_BACK_DELAYED_PRESS = 20;
+    private static final int MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK = 21;
+    private static final int MSG_CAMERA_LONG_PRESS = 22;
+    private static final int MSG_TOGGLE_TORCH = 23;
 
     private static final int MSG_REQUEST_TRANSIENT_BARS_ARG_STATUS = 0;
     private static final int MSG_REQUEST_TRANSIENT_BARS_ARG_NAVIGATION = 1;
@@ -2459,10 +2459,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     CMSettings.Secure.RING_HOME_BUTTON_BEHAVIOR,
                     CMSettings.Secure.RING_HOME_BUTTON_BEHAVIOR_DEFAULT,
                     UserHandle.USER_CURRENT);
-            mIncallBackBehavior = Settings.Secure.getIntForUser(resolver,
-                    Settings.Secure.INCALL_BACK_BUTTON_BEHAVIOR,
-                    Settings.Secure.INCALL_BACK_BUTTON_BEHAVIOR_DEFAULT,
-                    UserHandle.USER_CURRENT);
             mTorchLongPressPowerEnabled = CMSettings.System.getIntForUser(
                     resolver, CMSettings.System.TORCH_LONG_PRESS_POWER_GESTURE, 0,
                     UserHandle.USER_CURRENT) == 1;
@@ -2495,6 +2491,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     CMSettings.System.VOLBTN_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) == 1);
             mVolumeAnswerCall = CMSettings.System.getIntForUser(resolver,
                     CMSettings.System.VOLUME_ANSWER_CALL, 0, UserHandle.USER_CURRENT) == 1;
+            mIncallBackBehavior = Settings.Secure.getIntForUser(resolver,
+                    Settings.Secure.INCALL_BACK_BUTTON_BEHAVIOR,
+                    Settings.Secure.INCALL_BACK_BUTTON_BEHAVIOR_DEFAULT,
+                    UserHandle.USER_CURRENT);
 
             // Configure wake gesture.
             boolean wakeGestureEnabledSetting = Settings.Secure.getIntForUser(resolver,

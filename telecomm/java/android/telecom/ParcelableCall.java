@@ -66,8 +66,8 @@ public final class ParcelableCall implements Parcelable {
             List<String> cannedSmsResponses,
             int capabilities,
             int properties,
-            int supportedAudioRoutes,
             long createTimeMillis,
+            int supportedAudioRoutes,
             long connectTimeMillis,
             Uri handle,
             int handlePresentation,
@@ -90,8 +90,8 @@ public final class ParcelableCall implements Parcelable {
         mCannedSmsResponses = cannedSmsResponses;
         mCapabilities = capabilities;
         mProperties = properties;
-        mSupportedAudioRoutes = supportedAudioRoutes;
         mCreateTimeMillis = createTimeMillis;
+        mSupportedAudioRoutes = supportedAudioRoutes;
         mConnectTimeMillis = connectTimeMillis;
         mHandle = handle;
         mHandlePresentation = handlePresentation;
@@ -317,8 +317,8 @@ public final class ParcelableCall implements Parcelable {
                     cannedSmsResponses,
                     capabilities,
                     properties,
-                    supportedAudioRoutes,
                     createTimeMillis,
+                    supportedAudioRoutes,
                     connectTimeMillis,
                     handle,
                     handlePresentation,

@@ -147,7 +147,7 @@ public interface BluetoothProfile {
      * the largest value assigned to a profile.
      * @hide
      */
-    public static final int MAX_PROFILE_ID = 17;
+    public static final int MAX_PROFILE_ID = 21;
 
     /**
      * Default priority for devices that we try to auto-connect to and

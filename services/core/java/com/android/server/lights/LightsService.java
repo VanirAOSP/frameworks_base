@@ -1,4 +1,5 @@
-/* * Copyright (C) 2008 The Android Open Source Project
+/*
+ * Copyright (C) 2008 The Android Open Source Project
  * Copyright (C) 2015 The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -147,7 +148,7 @@ public class LightsService extends SystemService {
                 brightnessMode = mLastBrightnessMode;
             }
 
-            if ((color != mColor || mode != mMode || onMS != mOnMS || offMS != mOffMS ||
+            if ((mModesUpdate || color != mColor || mode != mMode || onMS != mOnMS || offMS != mOffMS ||
                     mBrightnessMode != brightnessMode || mReset)) {
                 if (DEBUG) Slog.v(TAG, "setLight #" + mId + ": color=#"
                         + Integer.toHexString(color) + ": brightnessMode=" + brightnessMode);
@@ -184,11 +185,12 @@ public class LightsService extends SystemService {
         private int mBrightnessMode;
         private int mLastBrightnessMode;
         private int mLastColor;
-        private boolean mVrModeEnabled;
-        private boolean mUseLowPersistenceForVR;
+        private boolean mLocked;
+        private boolean mModesUpdate;
         private boolean mMultipleLeds;
         private boolean mReset = true;
-        private boolean mModesUpdate;
+        private boolean mVrModeEnabled;
+        private boolean mUseLowPersistenceForVR;
     }
 
     public LightsService(Context context) {

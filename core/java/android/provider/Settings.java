@@ -6612,22 +6612,16 @@ public final class Settings {
         public static final String ADVANCED_REBOOT = "advanced_reboot";
 
         /**
-         * Has this pairable device been paired or upgraded from a previously paired system.
-         * @hide
-         */
-        public static final String DEVICE_PAIRED = "device_paired";
-
-        /**
          * Boolean value whether to link ringtone and notification volume
          * @hide
          */
         public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
 
         /**
-         * Force authorize Substratum (or equivalent) frontend calling packages by Masquerade
+         * Has this pairable device been paired or upgraded from a previously paired system.
          * @hide
          */
-        public static final String FORCE_AUTHORIZE_SUBSTRATUM_PACKAGES = "force_authorize_substratum_packages";
+        public static final String DEVICE_PAIRED = "device_paired";
 
         /**
          * This are the settings to be backed up.

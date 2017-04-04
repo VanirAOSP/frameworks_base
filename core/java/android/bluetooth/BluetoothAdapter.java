@@ -900,6 +900,7 @@ public final class BluetoothAdapter {
      */
     @RequiresPermission(Manifest.permission.BLUETOOTH_ADMIN)
     public boolean enable() {
+        android.util.SeempLog.record(56);
         if (isEnabled()) {
             if (DBG) Log.d(TAG, "enable(): BT already enabled!");
             return true;

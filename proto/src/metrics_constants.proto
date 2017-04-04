@@ -2219,17 +2219,16 @@ message MetricsEvent {
     // OS: N-MR2
     ACTION_LOCK_BECAUSE_SIM_REMOVED = 497;
 
-    // OPEN: QS NFC tile shown
-    // ACTION: QS NFC tile tapped
-    // CATEGORY: QUICK_SETTINGS
-    QS_NFC = 499;
-
-
     // ACTION: QS Brightness Slider (with auto brightness disabled, and VR enabled)
     //   SUBTYPE: slider value
     // CATEGORY: QUICK_SETTINGS
     // OS: 6.0
     ACTION_BRIGHTNESS_FOR_VR = 498;
+
+    // OPEN: QS NFC tile shown
+    // ACTION: QS NFC tile tapped
+    // CATEGORY: QUICK_SETTINGS
+    QS_NFC = 498;
 
     // ACTION: A captive portal was detected during network validation
     // CATEGORY: NOTIFICATION

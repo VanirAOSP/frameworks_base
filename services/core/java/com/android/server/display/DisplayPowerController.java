@@ -396,9 +396,10 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
                         lightSensorWarmUpTimeConfig, screenBrightnessRangeMinimum,
                         mScreenBrightnessRangeMaximum, dozeScaleFactor, lightSensorRate,
                         initialLightSensorRate, brighteningLightDebounce, brighteningLightFastDebounce,
-                        darkeningLightDebounce, autoBrightnessResetAmbientLuxAfterWarmUp, ambientLightHorizon,
-                        autoBrightnessAdjustmentMaxGamma, mUseActiveDozeLightSensorConfig,
+                        darkeningLightDebounce, autoBrightnessResetAmbientLuxAfterWarmUp,
+                        ambientLightHorizon, autoBrightnessAdjustmentMaxGamma, mUseActiveDozeLightSensorConfig,
                         useNewSensorSamplesForDoze, luxLevels);
+
             }
         }
 

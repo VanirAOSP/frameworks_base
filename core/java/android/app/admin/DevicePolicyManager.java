@@ -6636,6 +6636,26 @@ public class DevicePolicyManager {
     }
 
     /**
+     * CM: check if secure keyguard is required
+     * @hide
+     */
+    public boolean requireSecureKeyguard() {
+        return requireSecureKeyguard(UserHandle.myUserId());
+    }
+
+    /** @hide */
+    public boolean requireSecureKeyguard(int userHandle) {
+        if (mService != null) {
+            try {
+                return mService.requireSecureKeyguard(userHandle);
+            } catch (RemoteException e) {
+                Log.w(TAG, "Failed to get secure keyguard requirement");
+            }
+        }
+        return true;
+    }
+
+    /**
      * Called by a device owner to control the network logging feature. Logging can only be
      * enabled on single user devices where the sole user is managed by the device owner. If a new
      * user is added on the device, logging is disabled.
@@ -6710,25 +6730,5 @@ public class DevicePolicyManager {
         } catch (RemoteException re) {
             throw re.rethrowFromSystemServer();
         }
-    }
-
-    /**
-     * CM: check if secure keyguard is required
-     * @hide
-     */
-    public boolean requireSecureKeyguard() {
-        return requireSecureKeyguard(UserHandle.myUserId());
-    }
-
-    /** @hide */
-    public boolean requireSecureKeyguard(int userHandle) {
-        if (mService != null) {
-            try {
-                return mService.requireSecureKeyguard(userHandle);
-            } catch (RemoteException e) {
-                Log.w(TAG, "Failed to get secure keyguard requirement");
-            }
-        }
-        return true;
     }
 }
