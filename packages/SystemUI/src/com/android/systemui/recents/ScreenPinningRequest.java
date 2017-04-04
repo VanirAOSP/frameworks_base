@@ -234,11 +234,13 @@ public class ScreenPinningRequest implements View.OnClickListener {
                         .setVisibility(View.INVISIBLE);
             }
 
+            boolean touchExplorationEnabled = mAccessibilityService.isTouchExplorationEnabled();
             final int description;
             if (hasNavigationBar()) {
-                description = R.string.screen_pinning_description;
+                description = touchExplorationEnabled ? R.string.screen_pinning_description_accessible : R.string.screen_pinning_description;
                 final int backBgVisibility =
-                        mAccessibilityService.isEnabled() ? View.INVISIBLE : View.VISIBLE;
+                        touchExplorationEnabled ? View.INVISIBLE : View.VISIBLE;
+            final int backBgVisibility = touchExplorationEnabled ? View.INVISIBLE : View.VISIBLE;
                 mLayout.findViewById(R.id.screen_pinning_back_bg).setVisibility(backBgVisibility);
                 mLayout.findViewById(R.id.screen_pinning_back_bg_light).setVisibility(backBgVisibility);
             } else {
