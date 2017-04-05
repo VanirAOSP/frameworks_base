@@ -131,7 +131,7 @@ public class KeyguardAffordanceView extends ImageView implements Palette.Palette
         super(context, attrs, defStyleAttr, defStyleRes);
         mCirclePaint = new Paint();
         mCirclePaint.setAntiAlias(true);
-        mCircleColor = mContext.getResources().getColor(R.color.keyguard_affordance_circle_background);
+        mCircleColor = 0xffffffff;
         mCirclePaint.setColor(mCircleColor);
 
         mNormalColor = 0xffffffff;

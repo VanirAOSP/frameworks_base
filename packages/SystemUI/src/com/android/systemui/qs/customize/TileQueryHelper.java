@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -178,8 +177,7 @@ public class TileQueryHelper {
                     continue;
                 }
                 icon.mutate();
-                icon.setTint(mContext.getColor(R.color.external_qs_tile_tint_color));
-                icon.setTintMode(Mode.SRC_ATOP);
+                icon.setTint(mContext.getColor(android.R.color.white));
                 CharSequence label = info.serviceInfo.loadLabel(pm);
                 addTile(spec, icon, label != null ? label.toString() : "null", appLabel, mContext);
             }

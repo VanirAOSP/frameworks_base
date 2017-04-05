@@ -21,7 +21,6 @@ import static android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED
 import static android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
 import static android.content.pm.PackageManager.COMPONENT_VISIBLE_STATUS;
 
-import android.annotation.NonNull;
 import android.content.pm.IntentFilterVerificationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageUserState;
@@ -380,7 +379,7 @@ abstract class PackageSettingBase extends SettingBase {
             boolean notLaunched, boolean hidden, boolean suspended,
             String lastDisableAppCaller, ArraySet<String> enabledComponents,
             ArraySet<String> disabledComponents, boolean blockUninstall, int domainVerifState,
-            int linkGeneration, String[] resourceDirs,
+            int linkGeneration,
             ArraySet<String> protectedComponents, ArraySet<String> visibleComponents) {
         PackageUserState state = modifyUserState(userId);
         state.ceDataInode = ceDataInode;
@@ -398,7 +397,6 @@ abstract class PackageSettingBase extends SettingBase {
         state.appLinkGeneration = linkGeneration;
         state.protectedComponents = protectedComponents;
         state.visibleComponents = visibleComponents;
-        state.resourceDirs = resourceDirs;
     }
 
     ArraySet<String> getEnabledComponents(int userId) {
@@ -455,10 +453,6 @@ abstract class PackageSettingBase extends SettingBase {
 
     void addEnabledComponent(String componentClassName, int userId) {
         modifyUserStateComponents(userId, false, true).enabledComponents.add(componentClassName);
-    }
-
-    void setResourceDirs(@NonNull final String[] resourceDirs, final int userId) {
-        modifyUserState(userId).resourceDirs = resourceDirs;
     }
 
     boolean enableComponentLPw(String componentClassName, int userId) {
