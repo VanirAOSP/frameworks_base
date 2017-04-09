@@ -149,11 +149,11 @@ public class LockPatternView extends View {
     private PatternExploreByTouchHelper mExploreByTouchHelper;
     private AudioManager mAudioManager;
 
-    private LockPatternUtils mLockPatternUtils;
-
     private Drawable mSelectedDrawable;
     private Drawable mNotSelectedDrawable;
     private boolean mUseLockPatternDrawable;
+
+    private LockPatternUtils mLockPatternUtils;
 
     /**
      * Represents a cell in the matrix of the unlock pattern view.
@@ -1173,7 +1173,6 @@ public class LockPatternView extends View {
                     CellState cellState = mCellStates[i][j];
                     float centerX = getCenterXForColumn(j);
                     float translationY = cellState.translationY;
-
                     if (mUseLockPatternDrawable) {
                         drawCellDrawable(canvas, i, j, cellState.radius, drawLookup[i][j]);
                     } else {

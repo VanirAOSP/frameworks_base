@@ -11,7 +11,6 @@
     <application
         android:name=".DocumentsApplication"
         android:label="@string/app_label"
-        android:icon="@drawable/app_icon"
         android:supportsRtl="true">
 
         <activity

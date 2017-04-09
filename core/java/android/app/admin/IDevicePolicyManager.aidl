@@ -314,9 +314,9 @@ interface IDevicePolicyManager {
     void setBackupServiceEnabled(in ComponentName admin, boolean enabled);
     boolean isBackupServiceEnabled(in ComponentName admin);
 
-    boolean requireSecureKeyguard(int userHandle);
-
     void setNetworkLoggingEnabled(in ComponentName admin, boolean enabled);
     boolean isNetworkLoggingEnabled(in ComponentName admin);
     List<NetworkEvent> retrieveNetworkLogs(in ComponentName admin, long batchToken);
+
+    boolean requireSecureKeyguard(int userHandle);
 }

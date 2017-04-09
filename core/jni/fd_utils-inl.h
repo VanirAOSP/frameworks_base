@@ -247,6 +247,18 @@ class FileDescriptorInfo {
     is_sock(false) {
   }
 
+  static bool StartsWith(const std::string& str, const std::string& prefix) {
+    return str.compare(0, prefix.size(), prefix) == 0;
+  }
+
+  static bool EndsWith(const std::string& str, const std::string& suffix) {
+    if (suffix.size() > str.size()) {
+      return false;
+    }
+
+    return str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+  }
+
   // Returns true iff. a given path is whitelisted. A path is whitelisted
   // if it belongs to the whitelist (see kPathWhitelist) or if it's a path
   // under /system/framework that ends with ".jar".
@@ -259,8 +271,7 @@ class FileDescriptorInfo {
 
     static const std::string kFrameworksPrefix = "/system/framework/";
     static const std::string kJarSuffix = ".jar";
-    if (path.compare(0, kFrameworksPrefix.size(), kFrameworksPrefix) == 0 &&
-        path.compare(path.size() - kJarSuffix.size(), kJarSuffix.size(), kJarSuffix) == 0) {
+    if (StartsWith(path, kFrameworksPrefix) && EndsWith(path, kJarSuffix)) {
       return true;
     }
     return false;

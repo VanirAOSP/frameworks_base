@@ -6606,6 +6606,12 @@ public final class Settings {
         public static final String WEB_ACTION_ENABLED = "web_action_enabled";
 
         /**
+         * Has this pairable device been paired or upgraded from a previously paired system.
+         * @hide
+         */
+        public static final String DEVICE_PAIRED = "device_paired";
+
+        /**
          * Whether to include options in power menu for rebooting into recovery or bootloader
          * @hide
          */
@@ -6616,12 +6622,6 @@ public final class Settings {
          * @hide
          */
         public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
-
-        /**
-         * Has this pairable device been paired or upgraded from a previously paired system.
-         * @hide
-         */
-        public static final String DEVICE_PAIRED = "device_paired";
 
         /**
          * Force authorize Substratum (or equivalent) frontend calling packages by Masquerade

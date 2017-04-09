@@ -71,12 +71,13 @@ public class PowerUI extends SystemUI {
 
     private long mScreenOffTime = -1;
 
-    // For filtering ACTION_POWER_DISCONNECTED on boot
-    private boolean mIgnoredFirstPowerBroadcast;
     private float mThresholdTemp;
     private float[] mRecentTemps = new float[MAX_RECENT_TEMPS];
     private int mNumTemps;
     private long mNextLogTime;
+
+    // For filtering ACTION_POWER_DISCONNECTED on boot
+    private boolean mIgnoredFirstPowerBroadcast;
 
     public void start() {
         mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
