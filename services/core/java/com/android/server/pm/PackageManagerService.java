@@ -399,16 +399,17 @@ public class PackageManagerService extends IPackageManager.Stub {
     static final int SCAN_UPDATE_TIME = 1<<6;
     static final int SCAN_DEFER_DEX = 1<<7;
     static final int SCAN_BOOTING = 1<<8;
-    static final int SCAN_DELETE_DATA_ON_FAILURES = 1<<9;
-    static final int SCAN_REPLACING = 1<<10;
-    static final int SCAN_REQUIRE_KNOWN = 1<<11;
-    static final int SCAN_MOVE = 1<<12;
-    static final int SCAN_INITIAL = 1<<13;
-    static final int SCAN_CHECK_ONLY = 1<<14;
-    static final int SCAN_DONT_KILL_APP = 1<<15;
-    static final int SCAN_IGNORE_FROZEN = 1<<16;
+    static final int SCAN_TRUSTED_OVERLAY = 1<<9;
+    static final int SCAN_DELETE_DATA_ON_FAILURES = 1<<10;
+    static final int SCAN_REPLACING = 1<<11;
+    static final int SCAN_REQUIRE_KNOWN = 1<<12;
+    static final int SCAN_MOVE = 1<<13;
+    static final int SCAN_INITIAL = 1<<14;
+    static final int SCAN_CHECK_ONLY = 1<<15;
+    static final int SCAN_DONT_KILL_APP = 1<<17;
+    static final int SCAN_IGNORE_FROZEN = 1<<18;
 
-    static final int REMOVE_CHATTY = 1<<17;
+    static final int REMOVE_CHATTY = 1<<16;
 
     private static final int[] EMPTY_INT_ARRAY = new int[0];
 
@@ -2350,13 +2351,15 @@ public class PackageManagerService extends IPackageManager.Stub {
             if (!overlayThemeDir.isEmpty()) {
                 scanDirTracedLI(new File(VENDOR_OVERLAY_DIR, overlayThemeDir), mDefParseFlags
                         | PackageParser.PARSE_IS_SYSTEM
-                        | PackageParser.PARSE_IS_SYSTEM_DIR,
-                        scanFlags 0);  }
+                        | PackageParser.PARSE_IS_SYSTEM_DIR
+                        | PackageParser.PARSE_TRUSTED_OVERLAY,
+                        scanFlags | SCAN_TRUSTED_OVERLAY, 0);  }
 
             scanDirTracedLI(new File(VENDOR_OVERLAY_DIR), mDefParseFlags
                     | PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR,
-                    scanFlags, 0);
+                    | PackageParser.PARSE_IS_SYSTEM_DIR
+                    | PackageParser.PARSE_TRUSTED_OVERLAY,
+                    scanFlags | SCAN_TRUSTED_OVERLAY, 0);
 
             // Find base frameworks (resource packages without code).
             scanDirTracedLI(frameworkDir, mDefParseFlags
@@ -6896,6 +6899,10 @@ public class PackageManagerService extends IPackageManager.Stub {
         pp.setOnlyPowerOffAlarmApps(mOnlyPowerOffAlarm);
         pp.setDisplayMetrics(mMetrics);
 
+        if ((scanFlags & SCAN_TRUSTED_OVERLAY) != 0) {
+            parseFlags |= PackageParser.PARSE_TRUSTED_OVERLAY;
+        }
+
         Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "parsePackage");
         final PackageParser.Package pkg;
         try {
@@ -8128,9 +8135,14 @@ public class PackageManagerService extends IPackageManager.Stub {
             pkg.applicationInfo.privateFlags &=
                     ~ApplicationInfo.PRIVATE_FLAG_DIRECT_BOOT_AWARE;
         }
+        pkg.mTrustedOverlay = (policyFlags&PackageParser.PARSE_TRUSTED_OVERLAY) != 0;
 
         if ((policyFlags&PackageParser.PARSE_IS_PRIVILEGED) != 0) {
             pkg.applicationInfo.privateFlags |= ApplicationInfo.PRIVATE_FLAG_PRIVILEGED;
+        }
+
+        if ((policyFlags & PackageParser.PARSE_ENFORCE_CODE) != 0) {
+            enforceCodePolicy(pkg);
         }
 
         if (mCustomResolverComponentName != null &&
