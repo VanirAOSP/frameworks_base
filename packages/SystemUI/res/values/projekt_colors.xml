@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Copyright (c) 2016 Projekt Substratum
+    Copyright (c) 2016-2017 Projekt Substratum
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -37,4 +37,6 @@
     <!-- Screenshot action colors -->
     <color name="screenshot_flash_color">@android:color/white</color>
     <color name="screenshot_background_color">@android:color/black</color>
+    <!-- Separate QS text label tint from icon tint -->
+    <color name="qs_tile_label_tint_unavailable">@color/qs_tile_tint_unavailable</color>
 </resources>
