@@ -66,6 +66,7 @@ public class QSPanel extends LinearLayout implements Tunable, Callback {
     private int mBrightnessPaddingTop;
     protected boolean mExpanded;
     protected boolean mListening;
+    private boolean mIsAutomaticBrightnessAvailable = false;
 
     private Callback mCallback;
     private BrightnessController mBrightnessController;
@@ -114,10 +115,9 @@ public class QSPanel extends LinearLayout implements Tunable, Callback {
                 R.layout.qs_paged_tile_layout, this, false);
         mTileLayout.setListening(mListening);
         addView((View) mTileLayout);
-    }
 
-    private boolean isAutomaticBrightnessAvailable() {
-        return getResources().getBoolean(com.android.internal.R.bool.config_automatic_brightness_available);
+        mIsAutomaticBrightnessAvailable = getResources().getBoolean(
+                com.android.internal.R.bool.config_automatic_brightness_available);
     }
 
     public boolean isShowingCustomize() {
@@ -155,7 +155,7 @@ public class QSPanel extends LinearLayout implements Tunable, Callback {
         if (QS_SHOW_BRIGHTNESS_SLIDER.equals(key)) {
             mBrightnessView.setVisibility(newValue == null || Integer.parseInt(newValue) != 0
                     ? VISIBLE : GONE);
-        } else if ((QS_SHOW_AUTO_BRIGHTNESS.equals(key)) && (isAutomaticBrightnessAvailable())) {
+        } else if (QS_SHOW_AUTO_BRIGHTNESS.equals(key) && mIsAutomaticBrightnessAvailable) {
             mAutoBrightnessView.setVisibility(newValue == null || Integer.parseInt(newValue) != 0
                     ? VISIBLE : GONE);
         }
