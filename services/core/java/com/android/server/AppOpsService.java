@@ -1120,7 +1120,7 @@ public class AppOpsService extends IAppOpsService.Stub {
     private int noteOperationUnchecked(int code, int uid, String packageName,
             int proxyUid, String proxyPackageName) {
         PermissionDialogReq req = null;
-        final boolean isInteractive = mPowerManager.isInteractive();
+        final boolean isInteractive = mPowerManager != null ? mPowerManager.isInteractive() : false;
         synchronized (this) {
             Ops ops = getOpsRawLocked(uid, packageName, true);
             if (ops == null) {
