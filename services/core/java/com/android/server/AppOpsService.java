@@ -1120,7 +1120,13 @@ public class AppOpsService extends IAppOpsService.Stub {
     private int noteOperationUnchecked(int code, int uid, String packageName,
             int proxyUid, String proxyPackageName) {
         PermissionDialogReq req = null;
-        final boolean isInteractive = mPowerManager.isInteractive();
+        boolean isinteractive = false;
+        try {
+            if (mPowerManager != null)
+                isinteractive = mPowerManager.isInteractive();
+        } catch(Exception ex) {
+            Slog.w(TAG, "Cannot check if PowerManager is interactive. Assuming false.", ex);
+        }
         synchronized (this) {
             Ops ops = getOpsRawLocked(uid, packageName, true);
             if (ops == null) {
