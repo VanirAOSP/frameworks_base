@@ -235,7 +235,6 @@ public class SignalClusterView
 
     @Override
     protected void onDetachedFromWindow() {
-        mMobileImsImageView      = null;
         mMobileSignalGroup.removeAllViews();
         TunerService.get(mContext).removeTunable(this);
         mSC.removeCallback(this);
